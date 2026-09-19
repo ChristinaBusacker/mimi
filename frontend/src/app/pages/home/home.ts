@@ -5,6 +5,8 @@ import {
   computed,
   inject,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 
 import type {
@@ -20,6 +22,10 @@ import { I18nState } from '../../core/i18n/i18n.state';
 import type { Language } from '../../core/i18n/i18n.types';
 import { TwitchState } from '../../core/twitch/twitch.state';
 import { YouTubeState } from '../../core/youtube/youtube.state';
+import {
+  createTwitchPreview,
+  createVideoPreview,
+} from './home-preview';
 
 type HeroIcon = 'gaming' | 'heart' | 'music';
 
@@ -46,15 +52,33 @@ interface HeroViewModel {
 })
 export class Home {
   private readonly store = inject(Store);
+  private readonly route = inject(ActivatedRoute);
 
   private readonly twitchStatus = this.store.selectSignal(TwitchState.status);
+  private readonly youtubeVideos = this.store.selectSignal(YouTubeState.videos);
   private readonly language = this.store.selectSignal(I18nState.language);
 
-  protected readonly videos = this.store.selectSignal(YouTubeState.videos);
+  private readonly queryParams = toSignal(this.route.queryParamMap, {
+    initialValue: this.route.snapshot.queryParamMap,
+  });
+
+  private readonly effectiveTwitchStatus = computed(
+    () =>
+      createTwitchPreview(
+        this.queryParams(),
+        this.twitchStatus(),
+      ) ?? this.twitchStatus(),
+  );
+
+  protected readonly videos = computed(
+    () =>
+      createVideoPreview(this.queryParams()) ??
+      this.youtubeVideos(),
+  );
 
   protected readonly hero = computed(() =>
     this.createHeroViewModel(
-      this.twitchStatus(),
+      this.effectiveTwitchStatus(),
       this.language(),
     ),
   );

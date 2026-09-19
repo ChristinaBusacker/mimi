@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngxs/store';
 
 import { I18nState } from '../../core/i18n/i18n.state';
@@ -14,6 +15,7 @@ describe('Home', () => {
     await TestBed.configureTestingModule({
       imports: [Home],
       providers: [
+        provideRouter([]),
         provideStore([
           I18nState,
           TwitchState,
