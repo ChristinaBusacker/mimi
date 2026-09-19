@@ -2,8 +2,11 @@ import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  afterNextRender,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
@@ -22,6 +25,7 @@ import { I18nState } from '../../core/i18n/i18n.state';
 import type { Language } from '../../core/i18n/i18n.types';
 import { TwitchState } from '../../core/twitch/twitch.state';
 import { YouTubeState } from '../../core/youtube/youtube.state';
+import { createCountdownViewModel } from './home-countdown';
 import {
   createTwitchPreview,
   createVideoPreview,
@@ -39,8 +43,9 @@ interface HeroViewModel {
   actionKey: string;
   channelUrl: string | null;
   streamTitle: string | null;
-  startsAt: string | null;
+  scheduledAt: string | null;
   isLive: boolean;
+  isUpcoming: boolean;
 }
 
 @Component({
@@ -53,10 +58,17 @@ interface HeroViewModel {
 export class Home {
   private readonly store = inject(Store);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly twitchStatus = this.store.selectSignal(TwitchState.status);
   private readonly youtubeVideos = this.store.selectSignal(YouTubeState.videos);
   private readonly language = this.store.selectSignal(I18nState.language);
+  private readonly dictionary = this.store.selectSignal(
+    I18nState.currentDictionary,
+  );
+
+  private readonly currentTime = signal<number | null>(null);
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
   private readonly queryParams = toSignal(this.route.queryParamMap, {
     initialValue: this.route.snapshot.queryParamMap,
@@ -82,6 +94,40 @@ export class Home {
       this.language(),
     ),
   );
+
+  protected readonly countdown = computed(() => {
+    const currentTime = this.currentTime();
+    const status = this.effectiveTwitchStatus();
+
+    if (
+      currentTime === null ||
+      status?.state !== 'upcoming'
+    ) {
+      return null;
+    }
+
+    return createCountdownViewModel(
+      status.startsAt,
+      currentTime,
+      this.dictionary(),
+    );
+  });
+
+  constructor() {
+    afterNextRender(() => {
+      this.currentTime.set(Date.now());
+
+      this.countdownInterval = setInterval(() => {
+        this.currentTime.set(Date.now());
+      }, 1000);
+    });
+
+    this.destroyRef.onDestroy(() => {
+      if (this.countdownInterval !== null) {
+        clearInterval(this.countdownInterval);
+      }
+    });
+  }
 
   private createHeroViewModel(
     status: TwitchStatus | null,
@@ -115,11 +161,12 @@ export class Home {
           : 'hero.action.channel',
       channelUrl: status?.channelUrl ?? null,
       streamTitle: activeStatus?.title ?? null,
-      startsAt:
+      scheduledAt:
         status?.state === 'upcoming'
           ? this.formatDateTime(status.startsAt, language)
           : null,
       isLive: status?.state === 'live',
+      isUpcoming: status?.state === 'upcoming',
     };
   }
 
@@ -135,7 +182,7 @@ export class Home {
     return new Intl.DateTimeFormat(
       language === 'de' ? 'de-DE' : 'en-US',
       {
-        weekday: 'long',
+        weekday: 'short',
         day: '2-digit',
         month: '2-digit',
         hour: '2-digit',

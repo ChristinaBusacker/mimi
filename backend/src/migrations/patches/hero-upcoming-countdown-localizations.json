@@ -1,0 +1,29 @@
+{
+  "localizations": [
+    {
+      "key": "hero.upcoming.countdown.label",
+      "de": "Noch",
+      "en": "Starts in"
+    },
+    {
+      "key": "hero.upcoming.countdown.starting",
+      "de": "Startet gleich",
+      "en": "Starting now"
+    },
+    {
+      "key": "hero.upcoming.countdown.day",
+      "de": "Tag",
+      "en": "day"
+    },
+    {
+      "key": "hero.upcoming.countdown.days",
+      "de": "Tage",
+      "en": "days"
+    },
+    {
+      "key": "hero.upcoming.countdown.hourShort",
+      "de": "Std",
+      "en": "hr"
+    }
+  ]
+}
