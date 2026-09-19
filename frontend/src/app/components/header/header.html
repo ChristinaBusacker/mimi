@@ -1,51 +1,54 @@
-<header>
+<header class="desktop-header">
   <div class="left partial">
-    <nav class="social">
+    <nav class="social" aria-label="Social Media">
       <ul>
         <li>
-          <a href="#">
-            <img class="icon" src="images/icons/logos/discord.png" />
+          <a href="#" aria-label="Discord">
+            <img class="icon" src="images/icons/logos/discord.png" alt="" />
           </a>
         </li>
         <li>
-          <a href="#">
-            <img class="icon" src="images/icons/logos/x.png" />
+          <a href="#" aria-label="X">
+            <img class="icon" src="images/icons/logos/x.png" alt="" />
           </a>
         </li>
         <li>
-          <a href="#">
-            <img class="icon" src="images/icons/logos/instagram.png" />
+          <a href="#" aria-label="Instagram">
+            <img class="icon" src="images/icons/logos/instagram.png" alt="" />
           </a>
         </li>
         <li>
-          <a href="#">
-            <img class="icon" src="images/icons/logos/youtube.png" />
+          <a href="#" aria-label="YouTube">
+            <img class="icon" src="images/icons/logos/youtube.png" alt="" />
           </a>
         </li>
         <li>
-          <a href="#">
-            <img class="icon" src="images/icons/logos/twitch.png" />
+          <a href="#" aria-label="Twitch">
+            <img class="icon" src="images/icons/logos/twitch.png" alt="" />
           </a>
         </li>
       </ul>
     </nav>
+
     <nav>
       <ul>
-        <li></li>
         <li>
-          <a href="#">{{ 'navigation.gaming' | i18n | async }}</a>
+          <a routerLink="/gaming">{{ 'navigation.gaming' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">{{ 'navigation.music' | i18n | async }}</a>
+          <a routerLink="/music">{{ 'navigation.music' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">{{ 'navigation.videos' | i18n | async }}</a>
+          <a routerLink="/videos">{{ 'navigation.videos' | i18n | async }}</a>
         </li>
       </ul>
     </nav>
   </div>
 
-  <img class="logo" src="/images/logo.png" />
+  <a routerLink="/" class="desktop-logo">
+    <img class="logo" src="/images/logo.png" alt="Mimishow" />
+  </a>
+
   <div class="right partial">
     <nav>
       <ul>
@@ -60,9 +63,116 @@
         </li>
       </ul>
     </nav>
+
     <app-button class="primary">
       <app-icon name="heart" class="black" />
       {{ 'navigation.support' | i18n | async }}
     </app-button>
   </div>
 </header>
+
+<div #mobileShell class="mobile-shell">
+  <header class="mobile-header">
+    <button
+      #menuToggle
+      type="button"
+      class="menu-toggle"
+      [class.is-open]="menuOpen()"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="mobile-menu"
+      [attr.aria-label]="
+        (menuOpen()
+          ? 'mobile.navigation.closeMenu'
+          : 'mobile.navigation.openMenu'
+        ) | i18n | async
+      "
+      (click)="toggleMenu()"
+    >
+      <span class="menu-toggle__icon" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+
+    <a
+      routerLink="/"
+      class="mobile-logo"
+      aria-label="Mimishow"
+      (click)="closeMenu()"
+    >
+      <img src="/images/logo.png" alt="" />
+    </a>
+
+    <button
+      type="button"
+      class="mobile-support"
+      [attr.aria-label]="'navigation.support' | i18n | async"
+    >
+      <app-icon name="heart" class="primary" />
+    </button>
+  </header>
+
+  <aside
+    id="mobile-menu"
+    class="mobile-menu"
+    [class.is-open]="menuOpen()"
+    [attr.aria-hidden]="!menuOpen()"
+    [attr.inert]="menuOpen() ? null : ''"
+  >
+    <div class="mobile-menu__content">
+      <nav class="mobile-menu__navigation">
+        <a routerLink="/gaming" (click)="closeMenu()">
+          {{ 'navigation.gaming' | i18n | async }}
+        </a>
+        <a routerLink="/music" (click)="closeMenu()">
+          {{ 'navigation.music' | i18n | async }}
+        </a>
+        <span>{{ 'navigation.about' | i18n | async }}</span>
+        <a routerLink="/videos" (click)="closeMenu()">
+          {{ 'navigation.videos' | i18n | async }}
+        </a>
+        <a href="#mobile-social">
+          {{ 'mobile.navigation.social' | i18n | async }}
+        </a>
+        <span>{{ 'mobile.navigation.subscribe' | i18n | async }}</span>
+        <span>{{ 'footer.contact' | i18n | async }}</span>
+      </nav>
+
+      <nav
+        id="mobile-social"
+        class="mobile-menu__social"
+        aria-label="Social Media"
+      >
+        <a href="#" aria-label="Discord">
+          <img src="images/icons/logos/discord.png" alt="" />
+        </a>
+        <a href="#" aria-label="X">
+          <img src="images/icons/logos/x.png" alt="" />
+        </a>
+        <a href="#" aria-label="Instagram">
+          <img src="images/icons/logos/instagram.png" alt="" />
+        </a>
+        <a href="#" aria-label="YouTube">
+          <img src="images/icons/logos/youtube.png" alt="" />
+        </a>
+        <a href="#" aria-label="Twitch">
+          <img src="images/icons/logos/twitch.png" alt="" />
+        </a>
+      </nav>
+    </div>
+
+    <div class="mobile-menu__footer">
+      <div class="mobile-menu__brand">
+        <img src="/images/logo.png" alt="Mimishow" />
+        <app-icon name="heart" class="secondary small" />
+      </div>
+
+      <div class="mobile-menu__legal">
+        <span>{{ 'footer.legalNotice' | i18n | async }}</span>
+        <span>{{ 'footer.privacy' | i18n | async }}</span>
+        <span>{{ 'footer.contact' | i18n | async }}</span>
+      </div>
+    </div>
+  </aside>
+</div>

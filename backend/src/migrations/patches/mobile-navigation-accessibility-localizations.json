@@ -1,0 +1,14 @@
+{
+  "localizations": [
+    {
+      "key": "mobile.navigation.openMenu",
+      "de": "Menü öffnen",
+      "en": "Open menu"
+    },
+    {
+      "key": "mobile.navigation.closeMenu",
+      "de": "Menü schließen",
+      "en": "Close menu"
+    }
+  ]
+}
