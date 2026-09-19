@@ -1,5 +1,10 @@
 import { Injectable, MessageEvent } from '@nestjs/common';
-import { interval, map, merge, Observable, Subject } from 'rxjs';
+import { Observable, Subject, interval, map, merge } from 'rxjs';
+
+import type {
+  AppEventMap,
+  AppEventType,
+} from '@shared/events/app-event';
 
 @Injectable()
 export class EventsService {
@@ -11,14 +16,17 @@ export class EventsService {
         type: 'heartbeat',
         data: {
           timestamp: new Date().toISOString(),
-        },
+        } satisfies AppEventMap['heartbeat'],
       })),
     );
 
     return merge(this.events.asObservable(), heartbeat);
   }
 
-  publish(type: string, data?: string | object): void {
+  publish<TType extends AppEventType>(
+    type: TType,
+    data: AppEventMap[TType],
+  ): void {
     this.events.next({
       type,
       data,

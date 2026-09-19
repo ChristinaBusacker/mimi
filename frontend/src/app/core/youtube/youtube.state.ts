@@ -5,7 +5,10 @@ import { EMPTY, Observable, catchError, tap } from 'rxjs';
 import type { YouTubeVideo } from '@shared/youtube/youtube-video';
 
 import { RequestService } from '../http/request.service';
-import { LoadYouTubeVideos } from './youtube.actions';
+import {
+  LoadYouTubeVideos,
+  SetYouTubeVideos,
+} from './youtube.actions';
 
 interface YouTubeStateModel {
   videos: YouTubeVideo[];
@@ -40,5 +43,15 @@ export class YouTubeState {
       }),
       catchError(() => EMPTY),
     );
+  }
+
+  @Action(SetYouTubeVideos)
+  setVideos(
+    context: StateContext<YouTubeStateModel>,
+    { videos }: SetYouTubeVideos,
+  ): void {
+    context.patchState({
+      videos,
+    });
   }
 }

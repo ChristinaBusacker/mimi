@@ -5,7 +5,10 @@ import { EMPTY, Observable, catchError, tap } from 'rxjs';
 import type { TwitchStatus } from '@shared/twitch/twitch-status';
 
 import { RequestService } from '../http/request.service';
-import { LoadTwitchStatus } from './twitch.actions';
+import {
+  LoadTwitchStatus,
+  SetTwitchStatus,
+} from './twitch.actions';
 
 interface TwitchStateModel {
   status: TwitchStatus | null;
@@ -40,5 +43,15 @@ export class TwitchState {
       }),
       catchError(() => EMPTY),
     );
+  }
+
+  @Action(SetTwitchStatus)
+  setStatus(
+    context: StateContext<TwitchStateModel>,
+    { status }: SetTwitchStatus,
+  ): void {
+    context.patchState({
+      status,
+    });
   }
 }

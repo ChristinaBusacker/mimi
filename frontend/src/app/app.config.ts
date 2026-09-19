@@ -9,6 +9,7 @@ import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngxs/store';
 
 import { routes } from './app.routes';
+import { EventStreamService } from './core/events/event-stream.service';
 import { I18nState } from './core/i18n/i18n.state';
 import { LanguageService } from './core/i18n/language.service';
 import { TwitchState } from './core/twitch/twitch.state';
@@ -25,5 +26,6 @@ export const appConfig: ApplicationConfig = {
       YouTubeState,
     ]),
     provideAppInitializer(() => inject(LanguageService).initialize()),
+    provideAppInitializer(() => inject(EventStreamService).start()),
   ],
 };
