@@ -1,0 +1,9 @@
+{
+  "localizations": [
+    {
+      "key": "stream.status.live",
+      "de": "Live",
+      "en": "Live"
+    }
+  ]
+}

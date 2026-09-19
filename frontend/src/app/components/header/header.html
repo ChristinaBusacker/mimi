@@ -33,13 +33,13 @@
       <ul>
         <li></li>
         <li>
-          <a href="#">Gaming</a>
+          <a href="#">{{ 'navigation.gaming' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">Music</a>
+          <a href="#">{{ 'navigation.music' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">Video</a>
+          <a href="#">{{ 'navigation.videos' | i18n | async }}</a>
         </li>
       </ul>
     </nav>
@@ -50,19 +50,19 @@
     <nav>
       <ul>
         <li>
-          <a href="#">About</a>
+          <a href="#">{{ 'navigation.about' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">Community</a>
+          <a href="#">{{ 'navigation.community' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">Shop</a>
+          <a href="#">{{ 'navigation.shop' | i18n | async }}</a>
         </li>
       </ul>
     </nav>
     <app-button class="primary">
       <app-icon name="heart" class="black" />
-      Support me
+      {{ 'navigation.support' | i18n | async }}
     </app-button>
   </div>
 </header>

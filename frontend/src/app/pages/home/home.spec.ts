@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideStore } from '@ngxs/store';
+
+import { I18nState } from '../../core/i18n/i18n.state';
 import { Home } from './home';
 
 describe('Home', () => {
@@ -8,6 +11,7 @@ describe('Home', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Home],
+      providers: [provideStore([I18nState])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Home);
