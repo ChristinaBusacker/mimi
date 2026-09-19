@@ -1,24 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngxs/store';
 
 import { I18nState } from '../../core/i18n/i18n.state';
-import { Footer } from './footer';
+import { LegalNotice } from './legal-notice';
 
-describe('Footer', () => {
-  let component: Footer;
-  let fixture: ComponentFixture<Footer>;
+describe('LegalNotice', () => {
+  let component: LegalNotice;
+  let fixture: ComponentFixture<LegalNotice>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Footer],
-      providers: [
-        provideRouter([]),
-        provideStore([I18nState]),
-      ],
+      imports: [LegalNotice],
+      providers: [provideStore([I18nState])],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Footer);
+    fixture = TestBed.createComponent(LegalNotice);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

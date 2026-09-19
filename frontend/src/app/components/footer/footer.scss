@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -5,20 +7,79 @@
   justify-content: center;
   gap: var(--spacing-sm);
   margin-top: 160px;
+}
+
+.footer-logo {
+  display: flex;
 
   img {
     width: 160px;
-    bottom: 30px;
+  }
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+
+  a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+}
+
+.language-switch {
+  display: flex;
+  gap: var(--spacing-xs);
+
+  button {
+    min-width: 38px;
+    padding: 3px 8px;
+
+    border: var(--control-border-width) solid var(--color-secondary);
+    border-radius: var(--radius-pill);
+
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 800;
+
+    transition:
+      background-color 160ms ease,
+      color 160ms ease;
+
+    &.active {
+      background-color: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+  }
+}
+
+@include compact-layout {
+  :host {
+    margin-top: 100px;
   }
 
-  footer,
+  footer {
+    flex-direction: column;
+  }
+
   nav {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-md);
-    & a {
-      text-decoration: none;
-      color: var(--color-text);
-    }
+    flex-wrap: wrap;
+  }
+}
+
+@include reduced-motion {
+  .language-switch button {
+    transition: none;
   }
 }

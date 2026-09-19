@@ -1,8 +1,45 @@
-<img src="/images/logo.png" />
+<a routerLink="/" class="footer-logo" aria-label="Mimishow">
+  <img src="/images/logo.png" alt="" />
+</a>
+
 <footer>
-  <nav>
-    <a href="#">{{ 'footer.legalNotice' | i18n | async }}</a>
-    <a href="#">{{ 'footer.privacy' | i18n | async }}</a>
-    <a href="#">{{ 'footer.contact' | i18n | async }}</a>
+  <nav aria-label="Footer">
+    <a routerLink="/impressum">
+      {{ 'footer.legalNotice' | i18n | async }}
+    </a>
+    <a routerLink="/datenschutz">
+      {{ 'footer.privacy' | i18n | async }}
+    </a>
+    <a routerLink="/kontakt">
+      {{ 'footer.contact' | i18n | async }}
+    </a>
   </nav>
+
+  <div
+    class="language-switch"
+    role="group"
+    [attr.aria-label]="'footer.language.label' | i18n | async"
+  >
+    <button
+      type="button"
+      lang="de"
+      [class.active]="language() === 'de'"
+      [attr.aria-pressed]="language() === 'de'"
+      [attr.aria-label]="'footer.language.german' | i18n | async"
+      (click)="setLanguage('de')"
+    >
+      DE
+    </button>
+
+    <button
+      type="button"
+      lang="en"
+      [class.active]="language() === 'en'"
+      [attr.aria-pressed]="language() === 'en'"
+      [attr.aria-label]="'footer.language.english' | i18n | async"
+      (click)="setLanguage('en')"
+    >
+      EN
+    </button>
+  </div>
 </footer>

@@ -1,24 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngxs/store';
 
 import { I18nState } from '../../core/i18n/i18n.state';
-import { Footer } from './footer';
+import { Privacy } from './privacy';
 
-describe('Footer', () => {
-  let component: Footer;
-  let fixture: ComponentFixture<Footer>;
+describe('Privacy', () => {
+  let component: Privacy;
+  let fixture: ComponentFixture<Privacy>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Footer],
-      providers: [
-        provideRouter([]),
-        provideStore([I18nState]),
-      ],
+      imports: [Privacy],
+      providers: [provideStore([I18nState])],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Footer);
+    fixture = TestBed.createComponent(Privacy);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

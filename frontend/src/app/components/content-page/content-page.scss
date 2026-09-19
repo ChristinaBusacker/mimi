@@ -1,0 +1,26 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.content-page {
+  @include framed;
+
+  min-height: 320px;
+  padding: var(--spacing-md);
+
+  background-color: var(--color-surface-translucent);
+  color: var(--color-text);
+
+  h1 {
+    color: var(--color-secondary);
+    font-size: 2rem;
+  }
+}
+
+@include compact-layout {
+  .content-page {
+    margin: 0 var(--spacing-sm);
+  }
+}

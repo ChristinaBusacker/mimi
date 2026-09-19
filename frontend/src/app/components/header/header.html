@@ -136,7 +136,9 @@
           {{ 'mobile.navigation.social' | i18n | async }}
         </a>
         <span>{{ 'mobile.navigation.subscribe' | i18n | async }}</span>
-        <span>{{ 'footer.contact' | i18n | async }}</span>
+        <a routerLink="/kontakt" (click)="closeMenu()">
+          {{ 'footer.contact' | i18n | async }}
+        </a>
       </nav>
 
       <nav
@@ -171,7 +173,9 @@
       <div class="mobile-menu__legal">
         <span>{{ 'footer.legalNotice' | i18n | async }}</span>
         <span>{{ 'footer.privacy' | i18n | async }}</span>
-        <span>{{ 'footer.contact' | i18n | async }}</span>
+        <a routerLink="/kontakt" (click)="closeMenu()">
+          {{ 'footer.contact' | i18n | async }}
+        </a>
       </div>
     </div>
   </aside>

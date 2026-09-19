@@ -22,4 +22,25 @@ export const routes: Routes = [
     path: 'videos',
     loadComponent: () => import('./pages/videos/videos').then((module) => module.Videos),
   },
+  {
+    path: 'impressum',
+    loadComponent: () =>
+      import('./pages/legal-notice/legal-notice').then(
+        (module) => module.LegalNotice,
+      ),
+  },
+  {
+    path: 'datenschutz',
+    loadComponent: () =>
+      import('./pages/privacy/privacy').then(
+        (module) => module.Privacy,
+      ),
+  },
+  {
+    path: 'kontakt',
+    loadComponent: () =>
+      import('./pages/contact/contact').then(
+        (module) => module.Contact,
+      ),
+  },
 ];

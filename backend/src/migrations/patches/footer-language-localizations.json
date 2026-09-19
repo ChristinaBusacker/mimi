@@ -1,0 +1,19 @@
+{
+  "localizations": [
+    {
+      "key": "footer.language.label",
+      "de": "Sprache",
+      "en": "Language"
+    },
+    {
+      "key": "footer.language.german",
+      "de": "Deutsch",
+      "en": "German"
+    },
+    {
+      "key": "footer.language.english",
+      "de": "Englisch",
+      "en": "English"
+    }
+  ]
+}
