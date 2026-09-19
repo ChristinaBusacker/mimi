@@ -18,6 +18,8 @@ import {
 } from './i18n.types';
 
 const LANGUAGE_STORAGE_KEY = 'language';
+const LANGUAGE_COOKIE_NAME = 'mimi-language';
+const LANGUAGE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 @Injectable({
   providedIn: 'root',
@@ -49,6 +51,7 @@ export class LanguageService {
   ): Observable<void> {
     if (persist) {
       this.storage.set(LANGUAGE_STORAGE_KEY, language);
+      this.writeLanguageCookie(language);
     }
 
     this.document.documentElement.lang = language;
@@ -62,7 +65,15 @@ export class LanguageService {
     const storedLanguage = this.storage.get<unknown>(LANGUAGE_STORAGE_KEY);
 
     if (isLanguage(storedLanguage)) {
+      this.writeLanguageCookie(storedLanguage);
+
       return storedLanguage;
+    }
+
+    const cookieLanguage = this.readLanguageCookie();
+
+    if (cookieLanguage) {
+      return cookieLanguage;
     }
 
     const requestLanguage = this.request?.headers.get('accept-language');
@@ -76,6 +87,43 @@ export class LanguageService {
     }
 
     return DEFAULT_LANGUAGE;
+  }
+
+  private readLanguageCookie(): Language | null {
+    const cookieHeader =
+      this.request?.headers.get('cookie') ??
+      (this.isBrowser ? this.document.cookie : '');
+
+    const languageCookie = cookieHeader
+      .split(';')
+      .map((cookie) => cookie.trim())
+      .find((cookie) => cookie.startsWith(`${LANGUAGE_COOKIE_NAME}=`));
+
+    if (!languageCookie) {
+      return null;
+    }
+
+    const value = decodeURIComponent(
+      languageCookie.slice(LANGUAGE_COOKIE_NAME.length + 1),
+    );
+
+    return isLanguage(value) ? value : null;
+  }
+
+  private writeLanguageCookie(language: Language): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    const secure =
+      this.document.location?.protocol === 'https:' ? '; Secure' : '';
+
+    this.document.cookie = [
+      `${LANGUAGE_COOKIE_NAME}=${encodeURIComponent(language)}`,
+      'Path=/',
+      `Max-Age=${LANGUAGE_COOKIE_MAX_AGE}`,
+      'SameSite=Lax',
+    ].join('; ') + secure;
   }
 
   private fromLocale(locale: string): Language {
