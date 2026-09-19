@@ -9,6 +9,7 @@ export class CacheEntry {
 
   @Column({
     type: 'jsonb',
+    nullable: true,
   })
   value!: unknown;
 
