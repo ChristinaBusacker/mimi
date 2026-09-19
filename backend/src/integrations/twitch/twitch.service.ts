@@ -4,8 +4,7 @@ import { Interval } from '@nestjs/schedule';
 
 import { CacheService } from '../cache/cache.service';
 import { EventsService } from '../events/events.service';
-
-import { HeroType, TwitchStatus } from './twitch.types';
+import { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
 
 interface TwitchAppToken {
   value: string;
@@ -87,9 +86,7 @@ export class TwitchService implements OnApplicationBootstrap {
   }
 
   getStatus(): TwitchStatus {
-    const channelLogin = this.configService.getOrThrow<string>(
-      'TWITCH_CHANNEL_LOGIN',
-    );
+    const channelLogin = this.configService.getOrThrow<string>('TWITCH_CHANNEL_LOGIN');
 
     const channelUrl = `https://www.twitch.tv/${channelLogin}`;
 
@@ -114,15 +111,8 @@ export class TwitchService implements OnApplicationBootstrap {
     const now = Date.now();
 
     const next = this.schedule
-      .filter(
-        (segment) =>
-          segment.canceled_until === null &&
-          Date.parse(segment.start_time) > now,
-      )
-      .sort(
-        (left, right) =>
-          Date.parse(left.start_time) - Date.parse(right.start_time),
-      )[0];
+      .filter((segment) => segment.canceled_until === null && Date.parse(segment.start_time) > now)
+      .sort((left, right) => Date.parse(left.start_time) - Date.parse(right.start_time))[0];
 
     if (!next) {
       return {
@@ -178,21 +168,15 @@ export class TwitchService implements OnApplicationBootstrap {
     try {
       const broadcasterId = await this.getBroadcasterId();
 
-      const response = await this.twitchRequest<TwitchStreamsResponse>(
-        '/streams',
-        {
-          user_id: broadcasterId,
-        },
-      );
+      const response = await this.twitchRequest<TwitchStreamsResponse>('/streams', {
+        user_id: broadcasterId,
+      });
 
       const wasLive = this.live !== null;
 
       this.live = response?.data[0] ?? null;
 
-      await this.cache.refresh(
-        TwitchService.LIVE_CACHE_KEY,
-        async () => this.live,
-      );
+      await this.cache.refresh(TwitchService.LIVE_CACHE_KEY, async () => this.live);
 
       this.publishStatusIfChanged();
 
@@ -200,9 +184,7 @@ export class TwitchService implements OnApplicationBootstrap {
         await this.refreshSchedule();
       }
     } catch (error: unknown) {
-      this.logger.warn(
-        `Could not refresh Twitch live status: ${this.getErrorMessage(error)}`,
-      );
+      this.logger.warn(`Could not refresh Twitch live status: ${this.getErrorMessage(error)}`);
     }
   }
 
@@ -222,16 +204,11 @@ export class TwitchService implements OnApplicationBootstrap {
 
       this.schedule = response?.data.segments ?? [];
 
-      await this.cache.refresh(
-        TwitchService.SCHEDULE_CACHE_KEY,
-        async () => this.schedule,
-      );
+      await this.cache.refresh(TwitchService.SCHEDULE_CACHE_KEY, async () => this.schedule);
 
       this.publishStatusIfChanged();
     } catch (error: unknown) {
-      this.logger.warn(
-        `Could not refresh Twitch schedule: ${this.getErrorMessage(error)}`,
-      );
+      this.logger.warn(`Could not refresh Twitch schedule: ${this.getErrorMessage(error)}`);
     }
   }
 
@@ -302,9 +279,7 @@ export class TwitchService implements OnApplicationBootstrap {
 
     const clientId = this.configService.getOrThrow<string>('TWITCH_CLIENT_ID');
 
-    const clientSecret = this.configService.getOrThrow<string>(
-      'TWITCH_CLIENT_SECRET',
-    );
+    const clientSecret = this.configService.getOrThrow<string>('TWITCH_CLIENT_SECRET');
 
     const body = new URLSearchParams({
       client_id: clientId,
@@ -325,9 +300,7 @@ export class TwitchService implements OnApplicationBootstrap {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Could not obtain Twitch access token (${response.status}).`,
-      );
+      throw new Error(`Could not obtain Twitch access token (${response.status}).`);
     }
 
     const result = (await response.json()) as {

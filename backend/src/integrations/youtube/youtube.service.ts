@@ -5,7 +5,7 @@ import { Interval } from '@nestjs/schedule';
 import { CacheService } from '../cache/cache.service';
 import { EventsService } from '../events/events.service';
 
-import { YouTubeVideo } from './youtube.types';
+import { YouTubeVideo } from '../../../../shared/youtube/youtube-video';
 
 interface YouTubeChannelResponse {
   items: Array<{
@@ -94,9 +94,7 @@ export class YouTubeService implements OnApplicationBootstrap {
 
   private async refreshSafely(): Promise<void> {
     try {
-      const previous = await this.cache.get<YouTubeVideo[]>(
-        YouTubeService.CACHE_KEY,
-      );
+      const previous = await this.cache.get<YouTubeVideo[]>(YouTubeService.CACHE_KEY);
 
       const refreshed = await this.cache.refresh(YouTubeService.CACHE_KEY, () =>
         this.fetchVideos(),
@@ -106,26 +104,18 @@ export class YouTubeService implements OnApplicationBootstrap {
         this.events.publish('youtube.videos.updated', refreshed.value);
       }
     } catch (error: unknown) {
-      this.logger.warn(
-        `Could not refresh YouTube videos: ${this.getErrorMessage(error)}`,
-      );
+      this.logger.warn(`Could not refresh YouTube videos: ${this.getErrorMessage(error)}`);
     }
   }
 
   private async fetchVideos(): Promise<YouTubeVideo[]> {
     const apiKey = this.configService.getOrThrow<string>('YOUTUBE_API_KEY');
 
-    const channelId =
-      this.configService.getOrThrow<string>('YOUTUBE_CHANNEL_ID');
+    const channelId = this.configService.getOrThrow<string>('YOUTUBE_CHANNEL_ID');
 
-    const limit = Number(
-      this.configService.get<string>('YOUTUBE_VIDEO_LIMIT') ?? 6,
-    );
+    const limit = Number(this.configService.get<string>('YOUTUBE_VIDEO_LIMIT') ?? 6);
 
-    const uploadsPlaylistId = await this.getUploadsPlaylistId(
-      apiKey,
-      channelId,
-    );
+    const uploadsPlaylistId = await this.getUploadsPlaylistId(apiKey, channelId);
 
     const candidateCount = Math.min(Math.max(limit * 4, 20), 50);
 
@@ -158,17 +148,11 @@ export class YouTubeService implements OnApplicationBootstrap {
       .filter((video) => video.status.privacyStatus === 'public')
       .map((video) => this.mapVideo(video))
       .filter((video) => video.durationSeconds > 120)
-      .sort(
-        (left, right) =>
-          Date.parse(right.publishedAt) - Date.parse(left.publishedAt),
-      )
+      .sort((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt))
       .slice(0, limit);
   }
 
-  private async getUploadsPlaylistId(
-    apiKey: string,
-    channelId: string,
-  ): Promise<string> {
+  private async getUploadsPlaylistId(apiKey: string, channelId: string): Promise<string> {
     const response = await this.fetchJson<YouTubeChannelResponse>(
       'https://www.googleapis.com/youtube/v3/channels',
       {
@@ -210,9 +194,7 @@ export class YouTubeService implements OnApplicationBootstrap {
   }
 
   private parseDuration(duration: string): number {
-    const match = /^P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(
-      duration,
-    );
+    const match = /^P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(duration);
 
     if (!match) {
       return 0;
@@ -252,10 +234,7 @@ export class YouTubeService implements OnApplicationBootstrap {
     );
   }
 
-  private async fetchJson<T>(
-    url: string,
-    parameters: Record<string, string>,
-  ): Promise<T> {
+  private async fetchJson<T>(url: string, parameters: Record<string, string>): Promise<T> {
     const requestUrl = new URL(url);
 
     for (const [key, value] of Object.entries(parameters)) {

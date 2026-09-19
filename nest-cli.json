@@ -4,6 +4,12 @@
     "sourceRoot": "backend/src",
     "compilerOptions": {
         "deleteOutDir": true,
-        "tsConfigPath": "backend/tsconfig.build.json"
+        "tsConfigPath": "backend/tsconfig.build.json",
+        "assets": [
+            {
+                "include": "migrations/patches/**/*.json",
+                "watchAssets": true
+            }
+        ]
     }
 }

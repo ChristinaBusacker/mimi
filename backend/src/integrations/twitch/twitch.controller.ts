@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 
 import { TwitchService } from './twitch.service';
-import type { TwitchStatus } from './twitch.types';
+import { TwitchStatus } from '@shared/twitch/twitch-status';
 
 @Controller('twitch')
 export class TwitchController {
