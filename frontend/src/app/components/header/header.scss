@@ -1,19 +1,21 @@
+@use 'mixins' as *;
+
 :host {
   display: block;
 
   header {
+    @include framed;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 30px;
-    padding: 0 20px;
+    gap: var(--spacing-lg);
+    padding: 0 var(--spacing-md);
 
-    max-width: 1200px;
+    max-width: var(--content-max-width);
     width: 100%;
     margin: 0 auto;
-    background-color: #241122;
-    border: 4px solid #af68a7;
-    border-radius: 16px;
+    background-color: var(--color-surface);
     height: 60px;
 
     & .partial {
@@ -34,7 +36,7 @@
         & li {
           & a {
             text-decoration: none;
-            color: white;
+            color: var(--color-text);
           }
         }
       }
@@ -42,7 +44,7 @@
         & ul {
           width: 160px;
           display: flex;
-          gap: 5px;
+          gap: var(--spacing-xs);
           justify-content: space-between;
         }
 

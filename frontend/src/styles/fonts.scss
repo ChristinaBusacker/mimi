@@ -24,15 +24,15 @@
 
 body,
 .open-sans {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-body);
 }
 
 .more-sugar {
-  font-family: 'More Sugar', sans-serif;
+  font-family: var(--font-display);
 }
 
 .sue-ellen {
-  font-family: 'Sue Ellen Francisco', cursive;
+  font-family: var(--font-handwritten);
 }
 
 h1,
@@ -41,6 +41,6 @@ h3,
 h4 {
   padding: 0;
   margin: 0;
-  font-family: 'Sue Ellen Francisco', cursive;
+  font-family: var(--font-handwritten);
   letter-spacing: 0.08em;
 }

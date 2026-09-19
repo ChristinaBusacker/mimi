@@ -3,19 +3,19 @@
   display: flex;
 
   &.black {
-    fill: black;
+    fill: var(--color-text-inverse);
   }
 
   &.white {
-    fill: white;
+    fill: var(--color-text);
   }
 
   &.primary {
-    fill: #fcaac1;
+    fill: var(--color-primary);
   }
 
   &.secondary {
-    fill: #af68a7;
+    fill: var(--color-secondary);
   }
 
   &.small {

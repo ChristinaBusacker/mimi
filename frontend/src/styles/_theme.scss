@@ -1,0 +1,26 @@
+:root {
+  --color-surface: #241122;
+  --color-surface-translucent: rgb(36 17 34 / 70%);
+  --color-primary: #fcaac1;
+  --color-secondary: #af68a7;
+  --color-text: #fff;
+  --color-text-inverse: #000;
+  --color-live: #bf0303;
+
+  --border-width: 4px;
+  --control-border-width: 2px;
+
+  --radius-card: 16px;
+  --radius-pill: 32px;
+
+  --content-max-width: 1200px;
+
+  --spacing-xs: 5px;
+  --spacing-sm: 10px;
+  --spacing-md: 20px;
+  --spacing-lg: 30px;
+
+  --font-body: 'Open Sans', sans-serif;
+  --font-display: 'More Sugar', sans-serif;
+  --font-handwritten: 'Sue Ellen Francisco', cursive;
+}

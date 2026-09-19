@@ -33,6 +33,11 @@
             "styles": [
               "frontend/src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "frontend/src/styles"
+              ]
+            },
             "server": "frontend/src/main.server.ts",
             "outputMode": "server",
             "security": {

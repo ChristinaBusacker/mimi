@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 :host {
   position: fixed;
   inset: 0;
@@ -56,13 +58,7 @@
   filter: blur(var(--blur)) saturate(1.08) contrast(1.04);
 }
 
-@media (max-width: 900px) {
-  .crystal {
-    width: clamp(250px, 38vw, 340px);
-  }
-}
-
-@media (max-width: 900px) {
+@include compact-layout {
   .crystal {
     width: clamp(155px, 44vw, 180px);
   }

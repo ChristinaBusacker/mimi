@@ -1,0 +1,24 @@
+$layout-breakpoint: 900px;
+
+@mixin framed($width: var(--border-width)) {
+  border: $width solid var(--color-secondary);
+  border-radius: var(--radius-card);
+}
+
+@mixin compact-layout {
+  @media (max-width: $layout-breakpoint) {
+    @content;
+  }
+}
+
+@mixin wide-layout {
+  @media (min-width: $layout-breakpoint) {
+    @content;
+  }
+}
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}

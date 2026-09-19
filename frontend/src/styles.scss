@@ -1,6 +1,9 @@
-@use './styles/fonts.scss';
+@use './styles/theme';
+@use './styles/fonts';
 
-body * {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
