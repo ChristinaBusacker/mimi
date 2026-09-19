@@ -1,25 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-export class CreateLocalizationDto {
+export class LocalizationResponseDto {
+  @ApiProperty({
+    format: 'uuid',
+  })
+  uuid!: string;
+
   @ApiProperty({
     example: 'hero.subtitle',
-    maxLength: 255,
   })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(255)
   key!: string;
 
   @ApiProperty({
     example: 'Live-Musik mit Mimi.',
   })
-  @IsString()
   de!: string;
 
   @ApiProperty({
     example: 'Live music with Mimi.',
   })
-  @IsString()
   en!: string;
 }

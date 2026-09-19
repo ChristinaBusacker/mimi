@@ -8,26 +8,66 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { CreateLocalizationDto } from './dto/create-localization.dto';
+import { LocalizationResponseDto } from './dto/localization-response.dto';
 import { UpdateLocalizationDto } from './dto/update-localization.dto';
-import { LocalizationEntry } from './entities/localization.entry';
 import {
   LOCALIZATION_LOCALES,
   type LocalizationLocale,
 } from './localization-locale';
 import { LocalizationsService } from './localizations.service';
 
+@ApiTags('Localizations')
 @Controller('localizations')
 export class LocalizationsController {
   constructor(private readonly localizationsService: LocalizationsService) {}
 
   @Get()
-  getAll(): Promise<LocalizationEntry[]> {
+  @ApiOperation({
+    summary: 'List all localizations',
+  })
+  @ApiOkResponse({
+    type: LocalizationResponseDto,
+    isArray: true,
+  })
+  getAll(): Promise<LocalizationResponseDto[]> {
     return this.localizationsService.getAll();
   }
 
   @Get('locale/:locale')
+  @ApiOperation({
+    summary: 'Get all localization values for one locale',
+  })
+  @ApiParam({
+    name: 'locale',
+    enum: [...LOCALIZATION_LOCALES],
+  })
+  @ApiOkResponse({
+    description: 'A key-value map for the requested locale.',
+    schema: {
+      type: 'object',
+      additionalProperties: {
+        type: 'string',
+      },
+      example: {
+        'hero.subtitle': 'Live-Musik mit Mimi.',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'The requested locale is not supported.',
+  })
   getForLocale(
     @Param('locale') locale: string,
   ): Promise<Record<string, string>> {
@@ -39,24 +79,77 @@ export class LocalizationsController {
   }
 
   @Get(':uuid')
-  getByUuid(@Param('uuid') uuid: string): Promise<LocalizationEntry> {
+  @ApiOperation({
+    summary: 'Get one localization',
+  })
+  @ApiParam({
+    name: 'uuid',
+    format: 'uuid',
+  })
+  @ApiOkResponse({
+    type: LocalizationResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: 'The localization does not exist.',
+  })
+  getByUuid(@Param('uuid') uuid: string): Promise<LocalizationResponseDto> {
     return this.localizationsService.getByUuid(uuid);
   }
 
   @Post()
-  create(@Body() dto: CreateLocalizationDto): Promise<LocalizationEntry> {
+  @ApiOperation({
+    summary: 'Create a localization',
+  })
+  @ApiCreatedResponse({
+    type: LocalizationResponseDto,
+  })
+  @ApiConflictResponse({
+    description: 'The localization key already exists.',
+  })
+  create(
+    @Body() dto: CreateLocalizationDto,
+  ): Promise<LocalizationResponseDto> {
     return this.localizationsService.create(dto);
   }
 
   @Patch(':uuid')
+  @ApiOperation({
+    summary: 'Update a localization',
+  })
+  @ApiParam({
+    name: 'uuid',
+    format: 'uuid',
+  })
+  @ApiOkResponse({
+    type: LocalizationResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: 'The localization does not exist.',
+  })
+  @ApiConflictResponse({
+    description: 'The localization key already exists.',
+  })
   update(
     @Param('uuid') uuid: string,
     @Body() dto: UpdateLocalizationDto,
-  ): Promise<LocalizationEntry> {
+  ): Promise<LocalizationResponseDto> {
     return this.localizationsService.update(uuid, dto);
   }
 
   @Delete(':uuid')
+  @ApiOperation({
+    summary: 'Delete a localization',
+  })
+  @ApiParam({
+    name: 'uuid',
+    format: 'uuid',
+  })
+  @ApiOkResponse({
+    description: 'The localization was deleted.',
+  })
+  @ApiNotFoundResponse({
+    description: 'The localization does not exist.',
+  })
   delete(@Param('uuid') uuid: string): Promise<void> {
     return this.localizationsService.delete(uuid);
   }
