@@ -36,8 +36,8 @@ describe('createCountdownViewModel', () => {
       ),
     ).toEqual({
       label: 'Noch',
-      value: '1 Tag 6 Std',
-      accessibleText: 'Noch 1 Tag 6 Std',
+      value: '1 Tag · 6 Std',
+      accessibleText: 'Noch 1 Tag · 6 Std',
     });
   });
 

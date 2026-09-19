@@ -82,7 +82,7 @@ export function createCountdownViewModel(
       );
     }
 
-    value = parts.join(' ');
+    value = parts.join(' · ');
   } else {
     const totalSeconds = Math.ceil(remaining / SECOND_MS);
     const hours = Math.floor(totalSeconds / 3600);

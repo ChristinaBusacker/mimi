@@ -12,10 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 
-import type {
-  HeroType,
-  TwitchStatus,
-} from '@shared/twitch/twitch-status';
+import type { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
 
 import { Button } from '../../components/button/button';
 import { Icon } from '../../components/icon/icon';
@@ -26,10 +23,7 @@ import type { Language } from '../../core/i18n/i18n.types';
 import { TwitchState } from '../../core/twitch/twitch.state';
 import { YouTubeState } from '../../core/youtube/youtube.state';
 import { createCountdownViewModel } from './home-countdown';
-import {
-  createTwitchPreview,
-  createVideoPreview,
-} from './home-preview';
+import { createTwitchPreview, createVideoPreview } from './home-preview';
 
 type HeroIcon = 'gaming' | 'heart' | 'music';
 
@@ -63,9 +57,7 @@ export class Home {
   private readonly twitchStatus = this.store.selectSignal(TwitchState.status);
   private readonly youtubeVideos = this.store.selectSignal(YouTubeState.videos);
   private readonly language = this.store.selectSignal(I18nState.language);
-  private readonly dictionary = this.store.selectSignal(
-    I18nState.currentDictionary,
-  );
+  private readonly dictionary = this.store.selectSignal(I18nState.currentDictionary);
 
   private readonly currentTime = signal<number | null>(null);
   private countdownInterval: ReturnType<typeof setInterval> | null = null;
@@ -75,42 +67,26 @@ export class Home {
   });
 
   private readonly effectiveTwitchStatus = computed(
-    () =>
-      createTwitchPreview(
-        this.queryParams(),
-        this.twitchStatus(),
-      ) ?? this.twitchStatus(),
+    () => createTwitchPreview(this.queryParams(), this.twitchStatus()) ?? this.twitchStatus(),
   );
 
   protected readonly videos = computed(
-    () =>
-      createVideoPreview(this.queryParams()) ??
-      this.youtubeVideos(),
+    () => createVideoPreview(this.queryParams()) ?? this.youtubeVideos(),
   );
 
   protected readonly hero = computed(() =>
-    this.createHeroViewModel(
-      this.effectiveTwitchStatus(),
-      this.language(),
-    ),
+    this.createHeroViewModel(this.effectiveTwitchStatus(), this.language()),
   );
 
   protected readonly countdown = computed(() => {
     const currentTime = this.currentTime();
     const status = this.effectiveTwitchStatus();
 
-    if (
-      currentTime === null ||
-      status?.state !== 'upcoming'
-    ) {
+    if (currentTime === null || status?.state !== 'upcoming') {
       return null;
     }
 
-    return createCountdownViewModel(
-      status.startsAt,
-      currentTime,
-      this.dictionary(),
-    );
+    return createCountdownViewModel(status.startsAt, currentTime, this.dictionary());
   });
 
   constructor() {
@@ -129,19 +105,11 @@ export class Home {
     });
   }
 
-  private createHeroViewModel(
-    status: TwitchStatus | null,
-    language: Language,
-  ): HeroViewModel {
+  private createHeroViewModel(status: TwitchStatus | null, language: Language): HeroViewModel {
     const heroType =
-      status && status.state !== 'none' && status.heroType
-        ? status.heroType
-        : 'music';
+      status && status.state !== 'none' && status.heroType ? status.heroType : 'music';
 
-    const activeStatus =
-      status && status.state !== 'none'
-        ? status
-        : null;
+    const activeStatus = status && status.state !== 'none' ? status : null;
 
     return {
       heroType,
@@ -155,16 +123,11 @@ export class Home {
           : status?.state === 'upcoming'
             ? 'stream.status.upcoming'
             : null,
-      actionKey:
-        status?.state === 'live'
-          ? 'hero.action.live'
-          : 'hero.action.channel',
+      actionKey: status?.state === 'live' ? 'hero.action.live' : 'hero.action.channel',
       channelUrl: status?.channelUrl ?? null,
       streamTitle: activeStatus?.title ?? null,
       scheduledAt:
-        status?.state === 'upcoming'
-          ? this.formatDateTime(status.startsAt, language)
-          : null,
+        status?.state === 'upcoming' ? this.formatDateTime(status.startsAt, language) : null,
       isLive: status?.state === 'live',
       isUpcoming: status?.state === 'upcoming',
     };
@@ -179,15 +142,12 @@ export class Home {
   }
 
   private formatDateTime(value: string, language: Language): string {
-    return new Intl.DateTimeFormat(
-      language === 'de' ? 'de-DE' : 'en-US',
-      {
-        weekday: 'short',
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-      },
-    ).format(new Date(value));
+    return new Intl.DateTimeFormat(language === 'de' ? 'de-DE' : 'en-US', {
+      weekday: 'short',
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value));
   }
 }

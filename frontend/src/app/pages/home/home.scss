@@ -83,18 +83,19 @@
         color: var(--color-text);
 
         & p {
-          margin-top: 0;
+          margin-top: 20px;
         }
 
         .upcoming-details {
-          display: flex;
-          align-items: flex-end;
+          display: grid;
+          grid-template-columns: 220px minmax(0, 1fr);
+          align-items: end;
           gap: var(--spacing-md);
           margin: var(--spacing-md) 0 var(--spacing-sm);
         }
 
         .countdown-slot {
-          min-width: 170px;
+          width: 220px;
           min-height: 58px;
         }
 
@@ -119,6 +120,7 @@
           font-family: var(--font-display);
           font-size: clamp(1.55rem, 2.6vw, 2.2rem);
           line-height: 1;
+          text-transform: uppercase;
           white-space: nowrap;
         }
 
@@ -257,12 +259,13 @@
       .left {
         .text {
           .upcoming-details {
-            align-items: flex-start;
-            flex-direction: column;
+            grid-template-columns: minmax(0, 1fr);
+            align-items: start;
             gap: var(--spacing-sm);
           }
 
           .countdown-slot {
+            width: 100%;
             min-height: 54px;
           }
         }

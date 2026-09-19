@@ -10,11 +10,7 @@
     <div class="left">
       <div class="tags">
         @if (heroView.statusKey) {
-          <div
-            class="tag"
-            [class.live]="heroView.isLive"
-            [class.upcoming]="heroView.isUpcoming"
-          >
+          <div class="tag" [class.live]="heroView.isLive" [class.upcoming]="heroView.isUpcoming">
             <app-icon name="circle" class="white small" />
             {{ heroView.statusKey | i18n | async }}
           </div>
@@ -32,7 +28,10 @@
 
       <div class="text">
         <h2 class="sue-ellen">{{ heroView.titleKey | i18n | async }}</h2>
-        <p>{{ heroView.descriptionKey | i18n | async }}</p>
+
+        @if (!heroView.isUpcoming) {
+          <p>{{ heroView.descriptionKey | i18n | async }}</p>
+        }
 
         @if (heroView.isUpcoming) {
           <div class="upcoming-details">
@@ -77,22 +76,14 @@
       @if (heroView.channelUrl; as channelUrl) {
         <div class="cta">
           @if (heroView.isLive) {
-            <app-button
-              class="primary round"
-              [href]="channelUrl"
-              target="_blank"
-            >
+            <app-button class="primary round" [href]="channelUrl" target="_blank">
               <app-icon name="twitch" class="" />
               {{ heroView.actionKey | i18n | async }}
               <app-icon name="arrow" class="" />
             </app-button>
           }
 
-          <app-button
-            class="secondary round white"
-            [href]="channelUrl"
-            target="_blank"
-          >
+          <app-button class="secondary round white" [href]="channelUrl" target="_blank">
             <app-icon name="play" class="secondary" />
             {{ 'hero.action.channel' | i18n | async }}
             <app-icon name="arrow" class="secondary" />
