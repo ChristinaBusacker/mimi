@@ -1,0 +1,26 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
+
+    "rootDir": "./src",
+    "outDir": "../dist/backend",
+
+    "types": ["node"],
+
+    "declaration": false,
+    "removeComments": true,
+    "sourceMap": true,
+    "noEmitOnError": true,
+
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts", "../shared/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+}

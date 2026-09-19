@@ -3,13 +3,20 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:frontend": "node dist/frontend/server/server.mjs"
+    "start": "concurrently --kill-others-on-fail \"npm:frontend:start\" \"npm:backend:start\"",
+    "build": "npm run frontend:build && npm run backend:build",
+    "frontend:start": "ng serve frontend",
+    "frontend:build": "ng build frontend",
+    "frontend:test": "ng test frontend",
+    "frontend:serve:ssr": "node dist/frontend/server/server.mjs",
+    "backend:start": "nest start --watch",
+    "backend:build": "nest build",
+    "backend:start:prod": "node dist/backend/main.js"
   },
   "private": true,
+  "engines": {
+    "node": ">=22.22.3 <23"
+  },
   "packageManager": "npm@11.13.0",
   "dependencies": {
     "@angular/common": "^22.1.0",
