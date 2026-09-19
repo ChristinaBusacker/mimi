@@ -1,44 +1,89 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# Dependencies
 
-# Compiled output
+/node_modules
+
+# Build output
+
 /dist
-/tmp
+/build
 /out-tsc
 /bazel-out
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
+# Angular cache
+
+/.angular/cache
+
+# TypeScript build cache
+
+*.tsbuildinfo
+
+# Test output
+
+/coverage
+/.nyc_output
+**screenshots**/
+
+# Temporary files
+
+/tmp
+/.temp
+/.tmp
+.sass-cache/
+/typings
+/connect.lock
+
+# Logs
+
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+testem.log
+/libpeerconnection.log
+
+# Environment files
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Runtime data
+
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Node diagnostic reports
+
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # IDEs and editors
-.idea/
+
+/.idea
 .project
 .classpath
 .c9/
 *.launch
 .settings/
 *.sublime-workspace
+.history/
 
 # Visual Studio Code
+
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/mcp.json
-.history/*
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-__screenshots__/
+# Operating system files
 
-# System files
 .DS_Store
 Thumbs.db

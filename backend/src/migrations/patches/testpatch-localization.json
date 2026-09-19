@@ -1,0 +1,9 @@
+{
+    "localizations": [
+        {
+            "key": "general.test",
+            "de": "Test",
+            "en": "Test"
+        }
+    ]
+}

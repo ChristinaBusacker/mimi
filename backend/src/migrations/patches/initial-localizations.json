@@ -1,0 +1,214 @@
+{
+    "localizations": [
+        {
+            "key": "navigation.gaming",
+            "de": "Gaming",
+            "en": "Gaming"
+        },
+        {
+            "key": "navigation.music",
+            "de": "Musik",
+            "en": "Music"
+        },
+        {
+            "key": "navigation.videos",
+            "de": "Video",
+            "en": "Video"
+        },
+        {
+            "key": "navigation.about",
+            "de": "About",
+            "en": "About"
+        },
+        {
+            "key": "navigation.community",
+            "de": "Community",
+            "en": "Community"
+        },
+        {
+            "key": "navigation.shop",
+            "de": "Shop",
+            "en": "Shop"
+        },
+        {
+            "key": "navigation.support",
+            "de": "Support",
+            "en": "Support"
+        },
+        {
+            "key": "stream.type.music",
+            "de": "Musik",
+            "en": "Music"
+        },
+        {
+            "key": "stream.type.chatting",
+            "de": "Chatting",
+            "en": "Chatting"
+        },
+        {
+            "key": "stream.type.gaming",
+            "de": "Gaming",
+            "en": "Gaming"
+        },
+        {
+            "key": "hero.music.label",
+            "de": "LIVE MUSIK",
+            "en": "LIVE MUSIC"
+        },
+        {
+            "key": "hero.music.title",
+            "de": "Live-Musik mit Mimi und ein bisschen gechatte",
+            "en": "Live music with Mimi and a little chatting"
+        },
+        {
+            "key": "hero.music.description",
+            "de": "Gemeinsam Musik machen und ein entspannter Chat. Schau gerne vorbei!",
+            "en": "Making music together and enjoying a relaxed chat. Come hang out!"
+        },
+        {
+            "key": "hero.chatting.label",
+            "de": "LIVE CHATTING",
+            "en": "LIVE CHATTING"
+        },
+        {
+            "key": "hero.chatting.title",
+            "de": "Einfach quatschen, lachen und den Abend genießen",
+            "en": "Just chatting, laughing and enjoying the evening"
+        },
+        {
+            "key": "hero.chatting.description",
+            "de": "Ein entspannter Stream zum Reden, Austauschen und gemeinsam Zeit verbringen.",
+            "en": "A relaxed stream for talking, sharing stories and spending some time together."
+        },
+        {
+            "key": "hero.gaming.label",
+            "de": "LIVE GAMING",
+            "en": "LIVE GAMING"
+        },
+        {
+            "key": "hero.gaming.title",
+            "de": "Gemeinsam zocken, entdecken und ein bisschen eskalieren",
+            "en": "Gaming together, exploring and causing a little chaos"
+        },
+        {
+            "key": "hero.gaming.description",
+            "de": "Von Cozy Games bis Abenteuer: Gemeinsam spielen, entdecken und Spaß haben.",
+            "en": "From cozy games to adventures: playing, exploring and having fun together."
+        },
+        {
+            "key": "hero.action.live",
+            "de": "Jetzt live",
+            "en": "Live now"
+        },
+        {
+            "key": "hero.action.channel",
+            "de": "Zum Kanal",
+            "en": "Go to channel"
+        },
+        {
+            "key": "content.title",
+            "de": "Meine Inhalte",
+            "en": "My Content"
+        },
+        {
+            "key": "content.gaming.title",
+            "de": "Gaming",
+            "en": "Gaming"
+        },
+        {
+            "key": "content.gaming.subtitle",
+            "de": "Von Cozy Games zu Abenteuern",
+            "en": "From cozy games to adventures"
+        },
+        {
+            "key": "content.gaming.description",
+            "de": "Gemeinsam zocken, erkunden und Spaß haben",
+            "en": "Playing, exploring and having fun together"
+        },
+        {
+            "key": "content.gaming.action",
+            "de": "Mehr zu Gaming",
+            "en": "More about Gaming"
+        },
+        {
+            "key": "content.music.title",
+            "de": "Musik",
+            "en": "Music"
+        },
+        {
+            "key": "content.music.subtitle",
+            "de": "Live Musik, Covers & eigene Songs",
+            "en": "Live music, covers & original songs"
+        },
+        {
+            "key": "content.music.description",
+            "de": "Gefühlvolle Balladen und andere Songs, die euch durch den Tag begleiten!",
+            "en": "Emotional ballads and other songs to accompany you through the day!"
+        },
+        {
+            "key": "content.music.action",
+            "de": "Mehr zu Musik",
+            "en": "More about Music"
+        },
+        {
+            "key": "content.videos.title",
+            "de": "Videos",
+            "en": "Videos"
+        },
+        {
+            "key": "content.videos.subtitle",
+            "de": "Spannende Videos",
+            "en": "Exciting videos"
+        },
+        {
+            "key": "content.videos.description",
+            "de": "Schau dir an, was ich sonst noch so gemacht habe!",
+            "en": "Take a look at what else I've been up to!"
+        },
+        {
+            "key": "content.videos.action",
+            "de": "Mehr zu Videos",
+            "en": "More Videos"
+        },
+        {
+            "key": "youtube.title",
+            "de": "Neu auf YouTube",
+            "en": "New on YouTube"
+        },
+        {
+            "key": "youtube.action.channel",
+            "de": "Auf zum Kanal",
+            "en": "Go to channel"
+        },
+        {
+            "key": "music.player.title",
+            "de": "Musik-Player",
+            "en": "Music Player"
+        },
+        {
+            "key": "footer.legalNotice",
+            "de": "Impressum",
+            "en": "Legal Notice"
+        },
+        {
+            "key": "footer.privacy",
+            "de": "Datenschutz",
+            "en": "Privacy"
+        },
+        {
+            "key": "footer.contact",
+            "de": "Kontakt",
+            "en": "Contact"
+        },
+        {
+            "key": "mobile.navigation.social",
+            "de": "Social",
+            "en": "Social"
+        },
+        {
+            "key": "mobile.navigation.subscribe",
+            "de": "Abonnieren",
+            "en": "Subscribe"
+        }
+    ]
+}
