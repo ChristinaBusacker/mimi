@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 
 import { YouTubeService } from './youtube.service';
-import { YouTubeVideo } from '../../../../shared/youtube/youtube-video';
+import type { YouTubeVideo } from '@shared/youtube/youtube-video';
 
 @Controller('youtube')
 export class YouTubeController {

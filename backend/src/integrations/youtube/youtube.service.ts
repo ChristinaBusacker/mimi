@@ -4,8 +4,7 @@ import { Interval } from '@nestjs/schedule';
 
 import { CacheService } from '../cache/cache.service';
 import { EventsService } from '../events/events.service';
-
-import { YouTubeVideo } from '../../../../shared/youtube/youtube-video';
+import type { YouTubeVideo } from '@shared/youtube/youtube-video';
 
 interface YouTubeChannelResponse {
   items: Array<{

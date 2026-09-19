@@ -4,7 +4,7 @@ import { Interval } from '@nestjs/schedule';
 
 import { CacheService } from '../cache/cache.service';
 import { EventsService } from '../events/events.service';
-import { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
+import type { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
 
 interface TwitchAppToken {
   value: string;
