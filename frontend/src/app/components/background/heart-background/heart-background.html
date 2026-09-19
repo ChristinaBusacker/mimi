@@ -1,0 +1,38 @@
+<div class="heart-background" aria-hidden="true">
+  <div class="heart-background__glow"></div>
+
+  <div class="heart-background__hearts">
+    @for (heart of hearts; track heart.id) {
+      <img
+        class="heart heart--ambient"
+        src="/images/background/heart.png"
+        alt=""
+        [style.--x]="heart.x + '%'"
+        [style.--y]="heart.y + '%'"
+        [style.--size]="heart.size + 'vw'"
+        [style.--opacity]="heart.opacity"
+        [style.--blur]="heart.blur + 'px'"
+        [style.--duration]="heart.duration + 's'"
+        [style.--delay]="heart.delay + 's'"
+        [style.--drift-x]="heart.driftX + 'vw'"
+        [style.--drift-y]="heart.driftY + 'vh'"
+      />
+    }
+
+    @for (heart of sparkles; track heart.id) {
+      <img
+        class="heart heart--sparkle"
+        src="/images/background/heart.png"
+        alt=""
+        [style.--x]="heart.x + '%'"
+        [style.--y]="heart.y + '%'"
+        [style.--size]="heart.size + 'vw'"
+        [style.--opacity]="heart.opacity"
+        [style.--duration]="heart.duration + 's'"
+        [style.--delay]="heart.delay + 's'"
+        [style.--drift-x]="heart.driftX + 'vw'"
+        [style.--drift-y]="heart.driftY + 'vh'"
+      />
+    }
+  </div>
+</div>

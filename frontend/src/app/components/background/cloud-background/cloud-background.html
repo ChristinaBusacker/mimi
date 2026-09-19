@@ -1,0 +1,17 @@
+<div
+  class="cloud-layer"
+  [style.--cloud-top]="top()"
+  [style.--cloud-width]="width()"
+  [style.--cloud-duration]="duration() + 's'"
+  [style.--cloud-delay]="delay() + 's'"
+  [style.--cloud-opacity]="opacity()"
+  [style.--cloud-offset-y]="offsetY()"
+>
+  <img
+    class="cloud"
+    [class.cloud--right]="direction() === 'right'"
+    [src]="src()"
+    alt=""
+    draggable="false"
+  />
+</div>

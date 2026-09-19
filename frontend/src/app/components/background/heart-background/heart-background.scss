@@ -1,0 +1,140 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+  pointer-events: none;
+}
+
+.heart-background {
+  background:
+    radial-gradient(
+      ellipse at 50% -10%,
+      rgb(255 240 220 / 85%) 0%,
+      rgb(255 219 215 / 45%) 30%,
+      transparent 58%
+    ),
+    linear-gradient(180deg, #f6b5bd 0%, #f3a0b2 45%, #ec6f8f 100%);
+}
+
+.heart-background__hearts {
+  position: absolute;
+  inset: 0;
+}
+
+.heart {
+  position: absolute;
+
+  left: var(--x);
+  top: var(--y);
+
+  width: var(--size);
+  height: auto;
+
+  opacity: var(--opacity);
+
+  transform: translate3d(-50%, -50%, 0);
+
+  will-change: transform, opacity;
+
+  user-select: none;
+}
+
+.heart--ambient {
+  filter: blur(var(--blur)) brightness(1.2);
+
+  animation:
+    heart-drift var(--duration) ease-in-out var(--delay) infinite alternate,
+    heart-breathe calc(var(--duration) * 0.55) ease-in-out var(--delay) infinite alternate;
+}
+
+.heart--sparkle {
+  filter: brightness(1.6) drop-shadow(0 0 4px rgb(255 255 255 / 65%));
+
+  animation:
+    heart-drift var(--duration) ease-in-out var(--delay) infinite alternate,
+    heart-twinkle 4s ease-in-out var(--delay) infinite;
+}
+
+.heart-background__glow {
+  position: absolute;
+  inset: -25%;
+
+  background:
+    radial-gradient(
+      ellipse at 25% 35%,
+      rgb(255 255 255 / 18%) 0%,
+      rgb(255 245 236 / 10%) 17%,
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 72% 48%,
+      rgb(255 255 255 / 22%) 0%,
+      rgb(255 245 235 / 10%) 20%,
+      transparent 45%
+    );
+
+  filter: blur(45px);
+
+  animation: glow-drift 30s ease-in-out infinite alternate;
+}
+
+.heart--large {
+  opacity: 0.08;
+  filter: blur(1px) brightness(1.15);
+}
+
+.heart--medium {
+  opacity: 0.14;
+  filter: brightness(1.1);
+}
+
+.heart--sparkle {
+  opacity: 0.8;
+  filter: brightness(1.8) drop-shadow(0 0 5px rgb(255 255 255 / 70%));
+}
+
+@keyframes glow-drift {
+  from {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(5%, 4%, 0) scale(1.08);
+  }
+}
+
+@keyframes heart-drift {
+  from {
+    transform: translate3d(-50%, -50%, 0);
+  }
+
+  to {
+    transform: translate3d(calc(-50% + var(--drift-x)), calc(-50% + var(--drift-y)), 0);
+  }
+}
+
+@keyframes heart-breathe {
+  from {
+    opacity: calc(var(--opacity) * 0.72);
+  }
+
+  to {
+    opacity: var(--opacity);
+  }
+}
+
+@keyframes heart-twinkle {
+  0%,
+  100% {
+    opacity: calc(var(--opacity) * 0.35);
+  }
+
+  45% {
+    opacity: var(--opacity);
+  }
+
+  65% {
+    opacity: calc(var(--opacity) * 0.65);
+  }
+}

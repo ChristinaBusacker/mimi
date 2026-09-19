@@ -1,0 +1,19 @@
+<div class="background-crystals" aria-hidden="true">
+  @for (crystal of crystals; track crystal.id) {
+    <div
+      class="crystal"
+      [class.crystal--left]="crystal.position === 'left'"
+      [class.crystal--right]="crystal.position === 'right'"
+      [class.crystal--front]="crystal.layer === 'front'"
+      [class.crystal--back]="crystal.layer === 'back'"
+      [style.--rotation]="crystal.rotation + 'deg'"
+      [style.--scale]="crystal.scale"
+      [style.--bottom]="crystal.bottom"
+      [style.--offset]="crystal.offset"
+      [style.--blur]="crystal.blur + 'px'"
+      [style.zIndex]="crystal.zIndex"
+    >
+      <img src="/images/background/crystal.png" alt="" />
+    </div>
+  }
+</div>

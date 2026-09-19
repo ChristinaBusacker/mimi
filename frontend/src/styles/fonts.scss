@@ -1,0 +1,46 @@
+@font-face {
+  font-family: 'More Sugar';
+  src: url('/fonts/MoreSugar-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sue Ellen Francisco';
+  src: url('/fonts/SueEllenFrancisco-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+body,
+.open-sans {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.more-sugar {
+  font-family: 'More Sugar', sans-serif;
+}
+
+.sue-ellen {
+  font-family: 'Sue Ellen Francisco', cursive;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  padding: 0;
+  margin: 0;
+  font-family: 'Sue Ellen Francisco', cursive;
+  letter-spacing: 0.08em;
+}

@@ -1,0 +1,24 @@
+:host {
+  width: 24px;
+  display: flex;
+
+  &.black {
+    fill: black;
+  }
+
+  &.white {
+    fill: white;
+  }
+
+  &.primary {
+    fill: #fcaac1;
+  }
+
+  &.secondary {
+    fill: #af68a7;
+  }
+
+  &.small {
+    width: 16px;
+  }
+}

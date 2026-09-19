@@ -1,0 +1,89 @@
+:host {
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: 2;
+}
+
+.background-crystals {
+  position: absolute;
+  inset: 0;
+
+  overflow: hidden;
+}
+
+.crystal {
+  position: absolute;
+
+  width: clamp(250px, 21vw, 430px);
+  bottom: var(--bottom);
+
+  transform-origin: bottom center;
+}
+
+.crystal--left {
+  left: var(--offset);
+}
+
+.crystal--right {
+  right: var(--offset);
+}
+
+.crystal img {
+  display: block;
+
+  width: 100%;
+  height: auto;
+
+  transform: rotate(var(--rotation)) scale(var(--scale));
+
+  transform-origin: bottom center;
+
+  will-change: transform, filter;
+}
+
+.crystal--back img {
+  opacity: 1;
+
+  filter: none;
+}
+
+.crystal--front img {
+  opacity: 1;
+
+  filter: blur(var(--blur)) saturate(1.08) contrast(1.04);
+}
+
+@media (max-width: 900px) {
+  .crystal {
+    width: clamp(250px, 38vw, 340px);
+  }
+}
+
+@media (max-width: 900px) {
+  .crystal {
+    width: clamp(155px, 44vw, 180px);
+  }
+
+  .crystal--left.crystal--back {
+    left: -115px;
+    bottom: 115px;
+  }
+
+  .crystal--left.crystal--front {
+    left: -90px;
+    bottom: 0;
+  }
+
+  .crystal--right.crystal--back {
+    right: -120px;
+    bottom: 125px;
+  }
+
+  .crystal--right.crystal--front {
+    right: -90px;
+    bottom: -5px;
+  }
+}
