@@ -1,3 +1,13 @@
-<button>
-  <ng-content />
-</button>
+@if (href(); as link) {
+  <a
+    [href]="link"
+    [target]="target()"
+    [attr.rel]="target() === '_blank' ? 'noopener noreferrer' : null"
+  >
+    <ng-content />
+  </a>
+} @else {
+  <button type="button">
+    <ng-content />
+  </button>
+}

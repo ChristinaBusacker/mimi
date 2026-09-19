@@ -1,0 +1,20 @@
+<a
+  class="video-card"
+  [href]="video().url"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <div class="thumbnail">
+    <img
+      [src]="video().thumbnailUrl"
+      [alt]="video().title"
+      loading="lazy"
+    />
+    <span class="duration">{{ duration() }}</span>
+  </div>
+
+  <div class="content">
+    <h3>{{ video().title }}</h3>
+    <p>{{ video().descriptionExcerpt }}</p>
+  </div>
+</a>

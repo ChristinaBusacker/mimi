@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
 
+import { homeDataResolver } from './pages/home/home.resolver';
+
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./pages/home/home').then((module) => module.Home),
+    resolve: {
+      data: homeDataResolver,
+    },
   },
   {
     path: 'gaming',

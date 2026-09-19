@@ -1,49 +1,92 @@
+@let heroView = hero();
+
 <section class="hero">
-  <div class="music">
+  <div
+    class="hero-content"
+    [class.hero-content--music]="heroView.heroType === 'music'"
+    [class.hero-content--chatting]="heroView.heroType === 'chatting'"
+    [class.hero-content--gaming]="heroView.heroType === 'gaming'"
+  >
     <div class="left">
       <div class="tags">
-        <div class="tag live">
-          <app-icon name="circle" class="white small" />
-          {{ 'stream.status.live' | i18n | async }}
-        </div>
-        <div class="tag music">
-          <app-icon name="music" class="white small" />
-          {{ 'stream.type.music' | i18n | async }}
+        @if (heroView.statusKey) {
+          <div
+            class="tag"
+            [class.live]="heroView.isLive"
+            [class.upcoming]="!heroView.isLive"
+          >
+            <app-icon name="circle" class="white small" />
+            {{ heroView.statusKey | i18n | async }}
+          </div>
+        }
+
+        <div class="tag type">
+          <app-icon [name]="heroView.icon" class="white small" />
+          {{ heroView.typeKey | i18n | async }}
         </div>
       </div>
+
       <div class="logo">
         <img src="images/logo.png" alt="" />
       </div>
+
       <div class="text">
-        <h2 class="sue-ellen">{{ 'hero.music.title' | i18n | async }}</h2>
-        <p>{{ 'hero.music.description' | i18n | async }}</p>
+        <h2 class="sue-ellen">{{ heroView.titleKey | i18n | async }}</h2>
+        <p>{{ heroView.descriptionKey | i18n | async }}</p>
+
+        @if (heroView.streamTitle) {
+          <div class="stream-meta">
+            <strong>{{ heroView.streamTitle }}</strong>
+
+            @if (heroView.startsAt) {
+              <span>{{ heroView.startsAt }}</span>
+            }
+          </div>
+        }
       </div>
-      <div class="cta">
-        <app-button class="primary round">
-          <app-icon name="twitch" class="" />
-          {{ 'hero.action.live' | i18n | async }}
-          <app-icon name="arrow" class="" />
-        </app-button>
-        <app-button class="secondary round white">
-          <app-icon name="play" class="secondary" />
-          {{ 'hero.action.channel' | i18n | async }}
-          <app-icon name="arrow" class="secondary" />
-        </app-button>
-      </div>
+
+      @if (heroView.channelUrl; as channelUrl) {
+        <div class="cta">
+          @if (heroView.isLive) {
+            <app-button
+              class="primary round"
+              [href]="channelUrl"
+              target="_blank"
+            >
+              <app-icon name="twitch" class="" />
+              {{ heroView.actionKey | i18n | async }}
+              <app-icon name="arrow" class="" />
+            </app-button>
+          }
+
+          <app-button
+            class="secondary round white"
+            [href]="channelUrl"
+            target="_blank"
+          >
+            <app-icon name="play" class="secondary" />
+            {{ 'hero.action.channel' | i18n | async }}
+            <app-icon name="arrow" class="secondary" />
+          </app-button>
+        </div>
+      }
     </div>
+
     <div class="right">
       <div class="avatar">
-        <img src="images/avatar1.png" />
+        <img src="images/avatar1.png" alt="" />
       </div>
     </div>
   </div>
 </section>
+
 <section class="content">
   <div class="wrapper">
     <div class="title">
       <app-icon name="heart" class="secondary" />
       <h2>{{ 'content.title' | i18n | async }}</h2>
     </div>
+
     <div class="row">
       <div class="tile gaming">
         <div class="title">
@@ -57,6 +100,7 @@
           <app-icon name="arrow" class="" />
         </app-button>
       </div>
+
       <div class="tile music">
         <div class="title">
           <app-icon name="music" class="secondary" />
@@ -69,6 +113,7 @@
           <app-icon name="arrow" class="" />
         </app-button>
       </div>
+
       <div class="tile videos">
         <div class="title">
           <app-icon name="youtube" class="secondary" />
@@ -83,48 +128,19 @@
       </div>
     </div>
   </div>
-  <div class="wrapper">
-    <div class="title">
-      <app-icon name="heart" class="secondary" />
-      <h2>{{ 'youtube.title' | i18n | async }}</h2>
-    </div>
-    <div class="row">
-      <div class="tile gaming">
-        <div class="title">
-          <app-icon name="gaming" class="secondary" />
-          <h3>{{ 'content.gaming.title' | i18n | async }}</h3>
-        </div>
-        <p>{{ 'content.gaming.subtitle' | i18n | async }}</p>
-        <p>{{ 'content.gaming.description' | i18n | async }}</p>
-        <app-button class="primary">
-          {{ 'content.gaming.action' | i18n | async }}
-          <app-icon name="arrow" class="" />
-        </app-button>
+
+  @if (videos().length > 0) {
+    <div class="wrapper">
+      <div class="title">
+        <app-icon name="heart" class="secondary" />
+        <h2>{{ 'youtube.title' | i18n | async }}</h2>
       </div>
-      <div class="tile music">
-        <div class="title">
-          <app-icon name="music" class="secondary" />
-          <h3>{{ 'content.music.title' | i18n | async }}</h3>
-        </div>
-        <p>{{ 'content.music.subtitle' | i18n | async }}</p>
-        <p>{{ 'content.music.description' | i18n | async }}</p>
-        <app-button class="primary">
-          {{ 'content.music.action' | i18n | async }}
-          <app-icon name="arrow" class="" />
-        </app-button>
-      </div>
-      <div class="tile videos">
-        <div class="title">
-          <app-icon name="youtube" class="secondary" />
-          <h3>{{ 'content.videos.title' | i18n | async }}</h3>
-        </div>
-        <p>{{ 'content.videos.subtitle' | i18n | async }}</p>
-        <p>{{ 'content.videos.description' | i18n | async }}</p>
-        <app-button class="primary">
-          {{ 'content.videos.action' | i18n | async }}
-          <app-icon name="arrow" class="" />
-        </app-button>
+
+      <div class="video-grid">
+        @for (video of videos(); track video.id) {
+          <app-video-card [video]="video" />
+        }
       </div>
     </div>
-  </div>
+  }
 </section>

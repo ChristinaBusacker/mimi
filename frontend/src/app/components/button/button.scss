@@ -2,44 +2,53 @@
 
 :host {
   display: block;
+}
 
-  button {
-    border: none;
-    background-color: transparent;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
+button,
+a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-  }
+  margin: 0;
+  padding: 0;
+  border: none;
 
-  &.primary,
-  &.secondary {
-    @include framed(var(--control-border-width));
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
+}
 
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-weight: 800;
-  }
+:host(.primary) button,
+:host(.primary) a,
+:host(.secondary) button,
+:host(.secondary) a {
+  @include framed(var(--control-border-width));
 
-  &.primary {
-    background-color: var(--color-primary);
-  }
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-weight: 800;
+}
 
-  &.secondary {
-    color: var(--color-text);
-  }
+:host(.primary) button,
+:host(.primary) a {
+  background-color: var(--color-primary);
+}
 
-  &.round {
-    border-radius: var(--radius-pill);
-    padding: var(--spacing-xs) var(--spacing-md);
-  }
+:host(.secondary) button,
+:host(.secondary) a {
+  color: var(--color-text);
+}
 
-  &.white {
-    button {
-      color: var(--color-text);
-    }
-  }
+:host(.round) button,
+:host(.round) a {
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-xs) var(--spacing-md);
+}
+
+:host(.white) button,
+:host(.white) a {
+  color: var(--color-text);
 }

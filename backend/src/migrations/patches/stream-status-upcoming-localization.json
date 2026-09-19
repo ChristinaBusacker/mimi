@@ -1,0 +1,9 @@
+{
+  "localizations": [
+    {
+      "key": "stream.status.upcoming",
+      "de": "Als Nächstes",
+      "en": "Up next"
+    }
+  ]
+}

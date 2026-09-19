@@ -11,13 +11,19 @@ import { provideStore } from '@ngxs/store';
 import { routes } from './app.routes';
 import { I18nState } from './core/i18n/i18n.state';
 import { LanguageService } from './core/i18n/language.service';
+import { TwitchState } from './core/twitch/twitch.state';
+import { YouTubeState } from './core/youtube/youtube.state';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(),
-    provideStore([I18nState]),
+    provideStore([
+      I18nState,
+      TwitchState,
+      YouTubeState,
+    ]),
     provideAppInitializer(() => inject(LanguageService).initialize()),
   ],
 };
