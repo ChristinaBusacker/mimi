@@ -1,0 +1,275 @@
+<div
+  class="markdown-editor"
+  role="group"
+  [attr.aria-label]="label()"
+>
+  <div
+    class="markdown-editor__toolbar"
+    role="toolbar"
+    [attr.aria-label]="'admin.markdown.toolbar' | i18n | async"
+  >
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      (click)="setParagraph()"
+    >
+      {{ 'admin.markdown.paragraph' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isHeadingActive(2)"
+      [disabled]="isDisabled()"
+      [attr.aria-pressed]="isHeadingActive(2)"
+      (click)="toggleHeading(2)"
+    >
+      H2
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isHeadingActive(3)"
+      [disabled]="isDisabled()"
+      [attr.aria-pressed]="isHeadingActive(3)"
+      (click)="toggleHeading(3)"
+    >
+      H3
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isBoldActive()"
+      [disabled]="isDisabled()"
+      [attr.aria-pressed]="isBoldActive()"
+      (click)="toggleBold()"
+    >
+      {{ 'admin.markdown.bold' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isItalicActive()"
+      [disabled]="isDisabled()"
+      [attr.aria-pressed]="isItalicActive()"
+      (click)="toggleItalic()"
+    >
+      {{ 'admin.markdown.italic' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isBulletListActive()"
+      [disabled]="isDisabled()"
+      [attr.aria-pressed]="isBulletListActive()"
+      (click)="toggleBulletList()"
+    >
+      {{ 'admin.markdown.bulletList' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isOrderedListActive()"
+      [disabled]="isDisabled()"
+      [attr.aria-pressed]="isOrderedListActive()"
+      (click)="toggleOrderedList()"
+    >
+      {{ 'admin.markdown.orderedList' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isBlockquoteActive()"
+      [disabled]="isDisabled()"
+      [attr.aria-pressed]="isBlockquoteActive()"
+      (click)="toggleBlockquote()"
+    >
+      {{ 'admin.markdown.quote' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      (click)="openPanel('link')"
+    >
+      {{ 'admin.markdown.link' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      (click)="openPanel('image')"
+    >
+      {{ 'admin.markdown.image' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      (click)="openPanel('youtube')"
+    >
+      {{ 'admin.markdown.youtube' | i18n | async }}
+    </button>
+
+    <span class="markdown-editor__toolbar-spacer"></span>
+
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      (click)="undo()"
+    >
+      {{ 'admin.markdown.undo' | i18n | async }}
+    </button>
+
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      (click)="redo()"
+    >
+      {{ 'admin.markdown.redo' | i18n | async }}
+    </button>
+  </div>
+
+  @if (panel() === 'link') {
+    <div class="markdown-editor__panel">
+      <label>
+        <span>{{ 'admin.markdown.linkUrl' | i18n | async }}</span>
+        <input
+          type="url"
+          [value]="linkUrl()"
+          (input)="setLinkUrl($event)"
+        />
+      </label>
+
+      <div class="markdown-editor__panel-actions">
+        <button
+          type="button"
+          (click)="applyLink()"
+        >
+          {{ 'admin.markdown.applyLink' | i18n | async }}
+        </button>
+
+        <button
+          type="button"
+          (click)="removeLink()"
+        >
+          {{ 'admin.markdown.removeLink' | i18n | async }}
+        </button>
+
+        <button
+          type="button"
+          (click)="closePanel()"
+        >
+          {{ 'admin.markdown.close' | i18n | async }}
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (panel() === 'image') {
+    <div class="markdown-editor__panel">
+      <label>
+        <span>{{ 'admin.markdown.imageAsset' | i18n | async }}</span>
+        <select
+          [value]="imageAssetId()"
+          (change)="setImageAssetId($event)"
+        >
+          <option value="">
+            {{ 'admin.markdown.selectImage' | i18n | async }}
+          </option>
+
+          @for (asset of availableAssets(); track asset.id) {
+            <option [value]="asset.id">
+              {{ asset.originalFilename }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>{{ 'admin.markdown.imageAlt' | i18n | async }}</span>
+        <input
+          type="text"
+          [value]="imageAlt()"
+          (input)="setImageAlt($event)"
+        />
+      </label>
+
+      <label class="markdown-editor__upload">
+        <span>
+          {{
+            (uploading()
+              ? 'admin.markdown.uploading'
+              : 'admin.markdown.uploadImage')
+              | i18n
+              | async
+          }}
+        </span>
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          [disabled]="uploading()"
+          (change)="uploadImage($event)"
+        />
+      </label>
+
+      <div class="markdown-editor__panel-actions">
+        <button
+          type="button"
+          (click)="insertImage()"
+        >
+          {{ 'admin.markdown.insertImage' | i18n | async }}
+        </button>
+
+        <button
+          type="button"
+          (click)="closePanel()"
+        >
+          {{ 'admin.markdown.close' | i18n | async }}
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (panel() === 'youtube') {
+    <div class="markdown-editor__panel">
+      <label>
+        <span>{{ 'admin.markdown.youtubeUrl' | i18n | async }}</span>
+        <input
+          type="url"
+          [value]="youtubeValue()"
+          (input)="setYoutubeValue($event)"
+        />
+      </label>
+
+      <div class="markdown-editor__panel-actions">
+        <button
+          type="button"
+          (click)="insertYoutube()"
+        >
+          {{ 'admin.markdown.insertYoutube' | i18n | async }}
+        </button>
+
+        <button
+          type="button"
+          (click)="closePanel()"
+        >
+          {{ 'admin.markdown.close' | i18n | async }}
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (errorKey(); as error) {
+    <p
+      class="markdown-editor__error"
+      role="alert"
+    >
+      {{ error | i18n | async }}
+    </p>
+  }
+
+  <div
+    #editorHost
+    class="markdown-editor__surface"
+  ></div>
+</div>

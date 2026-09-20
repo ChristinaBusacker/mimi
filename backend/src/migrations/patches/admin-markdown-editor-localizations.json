@@ -1,0 +1,149 @@
+{
+  "localizations": [
+    {
+      "key": "admin.music.content",
+      "de": "Inhalt",
+      "en": "Content"
+    },
+    {
+      "key": "admin.markdown.toolbar",
+      "de": "Formatierungswerkzeuge",
+      "en": "Formatting tools"
+    },
+    {
+      "key": "admin.markdown.paragraph",
+      "de": "Absatz",
+      "en": "Paragraph"
+    },
+    {
+      "key": "admin.markdown.bold",
+      "de": "Fett",
+      "en": "Bold"
+    },
+    {
+      "key": "admin.markdown.italic",
+      "de": "Kursiv",
+      "en": "Italic"
+    },
+    {
+      "key": "admin.markdown.bulletList",
+      "de": "Liste",
+      "en": "List"
+    },
+    {
+      "key": "admin.markdown.orderedList",
+      "de": "Nummeriert",
+      "en": "Numbered"
+    },
+    {
+      "key": "admin.markdown.quote",
+      "de": "Zitat",
+      "en": "Quote"
+    },
+    {
+      "key": "admin.markdown.link",
+      "de": "Link",
+      "en": "Link"
+    },
+    {
+      "key": "admin.markdown.image",
+      "de": "Bild",
+      "en": "Image"
+    },
+    {
+      "key": "admin.markdown.youtube",
+      "de": "YouTube",
+      "en": "YouTube"
+    },
+    {
+      "key": "admin.markdown.undo",
+      "de": "Rückgängig",
+      "en": "Undo"
+    },
+    {
+      "key": "admin.markdown.redo",
+      "de": "Wiederholen",
+      "en": "Redo"
+    },
+    {
+      "key": "admin.markdown.linkUrl",
+      "de": "Link-URL",
+      "en": "Link URL"
+    },
+    {
+      "key": "admin.markdown.applyLink",
+      "de": "Link setzen",
+      "en": "Apply link"
+    },
+    {
+      "key": "admin.markdown.removeLink",
+      "de": "Link entfernen",
+      "en": "Remove link"
+    },
+    {
+      "key": "admin.markdown.invalidLink",
+      "de": "Bitte gib eine gültige HTTP-, HTTPS- oder Mail-Adresse ein.",
+      "en": "Enter a valid HTTP, HTTPS, or email link."
+    },
+    {
+      "key": "admin.markdown.imageAsset",
+      "de": "Bild auswählen",
+      "en": "Select image"
+    },
+    {
+      "key": "admin.markdown.selectImage",
+      "de": "Bitte ein Bild auswählen",
+      "en": "Select an image"
+    },
+    {
+      "key": "admin.markdown.imageAlt",
+      "de": "Alternativtext",
+      "en": "Alternative text"
+    },
+    {
+      "key": "admin.markdown.imageRequired",
+      "de": "Bitte wähle zuerst ein Bild aus.",
+      "en": "Select an image first."
+    },
+    {
+      "key": "admin.markdown.insertImage",
+      "de": "Bild einfügen",
+      "en": "Insert image"
+    },
+    {
+      "key": "admin.markdown.uploadImage",
+      "de": "Neues Bild hochladen",
+      "en": "Upload new image"
+    },
+    {
+      "key": "admin.markdown.uploading",
+      "de": "Bild wird hochgeladen …",
+      "en": "Uploading image …"
+    },
+    {
+      "key": "admin.markdown.uploadFailed",
+      "de": "Das Bild konnte nicht hochgeladen werden.",
+      "en": "The image could not be uploaded."
+    },
+    {
+      "key": "admin.markdown.youtubeUrl",
+      "de": "YouTube-URL oder Video-ID",
+      "en": "YouTube URL or video ID"
+    },
+    {
+      "key": "admin.markdown.insertYoutube",
+      "de": "Video einfügen",
+      "en": "Insert video"
+    },
+    {
+      "key": "admin.markdown.invalidYoutube",
+      "de": "Die YouTube-URL oder Video-ID ist ungültig.",
+      "en": "The YouTube URL or video ID is invalid."
+    },
+    {
+      "key": "admin.markdown.close",
+      "de": "Schließen",
+      "en": "Close"
+    }
+  ]
+}

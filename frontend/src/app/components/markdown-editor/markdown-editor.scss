@@ -1,0 +1,169 @@
+@use 'mixins' as *;
+
+.markdown-editor {
+  @include framed(var(--control-border-width));
+
+  overflow: hidden;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 400;
+}
+
+.markdown-editor__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  border-bottom: var(--control-border-width) solid var(--color-secondary);
+  background: var(--color-menu-surface);
+
+  button {
+    min-height: 34px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid transparent;
+    border-radius: var(--radius-card);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    &:hover:not(:disabled),
+    &:focus-visible,
+    &.active {
+      border-color: var(--color-secondary);
+      background: var(--color-surface);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+}
+
+.markdown-editor__toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.markdown-editor__panel {
+  display: grid;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-bottom: var(--control-border-width) solid var(--color-secondary);
+  background: var(--color-surface-translucent);
+
+  label {
+    display: grid;
+    gap: var(--spacing-xs);
+    font-weight: 700;
+  }
+
+  input,
+  select {
+    @include framed(var(--control-border-width));
+
+    width: 100%;
+    min-width: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+}
+
+.markdown-editor__upload {
+  span {
+    justify-self: start;
+  }
+
+  input[type='file'] {
+    padding: var(--spacing-xs);
+  }
+}
+
+.markdown-editor__panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+
+  button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: var(--control-border-width) solid var(--color-secondary);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+
+    &:first-child {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+  }
+}
+
+.markdown-editor__error {
+  margin: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-bottom: var(--control-border-width) solid var(--color-secondary);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.markdown-editor__surface {
+  min-height: 220px;
+}
+
+.markdown-editor__content {
+  min-height: 220px;
+  padding: var(--spacing-sm);
+  outline: none;
+  line-height: 1.6;
+
+  > *:first-child {
+    margin-top: 0;
+  }
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  a {
+    color: var(--color-primary);
+  }
+
+  blockquote {
+    margin-inline: 0;
+    padding-left: var(--spacing-md);
+    border-left: var(--control-border-width) solid var(--color-secondary);
+  }
+
+  img[data-asset-id] {
+    display: block;
+    max-width: min(100%, 720px);
+    max-height: 560px;
+    margin: var(--spacing-md) auto;
+    border-radius: var(--radius-card);
+    object-fit: contain;
+  }
+
+  .markdown-editor__youtube-node {
+    display: grid;
+    place-items: center;
+    min-height: 160px;
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing-md);
+    border: var(--control-border-width) dashed var(--color-secondary);
+    border-radius: var(--radius-card);
+    background: var(--color-menu-surface);
+    font-weight: 800;
+  }
+}

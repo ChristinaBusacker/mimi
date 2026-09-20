@@ -1,4 +1,3 @@
-import type { Asset } from '@shared/assets/asset';
 import type {
   MusicAdminAlbum,
   MusicAdminTrack,
@@ -95,15 +94,6 @@ export class AdminMusicService {
   deleteTrack(id: string): Observable<void> {
     return this.request.delete<void>(
       `/admin/music/tracks/${id}`,
-    );
-  }
-
-  getAssets(
-    type: 'image' | 'audio',
-  ): Observable<Asset[]> {
-    return this.request.get<Asset[]>(
-      `/admin/assets?type=${type}`,
-      this.privateGetOptions(),
     );
   }
 

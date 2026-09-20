@@ -28,6 +28,8 @@ import {
 import { firstValueFrom, forkJoin } from 'rxjs';
 
 import { Button } from '../../../../components/button/button';
+import { MarkdownEditor } from '../../../../components/markdown-editor/markdown-editor';
+import { AdminAssetsService } from '../../../../core/assets/admin-assets.service';
 import { I18nPipe } from '../../../../core/i18n/i18n.pipe';
 import { AdminMusicService } from '../../../../core/music/admin-music.service';
 
@@ -37,6 +39,7 @@ import { AdminMusicService } from '../../../../core/music/admin-music.service';
     AsyncPipe,
     Button,
     I18nPipe,
+    MarkdownEditor,
     ReactiveFormsModule,
     RouterLink,
   ],
@@ -46,6 +49,7 @@ import { AdminMusicService } from '../../../../core/music/admin-music.service';
 })
 export class AdminTrackEditor implements OnInit {
   private readonly music = inject(AdminMusicService);
+  private readonly assets = inject(AdminAssetsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -128,8 +132,8 @@ export class AdminTrackEditor implements OnInit {
       const result = await firstValueFrom(
         forkJoin({
           albums: this.music.getAlbums(),
-          images: this.music.getAssets('image'),
-          audio: this.music.getAssets('audio'),
+          images: this.assets.getAll('image'),
+          audio: this.assets.getAll('audio'),
           track: this.trackId
             ? this.music.getTrack(this.trackId)
             : Promise.resolve(null),
@@ -148,6 +152,18 @@ export class AdminTrackEditor implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected addImage(asset: Asset): void {
+    this.images.update(
+      (images) => [
+        asset,
+        ...images.filter(
+          (candidate) =>
+            candidate.id !== asset.id,
+        ),
+      ],
+    );
   }
 
   protected albumTitle(album: MusicAdminAlbum): string {

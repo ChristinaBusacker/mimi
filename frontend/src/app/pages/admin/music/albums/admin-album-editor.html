@@ -94,10 +94,12 @@
           />
         </label>
 
-        <label>
-          <span>{{ 'admin.music.contentMarkdown' | i18n | async }}</span>
-          <textarea formControlName="contentDe"></textarea>
-        </label>
+        <app-markdown-editor
+          formControlName="contentDe"
+          [label]="'admin.music.content' | i18n | async"
+          [assets]="images()"
+          (assetUploaded)="addImage($event)"
+        />
       </fieldset>
 
       <fieldset>
@@ -111,10 +113,12 @@
           />
         </label>
 
-        <label>
-          <span>{{ 'admin.music.contentMarkdown' | i18n | async }}</span>
-          <textarea formControlName="contentEn"></textarea>
-        </label>
+        <app-markdown-editor
+          formControlName="contentEn"
+          [label]="'admin.music.content' | i18n | async"
+          [assets]="images()"
+          (assetUploaded)="addImage($event)"
+        />
       </fieldset>
 
       <div class="admin-editor__actions">

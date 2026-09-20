@@ -27,6 +27,8 @@ import {
 import { firstValueFrom, forkJoin } from 'rxjs';
 
 import { Button } from '../../../../components/button/button';
+import { MarkdownEditor } from '../../../../components/markdown-editor/markdown-editor';
+import { AdminAssetsService } from '../../../../core/assets/admin-assets.service';
 import { I18nPipe } from '../../../../core/i18n/i18n.pipe';
 import { AdminMusicService } from '../../../../core/music/admin-music.service';
 
@@ -36,6 +38,7 @@ import { AdminMusicService } from '../../../../core/music/admin-music.service';
     AsyncPipe,
     Button,
     I18nPipe,
+    MarkdownEditor,
     ReactiveFormsModule,
     RouterLink,
   ],
@@ -45,6 +48,7 @@ import { AdminMusicService } from '../../../../core/music/admin-music.service';
 })
 export class AdminAlbumEditor implements OnInit {
   private readonly music = inject(AdminMusicService);
+  private readonly assets = inject(AdminAssetsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -97,7 +101,7 @@ export class AdminAlbumEditor implements OnInit {
     try {
       const result = await firstValueFrom(
         forkJoin({
-          images: this.music.getAssets('image'),
+          images: this.assets.getAll('image'),
           album: this.albumId
             ? this.music.getAlbum(this.albumId)
             : Promise.resolve(null),
@@ -114,6 +118,18 @@ export class AdminAlbumEditor implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected addImage(asset: Asset): void {
+    this.images.update(
+      (images) => [
+        asset,
+        ...images.filter(
+          (candidate) =>
+            candidate.id !== asset.id,
+        ),
+      ],
+    );
   }
 
   protected async save(): Promise<void> {
