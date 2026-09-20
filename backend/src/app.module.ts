@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LocalizationsModule } from './localizations/localizations.module';
 import { MigrationsModule } from './migrations/migrations.module';
 import { IntegrationsModule } from './integrations/integrations.module';
+import { MusicModule } from './music/music.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -21,6 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     LocalizationsModule,
     MigrationsModule,
     IntegrationsModule,
+    MusicModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -3,7 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-dc';
 
-import { AuthenticatedUser, AuthService } from '../auth.service';
+import { AuthService } from '../auth.service';
+import type { AuthenticatedUser } from '@shared/auth/authenticated-user';
 
 interface DiscordProfile {
   id: string;
@@ -34,15 +35,9 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
     profile: DiscordProfile,
   ): Promise<AuthenticatedUser> {
     if (!profile.email) {
-      throw new UnauthorizedException(
-        'Discord did not provide an email address.',
-      );
+      throw new UnauthorizedException('Discord did not provide an email address.');
     }
 
-    return this.authService.validateDiscordUser(
-      profile.id,
-      profile.username,
-      profile.email,
-    );
+    return this.authService.validateDiscordUser(profile.id, profile.username, profile.email);
   }
 }
