@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { adminGuard } from './core/auth/admin.guard';
 import { homeDataResolver } from './pages/home/home.resolver';
 
 export const routes: Routes = [
@@ -42,5 +43,29 @@ export const routes: Routes = [
       import('./pages/contact/contact').then(
         (module) => module.Contact,
       ),
+  },
+  {
+    path: 'admin/login',
+    loadComponent: () =>
+      import('./pages/admin/login/admin-login').then(
+        (module) => module.AdminLogin,
+      ),
+  },
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./pages/admin/shell/admin-shell').then(
+        (module) => module.AdminShell,
+      ),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/admin/dashboard/admin-dashboard').then(
+            (module) => module.AdminDashboard,
+          ),
+      },
+    ],
   },
 ];

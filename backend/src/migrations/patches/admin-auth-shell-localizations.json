@@ -1,0 +1,79 @@
+{
+  "localizations": [
+    {
+      "key": "admin.login.title",
+      "de": "Adminbereich",
+      "en": "Admin area"
+    },
+    {
+      "key": "admin.login.subtitle",
+      "de": "Melde dich an, um Inhalte der Seite zu verwalten.",
+      "en": "Sign in to manage the site's content."
+    },
+    {
+      "key": "admin.login.email",
+      "de": "E-Mail-Adresse",
+      "en": "Email address"
+    },
+    {
+      "key": "admin.login.password",
+      "de": "Passwort",
+      "en": "Password"
+    },
+    {
+      "key": "admin.login.action",
+      "de": "Anmelden",
+      "en": "Sign in"
+    },
+    {
+      "key": "admin.login.invalidCredentials",
+      "de": "E-Mail-Adresse oder Passwort ist falsch.",
+      "en": "The email address or password is incorrect."
+    },
+    {
+      "key": "admin.login.failed",
+      "de": "Die Anmeldung ist gerade fehlgeschlagen. Bitte versuche es erneut.",
+      "en": "Sign-in failed. Please try again."
+    },
+    {
+      "key": "admin.login.accessDenied",
+      "de": "Dein Benutzerkonto hat keinen Zugriff auf den Adminbereich.",
+      "en": "Your account does not have access to the admin area."
+    },
+    {
+      "key": "admin.shell.title",
+      "de": "Verwaltung",
+      "en": "Administration"
+    },
+    {
+      "key": "admin.shell.navigation",
+      "de": "Admin-Navigation",
+      "en": "Admin navigation"
+    },
+    {
+      "key": "admin.nav.overview",
+      "de": "Übersicht",
+      "en": "Overview"
+    },
+    {
+      "key": "admin.nav.website",
+      "de": "Zur Website",
+      "en": "Open website"
+    },
+    {
+      "key": "admin.logout",
+      "de": "Abmelden",
+      "en": "Sign out"
+    },
+    {
+      "key": "admin.dashboard.title",
+      "de": "Adminbereich",
+      "en": "Admin area"
+    },
+    {
+      "key": "admin.dashboard.description",
+      "de": "Hier verwaltest du die Inhalte der Website. Die Musikverwaltung wird im nächsten Schritt ergänzt.",
+      "en": "Manage the website content here. Music management will be added in the next step."
+    }
+  ]
+}

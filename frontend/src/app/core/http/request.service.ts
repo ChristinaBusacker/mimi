@@ -7,10 +7,12 @@ import { API_BASE_URL } from './api-base-url.token';
 
 export interface GetRequestOptions {
   deduplicateAcrossTabs?: boolean;
+  transferCache?: boolean;
 }
 
 interface HttpRequestOptions {
   headers?: Record<string, string>;
+  transferCache?: boolean;
 }
 
 @Injectable({
@@ -29,7 +31,9 @@ export class RequestService {
     options: GetRequestOptions = {},
   ): Observable<T> {
     const url = this.buildUrl(path);
-    const requestOptions = this.createRequestOptions();
+    const requestOptions = this.createRequestOptions(
+      options.transferCache,
+    );
 
     if (options.deduplicateAcrossTabs === false) {
       return this.http.get<T>(url, requestOptions);
@@ -69,17 +73,24 @@ export class RequestService {
     );
   }
 
-  private createRequestOptions(): HttpRequestOptions {
+  private createRequestOptions(
+    transferCache?: boolean,
+  ): HttpRequestOptions {
     const cookie = this.ssrRequest?.headers.get('cookie');
 
-    if (!cookie) {
-      return {};
-    }
-
     return {
-      headers: {
-        cookie,
-      },
+      ...(cookie
+        ? {
+            headers: {
+              cookie,
+            },
+          }
+        : {}),
+      ...(transferCache === undefined
+        ? {}
+        : {
+            transferCache,
+          }),
     };
   }
 

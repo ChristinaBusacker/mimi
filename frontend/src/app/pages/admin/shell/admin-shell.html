@@ -1,0 +1,36 @@
+<section class="admin-shell">
+  <aside class="admin-shell__navigation">
+    <div>
+      <strong>{{ 'admin.shell.title' | i18n | async }}</strong>
+
+      @if (user(); as currentUser) {
+        <small>{{ currentUser.name }}</small>
+      }
+    </div>
+
+    <nav [attr.aria-label]="'admin.shell.navigation' | i18n | async">
+      <a
+        routerLink="/admin"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        {{ 'admin.nav.overview' | i18n | async }}
+      </a>
+
+      <a routerLink="/">
+        {{ 'admin.nav.website' | i18n | async }}
+      </a>
+    </nav>
+
+    <app-button
+      class="secondary round"
+      (click)="logout()"
+    >
+      {{ 'admin.logout' | i18n | async }}
+    </app-button>
+  </aside>
+
+  <div class="admin-shell__content">
+    <router-outlet />
+  </div>
+</section>

@@ -11,7 +11,10 @@
     <ng-container [ngTemplateOutlet]="content" />
   </a>
 } @else {
-  <button type="button">
+  <button
+    [type]="type()"
+    [disabled]="disabled()"
+  >
     <ng-container [ngTemplateOutlet]="content" />
   </button>
 }

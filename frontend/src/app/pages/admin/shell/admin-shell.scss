@@ -1,0 +1,79 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.admin-shell {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: var(--spacing-md);
+  min-height: 560px;
+}
+
+.admin-shell__navigation,
+.admin-shell__content {
+  @include framed;
+
+  background: var(--color-surface-translucent);
+  color: var(--color-text);
+}
+
+.admin-shell__navigation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+
+  > div {
+    display: grid;
+    gap: var(--spacing-xs);
+
+    small {
+      opacity: 0.75;
+    }
+  }
+
+  nav {
+    display: grid;
+    gap: var(--spacing-xs);
+
+    a {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-card);
+      color: inherit;
+      text-decoration: none;
+
+      &.active {
+        background: var(--color-secondary);
+      }
+    }
+  }
+
+  app-button {
+    margin-top: auto;
+  }
+}
+
+.admin-shell__content {
+  min-width: 0;
+  padding: var(--spacing-lg);
+}
+
+@include compact-layout {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-shell__navigation {
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    app-button {
+      margin-top: 0;
+      align-self: flex-start;
+    }
+  }
+}

@@ -22,6 +22,11 @@ a {
   text-decoration: none;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 :host(.primary) button,
 :host(.primary) a,
 :host(.secondary) button,

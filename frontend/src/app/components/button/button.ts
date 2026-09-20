@@ -10,4 +10,6 @@ import { Component, input } from '@angular/core';
 export class Button {
   readonly href = input<string | null>(null);
   readonly target = input<'_self' | '_blank'>('_self');
+  readonly type = input<'button' | 'submit'>('button');
+  readonly disabled = input(false);
 }

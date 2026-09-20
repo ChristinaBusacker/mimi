@@ -9,6 +9,7 @@ import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngxs/store';
 
 import { routes } from './app.routes';
+import { AuthState } from './core/auth/auth.state';
 import { EventStreamService } from './core/events/event-stream.service';
 import { I18nState } from './core/i18n/i18n.state';
 import { LanguageService } from './core/i18n/language.service';
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(),
     provideStore([
+      AuthState,
       I18nState,
       TwitchState,
       YouTubeState,
