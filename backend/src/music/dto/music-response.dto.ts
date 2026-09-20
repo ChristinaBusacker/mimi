@@ -97,7 +97,7 @@ export class MusicAlbumDto
   implements MusicAlbum
 {
   @ApiProperty()
-  contentMarkdown!: string;
+  contentHtml!: string;
 
   @ApiProperty({
     type: MusicTrackSummaryDto,
@@ -137,5 +137,5 @@ export class MusicTrackDto
   album!: MusicAlbumReferenceDto | null;
 
   @ApiProperty()
-  contentMarkdown!: string;
+  contentHtml!: string;
 }

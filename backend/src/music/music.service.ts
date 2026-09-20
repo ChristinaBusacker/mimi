@@ -13,6 +13,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
+import { MarkdownRendererService } from '../content/markdown-renderer.service';
 import { MusicAlbumTranslationEntry } from './entities/music-album-translation.entry';
 import { MusicAlbumEntry } from './entities/music-album.entry';
 import { MusicTrackTranslationEntry } from './entities/music-track-translation.entry';
@@ -25,6 +26,7 @@ import {
 @Injectable()
 export class MusicService {
   constructor(
+    private readonly markdownRenderer: MarkdownRendererService,
     @InjectRepository(MusicAlbumEntry)
     private readonly albumRepository: Repository<MusicAlbumEntry>,
     @InjectRepository(MusicAlbumTranslationEntry)
@@ -105,7 +107,9 @@ export class MusicService {
 
     return {
       ...this.mapAlbumSummary(album, translation),
-      contentMarkdown: translation.contentMarkdown,
+      contentHtml: this.markdownRenderer.render(
+        translation.contentMarkdown,
+      ),
       tracks: tracks
         .map((track) => {
           const trackTranslation = this.pickTranslation(
@@ -148,7 +152,9 @@ export class MusicService {
     return {
       ...this.mapTrackSummary(track, translation),
       album: await this.getAlbumReference(track.albumUuid, locale),
-      contentMarkdown: translation.contentMarkdown,
+      contentHtml: this.markdownRenderer.render(
+        translation.contentMarkdown,
+      ),
     };
   }
 

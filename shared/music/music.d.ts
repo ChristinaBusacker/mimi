@@ -9,7 +9,7 @@ export interface MusicAlbumSummary {
 }
 
 export interface MusicAlbum extends MusicAlbumSummary {
-  contentMarkdown: string;
+  contentHtml: string;
   tracks: MusicTrackSummary[];
 }
 
@@ -36,5 +36,5 @@ export interface MusicTrackSummary {
 
 export interface MusicTrack extends MusicTrackSummary {
   album: MusicAlbumReference | null;
-  contentMarkdown: string;
+  contentHtml: string;
 }
