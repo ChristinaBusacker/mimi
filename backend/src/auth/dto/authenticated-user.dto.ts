@@ -1,6 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import type {
+  AuthenticatedUser,
+  UserRole,
+} from '@shared/auth/authenticated-user';
 
-import type { AuthenticatedUser } from '../auth.service';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthenticatedUserDto implements AuthenticatedUser {
   @ApiProperty({
@@ -24,4 +27,9 @@ export class AuthenticatedUserDto implements AuthenticatedUser {
     example: '123456789012345678',
   })
   discordId!: string | null;
+
+  @ApiProperty({
+    enum: ['user', 'admin'],
+  })
+  role!: UserRole;
 }

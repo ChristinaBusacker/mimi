@@ -1,9 +1,12 @@
 // src/users/users.service.ts
 
+import type { UserRole } from '@shared/auth/authenticated-user';
+
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { hash } from 'bcryptjs';
+import { Repository } from 'typeorm';
+
 import { UserEntry } from './entities/user.entry';
 
 @Injectable()
@@ -12,6 +15,12 @@ export class UsersService {
     @InjectRepository(UserEntry)
     private readonly usersRepository: Repository<UserEntry>,
   ) {}
+
+  findByUuid(uuid: string): Promise<UserEntry | null> {
+    return this.usersRepository.findOneBy({
+      uuid,
+    });
+  }
 
   findByEmail(email: string): Promise<UserEntry | null> {
     return this.usersRepository.findOneBy({
@@ -68,6 +77,16 @@ export class UsersService {
 
   async connectDiscord(user: UserEntry, discordId: string): Promise<UserEntry> {
     user.discordId = discordId;
+
+    return this.usersRepository.save(user);
+  }
+
+  async setRole(user: UserEntry, role: UserRole): Promise<UserEntry> {
+    if (user.role === role) {
+      return user;
+    }
+
+    user.role = role;
 
     return this.usersRepository.save(user);
   }

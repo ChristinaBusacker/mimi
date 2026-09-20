@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
+import { AUTH_SESSION_COOKIE } from './auth/session-cookie';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +22,7 @@ async function bootstrap(): Promise<void> {
     .setTitle('Mimi API')
     .setDescription('Backend API for the Mimi website.')
     .setVersion('1.0')
+    .addCookieAuth(AUTH_SESSION_COOKIE)
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

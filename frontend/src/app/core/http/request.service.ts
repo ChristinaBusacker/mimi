@@ -9,6 +9,10 @@ export interface GetRequestOptions {
   deduplicateAcrossTabs?: boolean;
 }
 
+interface HttpRequestOptions {
+  headers?: Record<string, string>;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -25,13 +29,14 @@ export class RequestService {
     options: GetRequestOptions = {},
   ): Observable<T> {
     const url = this.buildUrl(path);
+    const requestOptions = this.createRequestOptions();
 
     if (options.deduplicateAcrossTabs === false) {
-      return this.http.get<T>(url);
+      return this.http.get<T>(url, requestOptions);
     }
 
     return this.crossTabRequests.execute(`GET:${url}`, () =>
-      this.http.get<T>(url),
+      this.http.get<T>(url, requestOptions),
     );
   }
 
@@ -39,18 +44,43 @@ export class RequestService {
     path: string,
     body: TBody,
   ): Observable<TResponse> {
-    return this.http.post<TResponse>(this.buildUrl(path), body);
+    return this.http.post<TResponse>(
+      this.buildUrl(path),
+      body,
+      this.createRequestOptions(),
+    );
   }
 
   patch<TResponse, TBody>(
     path: string,
     body: TBody,
   ): Observable<TResponse> {
-    return this.http.patch<TResponse>(this.buildUrl(path), body);
+    return this.http.patch<TResponse>(
+      this.buildUrl(path),
+      body,
+      this.createRequestOptions(),
+    );
   }
 
   delete<TResponse = void>(path: string): Observable<TResponse> {
-    return this.http.delete<TResponse>(this.buildUrl(path));
+    return this.http.delete<TResponse>(
+      this.buildUrl(path),
+      this.createRequestOptions(),
+    );
+  }
+
+  private createRequestOptions(): HttpRequestOptions {
+    const cookie = this.ssrRequest?.headers.get('cookie');
+
+    if (!cookie) {
+      return {};
+    }
+
+    return {
+      headers: {
+        cookie,
+      },
+    };
   }
 
   private buildUrl(path: string): string {

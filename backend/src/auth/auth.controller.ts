@@ -1,26 +1,46 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBody,
+  ApiCookieAuth,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 
+import { AuthSessionService } from './auth-session.service';
 import { AuthenticatedUserDto } from './dto/authenticated-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { DiscordAuthGuard } from './guards/discord-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-
-type AuthenticatedRequest = Request & {
-  user: AuthenticatedUserDto;
-};
+import { SessionAuthGuard } from './guards/session-auth.guard';
+import {
+  AUTH_SESSION_COOKIE,
+  clearSessionCookie,
+  readSessionCookie,
+  setSessionCookie,
+} from './session-cookie';
+import type { AuthenticatedRequest } from './types/authenticated-request';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
+  constructor(
+    private readonly sessions: AuthSessionService,
+  ) {}
+
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @ApiOperation({
@@ -36,8 +56,52 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'The credentials are invalid.',
   })
-  login(@Req() request: AuthenticatedRequest): AuthenticatedUserDto {
+  async login(
+    @Req() request: AuthenticatedRequest,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthenticatedUserDto> {
+    await this.startSession(request, response);
+
     return request.user;
+  }
+
+  @Get('me')
+  @UseGuards(SessionAuthGuard)
+  @ApiCookieAuth(AUTH_SESSION_COOKIE)
+  @ApiOperation({
+    summary: 'Get the currently authenticated user',
+  })
+  @ApiOkResponse({
+    description: 'The authenticated user.',
+    type: AuthenticatedUserDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'No valid session is available.',
+  })
+  me(@Req() request: AuthenticatedRequest): AuthenticatedUserDto {
+    return request.user;
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiCookieAuth(AUTH_SESSION_COOKIE)
+  @ApiOperation({
+    summary: 'Log out the current session',
+  })
+  @ApiNoContentResponse({
+    description: 'The current session was cleared.',
+  })
+  async logout(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const token = readSessionCookie(request);
+
+    if (token) {
+      await this.sessions.revoke(token);
+    }
+
+    clearSessionCookie(response);
   }
 
   @Get('discord')
@@ -63,7 +127,25 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Discord authentication failed.',
   })
-  discordCallback(@Req() request: AuthenticatedRequest): AuthenticatedUserDto {
+  async discordCallback(
+    @Req() request: AuthenticatedRequest,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthenticatedUserDto> {
+    await this.startSession(request, response);
+
     return request.user;
+  }
+
+  private async startSession(
+    request: AuthenticatedRequest,
+    response: Response,
+  ): Promise<void> {
+    const session = await this.sessions.create(request.user.uuid);
+
+    setSessionCookie(
+      response,
+      session.token,
+      session.expiresAt,
+    );
   }
 }

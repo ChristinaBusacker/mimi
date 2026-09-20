@@ -1,16 +1,49 @@
-// src/auth/auth.service.ts
+import type { AuthenticatedUser } from '@shared/auth/authenticated-user';
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { compare } from 'bcryptjs';
 
 import { UserEntry } from '../users/entities/user.entry';
 import { UsersService } from '../users/users.service';
 
-export type AuthenticatedUser = Omit<UserEntry, 'password'>;
-
 @Injectable()
-export class AuthService {
-  constructor(private readonly usersService: UsersService) {}
+export class AuthService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AuthService.name);
+  private readonly configuredAdminEmails: ReadonlySet<string>;
+
+  constructor(
+    private readonly usersService: UsersService,
+    configService: ConfigService,
+  ) {
+    this.configuredAdminEmails = new Set(
+      (configService.get<string>('AUTH_ADMIN_EMAILS') ?? '')
+        .split(',')
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean),
+    );
+  }
+
+  async onApplicationBootstrap(): Promise<void> {
+    for (const email of this.configuredAdminEmails) {
+      const user = await this.usersService.findByEmail(email);
+
+      if (!user) {
+        this.logger.warn(
+          `Configured admin user "${email}" does not exist yet.`,
+        );
+
+        continue;
+      }
+
+      await this.ensureConfiguredAdmin(user);
+    }
+  }
 
   async validateLocalUser(
     email: string,
@@ -28,7 +61,9 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return this.removePassword(user);
+    return this.toAuthenticatedUser(
+      await this.ensureConfiguredAdmin(user),
+    );
   }
 
   async validateDiscordUser(
@@ -40,7 +75,9 @@ export class AuthService {
       await this.usersService.findByDiscordId(discordId);
 
     if (existingDiscordUser) {
-      return this.removePassword(existingDiscordUser);
+      return this.toAuthenticatedUser(
+        await this.ensureConfiguredAdmin(existingDiscordUser),
+      );
     }
 
     const existingEmailUser = await this.usersService.findByEmail(email);
@@ -51,17 +88,42 @@ export class AuthService {
         discordId,
       );
 
-      return this.removePassword(connectedUser);
+      return this.toAuthenticatedUser(
+        await this.ensureConfiguredAdmin(connectedUser),
+      );
     }
 
-    const user = await this.usersService.createDiscord(discordId, name, email);
+    const user = await this.usersService.createDiscord(
+      discordId,
+      name,
+      email,
+    );
 
-    return this.removePassword(user);
+    return this.toAuthenticatedUser(
+      await this.ensureConfiguredAdmin(user),
+    );
   }
 
-  private removePassword(user: UserEntry): AuthenticatedUser {
-    const { password: _, ...authenticatedUser } = user;
+  toAuthenticatedUser(user: UserEntry): AuthenticatedUser {
+    return {
+      uuid: user.uuid,
+      name: user.name,
+      email: user.email,
+      discordId: user.discordId,
+      role: user.role,
+    };
+  }
 
-    return authenticatedUser;
+  private async ensureConfiguredAdmin(
+    user: UserEntry,
+  ): Promise<UserEntry> {
+    if (
+      user.role === 'admin' ||
+      !this.configuredAdminEmails.has(user.email.toLowerCase())
+    ) {
+      return user;
+    }
+
+    return this.usersService.setRole(user, 'admin');
   }
 }
