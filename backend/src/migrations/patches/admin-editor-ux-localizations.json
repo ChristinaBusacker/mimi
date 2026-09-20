@@ -1,0 +1,84 @@
+{
+  "localizations": [
+    {
+      "key": "admin.localizations.createTitle",
+      "de": "Neue Lokalisierung",
+      "en": "New localization"
+    },
+    {
+      "key": "admin.localizations.createDescription",
+      "de": "Neue Einträge werden separat angelegt und erscheinen danach alphabetisch in der Tabelle.",
+      "en": "New entries are created separately and then appear alphabetically in the table."
+    },
+    {
+      "key": "admin.music.albumTracks.title",
+      "de": "Tracks",
+      "en": "Tracks"
+    },
+    {
+      "key": "admin.music.albumTracks.manage",
+      "de": "Album-Reihenfolge",
+      "en": "Album order"
+    },
+    {
+      "key": "admin.music.albumTracks.description",
+      "de": "Ziehe Tracks in die gewünschte Reihenfolge oder füge mehrere Preview-Dateien auf einmal hinzu.",
+      "en": "Drag tracks into the desired order or add multiple preview files at once."
+    },
+    {
+      "key": "admin.music.albumTracks.saveFirst",
+      "de": "Speichere das Album zuerst. Danach kannst du hier Previews hineinziehen und die Tracks automatisch anlegen lassen.",
+      "en": "Save the album first. You can then drop previews here and create the tracks automatically."
+    },
+    {
+      "key": "admin.music.albumTracks.upload",
+      "de": "Previews hinzufügen",
+      "en": "Add previews"
+    },
+    {
+      "key": "admin.music.albumTracks.uploading",
+      "de": "Previews werden verarbeitet",
+      "en": "Processing previews"
+    },
+    {
+      "key": "admin.music.albumTracks.savingOrder",
+      "de": "Reihenfolge wird gespeichert …",
+      "en": "Saving track order …"
+    },
+    {
+      "key": "admin.music.albumTracks.empty",
+      "de": "Noch keine Tracks im Album.",
+      "en": "No tracks in this album yet."
+    },
+    {
+      "key": "admin.music.albumTracks.dropHint",
+      "de": "Du kannst mehrere MP3-, M4A-, OGG- oder WAV-Dateien direkt auf diesen Bereich ziehen.",
+      "en": "You can drop multiple MP3, M4A, OGG, or WAV files directly onto this area."
+    },
+    {
+      "key": "admin.music.albumTracks.dropActive",
+      "de": "Previews hier ablegen",
+      "en": "Drop previews here"
+    },
+    {
+      "key": "admin.music.albumTracks.edit",
+      "de": "Bearbeiten",
+      "en": "Edit"
+    },
+    {
+      "key": "admin.music.albumTracks.uploadPartialFailure",
+      "de": "Einige Dateien konnten nicht als Tracks angelegt werden. Erfolgreiche Uploads wurden trotzdem übernommen.",
+      "en": "Some files could not be created as tracks. Successful uploads were still added."
+    },
+    {
+      "key": "admin.music.albumTracks.reorderFailed",
+      "de": "Die neue Track-Reihenfolge konnte nicht gespeichert werden.",
+      "en": "The new track order could not be saved."
+    },
+    {
+      "key": "admin.music.albumTracks.loadFailed",
+      "de": "Die Trackliste konnte nicht neu geladen werden.",
+      "en": "The track list could not be reloaded."
+    }
+  ]
+}

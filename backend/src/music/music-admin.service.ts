@@ -122,6 +122,59 @@ export class MusicAdminService {
     }
   }
 
+  async reorderAlbumTracks(
+    albumUuid: string,
+    trackIds: string[],
+  ): Promise<MusicAdminTrack[]> {
+    await this.findAlbum(albumUuid);
+
+    const tracks = await this.trackRepository.find({
+      where: {
+        albumUuid,
+      },
+    });
+
+    const albumTrackIds = new Set(
+      tracks.map((track) => track.uuid),
+    );
+
+    if (
+      tracks.length !== trackIds.length ||
+      trackIds.some(
+        (trackId) => !albumTrackIds.has(trackId),
+      )
+    ) {
+      throw new BadRequestException(
+        'Track order must contain every track of the album exactly once.',
+      );
+    }
+
+    await this.dataSource.transaction(
+      async (manager) => {
+        const repository =
+          manager.getRepository(MusicTrackEntry);
+
+        for (
+          let index = 0;
+          index < trackIds.length;
+          index += 1
+        ) {
+          await repository.update(
+            {
+              uuid: trackIds[index],
+              albumUuid,
+            },
+            {
+              trackNumber: index + 1,
+            },
+          );
+        }
+      },
+    );
+
+    return this.getAlbumTracks(albumUuid);
+  }
+
   async getTracks(): Promise<MusicAdminTrack[]> {
     const tracks = await this.trackRepository.find({
       order: {
@@ -165,9 +218,9 @@ export class MusicAdminService {
           previewDurationSeconds: dto.previewDurationSeconds,
           previewAssetId: dto.previewAssetId,
           coverAssetId: dto.coverAssetId,
-          spotifyUrl: dto.spotifyUrl,
-          deezerUrl: dto.deezerUrl,
-          supportUrl: dto.supportUrl,
+          spotifyUrl: dto.spotifyUrl || null,
+          deezerUrl: dto.deezerUrl || null,
+          supportUrl: dto.supportUrl || null,
           status: dto.status,
         }),
       );
@@ -197,9 +250,9 @@ export class MusicAdminService {
         previewDurationSeconds: dto.previewDurationSeconds,
         previewAssetId: dto.previewAssetId,
         coverAssetId: dto.coverAssetId,
-        spotifyUrl: dto.spotifyUrl,
-        deezerUrl: dto.deezerUrl,
-        supportUrl: dto.supportUrl,
+        spotifyUrl: dto.spotifyUrl || null,
+        deezerUrl: dto.deezerUrl || null,
+        supportUrl: dto.supportUrl || null,
         status: dto.status,
       });
 
@@ -217,6 +270,35 @@ export class MusicAdminService {
     if (result.affected === 0) {
       throw new NotFoundException(`Music track "${uuid}" not found.`);
     }
+  }
+
+  private async getAlbumTracks(
+    albumUuid: string,
+  ): Promise<MusicAdminTrack[]> {
+    const tracks = await this.trackRepository.find({
+      where: {
+        albumUuid,
+      },
+      order: {
+        trackNumber: 'ASC',
+        createdAt: 'ASC',
+      },
+    });
+
+    const translations =
+      await this.getTrackTranslations(
+        tracks.map((track) => track.uuid),
+      );
+
+    return tracks.map((track) =>
+      this.mapTrack(
+        track,
+        translations.filter(
+          (translation) =>
+            translation.trackUuid === track.uuid,
+        ),
+      ),
+    );
   }
 
   private async findAlbum(uuid: string): Promise<MusicAlbumEntry> {

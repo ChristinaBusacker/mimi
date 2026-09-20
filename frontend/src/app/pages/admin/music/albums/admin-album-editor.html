@@ -61,6 +61,141 @@
         </div>
       </fieldset>
 
+
+      <fieldset>
+        <legend>{{ 'admin.music.albumTracks.title' | i18n | async }}</legend>
+
+        @if (!albumId) {
+          <p class="admin-album-tracks__notice">
+            {{ 'admin.music.albumTracks.saveFirst' | i18n | async }}
+          </p>
+        } @else {
+          <div
+            class="admin-album-tracks"
+            [class.admin-album-tracks--drop-active]="trackDropActive()"
+            (dragenter)="onTrackFilesDragEnter($event)"
+            (dragover)="onTrackFilesDragOver($event)"
+            (dragleave)="onTrackFilesDragLeave($event)"
+            (drop)="onTrackFilesDrop($event)"
+          >
+            <header>
+              <div>
+                <strong>
+                  {{ 'admin.music.albumTracks.manage' | i18n | async }}
+                </strong>
+                <span>
+                  {{ 'admin.music.albumTracks.description' | i18n | async }}
+                </span>
+              </div>
+
+              <label class="admin-album-tracks__upload">
+                <input
+                  type="file"
+                  multiple
+                  accept="audio/mpeg,audio/mp4,audio/ogg,audio/wav,audio/x-wav"
+                  [disabled]="trackUploading()"
+                  (change)="handleTrackFilesInput($event)"
+                />
+
+                <span>
+                  {{ 'admin.music.albumTracks.upload' | i18n | async }}
+                </span>
+              </label>
+            </header>
+
+            @if (trackUploading()) {
+              <p class="admin-album-tracks__progress">
+                {{
+                  'admin.music.albumTracks.uploading'
+                    | i18n
+                    | async
+                }}
+                {{ trackUploadCurrent() }}/{{ trackUploadTotal() }}
+              </p>
+            }
+
+            @if (trackOrderSaving()) {
+              <p class="admin-album-tracks__progress">
+                {{ 'admin.music.albumTracks.savingOrder' | i18n | async }}
+              </p>
+            }
+
+            @if (trackErrorKey(); as trackError) {
+              <p
+                class="admin-editor__message admin-editor__message--error"
+                role="alert"
+              >
+                {{ trackError | i18n | async }}
+              </p>
+            }
+
+            @if (tracks().length) {
+              <ol class="admin-album-tracks__list">
+                @for (track of tracks(); track track.id; let index = $index) {
+                  <li
+                    draggable="true"
+                    (dragstart)="startTrackDrag(track.id, $event)"
+                    (dragover)="allowTrackDrop($event)"
+                    (drop)="dropTrack($event, index)"
+                    (dragend)="endTrackDrag()"
+                  >
+                    <span
+                      class="admin-album-tracks__handle"
+                      aria-hidden="true"
+                    >
+                      ⠿
+                    </span>
+
+                    <span class="admin-album-tracks__number">
+                      {{ index + 1 }}
+                    </span>
+
+                    <div class="admin-album-tracks__track">
+                      <strong>
+                        {{ track.translations.de.title || track.slug }}
+                      </strong>
+                      <span>
+                        {{ formatDuration(track.previewDurationSeconds) }}
+                        ·
+                        {{ ('admin.music.status.' + track.status) | i18n | async }}
+                      </span>
+                    </div>
+
+                    <a
+                      class="admin-album-tracks__edit"
+                      [routerLink]="['/admin/music/tracks', track.id]"
+                    >
+                      {{ 'admin.music.albumTracks.edit' | i18n | async }}
+                    </a>
+                  </li>
+                }
+              </ol>
+            } @else {
+              <div class="admin-album-tracks__empty">
+                <strong>
+                  {{ 'admin.music.albumTracks.empty' | i18n | async }}
+                </strong>
+                <span>
+                  {{ 'admin.music.albumTracks.dropHint' | i18n | async }}
+                </span>
+              </div>
+            }
+
+            <p class="admin-album-tracks__drop-hint">
+              {{ 'admin.music.albumTracks.dropHint' | i18n | async }}
+            </p>
+
+            @if (trackDropActive()) {
+              <div class="admin-album-tracks__drop-overlay">
+                <strong>
+                  {{ 'admin.music.albumTracks.dropActive' | i18n | async }}
+                </strong>
+              </div>
+            }
+          </div>
+        }
+      </fieldset>
+
       <fieldset>
         <legend>{{ 'admin.music.language.de' | i18n | async }}</legend>
 

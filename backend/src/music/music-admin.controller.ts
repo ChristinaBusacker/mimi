@@ -29,6 +29,7 @@ import {
   MusicAdminTrackDto,
 } from './dto/music-admin-response.dto';
 import {
+  ReorderMusicAdminTracksDto,
   SaveMusicAdminAlbumDto,
   SaveMusicAdminTrackDto,
 } from './dto/save-music.dto';
@@ -107,6 +108,27 @@ export class MusicAdminController {
     return this.musicAdminService.updateAlbum(
       uuid,
       dto,
+    );
+  }
+
+  @Patch('albums/:uuid/tracks/order')
+  @ApiOperation({
+    summary: 'Reorder all tracks of a music album',
+  })
+  @ApiOkResponse({
+    type: MusicAdminTrackDto,
+    isArray: true,
+  })
+  @ApiNotFoundResponse({
+    description: 'The album does not exist.',
+  })
+  reorderAlbumTracks(
+    @Param('uuid') uuid: string,
+    @Body() dto: ReorderMusicAdminTracksDto,
+  ): Promise<MusicAdminTrackDto[]> {
+    return this.musicAdminService.reorderAlbumTracks(
+      uuid,
+      dto.trackIds,
     );
   }
 

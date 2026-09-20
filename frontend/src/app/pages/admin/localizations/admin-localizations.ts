@@ -23,8 +23,7 @@ type LocalizationField =
   | 'en';
 
 interface LocalizationRow extends Localization {
-  dirty: boolean;
-  saving: boolean;
+  original: SaveLocalization;
   error: boolean;
   confirmingDelete: boolean;
 }
@@ -60,32 +59,27 @@ export class AdminLocalizations implements OnInit {
       .trim()
       .toLocaleLowerCase();
 
-    return this.rows()
-      .filter((row) => {
-        if (!query) {
-          return true;
-        }
+    return this.rows().filter((row) => {
+      if (!query) {
+        return true;
+      }
 
-        return [
-          row.key,
-          row.de,
-          row.en,
-        ].some((value) =>
-          value
-            .toLocaleLowerCase()
-            .includes(query),
-        );
-      })
-      .slice()
-      .sort((left, right) =>
-        left.key.localeCompare(right.key),
+      return [
+        row.key,
+        row.de,
+        row.en,
+      ].some((value) =>
+        value
+          .toLocaleLowerCase()
+          .includes(query),
       );
+    });
   });
 
   protected readonly dirtyCount = computed(
     () =>
       this.rows().filter(
-        (row) => row.dirty,
+        (row) => this.isDirty(row),
       ).length,
   );
 
@@ -96,8 +90,10 @@ export class AdminLocalizations implements OnInit {
       );
 
       this.rows.set(
-        rows.map((row) =>
-          this.toRow(row),
+        this.sortRows(
+          rows.map((row) =>
+            this.toRow(row),
+          ),
         ),
       );
     } catch {
@@ -105,6 +101,14 @@ export class AdminLocalizations implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected isDirty(row: LocalizationRow): boolean {
+    return (
+      row.key !== row.original.key ||
+      row.de !== row.original.de ||
+      row.en !== row.original.en
+    );
   }
 
   protected setSearch(event: Event): void {
@@ -126,7 +130,6 @@ export class AdminLocalizations implements OnInit {
           ? {
               ...row,
               [field]: value,
-              dirty: true,
               error: false,
             }
           : row,
@@ -172,10 +175,12 @@ export class AdminLocalizations implements OnInit {
         }),
       );
 
-      this.rows.update((rows) => [
-        ...rows,
-        this.toRow(created),
-      ]);
+      this.rows.update((rows) =>
+        this.sortRows([
+          ...rows,
+          this.toRow(created),
+        ]),
+      );
 
       this.newKey.set('');
       this.newDe.set('');
@@ -187,62 +192,13 @@ export class AdminLocalizations implements OnInit {
     }
   }
 
-  protected async saveRow(
-    row: LocalizationRow,
-  ): Promise<void> {
-    if (!row.dirty || row.saving) {
-      return;
-    }
-
-    const key = row.key.trim();
-
-    if (!key) {
-      this.patchRow(row.uuid, {
-        error: true,
-      });
-
-      return;
-    }
-
-    this.patchRow(row.uuid, {
-      saving: true,
-      error: false,
-    });
-
-    try {
-      const saved = await firstValueFrom(
-        this.localizations.update(
-          row.uuid,
-          {
-            key,
-            de: row.de,
-            en: row.en,
-          },
-        ),
-      );
-
-      this.rows.update((rows) =>
-        rows.map((candidate) =>
-          candidate.uuid === row.uuid
-            ? this.toRow(saved)
-            : candidate,
-        ),
-      );
-    } catch {
-      this.patchRow(row.uuid, {
-        saving: false,
-        error: true,
-      });
-    }
-  }
-
   protected async saveAll(): Promise<void> {
     if (this.savingAll()) {
       return;
     }
 
     const dirtyRows = this.rows().filter(
-      (row) => row.dirty,
+      (row) => this.isDirty(row),
     );
 
     if (dirtyRows.length === 0) {
@@ -251,15 +207,55 @@ export class AdminLocalizations implements OnInit {
 
     this.savingAll.set(true);
 
-    try {
-      await Promise.all(
-        dirtyRows.map((row) =>
-          this.saveRow(row),
-        ),
+    for (const dirtyRow of dirtyRows) {
+      const current = this.rows().find(
+        (row) => row.uuid === dirtyRow.uuid,
       );
-    } finally {
-      this.savingAll.set(false);
+
+      if (!current || !this.isDirty(current)) {
+        continue;
+      }
+
+      const key = current.key.trim();
+
+      if (!key) {
+        this.patchRow(current.uuid, {
+          error: true,
+        });
+
+        continue;
+      }
+
+      try {
+        const saved = await firstValueFrom(
+          this.localizations.update(
+            current.uuid,
+            {
+              key,
+              de: current.de,
+              en: current.en,
+            },
+          ),
+        );
+
+        this.rows.update((rows) =>
+          rows.map((row) =>
+            row.uuid === current.uuid
+              ? this.toRow(saved)
+              : row,
+          ),
+        );
+      } catch {
+        this.patchRow(current.uuid, {
+          error: true,
+        });
+      }
     }
+
+    this.rows.update(
+      (rows) => this.sortRows(rows),
+    );
+    this.savingAll.set(false);
   }
 
   protected requestDelete(uuid: string): void {
@@ -321,17 +317,33 @@ export class AdminLocalizations implements OnInit {
   ): LocalizationRow {
     return {
       ...localization,
-      dirty: false,
-      saving: false,
+      original: {
+        key: localization.key,
+        de: localization.de,
+        en: localization.en,
+      },
       error: false,
       confirmingDelete: false,
     };
   }
 
+  private sortRows(
+    rows: LocalizationRow[],
+  ): LocalizationRow[] {
+    return rows
+      .slice()
+      .sort((left, right) =>
+        left.original.key.localeCompare(
+          right.original.key,
+        ),
+      );
+  }
+
   private readInputValue(event: Event): string {
     const target = event.target;
 
-    return target instanceof HTMLInputElement
+    return target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement
       ? target.value
       : '';
   }

@@ -1,5 +1,6 @@
 import type {
   MusicAdminTranslations,
+  ReorderMusicAdminTracks,
   SaveMusicAdminAlbum,
   SaveMusicAdminTrack,
 } from '@shared/music/music-admin';
@@ -7,6 +8,9 @@ import type { MusicPublicationStatus } from '@shared/music/music';
 
 import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
+  ArrayUnique,
+  IsArray,
   IsIn,
   IsInt,
   IsOptional,
@@ -16,6 +20,7 @@ import {
   Matches,
   Min,
   MinLength,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 
@@ -99,21 +104,39 @@ export class SaveMusicAdminTrackDto
   @IsUUID()
   coverAssetId!: string | null;
 
-  @IsOptional()
+  @ValidateIf(
+    (_object, value) =>
+      value !== null &&
+      value !== undefined &&
+      value !== '',
+  )
   @IsUrl({
     require_protocol: true,
+    protocols: ['http', 'https'],
   })
   spotifyUrl!: string | null;
 
-  @IsOptional()
+  @ValidateIf(
+    (_object, value) =>
+      value !== null &&
+      value !== undefined &&
+      value !== '',
+  )
   @IsUrl({
     require_protocol: true,
+    protocols: ['http', 'https'],
   })
   deezerUrl!: string | null;
 
-  @IsOptional()
+  @ValidateIf(
+    (_object, value) =>
+      value !== null &&
+      value !== undefined &&
+      value !== '',
+  )
   @IsUrl({
     require_protocol: true,
+    protocols: ['http', 'https'],
   })
   supportUrl!: string | null;
 
@@ -123,4 +146,16 @@ export class SaveMusicAdminTrackDto
   @ValidateNested()
   @Type(() => MusicAdminTranslationsInputDto)
   translations!: MusicAdminTranslationsInputDto;
+}
+
+export class ReorderMusicAdminTracksDto
+  implements ReorderMusicAdminTracks
+{
+  @IsArray()
+  @ArrayNotEmpty()
+  @ArrayUnique()
+  @IsUUID('4', {
+    each: true,
+  })
+  trackIds!: string[];
 }

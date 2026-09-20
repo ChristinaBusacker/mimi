@@ -61,3 +61,7 @@ export interface SaveMusicAdminTrack {
   status: MusicPublicationStatus;
   translations: MusicAdminTranslations;
 }
+
+export interface ReorderMusicAdminTracks {
+  trackIds: string[];
+}

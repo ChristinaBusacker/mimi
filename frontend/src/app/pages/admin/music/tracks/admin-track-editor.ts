@@ -167,6 +167,16 @@ export class AdminTrackEditor implements OnInit {
       const duration = await this.assets.readAudioDuration(asset);
 
       this.form.controls.previewDurationSeconds.setValue(duration);
+
+      if (
+        this.form.controls.durationSeconds.value <
+        duration
+      ) {
+        this.form.controls.durationSeconds.setValue(
+          duration,
+        );
+      }
+
       this.previewDuration.set(duration);
     } catch {
       this.form.controls.previewAssetId.setValue('');

@@ -30,6 +30,57 @@
     </label>
   </div>
 
+  <section class="admin-localizations__create">
+    <header>
+      <strong>{{ 'admin.localizations.createTitle' | i18n | async }}</strong>
+      <span>{{ 'admin.localizations.createDescription' | i18n | async }}</span>
+    </header>
+
+    <div class="admin-localizations__create-grid">
+      <label>
+        <span>{{ 'admin.localizations.key' | i18n | async }}</span>
+        <input
+          type="text"
+          [value]="newKey()"
+          [placeholder]="'admin.localizations.newKey' | i18n | async"
+          (input)="setNewValue('key', $event)"
+        />
+      </label>
+
+      <label>
+        <span>DE</span>
+        <textarea
+          rows="2"
+          [value]="newDe()"
+          (input)="setNewValue('de', $event)"
+        ></textarea>
+      </label>
+
+      <label>
+        <span>EN</span>
+        <textarea
+          rows="2"
+          [value]="newEn()"
+          (input)="setNewValue('en', $event)"
+        ></textarea>
+      </label>
+
+      <button
+        type="button"
+        [disabled]="creating()"
+        (click)="create()"
+      >
+        {{ 'admin.localizations.create' | i18n | async }}
+      </button>
+    </div>
+
+    @if (createError()) {
+      <span class="admin-localizations__row-error">
+        {{ 'admin.localizations.saveFailed' | i18n | async }}
+      </span>
+    }
+  </section>
+
   @if (loadFailed()) {
     <p class="admin-localizations__error" role="alert">
       {{ 'admin.localizations.loadFailed' | i18n | async }}
@@ -41,61 +92,30 @@
   } @else {
     <div class="admin-localizations__table-wrap">
       <table>
+        <colgroup>
+          <col class="admin-localizations__key-column" />
+          <col />
+          <col />
+          <col class="admin-localizations__actions-column" />
+        </colgroup>
+
         <thead>
           <tr>
             <th scope="col">{{ 'admin.localizations.key' | i18n | async }}</th>
             <th scope="col">DE</th>
             <th scope="col">EN</th>
             <th scope="col">
-              {{ 'admin.localizations.actions' | i18n | async }}
+              <span class="admin-localizations__visually-hidden">
+                {{ 'admin.localizations.actions' | i18n | async }}
+              </span>
             </th>
           </tr>
         </thead>
 
         <tbody>
-          <tr class="admin-localizations__new-row">
-            <td>
-              <input
-                type="text"
-                [value]="newKey()"
-                [placeholder]="'admin.localizations.newKey' | i18n | async"
-                (input)="setNewValue('key', $event)"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                [value]="newDe()"
-                (input)="setNewValue('de', $event)"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                [value]="newEn()"
-                (input)="setNewValue('en', $event)"
-              />
-            </td>
-            <td>
-              <button
-                type="button"
-                [disabled]="creating()"
-                (click)="create()"
-              >
-                {{ 'admin.localizations.create' | i18n | async }}
-              </button>
-
-              @if (createError()) {
-                <span class="admin-localizations__row-error">
-                  {{ 'admin.localizations.saveFailed' | i18n | async }}
-                </span>
-              }
-            </td>
-          </tr>
-
           @for (row of filteredRows(); track row.uuid) {
             <tr
-              [class.admin-localizations__row--dirty]="row.dirty"
+              [class.admin-localizations__row--dirty]="isDirty(row)"
               [class.admin-localizations__row--error]="row.error"
             >
               <td>
@@ -106,55 +126,53 @@
                 />
               </td>
               <td>
-                <input
-                  type="text"
+                <textarea
+                  rows="1"
                   [value]="row.de"
                   (input)="updateRow(row.uuid, 'de', $event)"
-                />
+                ></textarea>
               </td>
               <td>
-                <input
-                  type="text"
+                <textarea
+                  rows="1"
                   [value]="row.en"
                   (input)="updateRow(row.uuid, 'en', $event)"
-                />
+                ></textarea>
               </td>
               <td class="admin-localizations__row-actions">
-                <button
-                  type="button"
-                  [disabled]="!row.dirty || row.saving"
-                  (click)="saveRow(row)"
-                >
-                  {{
-                    (row.saving
-                      ? 'admin.localizations.saving'
-                      : 'admin.localizations.save')
-                      | i18n
-                      | async
-                  }}
-                </button>
-
                 @if (row.confirmingDelete) {
                   <button
                     type="button"
                     class="danger"
+                    [attr.aria-label]="'admin.localizations.deleteConfirm' | i18n | async"
+                    [title]="'admin.localizations.deleteConfirm' | i18n | async"
                     (click)="deleteRow(row)"
                   >
-                    {{ 'admin.localizations.deleteConfirm' | i18n | async }}
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m5 12 4 4L19 6" />
+                    </svg>
                   </button>
 
                   <button
                     type="button"
+                    [attr.aria-label]="'admin.localizations.cancel' | i18n | async"
+                    [title]="'admin.localizations.cancel' | i18n | async"
                     (click)="cancelDelete(row.uuid)"
                   >
-                    {{ 'admin.localizations.cancel' | i18n | async }}
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M6 6l12 12M18 6 6 18" />
+                    </svg>
                   </button>
                 } @else {
                   <button
                     type="button"
+                    [attr.aria-label]="'admin.localizations.delete' | i18n | async"
+                    [title]="'admin.localizations.delete' | i18n | async"
                     (click)="requestDelete(row.uuid)"
                   >
-                    {{ 'admin.localizations.delete' | i18n | async }}
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" />
+                    </svg>
                   </button>
                 }
 

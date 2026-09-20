@@ -1,6 +1,7 @@
 import type {
   MusicAdminAlbum,
   MusicAdminTrack,
+  ReorderMusicAdminTracks,
   SaveMusicAdminAlbum,
   SaveMusicAdminTrack,
 } from '@shared/music/music-admin';
@@ -55,6 +56,21 @@ export class AdminMusicService {
   deleteAlbum(id: string): Observable<void> {
     return this.request.delete<void>(
       `/admin/music/albums/${id}`,
+    );
+  }
+
+  reorderAlbumTracks(
+    albumId: string,
+    trackIds: string[],
+  ): Observable<MusicAdminTrack[]> {
+    return this.request.patch<
+      MusicAdminTrack[],
+      ReorderMusicAdminTracks
+    >(
+      `/admin/music/albums/${albumId}/tracks/order`,
+      {
+        trackIds,
+      },
     );
   }
 
