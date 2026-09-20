@@ -1,0 +1,16 @@
+<section class="hero">
+  <div
+    class="content"
+    [class.music]="type() === 'music'"
+    [class.chatting]="type() === 'chatting'"
+    [class.gaming]="type() === 'gaming'"
+  >
+    <div class="left">
+      <ng-content select="[hero-left]" />
+    </div>
+
+    <div class="right">
+      <ng-content select="[hero-right]" />
+    </div>
+  </div>
+</section>

@@ -1,4 +1,4 @@
-<section class="music-library-player">
+<section class="player">
   <audio
     #audio
     preload="metadata"
@@ -9,7 +9,7 @@
   ></audio>
 
   @if (activeAlbum(); as album) {
-    <div class="music-library-player__filter">
+    <div class="filter">
       <button
         type="button"
         (click)="clearAlbumFilter()"
@@ -35,21 +35,21 @@
   }
 
   @if (currentTrack(); as currentTrack) {
-    <header class="music-library-player__now-playing">
-      <div class="music-library-player__cover">
+    <header class="now-playing">
+      <div class="cover">
         @if (coverAssetId(currentTrack); as coverId) {
           <img
             [src]="assetUrl(coverId)"
             [alt]="currentTrack.title"
           />
         } @else {
-          <div class="music-library-player__cover-placeholder">
+          <div class="placeholder">
             <app-icon name="music" class="secondary" />
           </div>
         }
       </div>
 
-      <div class="music-library-player__current">
+      <div class="current">
         <span>
           {{
             (playing()
@@ -66,13 +66,13 @@
           @if (allowAlbumFilter()) {
             <button
               type="button"
-              class="music-library-player__album-button"
+              class="album-button"
               (click)="filterByAlbum(album)"
             >
               {{ album.title }}
             </button>
           } @else {
-            <span class="music-library-player__album-name">
+            <span class="album-name">
               {{ album.title }}
             </span>
           }
@@ -81,7 +81,7 @@
 
       <button
         type="button"
-        class="music-library-player__main-toggle"
+        class="main-toggle"
         [disabled]="!currentTrack.previewAssetId"
         [attr.aria-label]="
           (
@@ -103,7 +103,7 @@
         </span>
       </button>
 
-      <div class="music-library-player__progress">
+      <div class="progress">
         <input
           type="range"
           min="0"
@@ -122,10 +122,10 @@
         </span>
       </div>
 
-      <div class="music-library-player__external">
+      <div class="external">
         @if (currentTrack.supportUrl) {
           <a
-            class="music-library-player__support"
+            class="support"
             [href]="currentTrack.supportUrl"
             target="_blank"
             rel="noopener noreferrer"
@@ -159,11 +159,11 @@
   }
 
   <div
-    class="music-library-player__body"
-    [class.music-library-player__body--with-story]="storyVisible()"
+    class="body"
+    [class.with-story]="storyVisible()"
   >
-    <div class="music-library-player__list">
-      <div class="music-library-player__columns" aria-hidden="true">
+    <div class="list">
+      <div class="columns" aria-hidden="true">
         <span>#</span>
         <span></span>
         <span>{{ 'music.library.song' | i18n | async }}</span>
@@ -178,15 +178,15 @@
           let index = $index
         ) {
           <li
-            [class.music-library-player__track--active]="activeTrackId() === track.id"
+            [class.active]="activeTrackId() === track.id"
           >
-            <span class="music-library-player__number">
+            <span class="number">
               {{ track.trackNumber ?? index + 1 }}
             </span>
 
             <button
               type="button"
-              class="music-library-player__track-toggle"
+              class="track-toggle"
               [disabled]="!track.previewAssetId"
               [attr.aria-label]="
                 (
@@ -212,7 +212,7 @@
               </span>
             </button>
 
-            <div class="music-library-player__track-title">
+            <div class="track-title">
               <strong>{{ track.title }}</strong>
 
               @if (track.hasContent) {
@@ -222,7 +222,7 @@
               }
             </div>
 
-            <div class="music-library-player__track-album">
+            <div class="track-album">
               @if (track.album; as album) {
                 @if (allowAlbumFilter()) {
                   <button
@@ -239,7 +239,7 @@
               }
             </div>
 
-            <span class="music-library-player__track-duration">
+            <span class="track-duration">
               @if (track.previewAssetId) {
                 {{ formatDuration(track.previewDurationSeconds) }}
               } @else {
@@ -253,7 +253,7 @@
 
     @if (storyVisible(); as visible) {
       @if (visible) {
-        <aside class="music-library-player__story">
+        <aside class="story">
           <header>
             <div>
               <span>
@@ -280,7 +280,7 @@
             </p>
           } @else if (trackDetail(); as detail) {
             <div
-              class="music-library-player__story-content"
+              class="story-content"
               [innerHTML]="detail.contentHtml"
             ></div>
           }

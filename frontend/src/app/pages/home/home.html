@@ -1,104 +1,97 @@
 @let heroView = hero();
 
-<section class="hero">
-  <div
-    class="hero-content"
-    [class.hero-content--music]="heroView.heroType === 'music'"
-    [class.hero-content--chatting]="heroView.heroType === 'chatting'"
-    [class.hero-content--gaming]="heroView.heroType === 'gaming'"
-  >
-    <div class="left">
-      <div class="tags">
-        @if (heroView.statusKey) {
-          <div class="tag" [class.live]="heroView.isLive" [class.upcoming]="heroView.isUpcoming">
-            <app-icon name="circle" class="white small" />
-            {{ heroView.statusKey | i18n | async }}
-          </div>
-        }
-
-        <div class="tag type">
-          <app-icon [name]="heroView.icon" class="white small" />
-          {{ heroView.typeKey | i18n | async }}
+<app-hero [type]="heroView.heroType">
+  <div hero-left class="intro">
+    <div class="tags">
+      @if (heroView.statusKey) {
+        <div class="tag" [class.live]="heroView.isLive" [class.upcoming]="heroView.isUpcoming">
+          <app-icon name="circle" class="white small" />
+          {{ heroView.statusKey | i18n | async }}
         </div>
+      }
+
+      <div class="tag type">
+        <app-icon [name]="heroView.icon" class="white small" />
+        {{ heroView.typeKey | i18n | async }}
       </div>
+    </div>
 
-      <div class="logo">
-        <img src="images/logo.png" alt="" />
-      </div>
+    <div class="logo">
+      <img src="images/logo.png" alt="" />
+    </div>
 
-      <div class="text">
-        <h2 class="sue-ellen">{{ heroView.titleKey | i18n | async }}</h2>
+    <div class="text">
+      <h2 class="sue-ellen">{{ heroView.titleKey | i18n | async }}</h2>
 
-        @if (!heroView.isUpcoming) {
-          <p>{{ heroView.descriptionKey | i18n | async }}</p>
-        }
+      @if (!heroView.isUpcoming) {
+        <p>{{ heroView.descriptionKey | i18n | async }}</p>
+      }
 
-        @if (heroView.isUpcoming) {
-          <div class="upcoming-details">
-            <div class="countdown-slot">
-              @if (countdown(); as countdownView) {
-                <div
-                  class="countdown"
-                  role="timer"
-                  aria-live="off"
-                  [attr.aria-label]="countdownView.accessibleText"
-                >
-                  @if (countdownView.label) {
-                    <span class="countdown__label">
-                      {{ countdownView.label }}
-                    </span>
-                  }
-
-                  <strong class="countdown__value">
-                    {{ countdownView.value }}
-                  </strong>
-                </div>
-              }
-            </div>
-
-            @if (heroView.streamTitle) {
-              <div class="stream-meta stream-meta--upcoming">
-                <strong>{{ heroView.streamTitle }}</strong>
-
-                @if (heroView.scheduledAt) {
-                  <span>{{ heroView.scheduledAt }}</span>
+      @if (heroView.isUpcoming) {
+        <div class="upcoming-details">
+          <div class="countdown-slot">
+            @if (countdown(); as countdownView) {
+              <div
+                class="countdown"
+                role="timer"
+                aria-live="off"
+                [attr.aria-label]="countdownView.accessibleText"
+              >
+                @if (countdownView.label) {
+                  <span class="label">
+                    {{ countdownView.label }}
+                  </span>
                 }
+
+                <strong class="value">
+                  {{ countdownView.value }}
+                </strong>
               </div>
             }
           </div>
-        } @else if (heroView.streamTitle) {
-          <div class="stream-meta">
-            <strong>{{ heroView.streamTitle }}</strong>
-          </div>
-        }
-      </div>
 
-      @if (heroView.channelUrl; as channelUrl) {
-        <div class="cta">
-          @if (heroView.isLive) {
-            <app-button class="primary round" [href]="channelUrl" target="_blank">
-              <app-icon name="twitch" class="" />
-              {{ heroView.actionKey | i18n | async }}
-              <app-icon name="arrow" class="" />
-            </app-button>
+          @if (heroView.streamTitle) {
+            <div class="stream-meta upcoming">
+              <strong>{{ heroView.streamTitle }}</strong>
+
+              @if (heroView.scheduledAt) {
+                <span>{{ heroView.scheduledAt }}</span>
+              }
+            </div>
           }
-
-          <app-button class="secondary round white" [href]="channelUrl" target="_blank">
-            <app-icon name="play" class="secondary" />
-            {{ 'hero.action.channel' | i18n | async }}
-            <app-icon name="arrow" class="secondary" />
-          </app-button>
+        </div>
+      } @else if (heroView.streamTitle) {
+        <div class="stream-meta">
+          <strong>{{ heroView.streamTitle }}</strong>
         </div>
       }
     </div>
 
-    <div class="right">
-      <div class="avatar">
-        <img src="images/avatar1.png" alt="" />
+    @if (heroView.channelUrl; as channelUrl) {
+      <div class="cta">
+        @if (heroView.isLive) {
+          <app-button class="primary round" [href]="channelUrl" target="_blank">
+            <app-icon name="twitch" class="" />
+            {{ heroView.actionKey | i18n | async }}
+            <app-icon name="arrow" class="" />
+          </app-button>
+        }
+
+        <app-button class="secondary round white" [href]="channelUrl" target="_blank">
+          <app-icon name="play" class="secondary" />
+          {{ 'hero.action.channel' | i18n | async }}
+          <app-icon name="arrow" class="secondary" />
+        </app-button>
       </div>
+    }
+  </div>
+
+  <div hero-right class="visual">
+    <div class="avatar">
+      <img src="images/avatar1.png" alt="" />
     </div>
   </div>
-</section>
+</app-hero>
 
 <section class="content">
   <div class="wrapper">
@@ -115,7 +108,7 @@
         </div>
         <p>{{ 'content.gaming.subtitle' | i18n | async }}</p>
         <p>{{ 'content.gaming.description' | i18n | async }}</p>
-        <app-button class="primary">
+        <app-button class="primary font-black">
           {{ 'content.gaming.action' | i18n | async }}
           <app-icon name="arrow" class="" />
         </app-button>
@@ -128,7 +121,7 @@
         </div>
         <p>{{ 'content.music.subtitle' | i18n | async }}</p>
         <p>{{ 'content.music.description' | i18n | async }}</p>
-        <app-button class="primary">
+        <app-button class="primary font-black">
           {{ 'content.music.action' | i18n | async }}
           <app-icon name="arrow" class="" />
         </app-button>
@@ -141,7 +134,7 @@
         </div>
         <p>{{ 'content.videos.subtitle' | i18n | async }}</p>
         <p>{{ 'content.videos.description' | i18n | async }}</p>
-        <app-button class="primary">
+        <app-button class="primary font-black">
           {{ 'content.videos.action' | i18n | async }}
           <app-icon name="arrow" class="" />
         </app-button>

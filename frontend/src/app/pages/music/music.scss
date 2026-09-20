@@ -4,46 +4,25 @@
   display: block;
 }
 
-.music-page {
+.page {
   display: grid;
   gap: var(--spacing-md);
   color: var(--color-text);
 }
 
-.music-hero,
-.music-library-section {
-  @include framed;
-
-  position: relative;
-  overflow: hidden;
-  background: var(--color-surface-translucent);
-}
-
-.music-hero {
-  isolation: isolate;
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(300px, 0.82fr);
-  gap: clamp(var(--spacing-md), 4vw, var(--spacing-lg));
-  align-items: center;
-  padding: var(--spacing-md);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: var(--radius-card);
-    background:
-      linear-gradient(90deg, rgb(36 17 34 / 94%), rgb(36 17 34 / 72%), rgb(36 17 34 / 52%)),
-      url('/images/hero-bg-music.png') center / cover no-repeat;
-  }
-}
-
-.music-hero__intro {
+.intro {
   min-width: 0;
-  flex: 1;
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-primary);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
 
   .logo {
     width: 300px;
@@ -53,10 +32,9 @@
   h1 {
     max-width: 720px;
     margin: var(--spacing-xs) 0 var(--spacing-sm);
-    font-family: var(--font-display);
-    font-size: 32px;
-    line-height: 0.96;
     color: var(--color-secondary);
+    font-size: 32px;
+    line-height: 1.05;
   }
 
   > p {
@@ -66,108 +44,98 @@
   }
 }
 
-.music-hero__eyebrow {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  color: var(--color-primary);
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.music-hero__release {
-  justify-self: end;
+.release {
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
   gap: var(--spacing-sm);
   align-items: center;
+  width: 100%;
   padding: var(--spacing-sm);
   border: 1px solid rgb(175 104 167 / 64%);
   border-radius: var(--radius-card);
   background: rgb(29 17 28 / 74%);
   backdrop-filter: blur(8px);
-  flex: 1;
-}
 
-.music-hero__release-cover {
-  aspect-ratio: 1;
+  .cover {
+    aspect-ratio: 1;
 
-  img,
-  .music-hero__release-placeholder {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: var(--radius-card);
+    img,
+    .placeholder {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-card);
+    }
+
+    img {
+      object-fit: cover;
+    }
+
+    .placeholder {
+      display: grid;
+      place-items: center;
+      background: var(--color-menu-surface);
+
+      app-icon {
+        width: 52px;
+      }
+    }
   }
 
-  img {
-    object-fit: cover;
-  }
-}
+  .details {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
 
-.music-hero__release-placeholder {
-  display: grid;
-  place-items: center;
-  background: var(--color-menu-surface);
-
-  app-icon {
-    width: 52px;
-  }
-}
-
-.music-hero__release-content {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-
-  > span {
-    color: var(--color-primary);
-    font-size: 0.68rem;
-    line-height: 1.3rem;
-    font-weight: 800;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-  }
-
-  h2 {
-    margin: 0;
-    overflow: hidden;
-    font-family: var(--font-display);
-    font-size: 32px;
-    line-height: 2.5rem;
-    text-overflow: ellipsis;
-  }
-
-  small {
-    opacity: 0.68;
-  }
-
-  a {
-    justify-self: start;
-    margin-top: var(--spacing-xs);
-    color: var(--color-secondary);
-    font-weight: 800;
-    text-decoration: none;
-
-    &:hover,
-    &:focus-visible {
+    > span {
       color: var(--color-primary);
+      font-size: 0.68rem;
+      line-height: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0;
+      overflow: hidden;
+      font-family: var(--font-display);
+      font-size: 32px;
+      line-height: 2.5rem;
+      text-overflow: ellipsis;
+    }
+
+    small {
+      opacity: 0.68;
+    }
+
+    a {
+      justify-self: start;
+      margin-top: var(--spacing-xs);
+      color: var(--color-secondary);
+      font-weight: 800;
+      text-decoration: none;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--color-primary);
+      }
     }
   }
 }
 
-.music-library-section {
+.library {
+  @include framed;
+
   display: grid;
   gap: var(--spacing-md);
   padding: var(--spacing-md);
+  overflow: hidden;
+  background: var(--color-surface-translucent);
 
   > header {
     display: grid;
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(260px, 0.85fr);
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.85fr);
     gap: var(--spacing-lg);
     align-items: end;
 
@@ -192,55 +160,37 @@
       line-height: 1.55;
     }
   }
-}
 
-.music-page__empty {
-  display: grid;
-  place-items: center;
-  min-height: 300px;
-  text-align: center;
+  .empty {
+    display: grid;
+    place-items: center;
+    min-height: 300px;
+    text-align: center;
 
-  app-icon {
-    width: 56px;
-  }
+    app-icon {
+      width: 56px;
+    }
 
-  h2 {
-    margin: var(--spacing-sm) 0 0;
-    font-family: var(--font-display);
-  }
+    h2 {
+      margin: var(--spacing-sm) 0 0;
+      font-family: var(--font-display);
+    }
 
-  p {
-    max-width: 52ch;
-    margin: var(--spacing-xs) auto 0;
+    p {
+      max-width: 52ch;
+      margin: var(--spacing-xs) auto 0;
+    }
   }
 }
 
 @include compact-layout {
-  .music-hero {
-    grid-template-columns: 1fr;
-    min-height: 0;
-
-    &::before {
-      background:
-        linear-gradient(180deg, rgb(36 17 34 / 92%), rgb(36 17 34 / 76%)),
-        url('/images/hero-bg-music.png') center / cover no-repeat;
-    }
+  .release {
+    grid-template-columns: 96px minmax(0, 1fr);
   }
 
-  .music-hero__release {
-    justify-self: stretch;
-    width: 100%;
-  }
-
-  .music-library-section > header {
+  .library > header {
     grid-template-columns: 1fr;
     gap: var(--spacing-sm);
     align-items: start;
-  }
-}
-
-@media (max-width: 560px) {
-  .music-hero__release {
-    grid-template-columns: 96px minmax(0, 1fr);
   }
 }

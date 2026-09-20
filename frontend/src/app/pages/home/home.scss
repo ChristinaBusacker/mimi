@@ -3,110 +3,67 @@
 :host {
   display: block;
 
-  .hero {
-    min-height: 100px;
-    border-radius: var(--radius-card);
-    background-color: var(--color-surface);
-    position: relative;
-    isolation: isolate;
-
-    .hero-content {
-      position: relative;
+  .intro {
+    .tags {
       display: flex;
-      padding: var(--spacing-md);
+      gap: var(--spacing-sm);
+      justify-content: flex-start;
+      align-items: center;
 
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: var(--radius-card);
-        background-size: cover;
-        background-position: center;
-        opacity: 0.3;
-        z-index: -1;
-      }
-
-      &--music::before {
-        background-image: url(/images/hero-bg-music.png);
-      }
-    }
-
-    .right {
-      position: relative;
-      width: 50%;
-      flex: 1;
-
-      & .avatar {
-        position: absolute;
-        bottom: -25px;
-        right: 50px;
-      }
-    }
-
-    .left {
-      flex: 1;
-
-      .tags {
+      .tag {
         display: flex;
-        gap: var(--spacing-sm);
-        justify-content: flex-start;
         align-items: center;
-
-        .tag {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: var(--spacing-xs);
-          color: var(--color-text);
-          border-radius: var(--radius-card);
-          padding: 2px 8px;
-          text-transform: uppercase;
-          font-size: 0.75rem;
-
-          &.live {
-            background-color: var(--color-live);
-          }
-
-          &.upcoming,
-          &.type {
-            background-color: var(--color-secondary);
-          }
-        }
-      }
-
-      .logo {
-        width: 300px;
-        margin-top: 15px;
-      }
-
-      .text {
+        justify-content: center;
+        gap: var(--spacing-xs);
         color: var(--color-text);
+        border-radius: var(--radius-card);
+        padding: 2px 8px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
 
-        & p {
-          margin-top: 20px;
+        &.live {
+          background-color: var(--color-live);
         }
 
-        .upcoming-details {
-          display: grid;
-          grid-template-columns: 220px minmax(0, 1fr);
-          align-items: end;
-          gap: var(--spacing-md);
-          margin: var(--spacing-md) 0 var(--spacing-sm);
+        &.upcoming,
+        &.type {
+          background-color: var(--color-secondary);
         }
+      }
+    }
 
-        .countdown-slot {
-          width: 220px;
-          min-height: 58px;
-        }
+    .logo {
+      width: 300px;
+      margin-top: 15px;
+    }
 
-        .countdown {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 2px;
-        }
+    .text {
+      color: var(--color-text);
 
-        .countdown__label {
+      p {
+        margin-top: 20px;
+      }
+
+      .upcoming-details {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        align-items: end;
+        gap: var(--spacing-md);
+        margin: var(--spacing-md) 0 var(--spacing-sm);
+      }
+
+      .countdown-slot {
+        width: 220px;
+        min-height: 58px;
+      }
+
+      .countdown {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+
+        .label {
           color: var(--color-text);
           font-size: 0.75rem;
           font-weight: 800;
@@ -115,7 +72,7 @@
           text-transform: uppercase;
         }
 
-        .countdown__value {
+        .value {
           color: var(--color-primary);
           font-family: var(--font-display);
           font-size: clamp(1.55rem, 2.6vw, 2.2rem);
@@ -123,43 +80,51 @@
           text-transform: uppercase;
           white-space: nowrap;
         }
+      }
 
-        .stream-meta {
-          display: flex;
-          flex-direction: column;
-          gap: var(--spacing-xs);
-          margin: var(--spacing-sm) 0;
+      .stream-meta {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        margin: var(--spacing-sm) 0;
 
-          strong {
-            line-height: 1.25;
-          }
+        strong {
+          line-height: 1.25;
+        }
 
-          span {
-            font-size: 0.8rem;
-            opacity: 0.78;
-          }
+        span {
+          font-size: 0.8rem;
+          opacity: 0.78;
+        }
 
-          &--upcoming {
-            flex: 1;
-            min-width: 0;
-            margin: 0;
-          }
+        &.upcoming {
+          flex: 1;
+          min-width: 0;
+          margin: 0;
         }
       }
+    }
 
-      & h2 {
-        color: var(--color-secondary);
-        font-size: 32px;
-        line-height: 1.05;
-        padding: 0;
-        margin: 0;
-      }
+    h2 {
+      color: var(--color-secondary);
+      font-size: 32px;
+      line-height: 1.05;
+      padding: 0;
+      margin: 0;
+    }
 
-      .cta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--spacing-md);
-      }
+    .cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+  }
+
+  .visual {
+    .avatar {
+      position: absolute;
+      bottom: -25px;
+      right: 50px;
     }
   }
 
@@ -174,19 +139,19 @@
     flex-direction: column;
     gap: var(--spacing-lg);
 
-    & .wrapper {
-      & .title {
+    .wrapper {
+      .title {
         display: flex;
         gap: var(--spacing-sm);
         color: var(--color-text);
       }
 
-      & .row {
+      .row {
         display: flex;
         flex-wrap: wrap;
         gap: var(--spacing-md);
 
-        & .tile {
+        .tile {
           @include framed;
 
           position: relative;
@@ -199,11 +164,11 @@
           align-items: flex-start;
           min-width: 220px;
 
-          & p {
-            margin: 8px;
+          p {
+            margin: 8px 0;
           }
 
-          & app-button {
+          app-button {
             margin-top: 8px;
           }
 
@@ -211,7 +176,6 @@
             content: '';
             position: absolute;
             inset: 0;
-
             border-radius: var(--radius-card);
             background-size: cover;
             background-position: center;
@@ -220,27 +184,21 @@
             z-index: -1;
           }
 
-          &.gaming {
-            &::before {
-              background-image: url(/images/gaming-tile.png);
-            }
+          &.gaming::before {
+            background-image: url(/images/gaming-tile.png);
           }
 
-          &.music {
-            &::before {
-              background-image: url(/images/music-tile.png);
-            }
+          &.music::before {
+            background-image: url(/images/music-tile.png);
           }
 
-          &.videos {
-            &::before {
-              background-image: url(/images/video-tile.png);
-            }
+          &.videos::before {
+            background-image: url(/images/video-tile.png);
           }
         }
       }
 
-      & .video-grid {
+      .video-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: var(--spacing-md);
@@ -255,21 +213,23 @@
 
 @include compact-layout {
   :host {
-    .hero {
-      .left {
-        .text {
-          .upcoming-details {
-            grid-template-columns: minmax(0, 1fr);
-            align-items: start;
-            gap: var(--spacing-sm);
-          }
+    .intro {
+      .text {
+        .upcoming-details {
+          grid-template-columns: minmax(0, 1fr);
+          align-items: start;
+          gap: var(--spacing-sm);
+        }
 
-          .countdown-slot {
-            width: 100%;
-            min-height: 54px;
-          }
+        .countdown-slot {
+          width: 100%;
+          min-height: 54px;
         }
       }
+    }
+
+    .visual {
+      min-height: 320px;
     }
   }
 }

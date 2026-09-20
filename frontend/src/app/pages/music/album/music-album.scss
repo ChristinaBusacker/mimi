@@ -4,13 +4,13 @@
   display: block;
 }
 
-.music-album-page {
+.page {
   display: grid;
   gap: var(--spacing-md);
   color: var(--color-text);
 }
 
-.music-album-page__back {
+.back {
   justify-self: start;
   color: var(--color-secondary);
   font-weight: 800;
@@ -22,41 +22,12 @@
   }
 }
 
-.music-album-page__hero,
-.music-album-page__story,
-.music-album-page__tracks {
-  @include framed;
-
-  background: var(--color-surface-translucent);
-}
-
-.music-album-page__hero {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  grid-template-columns:
-    minmax(180px, 280px)
-    minmax(0, 1fr);
-  gap: var(--spacing-lg);
-  overflow: hidden;
-  padding: var(--spacing-lg);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background:
-      linear-gradient(90deg, rgb(36 17 34 / 94%), rgb(36 17 34 / 68%)),
-      url('/images/hero-bg-music.png') center / cover no-repeat;
-  }
-}
-
-.music-album-page__cover {
+.cover {
+  width: min(100%, 280px);
   aspect-ratio: 1;
 
   img,
-  .music-album-page__cover-placeholder {
+  .placeholder {
     @include framed(var(--control-border-width));
 
     display: block;
@@ -68,19 +39,20 @@
   img {
     object-fit: cover;
   }
-}
 
-.music-album-page__cover-placeholder {
-  display: grid;
-  place-items: center;
-  background: var(--color-menu-surface);
+  .placeholder {
+    display: grid;
+    place-items: center;
+    background: var(--color-menu-surface);
 
-  app-icon {
-    width: 72px;
+    app-icon {
+      width: 72px;
+    }
   }
 }
 
-.music-album-page__meta {
+.meta {
+  align-self: end;
   min-width: 0;
 
   > span {
@@ -104,7 +76,14 @@
   }
 }
 
-.music-album-page__story {
+.story,
+.tracks {
+  @include framed;
+
+  background: var(--color-surface-translucent);
+}
+
+.story {
   padding: var(--spacing-lg);
   line-height: 1.7;
 
@@ -138,7 +117,7 @@
   }
 }
 
-.music-album-page__tracks {
+.tracks {
   display: grid;
   gap: var(--spacing-md);
   padding: var(--spacing-md);
@@ -161,17 +140,11 @@
 }
 
 @include compact-layout {
-  .music-album-page__hero {
-    grid-template-columns: 1fr;
-    align-items: start;
-    padding: var(--spacing-md);
-  }
-
-  .music-album-page__cover {
+  .cover {
     width: min(100%, 320px);
   }
 
-  .music-album-page__story {
+  .story {
     padding: var(--spacing-md);
   }
 }

@@ -15,6 +15,7 @@ import { Store } from '@ngxs/store';
 import type { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
 
 import { Button } from '../../components/button/button';
+import { Hero } from '../../components/hero/hero';
 import { Icon } from '../../components/icon/icon';
 import { VideoCard } from '../../components/video-card/video-card';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
@@ -44,7 +45,7 @@ interface HeroViewModel {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Button, I18nPipe, Icon, VideoCard],
+  imports: [AsyncPipe, Button, Hero, I18nPipe, Icon, VideoCard],
   selector: 'app-home',
   styleUrl: './home.scss',
   templateUrl: './home.html',

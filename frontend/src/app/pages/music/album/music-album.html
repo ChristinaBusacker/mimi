@@ -1,37 +1,28 @@
 @let albumData = data();
 @let album = albumData.album;
 
-<section class="music-album-page">
-  <a
-    class="music-album-page__back"
-    routerLink="/music"
-  >
+<section class="page">
+  <a class="back" routerLink="/music">
     ←
     {{ 'music.album.back' | i18n | async }}
   </a>
 
-  <header class="music-album-page__hero">
-    <div class="music-album-page__cover">
+  <app-hero type="music">
+    <div hero-left class="cover">
       @if (album.coverAssetId) {
         <img
           [src]="assetUrl(album.coverAssetId)"
           [alt]="album.title"
         />
       } @else {
-        <div class="music-album-page__cover-placeholder">
-          <app-icon
-            name="music"
-            class="secondary"
-          />
+        <div class="placeholder">
+          <app-icon name="music" class="secondary" />
         </div>
       }
     </div>
 
-    <div class="music-album-page__meta">
-      <span>
-        {{ 'music.album.label' | i18n | async }}
-      </span>
-
+    <div hero-right class="meta">
+      <span>{{ 'music.album.label' | i18n | async }}</span>
       <h1>{{ album.title }}</h1>
 
       @if (
@@ -52,23 +43,16 @@
         {{ 'music.album.tracks' | i18n | async }}
       </strong>
     </div>
-  </header>
+  </app-hero>
 
   @if (album.contentHtml) {
-    <article
-      class="music-album-page__story"
-      [innerHTML]="album.contentHtml"
-    ></article>
+    <article class="story" [innerHTML]="album.contentHtml"></article>
   }
 
-  <section class="music-album-page__tracks">
+  <section class="tracks">
     <header>
-      <span>
-        {{ 'music.album.listenLabel' | i18n | async }}
-      </span>
-      <h2>
-        {{ 'music.album.listenTitle' | i18n | async }}
-      </h2>
+      <span>{{ 'music.album.listenLabel' | i18n | async }}</span>
+      <h2>{{ 'music.album.listenTitle' | i18n | async }}</h2>
     </header>
 
     @if (tracks().length) {
@@ -78,9 +62,7 @@
         [allowAlbumFilter]="false"
       />
     } @else {
-      <p>
-        {{ 'music.page.noTracks' | i18n | async }}
-      </p>
+      <p>{{ 'music.page.noTracks' | i18n | async }}</p>
     }
   </section>
 </section>

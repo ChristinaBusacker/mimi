@@ -57,3 +57,8 @@ button:disabled {
 :host(.white) a {
   color: var(--color-text);
 }
+
+:host(.font-black) button,
+:host(.font-black) a {
+  color: var(--color-text-inverse);
+}

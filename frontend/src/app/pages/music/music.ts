@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { distinctUntilChanged, of, switchMap } from 'rxjs';
 
+import { Hero } from '../../components/hero/hero';
 import { Icon } from '../../components/icon/icon';
 import { MusicLibraryPlayer } from '../../components/music-library-player/music-library-player';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
@@ -14,7 +15,7 @@ import { type MusicLandingData, MusicPublicService } from '../../core/music/musi
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Icon, I18nPipe, MusicLibraryPlayer, RouterLink],
+  imports: [AsyncPipe, Hero, Icon, I18nPipe, MusicLibraryPlayer, RouterLink],
   selector: 'app-music',
   styleUrl: './music.scss',
   templateUrl: './music.html',

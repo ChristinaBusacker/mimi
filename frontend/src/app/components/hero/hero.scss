@@ -1,0 +1,70 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+
+  &.right-align-center {
+    .right {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  &.right-align-end {
+    .right {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.hero {
+  min-height: 100px;
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+  position: relative;
+  isolation: isolate;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  padding: var(--spacing-md);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: var(--radius-card);
+    background-position: center;
+    background-size: cover;
+    opacity: 0.3;
+  }
+
+  &.music::before {
+    background-image: url('/images/hero-bg-music.png');
+  }
+}
+
+.left,
+.right {
+  flex: 1;
+  min-width: 0;
+}
+
+.right {
+  position: relative;
+  width: 50%;
+}
+
+@include compact-layout {
+  .content {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .right {
+    width: 100%;
+  }
+}
