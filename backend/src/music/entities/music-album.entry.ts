@@ -4,9 +4,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { AssetEntry } from '../../assets/entities/asset.entry';
 
 @Entity('music_albums')
 export class MusicAlbumEntry {
@@ -24,6 +28,15 @@ export class MusicAlbumEntry {
     nullable: true,
   })
   coverAssetId!: string | null;
+
+  @ManyToOne(() => AssetEntry, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({
+    name: 'coverAssetId',
+  })
+  coverAsset!: AssetEntry | null;
 
   @Column({
     type: 'date',

@@ -104,6 +104,16 @@ export class AuthService implements OnApplicationBootstrap {
     );
   }
 
+  async findAuthenticatedUserByUuid(
+    uuid: string,
+  ): Promise<AuthenticatedUser | null> {
+    const user = await this.usersService.findByUuid(uuid);
+
+    return user
+      ? this.toAuthenticatedUser(user)
+      : null;
+  }
+
   toAuthenticatedUser(user: UserEntry): AuthenticatedUser {
     return {
       uuid: user.uuid,

@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { AssetEntry } from '../../assets/entities/asset.entry';
 import { MusicAlbumEntry } from './music-album.entry';
 
 @Entity('music_tracks')
@@ -62,11 +63,29 @@ export class MusicTrackEntry {
   })
   previewAssetId!: string | null;
 
+  @ManyToOne(() => AssetEntry, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({
+    name: 'previewAssetId',
+  })
+  previewAsset!: AssetEntry | null;
+
   @Column({
     type: 'uuid',
     nullable: true,
   })
   coverAssetId!: string | null;
+
+  @ManyToOne(() => AssetEntry, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({
+    name: 'coverAssetId',
+  })
+  coverAsset!: AssetEntry | null;
 
   @Column({
     type: 'text',

@@ -54,6 +54,7 @@ testem.log
 
 # Runtime data
 
+/data/uploads/
 pids/
 *.pid
 *.seed
