@@ -132,6 +132,25 @@ export class MusicAdminController {
     );
   }
 
+  @Patch('albums/:uuid/tracks/publish')
+  @ApiOperation({
+    summary: 'Publish all tracks of a music album',
+  })
+  @ApiOkResponse({
+    type: MusicAdminTrackDto,
+    isArray: true,
+  })
+  @ApiNotFoundResponse({
+    description: 'The album does not exist.',
+  })
+  publishAlbumTracks(
+    @Param('uuid') uuid: string,
+  ): Promise<MusicAdminTrackDto[]> {
+    return this.musicAdminService.publishAlbumTracks(
+      uuid,
+    );
+  }
+
   @Delete('albums/:uuid')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({

@@ -12,6 +12,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -71,6 +72,14 @@ export class AdminAlbumEditor implements OnInit {
   protected readonly trackDropActive = signal(false);
   protected readonly trackOrderSaving = signal(false);
   protected readonly trackErrorKey = signal<string | null>(null);
+  protected readonly trackMessageKey = signal<string | null>(null);
+  protected readonly publishingTracks = signal(false);
+  protected readonly unpublishedTrackCount = computed(
+    () =>
+      this.tracks().filter(
+        (track) => track.status !== 'published',
+      ).length,
+  );
 
   private readonly knownTrackSlugs = new Set<string>();
   private draggedTrackId: string | null = null;
@@ -354,6 +363,41 @@ export class AdminAlbumEditor implements OnInit {
 
   protected endTrackDrag(): void {
     this.draggedTrackId = null;
+  }
+
+  protected async publishAllTracks(): Promise<void> {
+    if (
+      !this.albumId ||
+      this.publishingTracks() ||
+      this.unpublishedTrackCount() === 0
+    ) {
+      return;
+    }
+
+    this.publishingTracks.set(true);
+    this.trackErrorKey.set(null);
+    this.trackMessageKey.set(null);
+
+    try {
+      const tracks = await firstValueFrom(
+        this.music.publishAlbumTracks(
+          this.albumId,
+        ),
+      );
+
+      this.tracks.set(
+        this.sortAlbumTracks(tracks),
+      );
+      this.trackMessageKey.set(
+        'admin.music.albumTracks.publishedAll',
+      );
+    } catch {
+      this.trackErrorKey.set(
+        'admin.music.albumTracks.publishAllFailed',
+      );
+    } finally {
+      this.publishingTracks.set(false);
+    }
   }
 
   protected async save(): Promise<void> {

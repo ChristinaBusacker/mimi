@@ -122,6 +122,23 @@ export class MusicAdminService {
     }
   }
 
+  async publishAlbumTracks(
+    albumUuid: string,
+  ): Promise<MusicAdminTrack[]> {
+    await this.findAlbum(albumUuid);
+
+    await this.trackRepository.update(
+      {
+        albumUuid,
+      },
+      {
+        status: 'published',
+      },
+    );
+
+    return this.getAlbumTracks(albumUuid);
+  }
+
   async reorderAlbumTracks(
     albumUuid: string,
     trackIds: string[],

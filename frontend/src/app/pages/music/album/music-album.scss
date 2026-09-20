@@ -38,7 +38,6 @@
     minmax(180px, 280px)
     minmax(0, 1fr);
   gap: var(--spacing-lg);
-  align-items: end;
   overflow: hidden;
   padding: var(--spacing-lg);
 
@@ -48,13 +47,8 @@
     inset: 0;
     z-index: -1;
     background:
-      linear-gradient(
-        90deg,
-        rgb(36 17 34 / 94%),
-        rgb(36 17 34 / 68%)
-      ),
-      url('/images/hero-bg-music.png')
-        center / cover no-repeat;
+      linear-gradient(90deg, rgb(36 17 34 / 94%), rgb(36 17 34 / 68%)),
+      url('/images/hero-bg-music.png') center / cover no-repeat;
   }
 }
 
@@ -98,12 +92,10 @@
   }
 
   h1 {
-    margin:
-      var(--spacing-xs)
-      0;
+    margin: var(--spacing-xs) 0;
     font-family: var(--font-display);
     font-size: clamp(2.8rem, 7vw, 6rem);
-    line-height: 0.95;
+    line-height: 1.2;
   }
 
   p {

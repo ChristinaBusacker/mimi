@@ -73,6 +73,14 @@
   }
 }
 
+.admin-editor__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
 .admin-editor__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -121,7 +129,15 @@
     }
   }
 
-  .admin-editor__grid {
+  .admin-editor__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.admin-editor__grid {
     grid-template-columns: 1fr;
   }
 }

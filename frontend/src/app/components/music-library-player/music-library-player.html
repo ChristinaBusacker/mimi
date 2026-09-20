@@ -168,7 +168,7 @@
         <span></span>
         <span>{{ 'music.library.song' | i18n | async }}</span>
         <span>{{ 'music.library.album' | i18n | async }}</span>
-        <span>{{ 'music.library.duration' | i18n | async }}</span>
+        <span>{{ 'music.player.previewLength' | i18n | async }}</span>
       </div>
 
       <ol>
@@ -240,7 +240,11 @@
             </div>
 
             <span class="music-library-player__track-duration">
-              {{ formatDuration(track.durationSeconds) }}
+              @if (track.previewAssetId) {
+                {{ formatDuration(track.previewDurationSeconds) }}
+              } @else {
+                –
+              }
             </span>
           </li>
         }

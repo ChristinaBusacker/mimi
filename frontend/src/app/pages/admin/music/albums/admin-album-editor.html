@@ -8,9 +8,41 @@
       </h1>
     </div>
 
-    <a routerLink="/admin/music">
-      {{ 'admin.music.back' | i18n | async }}
-    </a>
+    <div class="admin-editor__header-actions">
+      @if (albumId) {
+        <app-button
+          class="secondary round"
+          [disabled]="
+            loading() ||
+            publishingTracks() ||
+            trackUploading() ||
+            trackOrderSaving() ||
+            unpublishedTrackCount() === 0
+          "
+          (click)="publishAllTracks()"
+        >
+          {{
+            (publishingTracks()
+              ? 'admin.music.albumTracks.publishingAll'
+              : 'admin.music.albumTracks.publishAll')
+              | i18n
+              | async
+          }}
+        </app-button>
+      }
+
+      <app-button
+        class="primary round"
+        [disabled]="loading() || saving()"
+        (click)="save()"
+      >
+        {{ 'admin.music.save' | i18n | async }}
+      </app-button>
+
+      <a routerLink="/admin/music">
+        {{ 'admin.music.back' | i18n | async }}
+      </a>
+    </div>
   </header>
 
   @if (loading()) {
@@ -126,6 +158,15 @@
                 role="alert"
               >
                 {{ trackError | i18n | async }}
+              </p>
+            }
+
+            @if (trackMessageKey(); as trackMessage) {
+              <p
+                class="admin-editor__message"
+                role="status"
+              >
+                {{ trackMessage | i18n | async }}
               </p>
             }
 

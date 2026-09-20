@@ -74,6 +74,18 @@ export class AdminMusicService {
     );
   }
 
+  publishAlbumTracks(
+    albumId: string,
+  ): Observable<MusicAdminTrack[]> {
+    return this.request.patch<
+      MusicAdminTrack[],
+      Record<string, never>
+    >(
+      `/admin/music/albums/${albumId}/tracks/publish`,
+      {},
+    );
+  }
+
   getTracks(): Observable<MusicAdminTrack[]> {
     return this.request.get<MusicAdminTrack[]>(
       '/admin/music/tracks',

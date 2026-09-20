@@ -1,0 +1,24 @@
+{
+  "localizations": [
+    {
+      "key": "admin.music.albumTracks.publishAll",
+      "de": "Alle Songs veröffentlichen",
+      "en": "Publish all songs"
+    },
+    {
+      "key": "admin.music.albumTracks.publishingAll",
+      "de": "Songs werden veröffentlicht …",
+      "en": "Publishing songs …"
+    },
+    {
+      "key": "admin.music.albumTracks.publishedAll",
+      "de": "Alle Songs des Albums sind veröffentlicht.",
+      "en": "All songs on the album are published."
+    },
+    {
+      "key": "admin.music.albumTracks.publishAllFailed",
+      "de": "Die Songs konnten nicht gemeinsam veröffentlicht werden.",
+      "en": "The songs could not be published together."
+    }
+  ]
+}
