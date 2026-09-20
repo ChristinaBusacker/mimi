@@ -115,6 +115,18 @@ export class AssetsService {
     return assets.map((asset) => this.mapAsset(asset));
   }
 
+  async getById(uuid: string): Promise<Asset> {
+    const asset = await this.repository.findOneBy({
+      uuid,
+    });
+
+    if (!asset) {
+      throw new NotFoundException(`Asset "${uuid}" not found.`);
+    }
+
+    return this.mapAsset(asset);
+  }
+
   async resolveFile(uuid: string): Promise<ResolvedAssetFile> {
     const asset = await this.repository.findOneBy({
       uuid,

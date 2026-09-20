@@ -1,0 +1,137 @@
+<section class="admin-editor">
+  <header>
+    <div>
+      <h1>
+        {{
+          (albumId
+            ? 'admin.music.album.editTitle'
+            : 'admin.music.album.createTitle')
+            | i18n
+            | async
+        }}
+      </h1>
+    </div>
+
+    <a routerLink="/admin/music">
+      {{ 'admin.music.back' | i18n | async }}
+    </a>
+  </header>
+
+  @if (loading()) {
+    <p>{{ 'admin.music.loading' | i18n | async }}</p>
+  } @else {
+    @if (errorKey(); as error) {
+      <p
+        class="admin-editor__message admin-editor__message--error"
+        role="alert"
+      >
+        {{ error | i18n | async }}
+      </p>
+    }
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="save()"
+    >
+      <fieldset>
+        <legend>{{ 'admin.music.general' | i18n | async }}</legend>
+
+        <div class="admin-editor__grid">
+          <label>
+            <span>{{ 'admin.music.slug' | i18n | async }}</span>
+            <input
+              type="text"
+              formControlName="slug"
+              autocomplete="off"
+            />
+          </label>
+
+          <label>
+            <span>{{ 'admin.music.status' | i18n | async }}</span>
+            <select formControlName="status">
+              <option value="draft">
+                {{ 'admin.music.status.draft' | i18n | async }}
+              </option>
+              <option value="published">
+                {{ 'admin.music.status.published' | i18n | async }}
+              </option>
+            </select>
+          </label>
+
+          <label>
+            <span>{{ 'admin.music.releaseDate' | i18n | async }}</span>
+            <input
+              type="date"
+              formControlName="releasedAt"
+            />
+          </label>
+
+          <label>
+            <span>{{ 'admin.music.cover' | i18n | async }}</span>
+            <select formControlName="coverAssetId">
+              <option value="">
+                {{ 'admin.music.asset.none' | i18n | async }}
+              </option>
+
+              @for (asset of images(); track asset.id) {
+                <option [value]="asset.id">
+                  {{ asset.originalFilename }}
+                </option>
+              }
+            </select>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>{{ 'admin.music.language.de' | i18n | async }}</legend>
+
+        <label>
+          <span>{{ 'admin.music.titleField' | i18n | async }}</span>
+          <input
+            type="text"
+            formControlName="titleDe"
+          />
+        </label>
+
+        <label>
+          <span>{{ 'admin.music.contentMarkdown' | i18n | async }}</span>
+          <textarea formControlName="contentDe"></textarea>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>{{ 'admin.music.language.en' | i18n | async }}</legend>
+
+        <label>
+          <span>{{ 'admin.music.titleField' | i18n | async }}</span>
+          <input
+            type="text"
+            formControlName="titleEn"
+          />
+        </label>
+
+        <label>
+          <span>{{ 'admin.music.contentMarkdown' | i18n | async }}</span>
+          <textarea formControlName="contentEn"></textarea>
+        </label>
+      </fieldset>
+
+      <div class="admin-editor__actions">
+        <app-button
+          class="primary round"
+          type="submit"
+          [disabled]="saving()"
+        >
+          {{ 'admin.music.save' | i18n | async }}
+        </app-button>
+
+        @if (saved()) {
+          <p class="admin-editor__message">
+            {{ 'admin.music.saved' | i18n | async }}
+          </p>
+        }
+      </div>
+    </form>
+  }
+</section>

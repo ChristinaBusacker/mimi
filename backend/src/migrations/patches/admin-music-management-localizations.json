@@ -1,0 +1,249 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.music",
+      "de": "Musik",
+      "en": "Music"
+    },
+    {
+      "key": "admin.dashboard.description",
+      "de": "Hier verwaltest du die Inhalte der Website.",
+      "en": "Manage the website content here."
+    },
+    {
+      "key": "admin.music.title",
+      "de": "Musik verwalten",
+      "en": "Manage music"
+    },
+    {
+      "key": "admin.music.description",
+      "de": "Verwalte Alben, Tracks, Veröffentlichungsstatus und die lokalisierten Inhalte.",
+      "en": "Manage albums, tracks, publication status, and localized content."
+    },
+    {
+      "key": "admin.music.loading",
+      "de": "Inhalte werden geladen …",
+      "en": "Loading content …"
+    },
+    {
+      "key": "admin.music.loadFailed",
+      "de": "Die Musikdaten konnten nicht geladen werden.",
+      "en": "The music data could not be loaded."
+    },
+    {
+      "key": "admin.music.albums.title",
+      "de": "Alben",
+      "en": "Albums"
+    },
+    {
+      "key": "admin.music.albums.create",
+      "de": "Album anlegen",
+      "en": "Create album"
+    },
+    {
+      "key": "admin.music.albums.empty",
+      "de": "Noch keine Alben vorhanden.",
+      "en": "No albums yet."
+    },
+    {
+      "key": "admin.music.tracks.title",
+      "de": "Tracks",
+      "en": "Tracks"
+    },
+    {
+      "key": "admin.music.tracks.create",
+      "de": "Track anlegen",
+      "en": "Create track"
+    },
+    {
+      "key": "admin.music.tracks.empty",
+      "de": "Noch keine Tracks vorhanden.",
+      "en": "No tracks yet."
+    },
+    {
+      "key": "admin.music.edit",
+      "de": "Bearbeiten",
+      "en": "Edit"
+    },
+    {
+      "key": "admin.music.delete",
+      "de": "Löschen",
+      "en": "Delete"
+    },
+    {
+      "key": "admin.music.deleteConfirm",
+      "de": "Wirklich löschen",
+      "en": "Delete permanently"
+    },
+    {
+      "key": "admin.music.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.music.status.draft",
+      "de": "Entwurf",
+      "en": "Draft"
+    },
+    {
+      "key": "admin.music.status.published",
+      "de": "Veröffentlicht",
+      "en": "Published"
+    },
+    {
+      "key": "admin.music.album.createTitle",
+      "de": "Album anlegen",
+      "en": "Create album"
+    },
+    {
+      "key": "admin.music.album.editTitle",
+      "de": "Album bearbeiten",
+      "en": "Edit album"
+    },
+    {
+      "key": "admin.music.track.createTitle",
+      "de": "Track anlegen",
+      "en": "Create track"
+    },
+    {
+      "key": "admin.music.track.editTitle",
+      "de": "Track bearbeiten",
+      "en": "Edit track"
+    },
+    {
+      "key": "admin.music.back",
+      "de": "Zurück zur Musikverwaltung",
+      "en": "Back to music management"
+    },
+    {
+      "key": "admin.music.general",
+      "de": "Allgemein",
+      "en": "General"
+    },
+    {
+      "key": "admin.music.links",
+      "de": "Links",
+      "en": "Links"
+    },
+    {
+      "key": "admin.music.slug",
+      "de": "Slug",
+      "en": "Slug"
+    },
+    {
+      "key": "admin.music.status",
+      "de": "Status",
+      "en": "Status"
+    },
+    {
+      "key": "admin.music.releaseDate",
+      "de": "Veröffentlichungsdatum",
+      "en": "Release date"
+    },
+    {
+      "key": "admin.music.cover",
+      "de": "Cover",
+      "en": "Cover"
+    },
+    {
+      "key": "admin.music.asset.none",
+      "de": "Kein Asset",
+      "en": "No asset"
+    },
+    {
+      "key": "admin.music.album",
+      "de": "Album",
+      "en": "Album"
+    },
+    {
+      "key": "admin.music.album.none",
+      "de": "Kein Album",
+      "en": "No album"
+    },
+    {
+      "key": "admin.music.trackNumber",
+      "de": "Tracknummer",
+      "en": "Track number"
+    },
+    {
+      "key": "admin.music.duration",
+      "de": "Trackdauer in Sekunden",
+      "en": "Track duration in seconds"
+    },
+    {
+      "key": "admin.music.previewDuration",
+      "de": "Preview-Dauer in Sekunden",
+      "en": "Preview duration in seconds"
+    },
+    {
+      "key": "admin.music.previewAudio",
+      "de": "Preview-Audio",
+      "en": "Preview audio"
+    },
+    {
+      "key": "admin.music.spotify",
+      "de": "Spotify-URL",
+      "en": "Spotify URL"
+    },
+    {
+      "key": "admin.music.deezer",
+      "de": "Deezer-URL",
+      "en": "Deezer URL"
+    },
+    {
+      "key": "admin.music.support",
+      "de": "Direkter Support / Kauf-URL",
+      "en": "Direct support / purchase URL"
+    },
+    {
+      "key": "admin.music.language.de",
+      "de": "Deutsch",
+      "en": "German"
+    },
+    {
+      "key": "admin.music.language.en",
+      "de": "Englisch",
+      "en": "English"
+    },
+    {
+      "key": "admin.music.titleField",
+      "de": "Titel",
+      "en": "Title"
+    },
+    {
+      "key": "admin.music.contentMarkdown",
+      "de": "Inhalt (Markdown)",
+      "en": "Content (Markdown)"
+    },
+    {
+      "key": "admin.music.save",
+      "de": "Speichern",
+      "en": "Save"
+    },
+    {
+      "key": "admin.music.saved",
+      "de": "Gespeichert.",
+      "en": "Saved."
+    },
+    {
+      "key": "admin.music.editor.loadFailed",
+      "de": "Die Daten konnten nicht geladen werden.",
+      "en": "The data could not be loaded."
+    },
+    {
+      "key": "admin.music.editor.saveFailed",
+      "de": "Die Änderungen konnten nicht gespeichert werden.",
+      "en": "The changes could not be saved."
+    },
+    {
+      "key": "admin.music.editor.englishTitleRequired",
+      "de": "Wenn englischer Inhalt vorhanden ist, braucht die englische Version auch einen Titel.",
+      "en": "English content also requires an English title."
+    },
+    {
+      "key": "admin.music.editor.previewTooLong",
+      "de": "Die Preview darf nicht länger als der vollständige Track sein.",
+      "en": "The preview cannot be longer than the full track."
+    }
+  ]
+}

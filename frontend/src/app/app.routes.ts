@@ -66,6 +66,41 @@ export const routes: Routes = [
             (module) => module.AdminDashboard,
           ),
       },
+      {
+        path: 'music',
+        loadComponent: () =>
+          import('./pages/admin/music/admin-music').then(
+            (module) => module.AdminMusic,
+          ),
+      },
+      {
+        path: 'music/albums/new',
+        loadComponent: () =>
+          import('./pages/admin/music/albums/admin-album-editor').then(
+            (module) => module.AdminAlbumEditor,
+          ),
+      },
+      {
+        path: 'music/albums/:id',
+        loadComponent: () =>
+          import('./pages/admin/music/albums/admin-album-editor').then(
+            (module) => module.AdminAlbumEditor,
+          ),
+      },
+      {
+        path: 'music/tracks/new',
+        loadComponent: () =>
+          import('./pages/admin/music/tracks/admin-track-editor').then(
+            (module) => module.AdminTrackEditor,
+          ),
+      },
+      {
+        path: 'music/tracks/:id',
+        loadComponent: () =>
+          import('./pages/admin/music/tracks/admin-track-editor').then(
+            (module) => module.AdminTrackEditor,
+          ),
+      },
     ],
   },
 ];

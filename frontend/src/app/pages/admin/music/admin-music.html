@@ -1,0 +1,136 @@
+<section class="admin-music">
+  <header class="admin-music__header">
+    <div>
+      <h1>{{ 'admin.music.title' | i18n | async }}</h1>
+      <p>{{ 'admin.music.description' | i18n | async }}</p>
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="admin-music__error" role="alert">
+      {{ 'admin.music.loadFailed' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.music.loading' | i18n | async }}</p>
+  } @else {
+    <section class="admin-music__section">
+      <header>
+        <h2>{{ 'admin.music.albums.title' | i18n | async }}</h2>
+
+        <a
+          class="admin-music__primary-action"
+          routerLink="/admin/music/albums/new"
+        >
+          {{ 'admin.music.albums.create' | i18n | async }}
+        </a>
+      </header>
+
+      @if (albums().length) {
+        <div class="admin-music__list">
+          @for (album of albums(); track album.id) {
+            <article class="admin-music__item">
+              <div>
+                <strong>{{ albumTitle(album) }}</strong>
+                <span>{{ album.slug }}</span>
+                <small>
+                  {{ ('admin.music.status.' + album.status) | i18n | async }}
+                </small>
+              </div>
+
+              <div class="admin-music__item-actions">
+                <a [routerLink]="['/admin/music/albums', album.id]">
+                  {{ 'admin.music.edit' | i18n | async }}
+                </a>
+
+                @if (confirmingAlbumId() === album.id) {
+                  <button
+                    type="button"
+                    (click)="deleteAlbum(album.id)"
+                  >
+                    {{ 'admin.music.deleteConfirm' | i18n | async }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="confirmingAlbumId.set(null)"
+                  >
+                    {{ 'admin.music.cancel' | i18n | async }}
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="confirmingAlbumId.set(album.id)"
+                  >
+                    {{ 'admin.music.delete' | i18n | async }}
+                  </button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <p>{{ 'admin.music.albums.empty' | i18n | async }}</p>
+      }
+    </section>
+
+    <section class="admin-music__section">
+      <header>
+        <h2>{{ 'admin.music.tracks.title' | i18n | async }}</h2>
+
+        <a
+          class="admin-music__primary-action"
+          routerLink="/admin/music/tracks/new"
+        >
+          {{ 'admin.music.tracks.create' | i18n | async }}
+        </a>
+      </header>
+
+      @if (tracks().length) {
+        <div class="admin-music__list">
+          @for (track of tracks(); track track.id) {
+            <article class="admin-music__item">
+              <div>
+                <strong>{{ trackTitle(track) }}</strong>
+                <span>{{ track.slug }}</span>
+                <small>
+                  {{ ('admin.music.status.' + track.status) | i18n | async }}
+                </small>
+              </div>
+
+              <div class="admin-music__item-actions">
+                <a [routerLink]="['/admin/music/tracks', track.id]">
+                  {{ 'admin.music.edit' | i18n | async }}
+                </a>
+
+                @if (confirmingTrackId() === track.id) {
+                  <button
+                    type="button"
+                    (click)="deleteTrack(track.id)"
+                  >
+                    {{ 'admin.music.deleteConfirm' | i18n | async }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="confirmingTrackId.set(null)"
+                  >
+                    {{ 'admin.music.cancel' | i18n | async }}
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="confirmingTrackId.set(track.id)"
+                  >
+                    {{ 'admin.music.delete' | i18n | async }}
+                  </button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <p>{{ 'admin.music.tracks.empty' | i18n | async }}</p>
+      }
+    </section>
+  }
+</section>
