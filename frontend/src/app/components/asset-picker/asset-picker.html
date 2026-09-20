@@ -1,0 +1,278 @@
+<div class="asset-picker">
+  <span class="asset-picker__label">
+    {{ label() }}
+  </span>
+
+  @if (selectedAsset(); as asset) {
+    <div class="asset-picker__selection">
+      @if (asset.type === 'image') {
+        <img
+          [src]="asset.url"
+          [alt]="asset.originalFilename"
+        />
+      } @else {
+        <div class="asset-picker__audio-selection">
+          <strong>{{ asset.originalFilename }}</strong>
+          <audio
+            controls
+            preload="metadata"
+            [src]="asset.url"
+          ></audio>
+        </div>
+      }
+
+      <div class="asset-picker__selection-meta">
+        <strong>{{ asset.originalFilename }}</strong>
+        <span>
+          {{ asset.createdAt | date:'mediumDate' }}
+          ·
+          {{ formatSize(asset.sizeBytes) }}
+        </span>
+      </div>
+    </div>
+  } @else {
+    <p class="asset-picker__empty">
+      {{ 'admin.assetPicker.noneSelected' | i18n | async }}
+    </p>
+  }
+
+  <div class="asset-picker__actions">
+    <button
+      type="button"
+      class="asset-picker__primary"
+      [disabled]="isDisabled()"
+      (click)="open()"
+    >
+      {{ buttonLabel() }}
+    </button>
+
+    @if (selectedAsset()) {
+      <button
+        type="button"
+        class="asset-picker__secondary"
+        [disabled]="isDisabled()"
+        (click)="clearSelection()"
+      >
+        {{ 'admin.assetPicker.clear' | i18n | async }}
+      </button>
+    }
+  </div>
+</div>
+
+<dialog
+  #dialog
+  class="asset-picker-dialog"
+  [class.asset-picker-dialog--dragging]="dragActive()"
+  (close)="onDialogClosed()"
+  (dragenter)="onDragEnter($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <div class="asset-picker-dialog__body">
+    <header>
+      <div>
+        <h2>
+          {{
+            (type() === 'image'
+              ? 'admin.assetPicker.imageTitle'
+              : 'admin.assetPicker.audioTitle')
+              | i18n
+              | async
+          }}
+        </h2>
+        <p>
+          {{
+            (type() === 'image'
+              ? 'admin.assetPicker.imageDescription'
+              : 'admin.assetPicker.audioDescription')
+              | i18n
+              | async
+          }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="asset-picker-dialog__close"
+        [attr.aria-label]="'admin.assetPicker.close' | i18n | async"
+        (click)="close()"
+      >
+        ×
+      </button>
+    </header>
+
+    <div class="asset-picker-dialog__controls">
+      <label class="asset-picker-dialog__search">
+        <span>{{ 'admin.assetPicker.search' | i18n | async }}</span>
+        <input
+          type="search"
+          [value]="search()"
+          [placeholder]="'admin.assetPicker.searchPlaceholder' | i18n | async"
+          (input)="setSearch($event)"
+        />
+      </label>
+
+      <label>
+        <span>{{ 'admin.assetPicker.sort' | i18n | async }}</span>
+        <select
+          [value]="sort()"
+          (change)="setSort($event)"
+        >
+          <option value="newest">
+            {{ 'admin.assetPicker.sort.newest' | i18n | async }}
+          </option>
+          <option value="oldest">
+            {{ 'admin.assetPicker.sort.oldest' | i18n | async }}
+          </option>
+          <option value="nameAsc">
+            {{ 'admin.assetPicker.sort.nameAsc' | i18n | async }}
+          </option>
+          <option value="nameDesc">
+            {{ 'admin.assetPicker.sort.nameDesc' | i18n | async }}
+          </option>
+        </select>
+      </label>
+
+      <label class="asset-picker-dialog__upload">
+        <input
+          type="file"
+          [accept]="accept()"
+          [disabled]="uploading()"
+          (change)="uploadFromInput($event)"
+        />
+
+        <span>
+          {{
+            (uploading()
+              ? 'admin.assetPicker.uploading'
+              : 'admin.assetPicker.upload')
+              | i18n
+              | async
+          }}
+        </span>
+      </label>
+    </div>
+
+    @if (errorKey(); as error) {
+      <p
+        class="asset-picker-dialog__error"
+        role="alert"
+      >
+        {{ error | i18n | async }}
+      </p>
+    }
+
+    @if (loading()) {
+      <p>{{ 'admin.assetPicker.loading' | i18n | async }}</p>
+    } @else if (filteredAssets().length === 0) {
+      <div class="asset-picker-dialog__empty">
+        <strong>{{ 'admin.assetPicker.empty' | i18n | async }}</strong>
+        <span>{{ 'admin.assetPicker.dropHint' | i18n | async }}</span>
+      </div>
+    } @else {
+      <div
+        class="asset-picker-dialog__library"
+        [class.asset-picker-dialog__library--images]="type() === 'image'"
+      >
+        @for (asset of filteredAssets(); track asset.id) {
+          <article
+            class="asset-picker-dialog__asset"
+            [class.asset-picker-dialog__asset--selected]="selectedId() === asset.id"
+          >
+            @if (asset.type === 'image') {
+              <button
+                type="button"
+                class="asset-picker-dialog__preview-button"
+                (click)="select(asset)"
+              >
+                <img
+                  [src]="asset.url"
+                  [alt]="asset.originalFilename"
+                  loading="lazy"
+                />
+              </button>
+            } @else {
+              <audio
+                controls
+                preload="metadata"
+                [src]="asset.url"
+              ></audio>
+            }
+
+            <div class="asset-picker-dialog__asset-meta">
+              <strong [title]="asset.originalFilename">
+                {{ asset.originalFilename }}
+              </strong>
+              <span>
+                {{ asset.createdAt | date:'mediumDate' }}
+                ·
+                {{ formatSize(asset.sizeBytes) }}
+              </span>
+            </div>
+
+            <div class="asset-picker-dialog__asset-actions">
+              @if (asset.type === 'audio') {
+                <button
+                  type="button"
+                  class="asset-picker-dialog__select"
+                  (click)="select(asset)"
+                >
+                  {{ 'admin.assetPicker.select' | i18n | async }}
+                </button>
+              }
+
+              @if (confirmingDeleteId() === asset.id) {
+                <p class="asset-picker-dialog__delete-warning">
+                  {{ 'admin.assetPicker.deleteWarning' | i18n | async }}
+                </p>
+
+                <button
+                  type="button"
+                  class="asset-picker-dialog__delete-confirm"
+                  [disabled]="deletingId() === asset.id"
+                  (click)="deleteAsset(asset)"
+                >
+                  {{ 'admin.assetPicker.deleteConfirm' | i18n | async }}
+                </button>
+
+                <button
+                  type="button"
+                  (click)="cancelDelete()"
+                >
+                  {{ 'admin.assetPicker.cancel' | i18n | async }}
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  class="asset-picker-dialog__delete"
+                  (click)="requestDelete(asset)"
+                >
+                  {{ 'admin.assetPicker.delete' | i18n | async }}
+                </button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+    <p class="asset-picker-dialog__drop-note">
+      {{ 'admin.assetPicker.dropHint' | i18n | async }}
+    </p>
+  </div>
+
+  @if (dragActive()) {
+    <div class="asset-picker-dialog__drop-overlay">
+      <strong>
+        {{
+          (type() === 'image'
+            ? 'admin.assetPicker.dropImage'
+            : 'admin.assetPicker.dropAudio')
+            | i18n
+            | async
+        }}
+      </strong>
+    </div>
+  }
+</dialog>

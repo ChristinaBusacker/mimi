@@ -3,11 +3,7 @@
     <div>
       <h1>
         {{
-          (trackId
-            ? 'admin.music.track.editTitle'
-            : 'admin.music.track.createTitle')
-            | i18n
-            | async
+          (trackId ? 'admin.music.track.editTitle' : 'admin.music.track.createTitle') | i18n | async
         }}
       </h1>
     </div>
@@ -21,29 +17,19 @@
     <p>{{ 'admin.music.loading' | i18n | async }}</p>
   } @else {
     @if (errorKey(); as error) {
-      <p
-        class="admin-editor__message admin-editor__message--error"
-        role="alert"
-      >
+      <p class="admin-editor__message admin-editor__message--error" role="alert">
         {{ error | i18n | async }}
       </p>
     }
 
-    <form
-      [formGroup]="form"
-      (ngSubmit)="save()"
-    >
+    <form [formGroup]="form" (ngSubmit)="save()">
       <fieldset>
         <legend>{{ 'admin.music.general' | i18n | async }}</legend>
 
         <div class="admin-editor__grid">
           <label>
             <span>{{ 'admin.music.slug' | i18n | async }}</span>
-            <input
-              type="text"
-              formControlName="slug"
-              autocomplete="off"
-            />
+            <input type="text" formControlName="slug" autocomplete="off" />
           </label>
 
           <label>
@@ -75,60 +61,38 @@
 
           <label>
             <span>{{ 'admin.music.trackNumber' | i18n | async }}</span>
-            <input
-              type="number"
-              min="1"
-              formControlName="trackNumber"
-            />
+            <input type="number" min="1" formControlName="trackNumber" />
           </label>
 
           <label>
             <span>{{ 'admin.music.duration' | i18n | async }}</span>
-            <input
-              type="number"
-              min="1"
-              formControlName="durationSeconds"
-            />
+            <input type="number" min="1" formControlName="durationSeconds" />
           </label>
 
           <label>
             <span>{{ 'admin.music.previewDuration' | i18n | async }}</span>
-            <input
-              type="number"
-              min="1"
-              formControlName="previewDurationSeconds"
-            />
+            <input type="number" min="1" formControlName="previewDurationSeconds" />
           </label>
 
-          <label>
-            <span>{{ 'admin.music.cover' | i18n | async }}</span>
-            <select formControlName="coverAssetId">
-              <option value="">
-                {{ 'admin.music.asset.none' | i18n | async }}
-              </option>
+          <app-asset-picker
+            type="image"
+            formControlName="coverAssetId"
+            [label]="('admin.music.cover' | i18n | async) || ''"
+            [buttonLabel]="('admin.assetPicker.coverButton' | i18n | async) || ''"
+            [assets]="images()"
+            (assetUploaded)="addImage($event)"
+            (assetDeleted)="removeImage($event)"
+          />
 
-              @for (asset of images(); track asset.id) {
-                <option [value]="asset.id">
-                  {{ asset.originalFilename }}
-                </option>
-              }
-            </select>
-          </label>
-
-          <label>
-            <span>{{ 'admin.music.previewAudio' | i18n | async }}</span>
-            <select formControlName="previewAssetId">
-              <option value="">
-                {{ 'admin.music.asset.none' | i18n | async }}
-              </option>
-
-              @for (asset of audio(); track asset.id) {
-                <option [value]="asset.id">
-                  {{ asset.originalFilename }}
-                </option>
-              }
-            </select>
-          </label>
+          <app-asset-picker
+            type="audio"
+            formControlName="previewAssetId"
+            [label]="('admin.music.previewAudio' | i18n | async) || ''"
+            [buttonLabel]="('admin.assetPicker.audioButton' | i18n | async) || ''"
+            [assets]="audio()"
+            (assetUploaded)="addAudio($event)"
+            (assetDeleted)="removeAudio($event)"
+          />
         </div>
       </fieldset>
 
@@ -138,26 +102,17 @@
         <div class="admin-editor__grid">
           <label>
             <span>{{ 'admin.music.spotify' | i18n | async }}</span>
-            <input
-              type="url"
-              formControlName="spotifyUrl"
-            />
+            <input type="url" formControlName="spotifyUrl" />
           </label>
 
           <label>
             <span>{{ 'admin.music.deezer' | i18n | async }}</span>
-            <input
-              type="url"
-              formControlName="deezerUrl"
-            />
+            <input type="url" formControlName="deezerUrl" />
           </label>
 
           <label>
             <span>{{ 'admin.music.support' | i18n | async }}</span>
-            <input
-              type="url"
-              formControlName="supportUrl"
-            />
+            <input type="url" formControlName="supportUrl" />
           </label>
         </div>
       </fieldset>
@@ -167,10 +122,7 @@
 
         <label>
           <span>{{ 'admin.music.titleField' | i18n | async }}</span>
-          <input
-            type="text"
-            formControlName="titleDe"
-          />
+          <input type="text" formControlName="titleDe" />
         </label>
 
         <app-markdown-editor
@@ -186,10 +138,7 @@
 
         <label>
           <span>{{ 'admin.music.titleField' | i18n | async }}</span>
-          <input
-            type="text"
-            formControlName="titleEn"
-          />
+          <input type="text" formControlName="titleEn" />
         </label>
 
         <app-markdown-editor
@@ -201,11 +150,7 @@
       </fieldset>
 
       <div class="admin-editor__actions">
-        <app-button
-          class="primary round"
-          type="submit"
-          [disabled]="saving()"
-        >
+        <app-button class="primary round" type="submit" [disabled]="saving()">
           {{ 'admin.music.save' | i18n | async }}
         </app-button>
 

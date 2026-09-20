@@ -26,6 +26,7 @@ import {
 } from '@angular/router';
 import { firstValueFrom, forkJoin } from 'rxjs';
 
+import { AssetPicker } from '../../../../components/asset-picker/asset-picker';
 import { Button } from '../../../../components/button/button';
 import { MarkdownEditor } from '../../../../components/markdown-editor/markdown-editor';
 import { AdminAssetsService } from '../../../../core/assets/admin-assets.service';
@@ -36,6 +37,7 @@ import { AdminMusicService } from '../../../../core/music/admin-music.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AsyncPipe,
+    AssetPicker,
     Button,
     I18nPipe,
     MarkdownEditor,
@@ -129,6 +131,16 @@ export class AdminAlbumEditor implements OnInit {
             candidate.id !== asset.id,
         ),
       ],
+    );
+  }
+
+  protected removeImage(assetId: string): void {
+    this.images.update(
+      (images) =>
+        images.filter(
+          (asset) =>
+            asset.id !== assetId,
+        ),
     );
   }
 

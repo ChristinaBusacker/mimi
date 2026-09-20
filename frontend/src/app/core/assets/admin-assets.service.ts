@@ -37,4 +37,10 @@ export class AdminAssetsService {
       body,
     );
   }
+
+  delete(id: string): Observable<void> {
+    return this.request.delete<void>(
+      `/admin/assets/${id}`,
+    );
+  }
 }

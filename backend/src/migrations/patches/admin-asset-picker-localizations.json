@@ -1,0 +1,169 @@
+{
+  "localizations": [
+    {
+      "key": "admin.assetPicker.coverButton",
+      "de": "Cover auswählen / hochladen",
+      "en": "Select / upload cover"
+    },
+    {
+      "key": "admin.assetPicker.audioButton",
+      "de": "Song auswählen / hochladen",
+      "en": "Select / upload song"
+    },
+    {
+      "key": "admin.assetPicker.noneSelected",
+      "de": "Noch nichts ausgewählt.",
+      "en": "Nothing selected yet."
+    },
+    {
+      "key": "admin.assetPicker.clear",
+      "de": "Auswahl entfernen",
+      "en": "Clear selection"
+    },
+    {
+      "key": "admin.assetPicker.imageTitle",
+      "de": "Cover auswählen",
+      "en": "Select cover"
+    },
+    {
+      "key": "admin.assetPicker.audioTitle",
+      "de": "Preview-Audio auswählen",
+      "en": "Select preview audio"
+    },
+    {
+      "key": "admin.assetPicker.imageDescription",
+      "de": "Wähle ein vorhandenes Bild oder lade ein neues hoch.",
+      "en": "Select an existing image or upload a new one."
+    },
+    {
+      "key": "admin.assetPicker.audioDescription",
+      "de": "Wähle eine vorhandene Hörprobe oder lade eine neue hoch.",
+      "en": "Select an existing preview or upload a new one."
+    },
+    {
+      "key": "admin.assetPicker.close",
+      "de": "Dialog schließen",
+      "en": "Close dialog"
+    },
+    {
+      "key": "admin.assetPicker.search",
+      "de": "Filtern",
+      "en": "Filter"
+    },
+    {
+      "key": "admin.assetPicker.searchPlaceholder",
+      "de": "Nach Dateiname suchen …",
+      "en": "Search by filename …"
+    },
+    {
+      "key": "admin.assetPicker.sort",
+      "de": "Sortieren",
+      "en": "Sort"
+    },
+    {
+      "key": "admin.assetPicker.sort.newest",
+      "de": "Neueste zuerst",
+      "en": "Newest first"
+    },
+    {
+      "key": "admin.assetPicker.sort.oldest",
+      "de": "Älteste zuerst",
+      "en": "Oldest first"
+    },
+    {
+      "key": "admin.assetPicker.sort.nameAsc",
+      "de": "Dateiname A–Z",
+      "en": "Filename A–Z"
+    },
+    {
+      "key": "admin.assetPicker.sort.nameDesc",
+      "de": "Dateiname Z–A",
+      "en": "Filename Z–A"
+    },
+    {
+      "key": "admin.assetPicker.upload",
+      "de": "Datei hochladen",
+      "en": "Upload file"
+    },
+    {
+      "key": "admin.assetPicker.uploading",
+      "de": "Wird hochgeladen …",
+      "en": "Uploading …"
+    },
+    {
+      "key": "admin.assetPicker.loading",
+      "de": "Assets werden geladen …",
+      "en": "Loading assets …"
+    },
+    {
+      "key": "admin.assetPicker.empty",
+      "de": "Keine passenden Assets gefunden.",
+      "en": "No matching assets found."
+    },
+    {
+      "key": "admin.assetPicker.dropHint",
+      "de": "Du kannst eine Datei auch direkt auf diesen Dialog ziehen.",
+      "en": "You can also drag a file directly onto this dialog."
+    },
+    {
+      "key": "admin.assetPicker.dropImage",
+      "de": "Bild hier ablegen und direkt auswählen",
+      "en": "Drop image here to upload and select it"
+    },
+    {
+      "key": "admin.assetPicker.dropAudio",
+      "de": "Audiodatei hier ablegen und direkt auswählen",
+      "en": "Drop audio file here to upload and select it"
+    },
+    {
+      "key": "admin.assetPicker.select",
+      "de": "Auswählen",
+      "en": "Select"
+    },
+    {
+      "key": "admin.assetPicker.delete",
+      "de": "Löschen",
+      "en": "Delete"
+    },
+    {
+      "key": "admin.assetPicker.deleteConfirm",
+      "de": "Dauerhaft löschen",
+      "en": "Delete permanently"
+    },
+    {
+      "key": "admin.assetPicker.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.assetPicker.deleteWarning",
+      "de": "Das Asset wird dauerhaft gelöscht. Verwendungen als Cover, Preview oder in Inhalten können danach fehlen.",
+      "en": "This permanently deletes the asset. Covers, previews, or content using it may then be missing."
+    },
+    {
+      "key": "admin.assetPicker.loadFailed",
+      "de": "Die Asset-Bibliothek konnte nicht geladen werden.",
+      "en": "The asset library could not be loaded."
+    },
+    {
+      "key": "admin.assetPicker.uploadFailed",
+      "de": "Die Datei konnte nicht hochgeladen werden.",
+      "en": "The file could not be uploaded."
+    },
+    {
+      "key": "admin.assetPicker.deleteFailed",
+      "de": "Das Asset konnte nicht gelöscht werden.",
+      "en": "The asset could not be deleted."
+    },
+    {
+      "key": "admin.assetPicker.singleFileOnly",
+      "de": "Bitte immer nur eine Datei gleichzeitig ablegen.",
+      "en": "Please drop only one file at a time."
+    },
+    {
+      "key": "admin.assetPicker.wrongType",
+      "de": "Die hochgeladene Datei hat nicht den erwarteten Asset-Typ.",
+      "en": "The uploaded file does not have the expected asset type."
+    }
+  ]
+}
