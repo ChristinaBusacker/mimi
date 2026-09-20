@@ -1,0 +1,287 @@
+<section class="music-library-player">
+  <audio
+    #audio
+    preload="metadata"
+    (timeupdate)="onTimeUpdate($event)"
+    (play)="onPlay()"
+    (pause)="onPause()"
+    (ended)="onEnded()"
+  ></audio>
+
+  @if (activeAlbum(); as album) {
+    <div class="music-library-player__filter">
+      <button
+        type="button"
+        (click)="clearAlbumFilter()"
+      >
+        ←
+        {{ 'music.library.allSongs' | i18n | async }}
+      </button>
+
+      <div>
+        <span>
+          {{ 'music.library.filteredByAlbum' | i18n | async }}
+        </span>
+        <strong>{{ album.title }}</strong>
+      </div>
+
+      <a
+        [routerLink]="['/music/albums', album.slug]"
+      >
+        {{ 'music.album.more' | i18n | async }}
+        →
+      </a>
+    </div>
+  }
+
+  @if (currentTrack(); as currentTrack) {
+    <header class="music-library-player__now-playing">
+      <div class="music-library-player__cover">
+        @if (coverAssetId(currentTrack); as coverId) {
+          <img
+            [src]="assetUrl(coverId)"
+            [alt]="currentTrack.title"
+          />
+        } @else {
+          <div class="music-library-player__cover-placeholder">
+            <app-icon name="music" class="secondary" />
+          </div>
+        }
+      </div>
+
+      <div class="music-library-player__current">
+        <span>
+          {{
+            (playing()
+              ? 'music.player.nowPlaying'
+              : 'music.library.selected')
+              | i18n
+              | async
+          }}
+        </span>
+
+        <strong>{{ currentTrack.title }}</strong>
+
+        @if (currentTrack.album; as album) {
+          @if (allowAlbumFilter()) {
+            <button
+              type="button"
+              class="music-library-player__album-button"
+              (click)="filterByAlbum(album)"
+            >
+              {{ album.title }}
+            </button>
+          } @else {
+            <span class="music-library-player__album-name">
+              {{ album.title }}
+            </span>
+          }
+        }
+      </div>
+
+      <button
+        type="button"
+        class="music-library-player__main-toggle"
+        [disabled]="!currentTrack.previewAssetId"
+        [attr.aria-label]="
+          (
+            isTrackPlaying(currentTrack)
+              ? 'music.player.pause'
+              : 'music.player.play'
+          )
+            | i18n
+            | async
+        "
+        (click)="toggleTrack(currentTrack)"
+      >
+        <span aria-hidden="true">
+          {{
+            isTrackPlaying(currentTrack)
+              ? 'Ⅱ'
+              : '▶'
+          }}
+        </span>
+      </button>
+
+      <div class="music-library-player__progress">
+        <input
+          type="range"
+          min="0"
+          [max]="currentTrack.previewDurationSeconds"
+          step="0.1"
+          [value]="currentTime()"
+          [disabled]="!currentTrack.previewAssetId"
+          [attr.aria-label]="'music.player.progress' | i18n | async"
+          (input)="seek($event)"
+        />
+
+        <span>
+          {{ formatDuration(currentTime()) }}
+          /
+          {{ formatDuration(currentTrack.previewDurationSeconds) }}
+        </span>
+      </div>
+
+      <div class="music-library-player__external">
+        @if (currentTrack.supportUrl) {
+          <a
+            class="music-library-player__support"
+            [href]="currentTrack.supportUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <app-icon name="heart" class="small" />
+            {{ 'music.support.action' | i18n | async }}
+          </a>
+        }
+
+        @if (currentTrack.spotifyUrl) {
+          <a
+            [href]="currentTrack.spotifyUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Spotify
+          </a>
+        }
+
+        @if (currentTrack.deezerUrl) {
+          <a
+            [href]="currentTrack.deezerUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Deezer
+          </a>
+        }
+      </div>
+    </header>
+  }
+
+  <div
+    class="music-library-player__body"
+    [class.music-library-player__body--with-story]="storyVisible()"
+  >
+    <div class="music-library-player__list">
+      <div class="music-library-player__columns" aria-hidden="true">
+        <span>#</span>
+        <span></span>
+        <span>{{ 'music.library.song' | i18n | async }}</span>
+        <span>{{ 'music.library.album' | i18n | async }}</span>
+        <span>{{ 'music.library.duration' | i18n | async }}</span>
+      </div>
+
+      <ol>
+        @for (
+          track of visibleTracks();
+          track track.id;
+          let index = $index
+        ) {
+          <li
+            [class.music-library-player__track--active]="activeTrackId() === track.id"
+          >
+            <span class="music-library-player__number">
+              {{ track.trackNumber ?? index + 1 }}
+            </span>
+
+            <button
+              type="button"
+              class="music-library-player__track-toggle"
+              [disabled]="!track.previewAssetId"
+              [attr.aria-label]="
+                (
+                  track.previewAssetId
+                    ? (
+                        isTrackPlaying(track)
+                          ? 'music.player.pauseTrack'
+                          : 'music.player.playTrack'
+                      )
+                    : 'music.player.noPreview'
+                )
+                  | i18n
+                  | async
+              "
+              (click)="toggleTrack(track)"
+            >
+              <span aria-hidden="true">
+                {{
+                  isTrackPlaying(track)
+                    ? 'Ⅱ'
+                    : '▶'
+                }}
+              </span>
+            </button>
+
+            <div class="music-library-player__track-title">
+              <strong>{{ track.title }}</strong>
+
+              @if (track.hasContent) {
+                <span>
+                  {{ 'music.library.hasStory' | i18n | async }}
+                </span>
+              }
+            </div>
+
+            <div class="music-library-player__track-album">
+              @if (track.album; as album) {
+                @if (allowAlbumFilter()) {
+                  <button
+                    type="button"
+                    (click)="filterByAlbum(album)"
+                  >
+                    {{ album.title }}
+                  </button>
+                } @else {
+                  <span>{{ album.title }}</span>
+                }
+              } @else {
+                <span>–</span>
+              }
+            </div>
+
+            <span class="music-library-player__track-duration">
+              {{ formatDuration(track.durationSeconds) }}
+            </span>
+          </li>
+        }
+      </ol>
+    </div>
+
+    @if (storyVisible(); as visible) {
+      @if (visible) {
+        <aside class="music-library-player__story">
+          <header>
+            <div>
+              <span>
+                {{ 'music.library.storyLabel' | i18n | async }}
+              </span>
+
+              @if (activeTrack(); as track) {
+                <h3>{{ track.title }}</h3>
+              }
+            </div>
+
+            <button
+              type="button"
+              [attr.aria-label]="'music.library.closeStory' | i18n | async"
+              (click)="closeStory()"
+            >
+              ×
+            </button>
+          </header>
+
+          @if (trackDetailLoading()) {
+            <p>
+              {{ 'music.library.loadingStory' | i18n | async }}
+            </p>
+          } @else if (trackDetail(); as detail) {
+            <div
+              class="music-library-player__story-content"
+              [innerHTML]="detail.contentHtml"
+            ></div>
+          }
+        </aside>
+      }
+    }
+  </div>
+</section>

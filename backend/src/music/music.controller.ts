@@ -19,6 +19,7 @@ import {
   MusicAlbumDto,
   MusicAlbumSummaryDto,
   MusicTrackDto,
+  MusicTrackListItemDto,
 } from './dto/music-response.dto';
 import {
   DEFAULT_MUSIC_LOCALE,
@@ -84,6 +85,30 @@ export class MusicController {
   ): Promise<MusicAlbumDto> {
     return this.musicService.getAlbumBySlug(
       slug,
+      this.resolveLocale(locale),
+    );
+  }
+
+  @Get('tracks')
+  @ApiOperation({
+    summary: 'List published music tracks',
+  })
+  @ApiQuery({
+    name: 'locale',
+    required: false,
+    enum: [...MUSIC_LOCALES],
+  })
+  @ApiOkResponse({
+    type: MusicTrackListItemDto,
+    isArray: true,
+  })
+  @ApiBadRequestResponse({
+    description: 'The requested locale is not supported.',
+  })
+  getTracks(
+    @Query('locale') locale?: string,
+  ): Promise<MusicTrackListItemDto[]> {
+    return this.musicService.getTracks(
       this.resolveLocale(locale),
     );
   }

@@ -1,0 +1,86 @@
+@let albumData = data();
+@let album = albumData.album;
+
+<section class="music-album-page">
+  <a
+    class="music-album-page__back"
+    routerLink="/music"
+  >
+    ←
+    {{ 'music.album.back' | i18n | async }}
+  </a>
+
+  <header class="music-album-page__hero">
+    <div class="music-album-page__cover">
+      @if (album.coverAssetId) {
+        <img
+          [src]="assetUrl(album.coverAssetId)"
+          [alt]="album.title"
+        />
+      } @else {
+        <div class="music-album-page__cover-placeholder">
+          <app-icon
+            name="music"
+            class="secondary"
+          />
+        </div>
+      }
+    </div>
+
+    <div class="music-album-page__meta">
+      <span>
+        {{ 'music.album.label' | i18n | async }}
+      </span>
+
+      <h1>{{ album.title }}</h1>
+
+      @if (
+        formatReleaseDate(
+          album.releasedAt,
+          albumData.locale
+        );
+        as releaseDate
+      ) {
+        <p>
+          {{ 'music.page.released' | i18n | async }}
+          {{ releaseDate }}
+        </p>
+      }
+
+      <strong>
+        {{ album.tracks.length }}
+        {{ 'music.album.tracks' | i18n | async }}
+      </strong>
+    </div>
+  </header>
+
+  @if (album.contentHtml) {
+    <article
+      class="music-album-page__story"
+      [innerHTML]="album.contentHtml"
+    ></article>
+  }
+
+  <section class="music-album-page__tracks">
+    <header>
+      <span>
+        {{ 'music.album.listenLabel' | i18n | async }}
+      </span>
+      <h2>
+        {{ 'music.album.listenTitle' | i18n | async }}
+      </h2>
+    </header>
+
+    @if (tracks().length) {
+      <app-music-library-player
+        [tracks]="tracks()"
+        [locale]="albumData.locale"
+        [allowAlbumFilter]="false"
+      />
+    } @else {
+      <p>
+        {{ 'music.page.noTracks' | i18n | async }}
+      </p>
+    }
+  </section>
+</section>

@@ -32,9 +32,13 @@ export interface MusicTrackSummary {
   spotifyUrl: string | null;
   deezerUrl: string | null;
   supportUrl: string | null;
+  hasContent: boolean;
 }
 
-export interface MusicTrack extends MusicTrackSummary {
+export interface MusicTrackListItem extends MusicTrackSummary {
   album: MusicAlbumReference | null;
+}
+
+export interface MusicTrack extends MusicTrackListItem {
   contentHtml: string;
 }

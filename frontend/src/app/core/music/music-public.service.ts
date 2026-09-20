@@ -1,6 +1,8 @@
 import type {
   MusicAlbum,
   MusicAlbumSummary,
+  MusicTrack,
+  MusicTrackListItem,
 } from '@shared/music/music';
 
 import {
@@ -9,9 +11,8 @@ import {
 } from '@angular/core';
 import {
   Observable,
+  forkJoin,
   map,
-  of,
-  switchMap,
 } from 'rxjs';
 
 import { RequestService } from '../http/request.service';
@@ -20,7 +21,12 @@ import type { Language } from '../i18n/i18n.types';
 export interface MusicLandingData {
   locale: Language;
   albums: MusicAlbumSummary[];
-  featuredAlbum: MusicAlbum | null;
+  tracks: MusicTrackListItem[];
+}
+
+export interface MusicAlbumPageData {
+  locale: Language;
+  album: MusicAlbum;
 }
 
 @Injectable({
@@ -35,34 +41,56 @@ export class MusicPublicService {
     const encodedLocale =
       encodeURIComponent(locale);
 
-    return this.request
-      .get<MusicAlbumSummary[]>(
+    return forkJoin({
+      albums: this.request.get<
+        MusicAlbumSummary[]
+      >(
         `/music/albums?locale=${encodedLocale}`,
-      )
-      .pipe(
-        switchMap((albums) => {
-          const featured = albums[0];
+      ),
+      tracks: this.request.get<
+        MusicTrackListItem[]
+      >(
+        `/music/tracks?locale=${encodedLocale}`,
+      ),
+    }).pipe(
+      map(({ albums, tracks }) => ({
+        locale,
+        albums,
+        tracks,
+      })),
+    );
+  }
 
-          if (!featured) {
-            return of({
-              locale,
-              albums,
-              featuredAlbum: null,
-            });
-          }
+  getAlbumPage(
+    slug: string,
+    locale: Language,
+  ): Observable<MusicAlbumPageData> {
+    return this.getAlbum(
+      slug,
+      locale,
+    ).pipe(
+      map((album) => ({
+        locale,
+        album,
+      })),
+    );
+  }
 
-          return this.request
-            .get<MusicAlbum>(
-              `/music/albums/${encodeURIComponent(featured.slug)}?locale=${encodedLocale}`,
-            )
-            .pipe(
-              map((featuredAlbum) => ({
-                locale,
-                albums,
-                featuredAlbum,
-              })),
-            );
-        }),
-      );
+  getAlbum(
+    slug: string,
+    locale: Language,
+  ): Observable<MusicAlbum> {
+    return this.request.get<MusicAlbum>(
+      `/music/albums/${encodeURIComponent(slug)}?locale=${encodeURIComponent(locale)}`,
+    );
+  }
+
+  getTrack(
+    slug: string,
+    locale: Language,
+  ): Observable<MusicTrack> {
+    return this.request.get<MusicTrack>(
+      `/music/tracks/${encodeURIComponent(slug)}?locale=${encodeURIComponent(locale)}`,
+    );
   }
 }

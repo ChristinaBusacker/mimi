@@ -3,6 +3,7 @@ import type {
   MusicAlbumReference,
   MusicAlbumSummary,
   MusicTrack,
+  MusicTrackListItem,
   MusicTrackSummary,
 } from '@shared/music/music';
 
@@ -127,6 +128,116 @@ export class MusicService {
     };
   }
 
+  async getTracks(
+    locale: MusicLocale,
+  ): Promise<MusicTrackListItem[]> {
+    const tracks = await this.trackRepository
+      .createQueryBuilder('track')
+      .leftJoinAndSelect('track.album', 'album')
+      .where('track.status = :status', {
+        status: 'published',
+      })
+      .andWhere(
+        '(album.uuid IS NULL OR album.status = :albumStatus)',
+        {
+          albumStatus: 'published',
+        },
+      )
+      .orderBy(
+        'album.releasedAt',
+        'DESC',
+        'NULLS LAST',
+      )
+      .addOrderBy(
+        'album.createdAt',
+        'DESC',
+        'NULLS LAST',
+      )
+      .addOrderBy(
+        'track.trackNumber',
+        'ASC',
+        'NULLS LAST',
+      )
+      .addOrderBy(
+        'track.createdAt',
+        'DESC',
+      )
+      .getMany();
+
+    if (tracks.length === 0) {
+      return [];
+    }
+
+    const trackTranslations =
+      await this.getTrackTranslations(
+        tracks.map((track) => track.uuid),
+        locale,
+      );
+    const albumUuids = [
+      ...new Set(
+        tracks
+          .map((track) => track.albumUuid)
+          .filter(
+            (albumUuid): albumUuid is string =>
+              albumUuid !== null,
+          ),
+      ),
+    ];
+    const albumTranslations =
+      await this.getAlbumTranslations(
+        albumUuids,
+        locale,
+      );
+
+    return tracks
+      .map((track) => {
+        const trackTranslation =
+          this.pickTranslation(
+            trackTranslations.filter(
+              (candidate) =>
+                candidate.trackUuid === track.uuid,
+            ),
+            locale,
+          );
+
+        if (!trackTranslation) {
+          return null;
+        }
+
+        const albumTranslation =
+          track.album
+            ? this.pickTranslation(
+                albumTranslations.filter(
+                  (candidate) =>
+                    candidate.albumUuid ===
+                    track.albumUuid,
+                ),
+                locale,
+              )
+            : null;
+
+        return {
+          ...this.mapTrackSummary(
+            track,
+            trackTranslation,
+          ),
+          album:
+            track.album && albumTranslation
+              ? this.mapAlbumReference(
+                  track.album,
+                  albumTranslation,
+                )
+              : null,
+        };
+      })
+      .filter(
+        (
+          track,
+        ): track is MusicTrackListItem =>
+          track !== null,
+      );
+  }
+
   async getTrackBySlug(
     slug: string,
     locale: MusicLocale,
@@ -188,6 +299,24 @@ export class MusicService {
     return this.pickTranslation(translations, locale);
   }
 
+  private async getAlbumTranslations(
+    albumUuids: string[],
+    locale: MusicLocale,
+  ): Promise<MusicAlbumTranslationEntry[]> {
+    if (albumUuids.length === 0) {
+      return [];
+    }
+
+    return this.albumTranslationRepository.find({
+      where: {
+        albumUuid: In(albumUuids),
+        locale: In(
+          this.getLocalesWithFallback(locale),
+        ),
+      },
+    });
+  }
+
   private async getTrackTranslation(
     trackUuid: string,
     locale: MusicLocale,
@@ -244,6 +373,16 @@ export class MusicService {
       return null;
     }
 
+    return this.mapAlbumReference(
+      album,
+      translation,
+    );
+  }
+
+  private mapAlbumReference(
+    album: MusicAlbumEntry,
+    translation: MusicAlbumTranslationEntry,
+  ): MusicAlbumReference {
     return {
       id: album.uuid,
       slug: album.slug,
@@ -281,6 +420,8 @@ export class MusicService {
       spotifyUrl: track.spotifyUrl,
       deezerUrl: track.deezerUrl,
       supportUrl: track.supportUrl,
+      hasContent:
+        translation.contentMarkdown.trim().length > 0,
     };
   }
 

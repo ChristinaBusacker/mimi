@@ -3,6 +3,7 @@ import type {
   MusicAlbumReference,
   MusicAlbumSummary,
   MusicTrack,
+  MusicTrackListItem,
   MusicTrackSummary,
 } from '@shared/music/music';
 
@@ -63,6 +64,9 @@ export class MusicTrackSummaryDto implements MusicTrackSummary {
     type: String,
   })
   supportUrl!: string | null;
+
+  @ApiProperty()
+  hasContent!: boolean;
 }
 
 export class MusicAlbumSummaryDto implements MusicAlbumSummary {
@@ -126,16 +130,21 @@ export class MusicAlbumReferenceDto implements MusicAlbumReference {
   coverAssetId!: string | null;
 }
 
-export class MusicTrackDto
+export class MusicTrackListItemDto
   extends MusicTrackSummaryDto
-  implements MusicTrack
+  implements MusicTrackListItem
 {
   @ApiProperty({
     type: MusicAlbumReferenceDto,
     nullable: true,
   })
   album!: MusicAlbumReferenceDto | null;
+}
 
+export class MusicTrackDto
+  extends MusicTrackListItemDto
+  implements MusicTrack
+{
   @ApiProperty()
   contentHtml!: string;
 }

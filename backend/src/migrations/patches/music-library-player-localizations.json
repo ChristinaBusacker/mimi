@@ -1,0 +1,99 @@
+{
+  "localizations": [
+    {
+      "key": "music.album.more",
+      "de": "Mehr zum Album erfahren",
+      "en": "Learn more about the album"
+    },
+    {
+      "key": "music.library.eyebrow",
+      "de": "Mimis Musik",
+      "en": "Mimi's music"
+    },
+    {
+      "key": "music.library.title",
+      "de": "Hören und entdecken",
+      "en": "Listen and explore"
+    },
+    {
+      "key": "music.library.description",
+      "de": "Hör dich durch Mimis Musik. Über den Albumnamen kannst du die Liste auf ein Release eingrenzen. Zu Songs mit Hintergrundtext öffnet sich beim Abspielen rechts die Geschichte dahinter.",
+      "en": "Explore Mimi's music. Use an album name to filter the list to one release. When a song has additional background text, its story opens on the right while playing."
+    },
+    {
+      "key": "music.library.allSongs",
+      "de": "Alle Songs",
+      "en": "All songs"
+    },
+    {
+      "key": "music.library.filteredByAlbum",
+      "de": "Gefiltert nach Album",
+      "en": "Filtered by album"
+    },
+    {
+      "key": "music.library.selected",
+      "de": "Bereit zum Anhören",
+      "en": "Ready to play"
+    },
+    {
+      "key": "music.library.song",
+      "de": "Song",
+      "en": "Song"
+    },
+    {
+      "key": "music.library.album",
+      "de": "Album",
+      "en": "Album"
+    },
+    {
+      "key": "music.library.duration",
+      "de": "Dauer",
+      "en": "Duration"
+    },
+    {
+      "key": "music.library.hasStory",
+      "de": "Mit Hintergrundgeschichte",
+      "en": "With background story"
+    },
+    {
+      "key": "music.library.storyLabel",
+      "de": "Hinter dem Song",
+      "en": "Behind the song"
+    },
+    {
+      "key": "music.library.loadingStory",
+      "de": "Die Geschichte zum Song wird geladen …",
+      "en": "Loading the story behind this song …"
+    },
+    {
+      "key": "music.library.closeStory",
+      "de": "Song-Informationen schließen",
+      "en": "Close song information"
+    },
+    {
+      "key": "music.album.back",
+      "de": "Zurück zur Musik",
+      "en": "Back to music"
+    },
+    {
+      "key": "music.album.label",
+      "de": "Album",
+      "en": "Album"
+    },
+    {
+      "key": "music.album.tracks",
+      "de": "Tracks",
+      "en": "tracks"
+    },
+    {
+      "key": "music.album.listenLabel",
+      "de": "Reinhören",
+      "en": "Listen"
+    },
+    {
+      "key": "music.album.listenTitle",
+      "de": "Tracks auf diesem Album",
+      "en": "Tracks on this album"
+    }
+  ]
+}

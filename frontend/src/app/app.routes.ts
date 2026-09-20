@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/auth/admin.guard';
 import { homeDataResolver } from './pages/home/home.resolver';
+import { musicAlbumResolver } from './pages/music/album/music-album.resolver';
 import { musicDataResolver } from './pages/music/music.resolver';
 
 export const routes: Routes = [
@@ -21,6 +22,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/music/music').then((module) => module.Music),
     resolve: {
       data: musicDataResolver,
+    },
+  },
+  {
+    path: 'music/albums/:slug',
+    loadComponent: () =>
+      import('./pages/music/album/music-album').then(
+        (module) => module.MusicAlbumPage,
+      ),
+    resolve: {
+      data: musicAlbumResolver,
     },
   },
   {
