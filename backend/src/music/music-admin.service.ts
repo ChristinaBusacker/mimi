@@ -289,8 +289,31 @@ export class MusicAdminService {
   }
 
   private validateDurations(dto: SaveMusicAdminTrackDto): void {
-    if (dto.previewDurationSeconds > dto.durationSeconds) {
-      throw new BadRequestException('The preview duration cannot exceed the track duration.');
+    if (
+      dto.previewAssetId &&
+      dto.previewDurationSeconds < 1
+    ) {
+      throw new BadRequestException(
+        'A preview asset requires a valid preview duration.',
+      );
+    }
+
+    if (
+      !dto.previewAssetId &&
+      dto.previewDurationSeconds !== 0
+    ) {
+      throw new BadRequestException(
+        'A preview duration requires a preview asset.',
+      );
+    }
+
+    if (
+      dto.previewDurationSeconds >
+      dto.durationSeconds
+    ) {
+      throw new BadRequestException(
+        'The preview duration cannot exceed the track duration.',
+      );
     }
   }
 

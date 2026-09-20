@@ -7,24 +7,9 @@ import type {
 import type { MusicPublicationStatus } from '@shared/music/music';
 
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  inject,
-  signal,
-} from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink,
-} from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom, forkJoin } from 'rxjs';
 
 import { AssetPicker } from '../../../../components/asset-picker/asset-picker';
@@ -55,8 +40,7 @@ export class AdminTrackEditor implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  protected readonly trackId =
-    this.route.snapshot.paramMap.get('id');
+  protected readonly trackId = this.route.snapshot.paramMap.get('id');
   protected readonly albums = signal<MusicAdminAlbum[]>([]);
   protected readonly images = signal<Asset[]>([]);
   protected readonly audio = signal<Asset[]>([]);
@@ -64,16 +48,13 @@ export class AdminTrackEditor implements OnInit {
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly errorKey = signal<string | null>(null);
+  protected readonly readingPreviewDuration = signal(false);
+  protected readonly previewDuration = signal<number | null>(null);
 
   protected readonly form = new FormGroup({
     slug: new FormControl('', {
       nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.pattern(
-          /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-        ),
-      ],
+      validators: [Validators.required, Validators.pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)],
     }),
     albumId: new FormControl('', {
       nonNullable: true,
@@ -81,17 +62,11 @@ export class AdminTrackEditor implements OnInit {
     trackNumber: new FormControl<number | null>(null),
     durationSeconds: new FormControl<number>(1, {
       nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.min(1),
-      ],
+      validators: [Validators.required, Validators.min(1)],
     }),
-    previewDurationSeconds: new FormControl<number>(1, {
+    previewDurationSeconds: new FormControl<number>(0, {
       nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.min(1),
-      ],
+      validators: [Validators.min(0)],
     }),
     previewAssetId: new FormControl('', {
       nonNullable: true,
@@ -108,12 +83,9 @@ export class AdminTrackEditor implements OnInit {
     supportUrl: new FormControl('', {
       nonNullable: true,
     }),
-    status: new FormControl<MusicPublicationStatus>(
-      'draft',
-      {
-        nonNullable: true,
-      },
-    ),
+    status: new FormControl<MusicPublicationStatus>('draft', {
+      nonNullable: true,
+    }),
     titleDe: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required],
@@ -136,9 +108,7 @@ export class AdminTrackEditor implements OnInit {
           albums: this.music.getAlbums(),
           images: this.assets.getAll('image'),
           audio: this.assets.getAll('audio'),
-          track: this.trackId
-            ? this.music.getTrack(this.trackId)
-            : Promise.resolve(null),
+          track: this.trackId ? this.music.getTrack(this.trackId) : Promise.resolve(null),
         }),
       );
 
@@ -157,56 +127,74 @@ export class AdminTrackEditor implements OnInit {
   }
 
   protected addImage(asset: Asset): void {
-    this.images.update(
-      (images) => [
-        asset,
-        ...images.filter(
-          (candidate) =>
-            candidate.id !== asset.id,
-        ),
-      ],
-    );
+    this.images.update((images) => [
+      asset,
+      ...images.filter((candidate) => candidate.id !== asset.id),
+    ]);
   }
 
   protected addAudio(asset: Asset): void {
-    this.audio.update(
-      (audio) => [
-        asset,
-        ...audio.filter(
-          (candidate) =>
-            candidate.id !== asset.id,
-        ),
-      ],
-    );
+    this.audio.update((audio) => [
+      asset,
+      ...audio.filter((candidate) => candidate.id !== asset.id),
+    ]);
   }
 
   protected removeImage(assetId: string): void {
-    this.images.update(
-      (images) =>
-        images.filter(
-          (asset) =>
-            asset.id !== assetId,
-        ),
-    );
+    this.images.update((images) => images.filter((asset) => asset.id !== assetId));
   }
 
   protected removeAudio(assetId: string): void {
-    this.audio.update(
-      (audio) =>
-        audio.filter(
-          (asset) =>
-            asset.id !== assetId,
-        ),
-    );
+    this.audio.update((audio) => audio.filter((asset) => asset.id !== assetId));
   }
 
   protected albumTitle(album: MusicAdminAlbum): string {
     return album.translations.de.title || album.slug;
   }
 
+  protected async setPreviewAsset(asset: Asset | null): Promise<void> {
+    if (!asset) {
+      this.form.controls.previewDurationSeconds.setValue(0);
+      this.previewDuration.set(null);
+
+      return;
+    }
+
+    this.readingPreviewDuration.set(true);
+    this.errorKey.set(null);
+
+    try {
+      const duration = await this.assets.readAudioDuration(asset);
+
+      this.form.controls.previewDurationSeconds.setValue(duration);
+      this.previewDuration.set(duration);
+    } catch {
+      this.form.controls.previewAssetId.setValue('');
+      this.form.controls.previewDurationSeconds.setValue(0);
+      this.previewDuration.set(null);
+      this.errorKey.set('admin.music.editor.previewDurationReadFailed');
+    } finally {
+      this.readingPreviewDuration.set(false);
+    }
+  }
+
+  protected formatDuration(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
   protected async save(): Promise<void> {
+    if (this.readingPreviewDuration()) {
+      this.errorKey.set('admin.music.editor.previewDurationReading');
+
+      return;
+    }
+
     if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
+      this.errorKey.set('admin.music.editor.invalidForm');
 
       return;
     }
@@ -223,21 +211,13 @@ export class AdminTrackEditor implements OnInit {
 
     try {
       const track = await firstValueFrom(
-        this.trackId
-          ? this.music.updateTrack(
-              this.trackId,
-              input,
-            )
-          : this.music.createTrack(input),
+        this.trackId ? this.music.updateTrack(this.trackId, input) : this.music.createTrack(input),
       );
 
       this.saved.set(true);
 
       if (!this.trackId) {
-        await this.router.navigate([
-          '/admin/music/tracks',
-          track.id,
-        ]);
+        await this.router.navigate(['/admin/music/tracks', track.id]);
       }
     } catch {
       this.errorKey.set('admin.music.editor.saveFailed');
@@ -252,20 +232,13 @@ export class AdminTrackEditor implements OnInit {
     const englishContent = value.contentEn.trim();
 
     if (englishContent && !englishTitle) {
-      this.errorKey.set(
-        'admin.music.editor.englishTitleRequired',
-      );
+      this.errorKey.set('admin.music.editor.englishTitleRequired');
 
       return null;
     }
 
-    if (
-      value.previewDurationSeconds >
-      value.durationSeconds
-    ) {
-      this.errorKey.set(
-        'admin.music.editor.previewTooLong',
-      );
+    if (value.previewDurationSeconds > value.durationSeconds) {
+      this.errorKey.set('admin.music.editor.previewTooLong');
 
       return null;
     }
@@ -275,18 +248,12 @@ export class AdminTrackEditor implements OnInit {
       albumId: value.albumId || null,
       trackNumber: value.trackNumber,
       durationSeconds: value.durationSeconds,
-      previewDurationSeconds:
-        value.previewDurationSeconds,
-      previewAssetId:
-        value.previewAssetId || null,
-      coverAssetId:
-        value.coverAssetId || null,
-      spotifyUrl:
-        this.optionalText(value.spotifyUrl),
-      deezerUrl:
-        this.optionalText(value.deezerUrl),
-      supportUrl:
-        this.optionalText(value.supportUrl),
+      previewDurationSeconds: value.previewDurationSeconds,
+      previewAssetId: value.previewAssetId || null,
+      coverAssetId: value.coverAssetId || null,
+      spotifyUrl: this.optionalText(value.spotifyUrl),
+      deezerUrl: this.optionalText(value.deezerUrl),
+      supportUrl: this.optionalText(value.supportUrl),
       status: value.status,
       translations: {
         de: {
@@ -310,25 +277,20 @@ export class AdminTrackEditor implements OnInit {
       albumId: track.albumId ?? '',
       trackNumber: track.trackNumber,
       durationSeconds: track.durationSeconds,
-      previewDurationSeconds:
-        track.previewDurationSeconds,
-      previewAssetId:
-        track.previewAssetId ?? '',
-      coverAssetId:
-        track.coverAssetId ?? '',
+      previewDurationSeconds: track.previewDurationSeconds,
+      previewAssetId: track.previewAssetId ?? '',
+      coverAssetId: track.coverAssetId ?? '',
       spotifyUrl: track.spotifyUrl ?? '',
       deezerUrl: track.deezerUrl ?? '',
       supportUrl: track.supportUrl ?? '',
       status: track.status,
-      titleDe:
-        track.translations.de.title,
-      contentDe:
-        track.translations.de.contentMarkdown,
-      titleEn:
-        track.translations.en?.title ?? '',
-      contentEn:
-        track.translations.en?.contentMarkdown ?? '',
+      titleDe: track.translations.de.title,
+      contentDe: track.translations.de.contentMarkdown,
+      titleEn: track.translations.en?.title ?? '',
+      contentEn: track.translations.en?.contentMarkdown ?? '',
     });
+
+    this.previewDuration.set(track.previewAssetId ? track.previewDurationSeconds : null);
   }
 
   private optionalText(value: string): string | null {

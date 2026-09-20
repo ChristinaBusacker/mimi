@@ -66,6 +66,7 @@ export class AssetPicker implements ControlValueAccessor {
 
   readonly assetUploaded = output<Asset>();
   readonly assetDeleted = output<string>();
+  readonly assetSelected = output<Asset | null>();
 
   private readonly loadedAssets = signal<Asset[]>([]);
   protected readonly selectedId = signal('');
@@ -222,6 +223,7 @@ export class AssetPicker implements ControlValueAccessor {
   protected select(asset: Asset): void {
     this.selectedId.set(asset.id);
     this.onChange(asset.id);
+    this.assetSelected.emit(asset);
     this.onTouched();
     this.close();
   }
@@ -229,6 +231,7 @@ export class AssetPicker implements ControlValueAccessor {
   protected clearSelection(): void {
     this.selectedId.set('');
     this.onChange('');
+    this.assetSelected.emit(null);
     this.onTouched();
   }
 

@@ -1,0 +1,129 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.localizations",
+      "de": "Lokalisierungen",
+      "en": "Localizations"
+    },
+    {
+      "key": "admin.music.editor.invalidForm",
+      "de": "Das Formular enthält noch ungültige oder fehlende Pflichtangaben.",
+      "en": "The form still contains invalid or missing required values."
+    },
+    {
+      "key": "admin.music.editor.previewDurationReadFailed",
+      "de": "Die Länge der ausgewählten Audiodatei konnte nicht ermittelt werden.",
+      "en": "The duration of the selected audio file could not be determined."
+    },
+    {
+      "key": "admin.music.editor.previewDurationReading",
+      "de": "Die Länge der Audio-Preview wird noch ermittelt.",
+      "en": "The audio preview duration is still being determined."
+    },
+    {
+      "key": "admin.music.previewDuration.reading",
+      "de": "Wird ermittelt …",
+      "en": "Reading …"
+    },
+    {
+      "key": "admin.music.previewDuration.automatic",
+      "de": "Automatisch aus der Audiodatei ermittelt",
+      "en": "Automatically read from the audio file"
+    },
+    {
+      "key": "admin.music.previewDuration.noPreview",
+      "de": "Wird nach Auswahl einer Preview automatisch ermittelt",
+      "en": "Will be read automatically after selecting a preview"
+    },
+    {
+      "key": "admin.localizations.title",
+      "de": "Lokalisierungen",
+      "en": "Localizations"
+    },
+    {
+      "key": "admin.localizations.description",
+      "de": "Bearbeite Schlüssel sowie deutsche und englische Texte direkt in der Tabelle.",
+      "en": "Edit keys and German and English text directly in the table."
+    },
+    {
+      "key": "admin.localizations.search",
+      "de": "Filtern",
+      "en": "Filter"
+    },
+    {
+      "key": "admin.localizations.searchPlaceholder",
+      "de": "Nach Key oder Text suchen …",
+      "en": "Search by key or text …"
+    },
+    {
+      "key": "admin.localizations.key",
+      "de": "Key",
+      "en": "Key"
+    },
+    {
+      "key": "admin.localizations.actions",
+      "de": "Aktionen",
+      "en": "Actions"
+    },
+    {
+      "key": "admin.localizations.newKey",
+      "de": "Neuer Key",
+      "en": "New key"
+    },
+    {
+      "key": "admin.localizations.create",
+      "de": "Anlegen",
+      "en": "Create"
+    },
+    {
+      "key": "admin.localizations.save",
+      "de": "Speichern",
+      "en": "Save"
+    },
+    {
+      "key": "admin.localizations.saving",
+      "de": "Speichert …",
+      "en": "Saving …"
+    },
+    {
+      "key": "admin.localizations.saveAll",
+      "de": "Alle Änderungen speichern",
+      "en": "Save all changes"
+    },
+    {
+      "key": "admin.localizations.delete",
+      "de": "Löschen",
+      "en": "Delete"
+    },
+    {
+      "key": "admin.localizations.deleteConfirm",
+      "de": "Wirklich löschen",
+      "en": "Delete permanently"
+    },
+    {
+      "key": "admin.localizations.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.localizations.loading",
+      "de": "Lokalisierungen werden geladen …",
+      "en": "Loading localizations …"
+    },
+    {
+      "key": "admin.localizations.loadFailed",
+      "de": "Die Lokalisierungen konnten nicht geladen werden.",
+      "en": "The localizations could not be loaded."
+    },
+    {
+      "key": "admin.localizations.saveFailed",
+      "de": "Speichern fehlgeschlagen.",
+      "en": "Saving failed."
+    },
+    {
+      "key": "admin.localizations.empty",
+      "de": "Keine passenden Lokalisierungen gefunden.",
+      "en": "No matching localizations found."
+    }
+  ]
+}

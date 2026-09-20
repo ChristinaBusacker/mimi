@@ -1,0 +1,177 @@
+<section class="admin-localizations">
+  <header>
+    <div>
+      <h1>{{ 'admin.localizations.title' | i18n | async }}</h1>
+      <p>{{ 'admin.localizations.description' | i18n | async }}</p>
+    </div>
+
+    <button
+      type="button"
+      class="admin-localizations__save-all"
+      [disabled]="dirtyCount() === 0 || savingAll()"
+      (click)="saveAll()"
+    >
+      {{ 'admin.localizations.saveAll' | i18n | async }}
+      @if (dirtyCount() > 0) {
+        ({{ dirtyCount() }})
+      }
+    </button>
+  </header>
+
+  <div class="admin-localizations__toolbar">
+    <label>
+      <span>{{ 'admin.localizations.search' | i18n | async }}</span>
+      <input
+        type="search"
+        [value]="search()"
+        [placeholder]="'admin.localizations.searchPlaceholder' | i18n | async"
+        (input)="setSearch($event)"
+      />
+    </label>
+  </div>
+
+  @if (loadFailed()) {
+    <p class="admin-localizations__error" role="alert">
+      {{ 'admin.localizations.loadFailed' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.localizations.loading' | i18n | async }}</p>
+  } @else {
+    <div class="admin-localizations__table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'admin.localizations.key' | i18n | async }}</th>
+            <th scope="col">DE</th>
+            <th scope="col">EN</th>
+            <th scope="col">
+              {{ 'admin.localizations.actions' | i18n | async }}
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="admin-localizations__new-row">
+            <td>
+              <input
+                type="text"
+                [value]="newKey()"
+                [placeholder]="'admin.localizations.newKey' | i18n | async"
+                (input)="setNewValue('key', $event)"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                [value]="newDe()"
+                (input)="setNewValue('de', $event)"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                [value]="newEn()"
+                (input)="setNewValue('en', $event)"
+              />
+            </td>
+            <td>
+              <button
+                type="button"
+                [disabled]="creating()"
+                (click)="create()"
+              >
+                {{ 'admin.localizations.create' | i18n | async }}
+              </button>
+
+              @if (createError()) {
+                <span class="admin-localizations__row-error">
+                  {{ 'admin.localizations.saveFailed' | i18n | async }}
+                </span>
+              }
+            </td>
+          </tr>
+
+          @for (row of filteredRows(); track row.uuid) {
+            <tr
+              [class.admin-localizations__row--dirty]="row.dirty"
+              [class.admin-localizations__row--error]="row.error"
+            >
+              <td>
+                <input
+                  type="text"
+                  [value]="row.key"
+                  (input)="updateRow(row.uuid, 'key', $event)"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  [value]="row.de"
+                  (input)="updateRow(row.uuid, 'de', $event)"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  [value]="row.en"
+                  (input)="updateRow(row.uuid, 'en', $event)"
+                />
+              </td>
+              <td class="admin-localizations__row-actions">
+                <button
+                  type="button"
+                  [disabled]="!row.dirty || row.saving"
+                  (click)="saveRow(row)"
+                >
+                  {{
+                    (row.saving
+                      ? 'admin.localizations.saving'
+                      : 'admin.localizations.save')
+                      | i18n
+                      | async
+                  }}
+                </button>
+
+                @if (row.confirmingDelete) {
+                  <button
+                    type="button"
+                    class="danger"
+                    (click)="deleteRow(row)"
+                  >
+                    {{ 'admin.localizations.deleteConfirm' | i18n | async }}
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="cancelDelete(row.uuid)"
+                  >
+                    {{ 'admin.localizations.cancel' | i18n | async }}
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="requestDelete(row.uuid)"
+                  >
+                    {{ 'admin.localizations.delete' | i18n | async }}
+                  </button>
+                }
+
+                @if (row.error) {
+                  <span class="admin-localizations__row-error">
+                    {{ 'admin.localizations.saveFailed' | i18n | async }}
+                  </span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (filteredRows().length === 0) {
+      <p>{{ 'admin.localizations.empty' | i18n | async }}</p>
+    }
+  }
+</section>

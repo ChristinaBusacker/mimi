@@ -74,6 +74,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'localizations',
+        loadComponent: () =>
+          import('./pages/admin/localizations/admin-localizations').then(
+            (module) => module.AdminLocalizations,
+          ),
+      },
+      {
         path: 'music/albums/new',
         loadComponent: () =>
           import('./pages/admin/music/albums/admin-album-editor').then(

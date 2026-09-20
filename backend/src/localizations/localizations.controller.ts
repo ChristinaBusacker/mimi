@@ -7,10 +7,12 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiCookieAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -19,6 +21,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { AdminGuard } from '../auth/guards/admin.guard';
+import { SessionAuthGuard } from '../auth/guards/session-auth.guard';
+import { AUTH_SESSION_COOKIE } from '../auth/session-cookie';
 import { CreateLocalizationDto } from './dto/create-localization.dto';
 import { LocalizationResponseDto } from './dto/localization-response.dto';
 import { UpdateLocalizationDto } from './dto/update-localization.dto';
@@ -96,6 +101,8 @@ export class LocalizationsController {
     return this.localizationsService.getByUuid(uuid);
   }
 
+  @ApiCookieAuth(AUTH_SESSION_COOKIE)
+  @UseGuards(SessionAuthGuard, AdminGuard)
   @Post()
   @ApiOperation({
     summary: 'Create a localization',
@@ -112,6 +119,8 @@ export class LocalizationsController {
     return this.localizationsService.create(dto);
   }
 
+  @ApiCookieAuth(AUTH_SESSION_COOKIE)
+  @UseGuards(SessionAuthGuard, AdminGuard)
   @Patch(':uuid')
   @ApiOperation({
     summary: 'Update a localization',
@@ -136,6 +145,8 @@ export class LocalizationsController {
     return this.localizationsService.update(uuid, dto);
   }
 
+  @ApiCookieAuth(AUTH_SESSION_COOKIE)
+  @UseGuards(SessionAuthGuard, AdminGuard)
   @Delete(':uuid')
   @ApiOperation({
     summary: 'Delete a localization',

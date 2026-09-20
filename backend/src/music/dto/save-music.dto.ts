@@ -88,7 +88,7 @@ export class SaveMusicAdminTrackDto
   durationSeconds!: number;
 
   @IsInt()
-  @Min(1)
+  @Min(0)
   previewDurationSeconds!: number;
 
   @IsOptional()

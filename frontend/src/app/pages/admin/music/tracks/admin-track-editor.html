@@ -69,10 +69,25 @@
             <input type="number" min="1" formControlName="durationSeconds" />
           </label>
 
-          <label>
+          <div class="admin-editor__derived-value">
             <span>{{ 'admin.music.previewDuration' | i18n | async }}</span>
-            <input type="number" min="1" formControlName="previewDurationSeconds" />
-          </label>
+
+            @if (readingPreviewDuration()) {
+              <strong>
+                {{ 'admin.music.previewDuration.reading' | i18n | async }}
+              </strong>
+            } @else if (previewDuration(); as duration) {
+              <strong>{{ formatDuration(duration) }}</strong>
+              <small>
+                {{ 'admin.music.previewDuration.automatic' | i18n | async }}
+              </small>
+            } @else {
+              <strong>–</strong>
+              <small>
+                {{ 'admin.music.previewDuration.noPreview' | i18n | async }}
+              </small>
+            }
+          </div>
 
           <app-asset-picker
             type="image"
@@ -92,6 +107,7 @@
             [assets]="audio()"
             (assetUploaded)="addAudio($event)"
             (assetDeleted)="removeAudio($event)"
+            (assetSelected)="setPreviewAsset($event)"
           />
         </div>
       </fieldset>
@@ -150,7 +166,11 @@
       </fieldset>
 
       <div class="admin-editor__actions">
-        <app-button class="primary round" type="submit" [disabled]="saving()">
+        <app-button
+          class="primary round"
+          type="submit"
+          [disabled]="saving() || readingPreviewDuration()"
+        >
           {{ 'admin.music.save' | i18n | async }}
         </app-button>
 

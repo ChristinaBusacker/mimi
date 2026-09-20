@@ -80,6 +80,24 @@
   align-items: start;
 }
 
+.admin-editor__derived-value {
+  display: grid;
+  gap: var(--spacing-xs);
+  align-content: start;
+
+  > span {
+    font-weight: 700;
+  }
+
+  strong {
+    font-size: 1.15rem;
+  }
+
+  small {
+    opacity: 0.7;
+  }
+}
+
 .admin-editor__actions {
   display: flex;
   flex-wrap: wrap;
