@@ -1,0 +1,357 @@
+@use 'mixins' as *;
+
+.music-page {
+  display: grid;
+  gap: var(--spacing-md);
+  color: var(--color-text);
+}
+
+.music-hero,
+.music-section {
+  @include framed;
+
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface-translucent);
+}
+
+.music-hero {
+  isolation: isolate;
+  padding: clamp(
+    var(--spacing-md),
+    4vw,
+    calc(var(--spacing-lg) * 1.5)
+  );
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      linear-gradient(
+        90deg,
+        rgb(36 17 34 / 94%),
+        rgb(36 17 34 / 76%) 48%,
+        rgb(36 17 34 / 48%)
+      ),
+      url('/images/hero-bg-music.png')
+        center / cover no-repeat;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 330px;
+    height: 330px;
+    right: -100px;
+    top: -120px;
+    z-index: -1;
+    border: 2px solid rgb(252 170 193 / 35%);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 45px rgb(175 104 167 / 8%),
+      0 0 0 90px rgb(252 170 193 / 5%);
+  }
+}
+
+.music-hero__intro {
+  max-width: 720px;
+  margin-bottom: var(--spacing-lg);
+
+  h1 {
+    margin:
+      var(--spacing-xs)
+      0
+      var(--spacing-sm);
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 0.95;
+  }
+
+  > p {
+    max-width: 62ch;
+    margin: 0;
+    line-height: 1.65;
+  }
+}
+
+.music-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.music-feature {
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 0.75fr)
+    minmax(0, 1.25fr);
+  gap: clamp(
+    var(--spacing-md),
+    4vw,
+    var(--spacing-lg)
+  );
+  align-items: center;
+}
+
+.music-feature__cover {
+  width: min(100%, 430px);
+  justify-self: center;
+  aspect-ratio: 1;
+
+  img,
+  .music-feature__cover-placeholder {
+    @include framed;
+
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: calc(
+      var(--radius-card) * 1.25
+    );
+  }
+
+  img {
+    object-fit: cover;
+    box-shadow:
+      0 18px 48px rgb(0 0 0 / 35%);
+  }
+}
+
+.music-feature__cover-placeholder,
+.music-album-card__placeholder {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      rgb(252 170 193 / 24%),
+      transparent 42%
+    ),
+    var(--color-surface);
+
+  app-icon {
+    width: 84px;
+    opacity: 0.75;
+  }
+}
+
+.music-feature__content {
+  min-width: 0;
+
+  h2 {
+    margin:
+      var(--spacing-xs)
+      0;
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 4.4rem);
+    line-height: 1;
+  }
+}
+
+.music-feature__label,
+.music-section__header span {
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.music-feature__release-date {
+  margin: 0;
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+.music-feature__description {
+  max-width: 58ch;
+  margin:
+    var(--spacing-md)
+    0;
+  line-height: 1.65;
+}
+
+.music-feature__support-note {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: flex-start;
+  max-width: 620px;
+  padding: var(--spacing-sm);
+  border-left: 3px solid var(--color-primary);
+  background: rgb(36 17 34 / 52%);
+
+  > div {
+    display: grid;
+    gap: 2px;
+
+    span {
+      opacity: 0.78;
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+  }
+}
+
+.music-section {
+  padding: var(--spacing-lg);
+
+  &--tracks {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(58 52 54 / 34%),
+        rgb(36 17 34 / 76%)
+      );
+  }
+}
+
+.music-section__header {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(260px, 0.8fr);
+  gap: var(--spacing-lg);
+  align-items: end;
+  margin-bottom: var(--spacing-lg);
+
+  h2 {
+    margin: 2px 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1;
+  }
+
+  > p {
+    margin: 0;
+    opacity: 0.78;
+    line-height: 1.55;
+  }
+}
+
+.music-albums {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.music-album-card {
+  @include framed(var(--control-border-width));
+
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.music-album-card__cover {
+  aspect-ratio: 1;
+
+  img,
+  .music-album-card__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  img {
+    object-fit: cover;
+  }
+}
+
+.music-album-card__content {
+  display: grid;
+  gap: 3px;
+  padding: var(--spacing-sm);
+
+  h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+  }
+
+  span {
+    opacity: 0.65;
+    font-size: 0.8rem;
+  }
+}
+
+.music-page__empty,
+.music-page__empty-state {
+  text-align: center;
+}
+
+.music-page__empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+
+  app-icon {
+    width: 64px;
+  }
+
+  h2 {
+    margin:
+      var(--spacing-sm)
+      0
+      0;
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+
+  p {
+    max-width: 52ch;
+    margin: var(--spacing-xs) auto 0;
+  }
+}
+
+@include compact-layout {
+  .music-hero {
+    padding: var(--spacing-md);
+
+    &::before {
+      background:
+        linear-gradient(
+          180deg,
+          rgb(36 17 34 / 90%),
+          rgb(36 17 34 / 80%)
+        ),
+        url('/images/hero-bg-music.png')
+          center / cover no-repeat;
+    }
+  }
+
+  .music-feature {
+    grid-template-columns: 1fr;
+  }
+
+  .music-feature__cover {
+    width: min(100%, 360px);
+  }
+
+  .music-section {
+    padding: var(--spacing-md);
+  }
+
+  .music-section__header {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+    align-items: start;
+  }
+
+  .music-albums {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .music-albums {
+    grid-template-columns: 1fr;
+  }
+}

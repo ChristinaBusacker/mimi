@@ -1,0 +1,139 @@
+{
+  "localizations": [
+    {
+      "key": "music.page.eyebrow",
+      "de": "Mimi als Künstlerin",
+      "en": "Mimi as an artist"
+    },
+    {
+      "key": "music.page.title",
+      "de": "Musik, Geschichten und ein bisschen mehr dahinter.",
+      "en": "Music, stories, and a little more behind it."
+    },
+    {
+      "key": "music.page.intro",
+      "de": "Hier findest du Mimis Veröffentlichungen und Hörproben. Die Website gibt ihrer Musik Raum außerhalb der üblichen Streamingplattformen.",
+      "en": "Find Mimi's releases and previews here. The website gives her music room beyond the usual streaming platforms."
+    },
+    {
+      "key": "music.page.currentRelease",
+      "de": "Aktuelles Release",
+      "en": "Current release"
+    },
+    {
+      "key": "music.page.released",
+      "de": "Veröffentlicht am",
+      "en": "Released on"
+    },
+    {
+      "key": "music.page.featureDescription",
+      "de": "Hör direkt in die einzelnen Tracks hinein und entscheide selbst, wo du die vollständige Musik hören oder Mimi unterstützen möchtest.",
+      "en": "Listen to previews of the individual tracks and choose where you want to hear the full music or support Mimi."
+    },
+    {
+      "key": "music.support.title",
+      "de": "Direkter Support macht mehr Unterschied.",
+      "en": "Direct support makes more of a difference."
+    },
+    {
+      "key": "music.support.description",
+      "de": "Streaming bleibt bequem und gehört dazu. Wenn für einen Track eine direkte Kauf- oder Supportmöglichkeit vorhanden ist, hilft dieser Weg Mimi unmittelbarer.",
+      "en": "Streaming is convenient and remains part of the picture. When a track offers a direct purchase or support option, that route supports Mimi more directly."
+    },
+    {
+      "key": "music.support.action",
+      "de": "Unterstützen",
+      "en": "Support"
+    },
+    {
+      "key": "music.page.listenLabel",
+      "de": "Reinhören",
+      "en": "Listen"
+    },
+    {
+      "key": "music.page.listenTitle",
+      "de": "Tracks vom aktuellen Release",
+      "en": "Tracks from the current release"
+    },
+    {
+      "key": "music.page.listenDescription",
+      "de": "Die Hörproben laufen über einen gemeinsamen Player. Startest du einen anderen Track, wird die vorherige Preview beendet.",
+      "en": "Previews use one shared player. Starting another track stops the previous preview."
+    },
+    {
+      "key": "music.page.noTracks",
+      "de": "Für dieses Release sind noch keine veröffentlichten Tracks verfügbar.",
+      "en": "No published tracks are available for this release yet."
+    },
+    {
+      "key": "music.page.catalogLabel",
+      "de": "Diskografie",
+      "en": "Discography"
+    },
+    {
+      "key": "music.page.catalogTitle",
+      "de": "Weitere Releases",
+      "en": "More releases"
+    },
+    {
+      "key": "music.page.catalogDescription",
+      "de": "Weitere veröffentlichte Musik von Mimi, chronologisch vom neuesten Release zurück.",
+      "en": "More released music from Mimi, ordered from the newest release backwards."
+    },
+    {
+      "key": "music.page.emptyTitle",
+      "de": "Hier entsteht Mimis Musikbereich.",
+      "en": "Mimi's music section is taking shape here."
+    },
+    {
+      "key": "music.page.emptyDescription",
+      "de": "Sobald ein Release veröffentlicht ist, erscheint es hier automatisch.",
+      "en": "As soon as a release is published, it will appear here automatically."
+    },
+    {
+      "key": "music.player.nowPlaying",
+      "de": "Jetzt läuft",
+      "en": "Now playing"
+    },
+    {
+      "key": "music.player.play",
+      "de": "Wiedergabe starten",
+      "en": "Start playback"
+    },
+    {
+      "key": "music.player.pause",
+      "de": "Wiedergabe pausieren",
+      "en": "Pause playback"
+    },
+    {
+      "key": "music.player.playTrack",
+      "de": "Track anhören",
+      "en": "Play track"
+    },
+    {
+      "key": "music.player.pauseTrack",
+      "de": "Track pausieren",
+      "en": "Pause track"
+    },
+    {
+      "key": "music.player.noPreview",
+      "de": "Für diesen Track gibt es keine Hörprobe",
+      "en": "No preview is available for this track"
+    },
+    {
+      "key": "music.player.progress",
+      "de": "Wiedergabeposition",
+      "en": "Playback position"
+    },
+    {
+      "key": "music.player.previewLength",
+      "de": "Preview",
+      "en": "Preview"
+    },
+    {
+      "key": "music.player.fullLength",
+      "de": "vollständig",
+      "en": "full"
+    }
+  ]
+}

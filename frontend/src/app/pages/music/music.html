@@ -1,1 +1,141 @@
-<p>music works!</p>
+@let musicData = data();
+@let featuredAlbum = musicData.featuredAlbum;
+
+<section class="music-page">
+  <section class="music-hero">
+    <div class="music-hero__intro">
+      <div class="music-hero__eyebrow">
+        <app-icon name="music" class="secondary" />
+        <span>{{ 'music.page.eyebrow' | i18n | async }}</span>
+      </div>
+
+      <h1>{{ 'music.page.title' | i18n | async }}</h1>
+      <p>{{ 'music.page.intro' | i18n | async }}</p>
+    </div>
+
+    @if (featuredAlbum) {
+      <div class="music-feature">
+        <div class="music-feature__cover">
+          @if (featuredAlbum.coverAssetId) {
+            <img
+              [src]="assetUrl(featuredAlbum.coverAssetId)"
+              [alt]="featuredAlbum.title"
+            />
+          } @else {
+            <div class="music-feature__cover-placeholder">
+              <app-icon name="music" class="secondary" />
+            </div>
+          }
+        </div>
+
+        <div class="music-feature__content">
+          <span class="music-feature__label">
+            {{ 'music.page.currentRelease' | i18n | async }}
+          </span>
+
+          <h2>{{ featuredAlbum.title }}</h2>
+
+          @if (
+            formatReleaseDate(
+              featuredAlbum.releasedAt,
+              musicData.locale
+            );
+            as releaseDate
+          ) {
+            <p class="music-feature__release-date">
+              {{ 'music.page.released' | i18n | async }}
+              {{ releaseDate }}
+            </p>
+          }
+
+          <p class="music-feature__description">
+            {{ 'music.page.featureDescription' | i18n | async }}
+          </p>
+
+          <div class="music-feature__support-note">
+            <app-icon name="heart" class="primary" />
+
+            <div>
+              <strong>
+                {{ 'music.support.title' | i18n | async }}
+              </strong>
+              <span>
+                {{ 'music.support.description' | i18n | async }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </section>
+
+  @if (featuredAlbum) {
+    <section class="music-section music-section--tracks">
+      <header class="music-section__header">
+        <div>
+          <span>{{ 'music.page.listenLabel' | i18n | async }}</span>
+          <h2>{{ 'music.page.listenTitle' | i18n | async }}</h2>
+        </div>
+
+        <p>{{ 'music.page.listenDescription' | i18n | async }}</p>
+      </header>
+
+      @if (featuredAlbum.tracks.length) {
+        <app-music-track-player
+          [tracks]="featuredAlbum.tracks"
+        />
+      } @else {
+        <p class="music-page__empty">
+          {{ 'music.page.noTracks' | i18n | async }}
+        </p>
+      }
+    </section>
+
+    @if (otherAlbums().length) {
+      <section class="music-section">
+        <header class="music-section__header">
+          <div>
+            <span>{{ 'music.page.catalogLabel' | i18n | async }}</span>
+            <h2>{{ 'music.page.catalogTitle' | i18n | async }}</h2>
+          </div>
+
+          <p>{{ 'music.page.catalogDescription' | i18n | async }}</p>
+        </header>
+
+        <div class="music-albums">
+          @for (album of otherAlbums(); track album.id) {
+            <article class="music-album-card">
+              <div class="music-album-card__cover">
+                @if (album.coverAssetId) {
+                  <img
+                    [src]="assetUrl(album.coverAssetId)"
+                    [alt]="album.title"
+                    loading="lazy"
+                  />
+                } @else {
+                  <div class="music-album-card__placeholder">
+                    <app-icon name="music" class="secondary" />
+                  </div>
+                }
+              </div>
+
+              <div class="music-album-card__content">
+                <h3>{{ album.title }}</h3>
+
+                @if (albumReleaseDate(album); as releaseDate) {
+                  <span>{{ releaseDate }}</span>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  } @else {
+    <section class="music-section music-page__empty-state">
+      <app-icon name="music" class="secondary" />
+      <h2>{{ 'music.page.emptyTitle' | i18n | async }}</h2>
+      <p>{{ 'music.page.emptyDescription' | i18n | async }}</p>
+    </section>
+  }
+</section>

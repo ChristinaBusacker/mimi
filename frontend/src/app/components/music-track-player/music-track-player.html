@@ -1,0 +1,147 @@
+<div class="music-track-player">
+  <audio
+    #audio
+    preload="metadata"
+    (timeupdate)="onTimeUpdate($event)"
+    (play)="onPlay()"
+    (pause)="onPause()"
+    (ended)="onEnded()"
+  ></audio>
+
+  @if (activeTrack(); as currentTrack) {
+    <div class="music-track-player__now-playing">
+      <button
+        type="button"
+        class="music-track-player__main-toggle"
+        [attr.aria-label]="
+          (playing()
+            ? 'music.player.pause'
+            : 'music.player.play')
+            | i18n
+            | async
+        "
+        (click)="toggleTrack(currentTrack)"
+      >
+        <span aria-hidden="true">
+          {{ playing() ? 'Ⅱ' : '▶' }}
+        </span>
+      </button>
+
+      <div class="music-track-player__current">
+        <span>
+          {{ 'music.player.nowPlaying' | i18n | async }}
+        </span>
+        <strong>{{ currentTrack.title }}</strong>
+      </div>
+
+      <input
+        type="range"
+        min="0"
+        [max]="currentTrack.previewDurationSeconds"
+        step="0.1"
+        [value]="currentTime()"
+        [attr.aria-label]="'music.player.progress' | i18n | async"
+        (input)="seek($event)"
+      />
+
+      <span class="music-track-player__time">
+        {{ formatDuration(currentTime()) }}
+        /
+        {{ formatDuration(currentTrack.previewDurationSeconds) }}
+      </span>
+    </div>
+  }
+
+  <ol class="music-track-player__tracks">
+    @for (track of tracks(); track track.id; let index = $index) {
+      <li
+        [class.music-track-player__track--active]="activeTrackId() === track.id"
+      >
+        <span class="music-track-player__number">
+          {{ track.trackNumber ?? index + 1 }}
+        </span>
+
+        <button
+          type="button"
+          class="music-track-player__toggle"
+          [disabled]="!track.previewAssetId"
+          [attr.aria-label]="
+            (
+              track.previewAssetId
+                ? (
+                    isTrackPlaying(track)
+                      ? 'music.player.pauseTrack'
+                      : 'music.player.playTrack'
+                  )
+                : 'music.player.noPreview'
+            )
+              | i18n
+              | async
+          "
+          (click)="toggleTrack(track)"
+        >
+          <span aria-hidden="true">
+            {{ isTrackPlaying(track) ? 'Ⅱ' : '▶' }}
+          </span>
+        </button>
+
+        <div class="music-track-player__title">
+          <strong>{{ track.title }}</strong>
+
+          <span>
+            @if (track.previewAssetId) {
+              {{
+                'music.player.previewLength'
+                  | i18n
+                  | async
+              }}
+              {{ formatDuration(track.previewDurationSeconds) }}
+              ·
+            }
+
+            {{
+              'music.player.fullLength'
+                | i18n
+                | async
+            }}
+            {{ formatDuration(track.durationSeconds) }}
+          </span>
+        </div>
+
+        <div class="music-track-player__links">
+          @if (track.supportUrl) {
+            <a
+              class="music-track-player__support"
+              [href]="track.supportUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <app-icon name="heart" class="small" />
+              {{ 'music.support.action' | i18n | async }}
+            </a>
+          }
+
+          @if (track.spotifyUrl) {
+            <a
+              [href]="track.spotifyUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Spotify
+            </a>
+          }
+
+          @if (track.deezerUrl) {
+            <a
+              [href]="track.deezerUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Deezer
+            </a>
+          }
+        </div>
+      </li>
+    }
+  </ol>
+</div>
