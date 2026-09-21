@@ -1,7 +1,4 @@
-import type {
-  ContentMediaAlignment,
-  ContentMediaSize,
-} from '@shared/content/content-media';
+import type { ContentMediaAlignment, ContentMediaSize } from '@shared/content/content-media';
 
 import { Injectable } from '@nestjs/common';
 import MarkdownIt from 'markdown-it';
@@ -11,8 +8,7 @@ const ASSET_SOURCE_PATTERN =
   /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
 
 const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,20}$/;
-const MEDIA_METADATA_PATTERN =
-  /^mimi-media:(left|center|right):(small|medium|large|full)$/;
+const MEDIA_METADATA_PATTERN = /^mimi-media:(left|center|right):(small|medium|large|full)$/;
 const YOUTUBE_BLOCK_PATTERN =
   /^:::youtube\s+([A-Za-z0-9_-]{6,20})(?:\s+(left|center|right))?(?:\s+(small|medium|large|full))?\s*$/;
 
@@ -67,23 +63,9 @@ export class MarkdownRendererService {
       ],
       allowedAttributes: {
         a: ['href', 'title'],
-        img: [
-          'src',
-          'alt',
-          'title',
-          'loading',
-          'decoding',
-          'class',
-        ],
+        img: ['src', 'alt', 'title', 'loading', 'decoding', 'class'],
         div: ['class'],
-        iframe: [
-          'src',
-          'title',
-          'loading',
-          'allow',
-          'allowfullscreen',
-          'referrerpolicy',
-        ],
+        iframe: ['src', 'title', 'loading', 'allow', 'allowfullscreen', 'referrerpolicy'],
       },
       allowedClasses: {
         img: [
@@ -127,10 +109,10 @@ export class MarkdownRendererService {
       const assetId = assetMatch[1];
       const alt = this.markdown.utils.escapeHtml(token.content);
       const title = token.attrGet('title');
-      const layout = this.parseMediaMetadata(title);
+      const layout = this.parseMediaMetadata(title + '');
       const titleAttribute =
-        title && !MEDIA_METADATA_PATTERN.test(title)
-          ? ` title="${this.markdown.utils.escapeHtml(title)}"`
+        title && !MEDIA_METADATA_PATTERN.test(title + '')
+          ? ` title="${this.markdown.utils.escapeHtml(title + '')}"`
           : '';
 
       return (
@@ -179,14 +161,8 @@ export class MarkdownRendererService {
         token.block = true;
         token.map = [startLine, closingLine + 1];
         token.attrSet('video-id', match[1]);
-        token.attrSet(
-          'alignment',
-          match[2] ?? DEFAULT_MEDIA_LAYOUT.alignment,
-        );
-        token.attrSet(
-          'size',
-          match[3] ?? DEFAULT_MEDIA_LAYOUT.size,
-        );
+        token.attrSet('alignment', match[2] ?? DEFAULT_MEDIA_LAYOUT.alignment);
+        token.attrSet('size', match[3] ?? DEFAULT_MEDIA_LAYOUT.size);
 
         state.line = closingLine + 1;
 
@@ -197,13 +173,13 @@ export class MarkdownRendererService {
     this.markdown.renderer.rules.youtube = (tokens, index): string => {
       const videoId = tokens[index].attrGet('video-id');
 
-      if (!videoId || !YOUTUBE_ID_PATTERN.test(videoId)) {
+      if (!videoId || !YOUTUBE_ID_PATTERN.test(videoId + '')) {
         return '';
       }
 
       const layout = this.normalizeMediaLayout(
-        tokens[index].attrGet('alignment'),
-        tokens[index].attrGet('size'),
+        tokens[index].attrGet('alignment') + '',
+        tokens[index].attrGet('size') + '',
       );
 
       return (
@@ -219,9 +195,7 @@ export class MarkdownRendererService {
     };
   }
 
-  private parseMediaMetadata(
-    value: string | null,
-  ): ContentMediaLayout {
+  private parseMediaMetadata(value: string | null): ContentMediaLayout {
     if (!value) {
       return DEFAULT_MEDIA_LAYOUT;
     }
@@ -236,34 +210,20 @@ export class MarkdownRendererService {
       : DEFAULT_MEDIA_LAYOUT;
   }
 
-  private normalizeMediaLayout(
-    alignment: string | null,
-    size: string | null,
-  ): ContentMediaLayout {
+  private normalizeMediaLayout(alignment: string | null, size: string | null): ContentMediaLayout {
     return {
       alignment:
-        alignment === 'left' ||
-        alignment === 'right' ||
-        alignment === 'center'
+        alignment === 'left' || alignment === 'right' || alignment === 'center'
           ? alignment
           : DEFAULT_MEDIA_LAYOUT.alignment,
       size:
-        size === 'small' ||
-        size === 'medium' ||
-        size === 'large' ||
-        size === 'full'
+        size === 'small' || size === 'medium' || size === 'large' || size === 'full'
           ? size
           : DEFAULT_MEDIA_LAYOUT.size,
     };
   }
 
-  private mediaClasses(
-    layout: ContentMediaLayout,
-  ): string {
-    return [
-      'content-media',
-      `media-${layout.alignment}`,
-      `size-${layout.size}`,
-    ].join(' ');
+  private mediaClasses(layout: ContentMediaLayout): string {
+    return ['content-media', `media-${layout.alignment}`, `size-${layout.size}`].join(' ');
   }
 }

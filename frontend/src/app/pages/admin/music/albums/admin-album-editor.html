@@ -250,6 +250,7 @@
           [label]="'admin.music.content' | i18n | async"
           [assets]="images()"
           (assetUploaded)="addImage($event)"
+          (assetDeleted)="removeImage($event)"
         />
       </fieldset>
 
@@ -266,6 +267,7 @@
           [label]="'admin.music.content' | i18n | async"
           [assets]="images()"
           (assetUploaded)="addImage($event)"
+          (assetDeleted)="removeImage($event)"
         />
       </fieldset>
 

@@ -167,23 +167,42 @@
 
   @if (panel() === 'image') {
     <div class="markdown-editor__panel">
-      <label>
+      <div class="image-asset">
         <span>{{ 'admin.markdown.imageAsset' | i18n | async }}</span>
-        <select
-          [value]="imageAssetId()"
-          (change)="setImageAssetId($event)"
-        >
-          <option value="">
-            {{ 'admin.markdown.selectImage' | i18n | async }}
-          </option>
 
-          @for (asset of availableAssets(); track asset.id) {
-            <option [value]="asset.id">
-              {{ asset.originalFilename }}
-            </option>
-          }
-        </select>
-      </label>
+        @if (selectedImage(); as asset) {
+          <button
+            type="button"
+            class="selected-asset"
+            (click)="openImageLibrary()"
+          >
+            <img
+              [src]="asset.url"
+              [alt]="asset.originalFilename"
+            />
+            <strong>{{ asset.originalFilename }}</strong>
+          </button>
+        } @else {
+          <p>{{ 'admin.assetPicker.noneSelected' | i18n | async }}</p>
+        }
+
+        <button
+          type="button"
+          class="choose-asset"
+          (click)="openImageLibrary()"
+        >
+          {{ 'admin.markdown.selectImage' | i18n | async }}
+        </button>
+      </div>
+
+      <app-asset-library
+        type="image"
+        [assets]="availableAssets()"
+        [selectedId]="imageAssetId()"
+        (assetSelected)="selectImageAsset($event)"
+        (assetUploaded)="addImageAsset($event)"
+        (assetDeleted)="removeImageAsset($event)"
+      />
 
       <label>
         <span>{{ 'admin.markdown.imageAlt' | i18n | async }}</span>
@@ -264,27 +283,10 @@
         </div>
       </div>
 
-      <label class="markdown-editor__upload">
-        <span>
-          {{
-            (uploading()
-              ? 'admin.markdown.uploading'
-              : 'admin.markdown.uploadImage')
-              | i18n
-              | async
-          }}
-        </span>
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/avif"
-          [disabled]="uploading()"
-          (change)="uploadImage($event)"
-        />
-      </label>
-
       <div class="markdown-editor__panel-actions">
         <button
           type="button"
+          [disabled]="!imageAssetId()"
           (click)="insertImage()"
         >
           {{ 'admin.markdown.insertImage' | i18n | async }}

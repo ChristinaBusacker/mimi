@@ -31,10 +31,9 @@ import {
 import { Editor } from '@tiptap/core';
 import { Markdown } from '@tiptap/markdown';
 import StarterKit from '@tiptap/starter-kit';
-import { firstValueFrom } from 'rxjs';
 
-import { AdminAssetsService } from '../../core/assets/admin-assets.service';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
+import { AssetLibrary } from '../asset-library/asset-library';
 import { AssetImage } from './asset-image.extension';
 import { YoutubeEmbed } from './youtube-embed.extension';
 
@@ -49,6 +48,7 @@ const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,20}$/;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   imports: [
+    AssetLibrary,
     AsyncPipe,
     I18nPipe,
   ],
@@ -69,16 +69,17 @@ export class MarkdownEditor
   implements AfterViewInit, OnDestroy, ControlValueAccessor
 {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly assetsService = inject(AdminAssetsService);
   private readonly editorHost =
     viewChild<ElementRef<HTMLElement>>('editorHost');
+  private readonly imageLibrary =
+    viewChild(AssetLibrary);
 
   readonly label = input<string | null>('');
   readonly assets = input<readonly Asset[]>([]);
   readonly assetUploaded = output<Asset>();
+  readonly assetDeleted = output<string>();
 
   private readonly editor = signal<Editor | null>(null);
-  private readonly uploadedAssets = signal<Asset[]>([]);
   private readonly revision = signal(0);
   private readonly disabled = signal(false);
 
@@ -95,21 +96,22 @@ export class MarkdownEditor
     signal<ContentMediaAlignment>('center');
   protected readonly youtubeSize =
     signal<ContentMediaSize>('large');
-  protected readonly uploading = signal(false);
   protected readonly errorKey = signal<string | null>(null);
 
-  protected readonly availableAssets = computed(() => {
-    const byId = new Map<string, Asset>();
+  protected readonly availableAssets = computed(
+    () =>
+      this.assets().filter(
+        (asset) => asset.type === 'image',
+      ),
+  );
 
-    for (const asset of [
-      ...this.uploadedAssets(),
-      ...this.assets(),
-    ]) {
-      byId.set(asset.id, asset);
-    }
-
-    return [...byId.values()];
-  });
+  protected readonly selectedImage = computed(
+    () =>
+      this.availableAssets().find(
+        (asset) =>
+          asset.id === this.imageAssetId(),
+      ) ?? null,
+  );
 
   private value = '';
   private onChange: (value: string) => void =
@@ -420,10 +422,34 @@ export class MarkdownEditor
     this.closePanel();
   }
 
-  protected setImageAssetId(event: Event): void {
-    this.imageAssetId.set(
-      this.readControlValue(event),
-    );
+  protected openImageLibrary(): void {
+    void this.imageLibrary()?.open();
+  }
+
+  protected selectImageAsset(
+    asset: Asset,
+  ): void {
+    this.imageAssetId.set(asset.id);
+    this.errorKey.set(null);
+  }
+
+  protected addImageAsset(
+    asset: Asset,
+  ): void {
+    this.imageAssetId.set(asset.id);
+    this.assetUploaded.emit(asset);
+  }
+
+  protected removeImageAsset(
+    assetId: string,
+  ): void {
+    if (
+      this.imageAssetId() === assetId
+    ) {
+      this.imageAssetId.set('');
+    }
+
+    this.assetDeleted.emit(assetId);
   }
 
   protected setImageAlt(event: Event): void {
@@ -462,50 +488,6 @@ export class MarkdownEditor
     this.imageAlignment.set('center');
     this.imageSize.set('large');
     this.closePanel();
-  }
-
-  protected async uploadImage(
-    event: Event,
-  ): Promise<void> {
-    const target = event.target;
-
-    if (
-      !(target instanceof HTMLInputElement) ||
-      !target.files?.length ||
-      this.uploading()
-    ) {
-      return;
-    }
-
-    const file = target.files[0];
-
-    this.uploading.set(true);
-    this.errorKey.set(null);
-
-    try {
-      const asset = await firstValueFrom(
-        this.assetsService.upload(file),
-      );
-
-      this.uploadedAssets.update(
-        (assets) => [
-          asset,
-          ...assets.filter(
-            (candidate) =>
-              candidate.id !== asset.id,
-          ),
-        ],
-      );
-      this.imageAssetId.set(asset.id);
-      this.assetUploaded.emit(asset);
-    } catch {
-      this.errorKey.set(
-        'admin.markdown.uploadFailed',
-      );
-    } finally {
-      target.value = '';
-      this.uploading.set(false);
-    }
   }
 
   protected setYoutubeValue(event: Event): void {
