@@ -73,6 +73,37 @@
   }
 }
 
+.markdown-editor__media-options {
+  display: grid;
+  gap: var(--spacing-xs);
+
+  > span {
+    font-weight: 700;
+  }
+}
+
+.markdown-editor__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+
+  button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: var(--control-border-width) solid var(--color-secondary);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+
+    &.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+  }
+}
+
 .markdown-editor__upload {
   span {
     justify-self: start;
@@ -146,24 +177,74 @@
     border-left: var(--control-border-width) solid var(--color-secondary);
   }
 
+  .content-media {
+    max-width: 100%;
+    margin-block: var(--spacing-md);
+  }
+
   img[data-asset-id] {
-    display: block;
-    max-width: min(100%, 720px);
+    height: auto;
     max-height: 560px;
-    margin: var(--spacing-md) auto;
     border-radius: var(--radius-card);
     object-fit: contain;
+  }
+
+  .media-left {
+    float: left;
+    margin-right: var(--spacing-md);
+  }
+
+  .media-center {
+    display: block;
+    margin-inline: auto;
+  }
+
+  .media-right {
+    float: right;
+    margin-left: var(--spacing-md);
+  }
+
+  .size-small {
+    width: min(100%, 240px);
+  }
+
+  .size-medium {
+    width: min(100%, 360px);
+  }
+
+  .size-large {
+    width: min(100%, 560px);
+  }
+
+  .size-full {
+    width: 100%;
   }
 
   .markdown-editor__youtube-node {
     display: grid;
     place-items: center;
     min-height: 160px;
-    margin: var(--spacing-md) 0;
     padding: var(--spacing-md);
     border: var(--control-border-width) dashed var(--color-secondary);
     border-radius: var(--radius-card);
     background: var(--color-menu-surface);
     font-weight: 800;
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}
+
+@include compact-layout {
+  .markdown-editor__content {
+    .media-left,
+    .media-right {
+      float: none;
+      width: 100%;
+      margin-inline: 0;
+    }
   }
 }

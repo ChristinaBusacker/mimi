@@ -194,6 +194,76 @@
         />
       </label>
 
+      <div class="markdown-editor__media-options">
+        <span>{{ 'admin.markdown.position' | i18n | async }}</span>
+
+        <div class="markdown-editor__choices">
+          <button
+            type="button"
+            [class.active]="imageAlignment() === 'left'"
+            [attr.aria-pressed]="imageAlignment() === 'left'"
+            (click)="setImageAlignment('left')"
+          >
+            {{ 'admin.markdown.position.left' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="imageAlignment() === 'center'"
+            [attr.aria-pressed]="imageAlignment() === 'center'"
+            (click)="setImageAlignment('center')"
+          >
+            {{ 'admin.markdown.position.center' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="imageAlignment() === 'right'"
+            [attr.aria-pressed]="imageAlignment() === 'right'"
+            (click)="setImageAlignment('right')"
+          >
+            {{ 'admin.markdown.position.right' | i18n | async }}
+          </button>
+        </div>
+      </div>
+
+      <div class="markdown-editor__media-options">
+        <span>{{ 'admin.markdown.size' | i18n | async }}</span>
+
+        <div class="markdown-editor__choices">
+          <button
+            type="button"
+            [class.active]="imageSize() === 'small'"
+            [attr.aria-pressed]="imageSize() === 'small'"
+            (click)="setImageSize('small')"
+          >
+            {{ 'admin.markdown.size.small' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="imageSize() === 'medium'"
+            [attr.aria-pressed]="imageSize() === 'medium'"
+            (click)="setImageSize('medium')"
+          >
+            {{ 'admin.markdown.size.medium' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="imageSize() === 'large'"
+            [attr.aria-pressed]="imageSize() === 'large'"
+            (click)="setImageSize('large')"
+          >
+            {{ 'admin.markdown.size.large' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="imageSize() === 'full'"
+            [attr.aria-pressed]="imageSize() === 'full'"
+            (click)="setImageSize('full')"
+          >
+            {{ 'admin.markdown.size.full' | i18n | async }}
+          </button>
+        </div>
+      </div>
+
       <label class="markdown-editor__upload">
         <span>
           {{
@@ -240,6 +310,76 @@
           (input)="setYoutubeValue($event)"
         />
       </label>
+
+      <div class="markdown-editor__media-options">
+        <span>{{ 'admin.markdown.position' | i18n | async }}</span>
+
+        <div class="markdown-editor__choices">
+          <button
+            type="button"
+            [class.active]="youtubeAlignment() === 'left'"
+            [attr.aria-pressed]="youtubeAlignment() === 'left'"
+            (click)="setYoutubeAlignment('left')"
+          >
+            {{ 'admin.markdown.position.left' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="youtubeAlignment() === 'center'"
+            [attr.aria-pressed]="youtubeAlignment() === 'center'"
+            (click)="setYoutubeAlignment('center')"
+          >
+            {{ 'admin.markdown.position.center' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="youtubeAlignment() === 'right'"
+            [attr.aria-pressed]="youtubeAlignment() === 'right'"
+            (click)="setYoutubeAlignment('right')"
+          >
+            {{ 'admin.markdown.position.right' | i18n | async }}
+          </button>
+        </div>
+      </div>
+
+      <div class="markdown-editor__media-options">
+        <span>{{ 'admin.markdown.size' | i18n | async }}</span>
+
+        <div class="markdown-editor__choices">
+          <button
+            type="button"
+            [class.active]="youtubeSize() === 'small'"
+            [attr.aria-pressed]="youtubeSize() === 'small'"
+            (click)="setYoutubeSize('small')"
+          >
+            {{ 'admin.markdown.size.small' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="youtubeSize() === 'medium'"
+            [attr.aria-pressed]="youtubeSize() === 'medium'"
+            (click)="setYoutubeSize('medium')"
+          >
+            {{ 'admin.markdown.size.medium' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="youtubeSize() === 'large'"
+            [attr.aria-pressed]="youtubeSize() === 'large'"
+            (click)="setYoutubeSize('large')"
+          >
+            {{ 'admin.markdown.size.large' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            [class.active]="youtubeSize() === 'full'"
+            [attr.aria-pressed]="youtubeSize() === 'full'"
+            (click)="setYoutubeSize('full')"
+          >
+            {{ 'admin.markdown.size.full' | i18n | async }}
+          </button>
+        </div>
+      </div>
 
       <div class="markdown-editor__panel-actions">
         <button

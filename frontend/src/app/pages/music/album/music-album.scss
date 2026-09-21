@@ -85,36 +85,6 @@
 
 .story {
   padding: var(--spacing-lg);
-  line-height: 1.7;
-
-  > *:first-child {
-    margin-top: 0;
-  }
-
-  > *:last-child {
-    margin-bottom: 0;
-  }
-
-  h2,
-  h3 {
-    font-family: var(--font-display);
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--radius-card);
-  }
-
-  a {
-    color: var(--color-primary);
-  }
-
-  blockquote {
-    margin-inline: 0;
-    padding-left: var(--spacing-md);
-    border-left: 3px solid var(--color-secondary);
-  }
 }
 
 .tracks {

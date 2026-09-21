@@ -1,0 +1,49 @@
+{
+  "localizations": [
+    {
+      "key": "admin.markdown.position",
+      "de": "Position",
+      "en": "Position"
+    },
+    {
+      "key": "admin.markdown.position.left",
+      "de": "Links",
+      "en": "Left"
+    },
+    {
+      "key": "admin.markdown.position.center",
+      "de": "Mitte",
+      "en": "Center"
+    },
+    {
+      "key": "admin.markdown.position.right",
+      "de": "Rechts",
+      "en": "Right"
+    },
+    {
+      "key": "admin.markdown.size",
+      "de": "Größe",
+      "en": "Size"
+    },
+    {
+      "key": "admin.markdown.size.small",
+      "de": "Klein",
+      "en": "Small"
+    },
+    {
+      "key": "admin.markdown.size.medium",
+      "de": "Mittel",
+      "en": "Medium"
+    },
+    {
+      "key": "admin.markdown.size.large",
+      "de": "Groß",
+      "en": "Large"
+    },
+    {
+      "key": "admin.markdown.size.full",
+      "de": "Volle Breite",
+      "en": "Full width"
+    }
+  ]
+}

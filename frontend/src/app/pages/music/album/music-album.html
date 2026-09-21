@@ -46,7 +46,11 @@
   </app-hero>
 
   @if (album.contentHtml) {
-    <article class="story" [innerHTML]="album.contentHtml"></article>
+    <article class="story">
+      <app-rendered-content
+        [sanitizedHtml]="album.contentHtml"
+      />
+    </article>
   }
 
   <section class="tracks">

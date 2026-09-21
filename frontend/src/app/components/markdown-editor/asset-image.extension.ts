@@ -1,3 +1,8 @@
+import type {
+  ContentMediaAlignment,
+  ContentMediaSize,
+} from '@shared/content/content-media';
+
 import { Node } from '@tiptap/core';
 import '@tiptap/markdown';
 
@@ -7,7 +12,21 @@ const ASSET_SOURCE_PATTERN =
 interface MarkdownImageToken {
   href?: unknown;
   text?: unknown;
+  title?: unknown;
 }
+
+interface ContentMediaLayout {
+  alignment: ContentMediaAlignment;
+  size: ContentMediaSize;
+}
+
+const MEDIA_METADATA_PATTERN =
+  /^mimi-media:(left|center|right):(small|medium|large|full)$/;
+
+const DEFAULT_MEDIA_LAYOUT: ContentMediaLayout = {
+  alignment: 'center',
+  size: 'large',
+};
 
 function readNodeAttribute(
   attributes: Record<string, unknown> | undefined,
@@ -20,6 +39,52 @@ function readNodeAttribute(
 
 function escapeAltText(value: string): string {
   return value.replace(/[\\[\]]/g, '\\$&');
+}
+
+function readLayout(
+  attributes: Record<string, unknown> | undefined,
+): ContentMediaLayout {
+  const alignment = readNodeAttribute(
+    attributes,
+    'alignment',
+  );
+  const size = readNodeAttribute(
+    attributes,
+    'size',
+  );
+
+  return {
+    alignment:
+      alignment === 'left' ||
+      alignment === 'right' ||
+      alignment === 'center'
+        ? alignment
+        : DEFAULT_MEDIA_LAYOUT.alignment,
+    size:
+      size === 'small' ||
+      size === 'medium' ||
+      size === 'large' ||
+      size === 'full'
+        ? size
+        : DEFAULT_MEDIA_LAYOUT.size,
+  };
+}
+
+function parseLayoutTitle(
+  value: unknown,
+): ContentMediaLayout {
+  if (typeof value !== 'string') {
+    return DEFAULT_MEDIA_LAYOUT;
+  }
+
+  const match = MEDIA_METADATA_PATTERN.exec(value);
+
+  return match
+    ? {
+        alignment: match[1] as ContentMediaAlignment,
+        size: match[2] as ContentMediaSize,
+      }
+    : DEFAULT_MEDIA_LAYOUT;
 }
 
 export const AssetImage = Node.create({
@@ -39,6 +104,12 @@ export const AssetImage = Node.create({
       alt: {
         default: '',
       },
+      alignment: {
+        default: DEFAULT_MEDIA_LAYOUT.alignment,
+      },
+      size: {
+        default: DEFAULT_MEDIA_LAYOUT.size,
+      },
     };
   },
 
@@ -56,6 +127,12 @@ export const AssetImage = Node.create({
           return {
             assetId,
             alt: element.getAttribute('alt') ?? '',
+            alignment:
+              element.getAttribute('data-alignment') ??
+              DEFAULT_MEDIA_LAYOUT.alignment,
+            size:
+              element.getAttribute('data-size') ??
+              DEFAULT_MEDIA_LAYOUT.size,
           };
         },
       },
@@ -72,6 +149,8 @@ export const AssetImage = Node.create({
       return ['span', { 'data-invalid-asset': '' }];
     }
 
+    const layout = readLayout(node.attrs);
+
     return [
       'img',
       {
@@ -79,6 +158,10 @@ export const AssetImage = Node.create({
         alt:
           readNodeAttribute(node.attrs, 'alt') ?? '',
         'data-asset-id': assetId,
+        'data-alignment': layout.alignment,
+        'data-size': layout.size,
+        class:
+          `content-media media-${layout.alignment} size-${layout.size}`,
         loading: 'lazy',
       },
     ];
@@ -96,6 +179,10 @@ export const AssetImage = Node.create({
       return [];
     }
 
+    const layout = parseLayoutTitle(
+      imageToken.title,
+    );
+
     return {
       type: 'assetImage',
       attrs: {
@@ -104,6 +191,8 @@ export const AssetImage = Node.create({
           typeof imageToken.text === 'string'
             ? imageToken.text
             : '',
+        alignment: layout.alignment,
+        size: layout.size,
       },
     };
   },
@@ -121,7 +210,12 @@ export const AssetImage = Node.create({
     const alt = escapeAltText(
       readNodeAttribute(node.attrs, 'alt') ?? '',
     );
+    const layout = readLayout(node.attrs);
+    const metadata =
+      `mimi-media:${layout.alignment}:${layout.size}`;
 
-    return `![${alt}](asset:${assetId})`;
+    return (
+      `![${alt}](asset:${assetId} "${metadata}")`
+    );
   },
 });

@@ -23,6 +23,7 @@ import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import type { Language } from '../../core/i18n/i18n.types';
 import { MusicPublicService } from '../../core/music/music-public.service';
 import { Icon } from '../icon/icon';
+import { RenderedContent } from '../rendered-content/rendered-content';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +31,7 @@ import { Icon } from '../icon/icon';
     AsyncPipe,
     I18nPipe,
     Icon,
+    RenderedContent,
     RouterLink,
   ],
   selector: 'app-music-library-player',

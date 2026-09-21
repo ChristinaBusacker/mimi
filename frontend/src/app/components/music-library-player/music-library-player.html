@@ -279,10 +279,9 @@
               {{ 'music.library.loadingStory' | i18n | async }}
             </p>
           } @else if (trackDetail(); as detail) {
-            <div
-              class="story-content"
-              [innerHTML]="detail.contentHtml"
-            ></div>
+            <app-rendered-content
+              [sanitizedHtml]="detail.contentHtml"
+            />
           }
         </aside>
       }

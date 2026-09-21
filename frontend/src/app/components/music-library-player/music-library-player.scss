@@ -412,29 +412,9 @@
       padding: var(--spacing-sm);
     }
 
-    .story-content {
+    app-rendered-content {
+      display: block;
       padding: 0 var(--spacing-sm) var(--spacing-md);
-      line-height: 1.6;
-
-      > *:first-child {
-        margin-top: 0;
-      }
-
-      img {
-        max-width: 100%;
-        height: auto;
-        border-radius: var(--radius-card);
-      }
-
-      a {
-        color: var(--color-primary);
-      }
-
-      blockquote {
-        margin-inline: 0;
-        padding-left: var(--spacing-sm);
-        border-left: 2px solid var(--color-secondary);
-      }
     }
   }
 }

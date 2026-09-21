@@ -1,4 +1,8 @@
 import type { Asset } from '@shared/assets/asset';
+import type {
+  ContentMediaAlignment,
+  ContentMediaSize,
+} from '@shared/content/content-media';
 
 import {
   AsyncPipe,
@@ -82,7 +86,15 @@ export class MarkdownEditor
   protected readonly linkUrl = signal('');
   protected readonly imageAssetId = signal('');
   protected readonly imageAlt = signal('');
+  protected readonly imageAlignment =
+    signal<ContentMediaAlignment>('center');
+  protected readonly imageSize =
+    signal<ContentMediaSize>('large');
   protected readonly youtubeValue = signal('');
+  protected readonly youtubeAlignment =
+    signal<ContentMediaAlignment>('center');
+  protected readonly youtubeSize =
+    signal<ContentMediaSize>('large');
   protected readonly uploading = signal(false);
   protected readonly errorKey = signal<string | null>(null);
 
@@ -439,12 +451,16 @@ export class MarkdownEditor
         attrs: {
           assetId,
           alt: this.imageAlt().trim(),
+          alignment: this.imageAlignment(),
+          size: this.imageSize(),
         },
       })
       .run();
 
     this.imageAssetId.set('');
     this.imageAlt.set('');
+    this.imageAlignment.set('center');
+    this.imageSize.set('large');
     this.closePanel();
   }
 
@@ -519,6 +535,8 @@ export class MarkdownEditor
           type: 'youtubeEmbed',
           attrs: {
             videoId,
+            alignment: this.youtubeAlignment(),
+            size: this.youtubeSize(),
           },
         },
         {
@@ -528,7 +546,33 @@ export class MarkdownEditor
       .run();
 
     this.youtubeValue.set('');
+    this.youtubeAlignment.set('center');
+    this.youtubeSize.set('large');
     this.closePanel();
+  }
+
+  protected setImageAlignment(
+    alignment: ContentMediaAlignment,
+  ): void {
+    this.imageAlignment.set(alignment);
+  }
+
+  protected setImageSize(
+    size: ContentMediaSize,
+  ): void {
+    this.imageSize.set(size);
+  }
+
+  protected setYoutubeAlignment(
+    alignment: ContentMediaAlignment,
+  ): void {
+    this.youtubeAlignment.set(alignment);
+  }
+
+  protected setYoutubeSize(
+    size: ContentMediaSize,
+  ): void {
+    this.youtubeSize.set(size);
   }
 
   private bumpRevision(): void {
