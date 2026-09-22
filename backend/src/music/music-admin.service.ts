@@ -15,6 +15,10 @@ import {
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
 
+import {
+  AssetUsageService,
+  type AssetUsageInput,
+} from '../assets/asset-usage.service';
 import { AssetsService } from '../assets/assets.service';
 import {
   MusicAdminTranslationInputDto,
@@ -31,6 +35,8 @@ import { MusicTrackEntry } from './entities/music-track.entry';
 export class MusicAdminService {
   constructor(
     private readonly assetsService: AssetsService,
+    private readonly assetUsageService:
+      AssetUsageService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     @InjectRepository(MusicAlbumEntry)
@@ -71,6 +77,9 @@ export class MusicAdminService {
 
   async createAlbum(dto: SaveMusicAdminAlbumDto): Promise<MusicAdminAlbum> {
     await this.assertAssetType(dto.coverAssetId, 'image');
+    await this.validateTranslationAssets(
+      dto.translations,
+    );
     await this.assertAlbumSlugAvailable(dto.slug);
 
     const uuid = await this.dataSource.transaction(async (manager) => {
@@ -84,6 +93,12 @@ export class MusicAdminService {
       );
 
       await this.replaceAlbumTranslations(manager, album.uuid, dto.translations);
+      await this.assetUsageService.syncOwner(
+        manager,
+        'musicAlbum',
+        album.uuid,
+        this.albumAssetUsages(dto),
+      );
 
       return album.uuid;
     });
@@ -95,6 +110,9 @@ export class MusicAdminService {
     const album = await this.findAlbum(uuid);
 
     await this.assertAssetType(dto.coverAssetId, 'image');
+    await this.validateTranslationAssets(
+      dto.translations,
+    );
     await this.assertAlbumSlugAvailable(dto.slug, uuid);
 
     await this.dataSource.transaction(async (manager) => {
@@ -107,19 +125,35 @@ export class MusicAdminService {
       });
 
       await this.replaceAlbumTranslations(manager, uuid, dto.translations);
+      await this.assetUsageService.syncOwner(
+        manager,
+        'musicAlbum',
+        uuid,
+        this.albumAssetUsages(dto),
+      );
     });
 
     return this.getAlbum(uuid);
   }
 
   async deleteAlbum(uuid: string): Promise<void> {
-    const result = await this.albumRepository.delete({
-      uuid,
-    });
+    await this.findAlbum(uuid);
 
-    if (result.affected === 0) {
-      throw new NotFoundException(`Music album "${uuid}" not found.`);
-    }
+    await this.dataSource.transaction(
+      async (manager) => {
+        await this.assetUsageService.clearOwner(
+          manager,
+          'musicAlbum',
+          uuid,
+        );
+
+        await manager
+          .getRepository(MusicAlbumEntry)
+          .delete({
+            uuid,
+          });
+      },
+    );
   }
 
   async publishAlbumTracks(
@@ -220,6 +254,9 @@ export class MusicAdminService {
 
   async createTrack(dto: SaveMusicAdminTrackDto): Promise<MusicAdminTrack> {
     await this.validateTrackReferences(dto);
+    await this.validateTranslationAssets(
+      dto.translations,
+    );
     await this.assertTrackSlugAvailable(dto.slug);
     this.validateDurations(dto);
 
@@ -243,6 +280,12 @@ export class MusicAdminService {
       );
 
       await this.replaceTrackTranslations(manager, track.uuid, dto.translations);
+      await this.assetUsageService.syncOwner(
+        manager,
+        'musicTrack',
+        track.uuid,
+        this.trackAssetUsages(dto),
+      );
 
       return track.uuid;
     });
@@ -254,6 +297,9 @@ export class MusicAdminService {
     const track = await this.findTrack(uuid);
 
     await this.validateTrackReferences(dto);
+    await this.validateTranslationAssets(
+      dto.translations,
+    );
     await this.assertTrackSlugAvailable(dto.slug, uuid);
     this.validateDurations(dto);
 
@@ -274,19 +320,35 @@ export class MusicAdminService {
       });
 
       await this.replaceTrackTranslations(manager, uuid, dto.translations);
+      await this.assetUsageService.syncOwner(
+        manager,
+        'musicTrack',
+        uuid,
+        this.trackAssetUsages(dto),
+      );
     });
 
     return this.getTrack(uuid);
   }
 
   async deleteTrack(uuid: string): Promise<void> {
-    const result = await this.trackRepository.delete({
-      uuid,
-    });
+    await this.findTrack(uuid);
 
-    if (result.affected === 0) {
-      throw new NotFoundException(`Music track "${uuid}" not found.`);
-    }
+    await this.dataSource.transaction(
+      async (manager) => {
+        await this.assetUsageService.clearOwner(
+          manager,
+          'musicTrack',
+          uuid,
+        );
+
+        await manager
+          .getRepository(MusicTrackEntry)
+          .delete({
+            uuid,
+          });
+      },
+    );
   }
 
   private async getAlbumTracks(
@@ -385,6 +447,104 @@ export class MusicAdminService {
       this.assertAssetType(dto.coverAssetId, 'image'),
       this.assertAssetType(dto.previewAssetId, 'audio'),
     ]);
+  }
+
+  private async validateTranslationAssets(
+    translations: MusicAdminTranslationsInputDto,
+  ): Promise<void> {
+    const assetIds = new Set([
+      ...this.assetUsageService.extractMarkdownAssetIds(
+        translations.de.contentMarkdown,
+      ),
+      ...this.assetUsageService.extractMarkdownAssetIds(
+        translations.en?.contentMarkdown ?? '',
+      ),
+    ]);
+
+    await Promise.all(
+      [...assetIds].map((assetId) =>
+        this.assertAssetType(
+          assetId,
+          'image',
+        ),
+      ),
+    );
+  }
+
+  private albumAssetUsages(
+    dto: SaveMusicAdminAlbumDto,
+  ): AssetUsageInput[] {
+    return [
+      ...(dto.coverAssetId
+        ? [
+            {
+              assetUuid: dto.coverAssetId,
+              scope: 'cover',
+            },
+          ]
+        : []),
+      ...this.translationAssetUsages(
+        dto.translations,
+      ),
+    ];
+  }
+
+  private trackAssetUsages(
+    dto: SaveMusicAdminTrackDto,
+  ): AssetUsageInput[] {
+    return [
+      ...(dto.coverAssetId
+        ? [
+            {
+              assetUuid: dto.coverAssetId,
+              scope: 'cover',
+            },
+          ]
+        : []),
+      ...(dto.previewAssetId
+        ? [
+            {
+              assetUuid: dto.previewAssetId,
+              scope: 'preview',
+            },
+          ]
+        : []),
+      ...this.translationAssetUsages(
+        dto.translations,
+      ),
+    ];
+  }
+
+  private translationAssetUsages(
+    translations: MusicAdminTranslationsInputDto,
+  ): AssetUsageInput[] {
+    const usages: AssetUsageInput[] = [];
+
+    for (const [
+      locale,
+      translation,
+    ] of [
+      ['de', translations.de],
+      ['en', translations.en],
+    ] as const) {
+      if (!translation) {
+        continue;
+      }
+
+      for (
+        const assetUuid
+        of this.assetUsageService.extractMarkdownAssetIds(
+          translation.contentMarkdown,
+        )
+      ) {
+        usages.push({
+          assetUuid,
+          scope: `content:${locale}`,
+        });
+      }
+    }
+
+    return usages;
   }
 
   private validateDurations(dto: SaveMusicAdminTrackDto): void {

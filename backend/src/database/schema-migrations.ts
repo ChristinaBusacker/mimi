@@ -56,6 +56,137 @@ const migrations: readonly SchemaMigration[] = [
       `);
     },
   },
+  {
+    name: '20260922-asset-usage-tracking',
+    run: async (manager) => {
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "asset_usages" (
+          "assetUuid" uuid NOT NULL,
+          "ownerType" varchar(50) NOT NULL,
+          "ownerUuid" uuid NOT NULL,
+          "scope" varchar(50) NOT NULL,
+          CONSTRAINT "PK_asset_usages"
+            PRIMARY KEY (
+              "assetUuid",
+              "ownerType",
+              "ownerUuid",
+              "scope"
+            ),
+          CONSTRAINT "FK_asset_usages_asset"
+            FOREIGN KEY ("assetUuid")
+            REFERENCES "assets"("uuid")
+            ON DELETE RESTRICT
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_asset_usages_owner"
+        ON "asset_usages" (
+          "ownerType",
+          "ownerUuid"
+        )
+      `);
+
+      await manager.query(`
+        INSERT INTO "asset_usages" (
+          "assetUuid",
+          "ownerType",
+          "ownerUuid",
+          "scope"
+        )
+        SELECT
+          "coverAssetId",
+          'musicAlbum',
+          "uuid",
+          'cover'
+        FROM "music_albums"
+        WHERE "coverAssetId" IS NOT NULL
+        ON CONFLICT DO NOTHING
+      `);
+
+      await manager.query(`
+        INSERT INTO "asset_usages" (
+          "assetUuid",
+          "ownerType",
+          "ownerUuid",
+          "scope"
+        )
+        SELECT
+          "coverAssetId",
+          'musicTrack',
+          "uuid",
+          'cover'
+        FROM "music_tracks"
+        WHERE "coverAssetId" IS NOT NULL
+        ON CONFLICT DO NOTHING
+      `);
+
+      await manager.query(`
+        INSERT INTO "asset_usages" (
+          "assetUuid",
+          "ownerType",
+          "ownerUuid",
+          "scope"
+        )
+        SELECT
+          "previewAssetId",
+          'musicTrack',
+          "uuid",
+          'preview'
+        FROM "music_tracks"
+        WHERE "previewAssetId" IS NOT NULL
+        ON CONFLICT DO NOTHING
+      `);
+
+      await manager.query(`
+        INSERT INTO "asset_usages" (
+          "assetUuid",
+          "ownerType",
+          "ownerUuid",
+          "scope"
+        )
+        SELECT DISTINCT
+          asset."uuid",
+          'musicAlbum',
+          translation."albumUuid",
+          'content:' || translation."locale"
+        FROM "music_album_translations" translation
+        CROSS JOIN LATERAL regexp_matches(
+          translation."contentMarkdown",
+          'asset:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})',
+          'g'
+        ) AS reference(match)
+        INNER JOIN "assets" asset
+          ON asset."uuid"::text =
+            lower(reference.match[1])
+        ON CONFLICT DO NOTHING
+      `);
+
+      await manager.query(`
+        INSERT INTO "asset_usages" (
+          "assetUuid",
+          "ownerType",
+          "ownerUuid",
+          "scope"
+        )
+        SELECT DISTINCT
+          asset."uuid",
+          'musicTrack',
+          translation."trackUuid",
+          'content:' || translation."locale"
+        FROM "music_track_translations" translation
+        CROSS JOIN LATERAL regexp_matches(
+          translation."contentMarkdown",
+          'asset:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})',
+          'g'
+        ) AS reference(match)
+        INNER JOIN "assets" asset
+          ON asset."uuid"::text =
+            lower(reference.match[1])
+        ON CONFLICT DO NOTHING
+      `);
+    },
+  },
 ];
 
 export async function runSchemaMigrations(

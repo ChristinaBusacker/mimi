@@ -4,10 +4,12 @@ import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from '../auth/auth.module';
+import { AssetUsageService } from './asset-usage.service';
 import { getAssetMaxUploadBytes } from './asset.config';
 import { AdminAssetsController } from './admin-assets.controller';
 import { AssetsController } from './assets.controller';
 import { AssetEntry } from './entities/asset.entry';
+import { AssetUsageEntry } from './entities/asset-usage.entry';
 import { AssetVariantEntry } from './entities/asset-variant.entry';
 import { AssetsService } from './assets.service';
 
@@ -16,6 +18,7 @@ import { AssetsService } from './assets.service';
     AuthModule,
     TypeOrmModule.forFeature([
       AssetEntry,
+      AssetUsageEntry,
       AssetVariantEntry,
     ]),
     MulterModule.registerAsync({
@@ -32,7 +35,13 @@ import { AssetsService } from './assets.service';
     AssetsController,
     AdminAssetsController,
   ],
-  providers: [AssetsService],
-  exports: [AssetsService],
+  providers: [
+    AssetsService,
+    AssetUsageService,
+  ],
+  exports: [
+    AssetsService,
+    AssetUsageService,
+  ],
 })
 export class AssetsModule {}

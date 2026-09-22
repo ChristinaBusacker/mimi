@@ -38,6 +38,7 @@ import {
   type AssetImageVariantFormat,
   type AssetImageVariantName,
 } from './asset-image-variant';
+import { AssetUsageService } from './asset-usage.service';
 import {
   getAssetMaxUploadBytes,
   getAssetStoragePath,
@@ -91,6 +92,8 @@ export class AssetsService {
     private readonly variantRepository: Repository<AssetVariantEntry>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly assetUsageService:
+      AssetUsageService,
     configService: ConfigService,
   ) {
     const configuredStoragePath = getAssetStoragePath(configService);
@@ -279,6 +282,11 @@ export class AssetsService {
 
   async delete(uuid: string): Promise<void> {
     const asset = await this.findAsset(uuid);
+
+    await this.assetUsageService.assertUnused(
+      uuid,
+    );
+
     const variants = await this.variantRepository.findBy({
       assetUuid: uuid,
     });

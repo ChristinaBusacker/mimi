@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiConsumes,
   ApiCookieAuth,
   ApiCreatedResponse,
@@ -93,6 +94,10 @@ export class AdminAssetsController {
   })
   @ApiNoContentResponse({
     description: 'The asset was deleted.',
+  })
+  @ApiConflictResponse({
+    description:
+      'The asset is still referenced by content.',
   })
   delete(
     @Param('uuid') uuid: string,
