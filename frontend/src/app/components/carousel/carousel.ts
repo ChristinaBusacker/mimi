@@ -17,6 +17,7 @@ export type CarouselBreakpoints = Record<number, CarouselBreakpoint>;
 
 interface GlideInstance {
   destroy(): unknown;
+  go(pattern: string): unknown;
 }
 
 @Component({
@@ -47,6 +48,14 @@ export class Carousel {
       this.glide?.destroy();
       this.glide = null;
     });
+  }
+
+  protected previous(): void {
+    this.glide?.go('<');
+  }
+
+  protected next(): void {
+    this.glide?.go('>');
   }
 
   private async mount(): Promise<void> {

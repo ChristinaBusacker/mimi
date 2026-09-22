@@ -6,38 +6,47 @@
 }
 
 .carousel {
-  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 2px;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.glide {
   min-width: 0;
 }
 
 .glide__track {
+  height: 100%;
   border-radius: var(--radius-card);
+  width: 100%;
+  margin: 0 auto;
 }
 
 .controls {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  pointer-events: none;
+  align-items: stretch;
+
+  @include compact-layout {
+    display: none;
+  }
 
   button {
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    min-height: 96px;
     padding: 0;
     border: 0;
-    border-radius: var(--radius-card);
-    background: rgb(20 16 20 / 82%);
+
+    background: transparent;
     color: var(--color-text);
     cursor: pointer;
     font-size: 2.4rem;
     line-height: 1;
     opacity: 0.82;
-    pointer-events: auto;
     transition:
       background-color 160ms ease,
       color 160ms ease,
@@ -45,7 +54,7 @@
 
     &:hover,
     &:focus-visible {
-      background: rgb(36 17 34 / 96%);
+      background: rgb(36 17 34 / 26%);
       color: var(--color-primary);
       opacity: 1;
     }
@@ -58,10 +67,14 @@
 }
 
 @include compact-layout {
+  .carousel {
+    gap: var(--spacing-xs);
+  }
+
   .controls {
     button {
       width: 40px;
-      height: 72px;
+      min-height: 72px;
       font-size: 2rem;
     }
   }

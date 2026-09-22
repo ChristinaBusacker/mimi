@@ -1,12 +1,32 @@
-<div #root class="carousel glide">
-  <div class="glide__track" data-glide-el="track">
-    <div class="glide__slides">
-      <ng-content />
+<div class="carousel">
+  <div class="controls">
+    <button
+      type="button"
+      data-glide-dir="<"
+      [attr.aria-label]="previousLabel()"
+      (click)="previous()"
+    >
+      ‹
+    </button>
+  </div>
+
+  <div #root class="glide">
+    <div class="glide__track" data-glide-el="track">
+      <div class="glide__slides">
+        <ng-content />
+      </div>
     </div>
   </div>
 
-  <div class="controls" data-glide-el="controls">
-    <button type="button" data-glide-dir="<" [attr.aria-label]="previousLabel()">‹</button>
-    <button type="button" data-glide-dir=">" [attr.aria-label]="nextLabel()">›</button>
+  <div class="controls">
+    <button
+      type="button"
+      data-glide-dir=">"
+      class="right"
+      [attr.aria-label]="nextLabel()"
+      (click)="next()"
+    >
+      ›
+    </button>
   </div>
 </div>

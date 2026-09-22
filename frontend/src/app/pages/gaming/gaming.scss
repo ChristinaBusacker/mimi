@@ -90,6 +90,10 @@
   overflow: hidden;
   background: rgb(29 17 28 / 82%);
 
+  @include compact-layout {
+    margin: 0px;
+  }
+
   .artwork {
     position: absolute;
     inset: 0;

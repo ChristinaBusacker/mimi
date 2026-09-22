@@ -1,30 +1,13 @@
-import type {
-  GamingLocale,
-  GamingNextStream,
-} from '@shared/gaming/gaming';
+import type { GamingLocale, GamingNextStream } from '@shared/gaming/gaming';
 
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-} from '@angular/core';
-import {
-  toObservable,
-  toSignal,
-} from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
-import {
-  distinctUntilChanged,
-  of,
-  switchMap,
-} from 'rxjs';
+import { distinctUntilChanged, of, switchMap } from 'rxjs';
 
-import {
-  Carousel,
-  type CarouselBreakpoints,
-} from '../../components/carousel/carousel';
+import { Carousel, type CarouselBreakpoints } from '../../components/carousel/carousel';
 import { CarouselSlide } from '../../components/carousel/carousel-slide.directive';
 import { Button } from '../../components/button/button';
 import { Countdown } from '../../components/countdown/countdown';
@@ -53,52 +36,35 @@ import { I18nState } from '../../core/i18n/i18n.state';
   templateUrl: './gaming.html',
 })
 export class Gaming {
-  private readonly route =
-    inject(ActivatedRoute);
-  private readonly store =
-    inject(Store);
-  private readonly gaming =
-    inject(GamingService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly store = inject(Store);
+  private readonly gaming = inject(GamingService);
 
-  private readonly initialData =
-    this.route.snapshot.data[
-      'data'
-    ] as GamingNextStream;
+  private readonly initialData = this.route.snapshot.data['data'] as GamingNextStream;
 
-  private readonly language =
-    this.store.selectSignal(
-      I18nState.language,
-    );
+  private readonly language = this.store.selectSignal(I18nState.language);
 
-  private readonly initialLanguage =
-    this.store.selectSnapshot(
-      I18nState.language,
-    ) as GamingLocale;
+  private readonly initialLanguage = this.store.selectSnapshot(I18nState.language) as GamingLocale;
 
-  protected readonly screenshotBreakpoints:
-    CarouselBreakpoints = {
-      900: {
-        perView: 1.25,
-      },
-      560: {
-        perView: 1.05,
-        gap: 10,
-      },
-    };
+  protected readonly screenshotBreakpoints: CarouselBreakpoints = {
+    900: {
+      perView: 1.5,
+    },
+    560: {
+      perView: 1.25,
+      gap: 10,
+    },
+  };
 
   protected readonly data = toSignal(
     toObservable(this.language).pipe(
       distinctUntilChanged(),
       switchMap((locale) => {
-        const gamingLocale =
-          locale as GamingLocale;
+        const gamingLocale = locale as GamingLocale;
 
-        return gamingLocale ===
-          this.initialLanguage
+        return gamingLocale === this.initialLanguage
           ? of(this.initialData)
-          : this.gaming.getNextStream(
-              gamingLocale,
-            );
+          : this.gaming.getNextStream(gamingLocale);
       }),
     ),
     {
@@ -106,23 +72,15 @@ export class Gaming {
     },
   );
 
-  protected readonly locale =
-    this.language;
+  protected readonly locale = this.language;
 
-  protected formatDateTime(
-    value: string,
-  ): string {
-    return new Intl.DateTimeFormat(
-      this.locale() === 'de'
-        ? 'de-DE'
-        : 'en-US',
-      {
-        weekday: 'long',
-        day: '2-digit',
-        month: 'long',
-        hour: '2-digit',
-        minute: '2-digit',
-      },
-    ).format(new Date(value));
+  protected formatDateTime(value: string): string {
+    return new Intl.DateTimeFormat(this.locale() === 'de' ? 'de-DE' : 'en-US', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value));
   }
 }
