@@ -194,7 +194,7 @@
             [previousLabel]="('carousel.previous' | i18n | async) ?? ''"
             [nextLabel]="('carousel.next' | i18n | async) ?? ''"
           >
-            @for (screenshot of game.screenshots.slice(0, 3); track screenshot.fullSizeUrl) {
+            @for (screenshot of game.screenshots.slice(0, 6); track screenshot.fullSizeUrl) {
               <button
                 carouselSlide
                 type="button"

@@ -20,6 +20,8 @@ export class Lightbox {
   private readonly lightbox =
     inject(LightboxService);
 
+  protected readonly items =
+    this.lightbox.items;
   protected readonly current =
     this.lightbox.current;
   protected readonly count =
@@ -47,6 +49,10 @@ export class Lightbox {
 
   protected previous(): void {
     this.lightbox.previous();
+  }
+
+  protected select(index: number): void {
+    this.lightbox.select(index);
   }
 
   @HostListener('document:keydown', ['$event'])

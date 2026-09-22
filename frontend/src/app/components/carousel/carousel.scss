@@ -6,6 +6,7 @@
 }
 
 .carousel {
+  position: relative;
   min-width: 0;
 }
 
@@ -14,44 +15,54 @@
 }
 
 .controls {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--spacing-xs);
-  margin-top: var(--spacing-sm);
-
   position: absolute;
-  top: 50%;
-  width: 104%;
-  left: -2%;
-  transform: translateY(-50%);
-
-  @include compact-layout {
-    justify-content: space-around;
-  }
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
 
   button {
     display: grid;
     place-items: center;
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 96px;
     padding: 0;
-    border: var(--control-border-width) solid var(--color-secondary);
-    border-radius: 50%;
-    background: var(--color-surface);
+    border: 0;
+    border-radius: var(--radius-card);
+    background: rgb(20 16 20 / 82%);
     color: var(--color-text);
     cursor: pointer;
-    font-size: 1.7rem;
+    font-size: 2.4rem;
     line-height: 1;
+    opacity: 0.82;
+    pointer-events: auto;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      opacity 160ms ease;
 
     &:hover,
     &:focus-visible {
-      border-color: var(--color-primary);
+      background: rgb(36 17 34 / 96%);
       color: var(--color-primary);
+      opacity: 1;
     }
 
     &:focus-visible {
       outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline-offset: -2px;
+    }
+  }
+}
+
+@include compact-layout {
+  .controls {
+    button {
+      width: 40px;
+      height: 72px;
+      font-size: 2rem;
     }
   }
 }

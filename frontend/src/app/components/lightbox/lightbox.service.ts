@@ -43,17 +43,27 @@ export class LightboxService {
     }
 
     this.itemsState.set(items);
-    this.indexState.set(
-      Math.min(
-        Math.max(index, 0),
-        items.length - 1,
-      ),
-    );
+    this.select(index);
   }
 
   close(): void {
     this.itemsState.set([]);
     this.indexState.set(0);
+  }
+
+  select(index: number): void {
+    const count = this.itemsState().length;
+
+    if (count === 0) {
+      return;
+    }
+
+    this.indexState.set(
+      Math.min(
+        Math.max(index, 0),
+        count - 1,
+      ),
+    );
   }
 
   next(): void {

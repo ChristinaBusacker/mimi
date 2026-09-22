@@ -59,6 +59,29 @@
           </span>
         }
       </footer>
+
+      @if (hasMultiple()) {
+        <div class="thumbnails">
+          @for (
+            thumbnail of items();
+            track thumbnail.src
+          ) {
+            <button
+              type="button"
+              class="thumbnail"
+              [class.active]="$index === index()"
+              [attr.aria-current]="$index === index() ? 'true' : null"
+              [attr.aria-label]="thumbnail.alt + ' ' + ($index + 1)"
+              (click)="select($index)"
+            >
+              <img
+                [src]="thumbnail.src"
+                [alt]="thumbnail.alt"
+              />
+            </button>
+          }
+        </div>
+      }
     </section>
   </div>
 }
