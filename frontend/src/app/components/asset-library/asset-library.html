@@ -99,7 +99,7 @@
             @if (asset.type === 'image') {
               <button type="button" class="preview" (click)="select(asset)">
                 <img
-                  [src]="asset.url"
+                  [src]="asset.thumbnailUrl ?? asset.url"
                   [alt]="asset.originalFilename"
                   loading="lazy"
                 />

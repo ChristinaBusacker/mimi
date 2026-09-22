@@ -32,11 +32,16 @@
     margin-block: var(--spacing-md);
   }
 
-  img.content-media {
+  picture.content-media {
     display: block;
-    height: auto;
-    border-radius: var(--radius-card);
-    object-fit: contain;
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-card);
+      object-fit: contain;
+    }
   }
 
   .media-left {

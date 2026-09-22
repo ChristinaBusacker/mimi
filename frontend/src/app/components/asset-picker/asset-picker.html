@@ -4,7 +4,10 @@
   @if (selectedAsset(); as asset) {
     <div class="selection">
       @if (asset.type === 'image') {
-        <img [src]="asset.url" [alt]="asset.originalFilename" />
+        <img
+          [src]="asset.thumbnailUrl ?? asset.url"
+          [alt]="asset.originalFilename"
+        />
       } @else {
         <div class="audio-selection">
           <strong>{{ asset.originalFilename }}</strong>

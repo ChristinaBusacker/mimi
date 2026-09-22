@@ -21,7 +21,10 @@ import type {
 } from 'express';
 import { createReadStream } from 'node:fs';
 
-import { AssetsService } from './assets.service';
+import {
+  AssetsService,
+  type ResolvedAssetFile,
+} from './assets.service';
 
 interface ByteRange {
   start: number;
@@ -32,6 +35,42 @@ interface ByteRange {
 @Controller('assets')
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
+
+  @Get(':uuid/image/:variant/:format')
+  @ApiOperation({
+    summary: 'Get a generated image variant',
+  })
+  @ApiProduces(
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+  )
+  @ApiOkResponse({
+    description: 'The generated image variant.',
+  })
+  @ApiNotFoundResponse({
+    description: 'The image asset does not exist.',
+  })
+  async getImageVariant(
+    @Param('uuid') uuid: string,
+    @Param('variant') variant: string,
+    @Param('format') format: string,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<StreamableFile | void> {
+    const resolved =
+      await this.assetsService.resolveImageVariant(
+        uuid,
+        variant,
+        format,
+      );
+
+    return this.sendFile(
+      resolved,
+      request,
+      response,
+    );
+  }
 
   @Get(':uuid')
   @ApiOperation({
@@ -64,9 +103,27 @@ export class AssetsController {
   ): Promise<StreamableFile | void> {
     const resolved = await this.assetsService.resolveFile(uuid);
 
+    return this.sendFile(
+      resolved,
+      request,
+      response,
+    );
+  }
+
+  private sendFile(
+    resolved: ResolvedAssetFile,
+    request: Request,
+    response: Response,
+  ): StreamableFile | void {
     response.setHeader('Accept-Ranges', 'bytes');
-    response.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    response.setHeader('Content-Type', resolved.asset.mimeType);
+    response.setHeader(
+      'Cache-Control',
+      'public, max-age=31536000, immutable',
+    );
+    response.setHeader(
+      'Content-Type',
+      resolved.mimeType,
+    );
 
     const range = this.parseRange(
       request.headers.range,

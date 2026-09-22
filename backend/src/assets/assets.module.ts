@@ -8,12 +8,16 @@ import { getAssetMaxUploadBytes } from './asset.config';
 import { AdminAssetsController } from './admin-assets.controller';
 import { AssetsController } from './assets.controller';
 import { AssetEntry } from './entities/asset.entry';
+import { AssetVariantEntry } from './entities/asset-variant.entry';
 import { AssetsService } from './assets.service';
 
 @Module({
   imports: [
     AuthModule,
-    TypeOrmModule.forFeature([AssetEntry]),
+    TypeOrmModule.forFeature([
+      AssetEntry,
+      AssetVariantEntry,
+    ]),
     MulterModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

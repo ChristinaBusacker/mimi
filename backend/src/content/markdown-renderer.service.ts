@@ -58,17 +58,21 @@ export class MarkdownRendererService {
         'br',
         'hr',
         'img',
+        'picture',
+        'source',
         'div',
         'iframe',
       ],
       allowedAttributes: {
         a: ['href', 'title'],
-        img: ['src', 'alt', 'title', 'loading', 'decoding', 'class'],
+        img: ['src', 'alt', 'title', 'loading', 'decoding'],
+        picture: ['class'],
+        source: ['srcset', 'type'],
         div: ['class'],
         iframe: ['src', 'title', 'loading', 'allow', 'allowfullscreen', 'referrerpolicy'],
       },
       allowedClasses: {
-        img: [
+        picture: [
           'content-media',
           'media-left',
           'media-center',
@@ -115,12 +119,16 @@ export class MarkdownRendererService {
           ? ` title="${this.markdown.utils.escapeHtml(title + '')}"`
           : '';
 
+      const variant = this.imageVariant(layout.size);
+
       return (
-        `<img src="/api/assets/${assetId}"` +
+        `<picture class="${this.mediaClasses(layout)}">` +
+        `<source srcset="/api/assets/${assetId}/image/${variant}/webp" type="image/webp">` +
+        `<img src="/api/assets/${assetId}/image/${variant}/fallback"` +
         ` alt="${alt}"` +
-        ` class="${this.mediaClasses(layout)}"` +
         `${titleAttribute}` +
-        ' loading="lazy" decoding="async">'
+        ' loading="lazy" decoding="async">' +
+        '</picture>'
       );
     };
   }
@@ -221,6 +229,20 @@ export class MarkdownRendererService {
           ? size
           : DEFAULT_MEDIA_LAYOUT.size,
     };
+  }
+
+  private imageVariant(
+    size: ContentMediaSize,
+  ): 'thumbnail' | 'medium' | 'large' {
+    if (size === 'small') {
+      return 'thumbnail';
+    }
+
+    if (size === 'medium') {
+      return 'medium';
+    }
+
+    return 'large';
   }
 
   private mediaClasses(layout: ContentMediaLayout): string {

@@ -177,7 +177,7 @@
             (click)="openImageLibrary()"
           >
             <img
-              [src]="asset.url"
+              [src]="asset.thumbnailUrl ?? asset.url"
               [alt]="asset.originalFilename"
             />
             <strong>{{ asset.originalFilename }}</strong>

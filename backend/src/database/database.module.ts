@@ -2,6 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Client } from 'pg';
+import {
+  DataSource,
+  type DataSourceOptions,
+} from 'typeorm';
+
+import { runSchemaMigrations } from './schema-migrations';
 
 async function ensureDatabaseExists(
   configService: ConfigService,
@@ -68,6 +74,20 @@ async function ensureDatabaseExists(
           autoLoadEntities: true,
           synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true',
         };
+      },
+      dataSourceFactory: async (options) => {
+        if (!options) {
+          throw new Error('Database options are missing.');
+        }
+
+        const dataSource = new DataSource(
+          options as DataSourceOptions,
+        );
+
+        await dataSource.initialize();
+        await runSchemaMigrations(dataSource);
+
+        return dataSource;
       },
     }),
   ],

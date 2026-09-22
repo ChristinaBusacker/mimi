@@ -6,6 +6,9 @@ export interface Asset {
   originalFilename: string;
   mimeType: string;
   sizeBytes: number;
+  width: number | null;
+  height: number | null;
   url: string;
+  thumbnailUrl: string | null;
   createdAt: string;
 }
