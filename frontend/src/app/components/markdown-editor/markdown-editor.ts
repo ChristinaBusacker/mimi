@@ -30,6 +30,7 @@ import {
 } from '@angular/forms';
 import { Editor } from '@tiptap/core';
 import { Markdown } from '@tiptap/markdown';
+import { NodeSelection } from '@tiptap/pm/state';
 import StarterKit from '@tiptap/starter-kit';
 
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
@@ -39,6 +40,10 @@ import { YoutubeEmbed } from './youtube-embed.extension';
 
 type EditorPanel =
   | 'link'
+  | 'image'
+  | 'youtube';
+
+type EditableMedia =
   | 'image'
   | 'youtube';
 
@@ -84,6 +89,8 @@ export class MarkdownEditor
   private readonly disabled = signal(false);
 
   protected readonly panel = signal<EditorPanel | null>(null);
+  protected readonly editingMedia =
+    signal<EditableMedia | null>(null);
   protected readonly linkUrl = signal('');
   protected readonly imageAssetId = signal('');
   protected readonly imageAlt = signal('');
@@ -173,8 +180,11 @@ export class MarkdownEditor
         this.onChange(this.value);
         this.bumpRevision();
       },
-      onSelectionUpdate: () => {
+      onSelectionUpdate: ({ editor: currentEditor }) => {
         this.bumpRevision();
+        this.closeMediaPanelIfSelectionChanged(
+          currentEditor,
+        );
       },
       onBlur: () => {
         this.onTouched();
@@ -280,6 +290,28 @@ export class MarkdownEditor
     );
   }
 
+  protected isImageSelected(): boolean {
+    this.revision();
+
+    return (
+      this.selectedNodeAttributes(
+        this.editor(),
+        'assetImage',
+      ) !== null
+    );
+  }
+
+  protected isYoutubeSelected(): boolean {
+    this.revision();
+
+    return (
+      this.selectedNodeAttributes(
+        this.editor(),
+        'youtubeEmbed',
+      ) !== null
+    );
+  }
+
   protected toggleBold(): void {
     this.editor()
       ?.chain()
@@ -360,10 +392,12 @@ export class MarkdownEditor
     this.errorKey.set(null);
 
     if (this.panel() === panel) {
-      this.panel.set(null);
+      this.closePanel();
 
       return;
     }
+
+    this.editingMedia.set(null);
 
     if (panel === 'link') {
       const href =
@@ -372,6 +406,12 @@ export class MarkdownEditor
       this.linkUrl.set(
         typeof href === 'string' ? href : '',
       );
+    } else if (panel === 'image') {
+      if (!this.loadSelectedImage()) {
+        this.resetImageForm();
+      }
+    } else if (!this.loadSelectedYoutube()) {
+      this.resetYoutubeForm();
     }
 
     this.panel.set(panel);
@@ -379,6 +419,7 @@ export class MarkdownEditor
 
   protected closePanel(): void {
     this.panel.set(null);
+    this.editingMedia.set(null);
     this.errorKey.set(null);
   }
 
@@ -458,8 +499,9 @@ export class MarkdownEditor
     );
   }
 
-  protected insertImage(): void {
+  protected saveImage(): void {
     const assetId = this.imageAssetId();
+    const editor = this.editor();
 
     if (!assetId) {
       this.errorKey.set(
@@ -469,24 +511,44 @@ export class MarkdownEditor
       return;
     }
 
-    this.editor()
-      ?.chain()
-      .focus()
-      .insertContent({
-        type: 'assetImage',
-        attrs: {
-          assetId,
-          alt: this.imageAlt().trim(),
-          alignment: this.imageAlignment(),
-          size: this.imageSize(),
-        },
-      })
-      .run();
+    if (!editor) {
+      return;
+    }
 
-    this.imageAssetId.set('');
-    this.imageAlt.set('');
-    this.imageAlignment.set('center');
-    this.imageSize.set('large');
+    const attrs = {
+      assetId,
+      alt: this.imageAlt().trim(),
+      alignment: this.imageAlignment(),
+      size: this.imageSize(),
+    };
+
+    if (
+      this.editingMedia() === 'image' &&
+      this.selectedNodeAttributes(
+        editor,
+        'assetImage',
+      )
+    ) {
+      editor
+        .chain()
+        .focus()
+        .updateAttributes(
+          'assetImage',
+          attrs,
+        )
+        .run();
+    } else {
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: 'assetImage',
+          attrs,
+        })
+        .run();
+    }
+
+    this.resetImageForm();
     this.closePanel();
   }
 
@@ -496,10 +558,11 @@ export class MarkdownEditor
     );
   }
 
-  protected insertYoutube(): void {
+  protected saveYoutube(): void {
     const videoId = this.extractYoutubeId(
       this.youtubeValue(),
     );
+    const editor = this.editor();
 
     if (!videoId) {
       this.errorKey.set(
@@ -509,27 +572,85 @@ export class MarkdownEditor
       return;
     }
 
-    this.editor()
-      ?.chain()
-      .focus()
-      .insertContent([
-        {
-          type: 'youtubeEmbed',
-          attrs: {
-            videoId,
-            alignment: this.youtubeAlignment(),
-            size: this.youtubeSize(),
+    if (!editor) {
+      return;
+    }
+
+    const attrs = {
+      videoId,
+      alignment: this.youtubeAlignment(),
+      size: this.youtubeSize(),
+    };
+
+    if (
+      this.editingMedia() === 'youtube' &&
+      this.selectedNodeAttributes(
+        editor,
+        'youtubeEmbed',
+      )
+    ) {
+      editor
+        .chain()
+        .focus()
+        .updateAttributes(
+          'youtubeEmbed',
+          attrs,
+        )
+        .run();
+    } else {
+      editor
+        .chain()
+        .focus()
+        .insertContent([
+          {
+            type: 'youtubeEmbed',
+            attrs,
           },
-        },
-        {
-          type: 'paragraph',
-        },
-      ])
+          {
+            type: 'paragraph',
+          },
+        ])
+        .run();
+    }
+
+    this.resetYoutubeForm();
+    this.closePanel();
+  }
+
+  protected removeSelectedMedia(): void {
+    const editor = this.editor();
+    const editingMedia = this.editingMedia();
+
+    if (!editor || !editingMedia) {
+      return;
+    }
+
+    const nodeName =
+      editingMedia === 'image'
+        ? 'assetImage'
+        : 'youtubeEmbed';
+
+    if (
+      !this.selectedNodeAttributes(
+        editor,
+        nodeName,
+      )
+    ) {
+      return;
+    }
+
+    editor
+      .chain()
+      .focus()
+      .deleteSelection()
       .run();
 
-    this.youtubeValue.set('');
-    this.youtubeAlignment.set('center');
-    this.youtubeSize.set('large');
+    if (editingMedia === 'image') {
+      this.resetImageForm();
+    } else {
+      this.resetYoutubeForm();
+    }
+
     this.closePanel();
   }
 
@@ -555,6 +676,166 @@ export class MarkdownEditor
     size: ContentMediaSize,
   ): void {
     this.youtubeSize.set(size);
+  }
+
+  private closeMediaPanelIfSelectionChanged(
+    editor: Editor,
+  ): void {
+    const editingMedia = this.editingMedia();
+
+    if (!editingMedia) {
+      return;
+    }
+
+    const nodeName =
+      editingMedia === 'image'
+        ? 'assetImage'
+        : 'youtubeEmbed';
+
+    if (
+      !this.selectedNodeAttributes(
+        editor,
+        nodeName,
+      )
+    ) {
+      this.closePanel();
+    }
+  }
+
+  private loadSelectedImage(): boolean {
+    const attrs = this.selectedNodeAttributes(
+      this.editor(),
+      'assetImage',
+    );
+
+    if (!attrs) {
+      return false;
+    }
+
+    this.imageAssetId.set(
+      this.readStringAttribute(
+        attrs,
+        'assetId',
+      ),
+    );
+    this.imageAlt.set(
+      this.readStringAttribute(
+        attrs,
+        'alt',
+      ),
+    );
+    this.imageAlignment.set(
+      this.readMediaAlignment(
+        attrs['alignment'],
+      ),
+    );
+    this.imageSize.set(
+      this.readMediaSize(
+        attrs['size'],
+      ),
+    );
+    this.editingMedia.set('image');
+
+    return true;
+  }
+
+  private loadSelectedYoutube(): boolean {
+    const attrs = this.selectedNodeAttributes(
+      this.editor(),
+      'youtubeEmbed',
+    );
+
+    if (!attrs) {
+      return false;
+    }
+
+    this.youtubeValue.set(
+      this.readStringAttribute(
+        attrs,
+        'videoId',
+      ),
+    );
+    this.youtubeAlignment.set(
+      this.readMediaAlignment(
+        attrs['alignment'],
+      ),
+    );
+    this.youtubeSize.set(
+      this.readMediaSize(
+        attrs['size'],
+      ),
+    );
+    this.editingMedia.set('youtube');
+
+    return true;
+  }
+
+  private selectedNodeAttributes(
+    editor: Editor | null,
+    nodeName: 'assetImage' | 'youtubeEmbed',
+  ): Record<string, unknown> | null {
+    if (!editor) {
+      return null;
+    }
+
+    const selection = editor.state.selection;
+
+    if (
+      !(selection instanceof NodeSelection) ||
+      selection.node.type.name !== nodeName
+    ) {
+      return null;
+    }
+
+    return selection.node.attrs as Record<
+      string,
+      unknown
+    >;
+  }
+
+  private readStringAttribute(
+    attrs: Record<string, unknown>,
+    name: string,
+  ): string {
+    const value = attrs[name];
+
+    return typeof value === 'string'
+      ? value
+      : '';
+  }
+
+  private readMediaAlignment(
+    value: unknown,
+  ): ContentMediaAlignment {
+    return value === 'left' ||
+      value === 'right' ||
+      value === 'center'
+      ? value
+      : 'center';
+  }
+
+  private readMediaSize(
+    value: unknown,
+  ): ContentMediaSize {
+    return value === 'small' ||
+      value === 'medium' ||
+      value === 'large' ||
+      value === 'full'
+      ? value
+      : 'large';
+  }
+
+  private resetImageForm(): void {
+    this.imageAssetId.set('');
+    this.imageAlt.set('');
+    this.imageAlignment.set('center');
+    this.imageSize.set('large');
+  }
+
+  private resetYoutubeForm(): void {
+    this.youtubeValue.set('');
+    this.youtubeAlignment.set('center');
+    this.youtubeSize.set('large');
   }
 
   private bumpRevision(): void {

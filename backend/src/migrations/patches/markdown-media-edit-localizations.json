@@ -1,0 +1,19 @@
+{
+  "localizations": [
+    {
+      "key": "admin.markdown.updateImage",
+      "de": "Bild aktualisieren",
+      "en": "Update image"
+    },
+    {
+      "key": "admin.markdown.updateYoutube",
+      "de": "Video aktualisieren",
+      "en": "Update video"
+    },
+    {
+      "key": "admin.markdown.removeFromContent",
+      "de": "Aus Inhalt entfernen",
+      "en": "Remove from content"
+    }
+  ]
+}

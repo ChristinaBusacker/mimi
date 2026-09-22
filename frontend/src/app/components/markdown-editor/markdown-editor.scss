@@ -226,6 +226,12 @@
   .content-media {
     max-width: 100%;
     margin-block: var(--spacing-md);
+    cursor: pointer;
+
+    &.ProseMirror-selectednode {
+      outline: 3px solid var(--color-primary);
+      outline-offset: 3px;
+    }
   }
 
   img[data-asset-id] {

@@ -96,7 +96,9 @@
 
     <button
       type="button"
+      [class.active]="panel() === 'image' || isImageSelected()"
       [disabled]="isDisabled()"
+      [attr.aria-pressed]="panel() === 'image' || isImageSelected()"
       (click)="openPanel('image')"
     >
       {{ 'admin.markdown.image' | i18n | async }}
@@ -104,7 +106,9 @@
 
     <button
       type="button"
+      [class.active]="panel() === 'youtube' || isYoutubeSelected()"
       [disabled]="isDisabled()"
+      [attr.aria-pressed]="panel() === 'youtube' || isYoutubeSelected()"
       (click)="openPanel('youtube')"
     >
       {{ 'admin.markdown.youtube' | i18n | async }}
@@ -287,10 +291,25 @@
         <button
           type="button"
           [disabled]="!imageAssetId()"
-          (click)="insertImage()"
+          (click)="saveImage()"
         >
-          {{ 'admin.markdown.insertImage' | i18n | async }}
+          {{
+            (editingMedia() === 'image'
+              ? 'admin.markdown.updateImage'
+              : 'admin.markdown.insertImage')
+              | i18n
+              | async
+          }}
         </button>
+
+        @if (editingMedia() === 'image') {
+          <button
+            type="button"
+            (click)="removeSelectedMedia()"
+          >
+            {{ 'admin.markdown.removeFromContent' | i18n | async }}
+          </button>
+        }
 
         <button
           type="button"
@@ -386,10 +405,25 @@
       <div class="markdown-editor__panel-actions">
         <button
           type="button"
-          (click)="insertYoutube()"
+          (click)="saveYoutube()"
         >
-          {{ 'admin.markdown.insertYoutube' | i18n | async }}
+          {{
+            (editingMedia() === 'youtube'
+              ? 'admin.markdown.updateYoutube'
+              : 'admin.markdown.insertYoutube')
+              | i18n
+              | async
+          }}
         </button>
+
+        @if (editingMedia() === 'youtube') {
+          <button
+            type="button"
+            (click)="removeSelectedMedia()"
+          >
+            {{ 'admin.markdown.removeFromContent' | i18n | async }}
+          </button>
+        }
 
         <button
           type="button"
