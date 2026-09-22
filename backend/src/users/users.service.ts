@@ -16,6 +16,15 @@ export class UsersService {
     private readonly usersRepository: Repository<UserEntry>,
   ) {}
 
+  findAll(): Promise<UserEntry[]> {
+    return this.usersRepository.find({
+      order: {
+        name: 'ASC',
+        email: 'ASC',
+      },
+    });
+  }
+
   findByUuid(uuid: string): Promise<UserEntry | null> {
     return this.usersRepository.findOneBy({
       uuid,

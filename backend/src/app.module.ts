@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AssetsModule } from './assets/assets.module';
+import { BlogModule } from './blog/blog.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -21,6 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UsersModule,
     AuthModule,
     AssetsModule,
+    BlogModule,
     LocalizationsModule,
     MigrationsModule,
     IntegrationsModule,

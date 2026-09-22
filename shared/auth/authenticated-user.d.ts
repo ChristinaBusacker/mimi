@@ -1,4 +1,8 @@
-export type UserRole = 'user' | 'admin';
+export type UserRole =
+  | 'user'
+  | 'author'
+  | 'editor'
+  | 'admin';
 
 export interface AuthenticatedUser {
   uuid: string;

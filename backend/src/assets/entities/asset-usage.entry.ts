@@ -9,6 +9,8 @@ import {
 import { AssetEntry } from './asset.entry';
 
 export type AssetUsageOwnerType =
+  | 'blogAuthor'
+  | 'blogPost'
   | 'musicAlbum'
   | 'musicTrack';
 

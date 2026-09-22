@@ -187,6 +187,91 @@ const migrations: readonly SchemaMigration[] = [
       `);
     },
   },
+  {
+    name: '20260922-blog-foundation',
+    run: async (manager) => {
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "blog_author_profiles" (
+          "userUuid" uuid NOT NULL,
+          "slug" varchar(160) NOT NULL,
+          "displayName" varchar(255) NOT NULL,
+          "bio" text NOT NULL DEFAULT '',
+          "avatarAssetId" uuid,
+          "createdAt" timestamptz NOT NULL DEFAULT now(),
+          "updatedAt" timestamptz NOT NULL DEFAULT now(),
+          CONSTRAINT "PK_blog_author_profiles"
+            PRIMARY KEY ("userUuid"),
+          CONSTRAINT "UQ_blog_author_profiles_slug"
+            UNIQUE ("slug"),
+          CONSTRAINT "FK_blog_author_profiles_user"
+            FOREIGN KEY ("userUuid")
+            REFERENCES "users"("uuid")
+            ON DELETE CASCADE,
+          CONSTRAINT "FK_blog_author_profiles_avatar"
+            FOREIGN KEY ("avatarAssetId")
+            REFERENCES "assets"("uuid")
+            ON DELETE SET NULL
+        )
+      `);
+
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "blog_posts" (
+          "uuid" uuid NOT NULL DEFAULT gen_random_uuid(),
+          "slug" varchar(160) NOT NULL,
+          "authorUuid" uuid NOT NULL,
+          "coverAssetId" uuid,
+          "status" varchar(20) NOT NULL DEFAULT 'draft',
+          "publishedAt" timestamptz,
+          "createdAt" timestamptz NOT NULL DEFAULT now(),
+          "updatedAt" timestamptz NOT NULL DEFAULT now(),
+          CONSTRAINT "PK_blog_posts"
+            PRIMARY KEY ("uuid"),
+          CONSTRAINT "UQ_blog_posts_slug"
+            UNIQUE ("slug"),
+          CONSTRAINT "FK_blog_posts_author"
+            FOREIGN KEY ("authorUuid")
+            REFERENCES "users"("uuid")
+            ON DELETE RESTRICT,
+          CONSTRAINT "FK_blog_posts_cover"
+            FOREIGN KEY ("coverAssetId")
+            REFERENCES "assets"("uuid")
+            ON DELETE SET NULL
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_blog_posts_publication"
+        ON "blog_posts" (
+          "status",
+          "publishedAt"
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_blog_posts_author"
+        ON "blog_posts" ("authorUuid")
+      `);
+
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "blog_post_translations" (
+          "uuid" uuid NOT NULL DEFAULT gen_random_uuid(),
+          "postUuid" uuid NOT NULL,
+          "locale" varchar(5) NOT NULL,
+          "title" varchar(255) NOT NULL,
+          "excerpt" text NOT NULL DEFAULT '',
+          "contentMarkdown" text NOT NULL DEFAULT '',
+          CONSTRAINT "PK_blog_post_translations"
+            PRIMARY KEY ("uuid"),
+          CONSTRAINT "UQ_blog_post_translations_locale"
+            UNIQUE ("postUuid", "locale"),
+          CONSTRAINT "FK_blog_post_translations_post"
+            FOREIGN KEY ("postUuid")
+            REFERENCES "blog_posts"("uuid")
+            ON DELETE CASCADE
+        )
+      `);
+    },
+  },
 ];
 
 export async function runSchemaMigrations(

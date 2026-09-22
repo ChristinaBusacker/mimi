@@ -29,7 +29,7 @@ export class AuthenticatedUserDto implements AuthenticatedUser {
   discordId!: string | null;
 
   @ApiProperty({
-    enum: ['user', 'admin'],
+    enum: ['user', 'author', 'editor', 'admin'],
   })
   role!: UserRole;
 }
