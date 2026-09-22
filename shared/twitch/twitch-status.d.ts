@@ -3,6 +3,21 @@ export type HeroType = 'music' | 'chatting' | 'gaming';
 export type TwitchStatus =
   TwitchLiveStatus | TwitchUpcomingStatus | TwitchOfflineStatus;
 
+export interface TwitchCategory {
+  id: string;
+  name: string;
+}
+
+export interface TwitchScheduledStream {
+  id: string;
+  title: string;
+  startsAt: string;
+  endsAt: string;
+  category: TwitchCategory | null;
+  heroType: HeroType | null;
+  channelUrl: string;
+}
+
 export interface TwitchLiveStatus {
   state: 'live';
   title: string;

@@ -4,7 +4,11 @@ import { Interval } from '@nestjs/schedule';
 
 import { CacheService } from '../cache/cache.service';
 import { EventsService } from '../events/events.service';
-import type { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
+import type {
+  HeroType,
+  TwitchScheduledStream,
+  TwitchStatus,
+} from '@shared/twitch/twitch-status';
 
 interface TwitchAppToken {
   value: string;
@@ -86,9 +90,7 @@ export class TwitchService implements OnApplicationBootstrap {
   }
 
   getStatus(): TwitchStatus {
-    const channelLogin = this.configService.getOrThrow<string>('TWITCH_CHANNEL_LOGIN');
-
-    const channelUrl = `https://www.twitch.tv/${channelLogin}`;
+    const channelUrl = this.getChannelUrl();
 
     if (this.live) {
       const category = this.live.game_name || null;
@@ -108,11 +110,7 @@ export class TwitchService implements OnApplicationBootstrap {
       };
     }
 
-    const now = Date.now();
-
-    const next = this.schedule
-      .filter((segment) => segment.canceled_until === null && Date.parse(segment.start_time) > now)
-      .sort((left, right) => Date.parse(left.start_time) - Date.parse(right.start_time))[0];
+    const next = this.getNextScheduledStream();
 
     if (!next) {
       return {
@@ -121,20 +119,68 @@ export class TwitchService implements OnApplicationBootstrap {
       };
     }
 
-    const category = next.category?.name ?? null;
-
     return {
       state: 'upcoming',
 
       title: next.title,
 
-      category,
+      category: next.category?.name ?? null,
 
-      heroType: this.mapHeroType(category),
+      heroType: next.heroType,
 
-      startsAt: next.start_time,
+      startsAt: next.startsAt,
 
       channelUrl,
+    };
+  }
+
+  getNextScheduledStream(
+    type?: HeroType,
+  ): TwitchScheduledStream | null {
+    const now = Date.now();
+
+    const next = this.schedule
+      .filter(
+        (segment) =>
+          segment.canceled_until === null &&
+          Date.parse(segment.start_time) > now,
+      )
+      .filter((segment) => {
+        if (!type) {
+          return true;
+        }
+
+        return (
+          this.mapHeroType(
+            segment.category?.name ?? null,
+          ) === type
+        );
+      })
+      .sort(
+        (left, right) =>
+          Date.parse(left.start_time) -
+          Date.parse(right.start_time),
+      )[0];
+
+    if (!next) {
+      return null;
+    }
+
+    return {
+      id: next.id,
+      title: next.title,
+      startsAt: next.start_time,
+      endsAt: next.end_time,
+      category: next.category
+        ? {
+            id: next.category.id,
+            name: next.category.name,
+          }
+        : null,
+      heroType: this.mapHeroType(
+        next.category?.name ?? null,
+      ),
+      channelUrl: this.getChannelUrl(),
     };
   }
 
@@ -315,6 +361,15 @@ export class TwitchService implements OnApplicationBootstrap {
     };
 
     return this.token.value;
+  }
+
+  private getChannelUrl(): string {
+    const channelLogin =
+      this.configService.getOrThrow<string>(
+        'TWITCH_CHANNEL_LOGIN',
+      );
+
+    return `https://www.twitch.tv/${channelLogin}`;
   }
 
   private mapHeroType(category: string | null): HeroType | null {

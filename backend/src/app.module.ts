@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LocalizationsModule } from './localizations/localizations.module';
 import { MigrationsModule } from './migrations/migrations.module';
 import { IntegrationsModule } from './integrations/integrations.module';
+import { GamingModule } from './gaming/gaming.module';
 import { MusicModule } from './music/music.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
@@ -26,6 +27,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     LocalizationsModule,
     MigrationsModule,
     IntegrationsModule,
+    GamingModule,
     MusicModule,
   ],
   controllers: [AppController],

@@ -1,0 +1,69 @@
+{
+  "localizations": [
+    {
+      "key": "gaming.page.eyebrow",
+      "de": "Gaming",
+      "en": "Gaming"
+    },
+    {
+      "key": "gaming.page.title",
+      "de": "Gemeinsam zocken, entdecken und Spaß haben",
+      "en": "Playing, exploring and having fun together"
+    },
+    {
+      "key": "gaming.page.intro",
+      "de": "Hier findest du den nächsten geplanten Gaming-Stream und, wenn möglich, direkt Informationen zu dem Spiel, das Mimi ausgewählt hat.",
+      "en": "Find Mimi's next scheduled gaming stream here, along with information about the selected game whenever available."
+    },
+    {
+      "key": "gaming.next.label",
+      "de": "Als nächstes",
+      "en": "Up next"
+    },
+    {
+      "key": "gaming.next.twitch",
+      "de": "Zum Twitch-Kanal",
+      "en": "Open Twitch channel"
+    },
+    {
+      "key": "gaming.next.empty",
+      "de": "Aktuell ist noch kein Gaming-Stream im Twitch-Sendeplan eingetragen.",
+      "en": "There is currently no gaming stream in the Twitch schedule."
+    },
+    {
+      "key": "gaming.game.label",
+      "de": "Das nächste Spiel",
+      "en": "Next game"
+    },
+    {
+      "key": "gaming.game.next",
+      "de": "Als nächstes gespielt",
+      "en": "Played next"
+    },
+    {
+      "key": "gaming.game.steam",
+      "de": "Auf Steam ansehen",
+      "en": "View on Steam"
+    },
+    {
+      "key": "gaming.game.noSteamData",
+      "de": "Für diese Twitch-Kategorie konnte noch keine eindeutige Steam-Zuordnung gefunden werden.",
+      "en": "No unambiguous Steam match has been found for this Twitch category yet."
+    },
+    {
+      "key": "gaming.info.eyebrow",
+      "de": "Gaming mit Mimi",
+      "en": "Gaming with Mimi"
+    },
+    {
+      "key": "gaming.info.title",
+      "de": "Was als nächstes gespielt wird",
+      "en": "What is coming up next"
+    },
+    {
+      "key": "gaming.info.description",
+      "de": "Der Termin kommt direkt aus Mimis Twitch-Sendeplan. Die Spielinformationen werden anhand der dort ausgewählten Twitch-Kategorie mit Steam verknüpft.",
+      "en": "The date comes directly from Mimi's Twitch schedule. Game information is matched to Steam using the Twitch category selected for that stream."
+    }
+  ]
+}

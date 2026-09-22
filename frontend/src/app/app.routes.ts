@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/auth/admin.guard';
 import { contributorGuard } from './core/auth/contributor.guard';
+import { gamingDataResolver } from './pages/gaming/gaming.resolver';
 import { homeDataResolver } from './pages/home/home.resolver';
 import { musicAlbumResolver } from './pages/music/album/music-album.resolver';
 import { musicDataResolver } from './pages/music/music.resolver';
@@ -17,6 +18,9 @@ export const routes: Routes = [
   {
     path: 'gaming',
     loadComponent: () => import('./pages/gaming/gaming').then((module) => module.Gaming),
+    resolve: {
+      data: gamingDataResolver,
+    },
   },
   {
     path: 'music',

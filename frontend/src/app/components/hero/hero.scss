@@ -45,6 +45,10 @@
   &.music::before {
     background-image: url('/images/hero-bg-music.png');
   }
+
+  &.gaming::before {
+    background-image: url('/images/gaming-tile.png');
+  }
 }
 
 .left,

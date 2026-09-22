@@ -1,1 +1,121 @@
-<p>gaming works!</p>
+@let gamingData = data();
+@let stream = gamingData.stream;
+@let game = gamingData.game;
+
+<section class="page">
+  <app-hero type="gaming" class="right-align-center">
+    <div hero-left class="intro">
+      <div class="tag">
+        <app-icon name="gaming" class="white small" />
+        {{ 'gaming.page.eyebrow' | i18n | async }}
+      </div>
+
+      <div class="logo">
+        <img src="images/logo.png" alt="" />
+      </div>
+
+      <h1 class="sue-ellen">
+        {{ 'gaming.page.title' | i18n | async }}
+      </h1>
+
+      <p>
+        {{ 'gaming.page.intro' | i18n | async }}
+      </p>
+
+      @if (stream) {
+        <div class="next-stream">
+          <span>
+            {{ 'gaming.next.label' | i18n | async }}
+          </span>
+          <strong>{{ stream.title }}</strong>
+          <small>
+            {{ formatDateTime(stream.startsAt) }}
+            @if (stream.category) {
+              · {{ stream.category.name }}
+            }
+          </small>
+        </div>
+
+        <app-button
+          class="primary round font-black"
+          [href]="stream.channelUrl"
+          target="_blank"
+        >
+          <app-icon name="twitch" />
+          {{ 'gaming.next.twitch' | i18n | async }}
+        </app-button>
+      } @else {
+        <p class="no-stream">
+          {{ 'gaming.next.empty' | i18n | async }}
+        </p>
+      }
+    </div>
+
+    @if (game) {
+      <article hero-right class="game-card">
+        @if (game.headerImageUrl) {
+          <img
+            [src]="game.headerImageUrl"
+            [alt]="game.name"
+          />
+        }
+
+        <div class="details">
+          <span>
+            {{ 'gaming.game.label' | i18n | async }}
+          </span>
+          <h2>{{ game.name }}</h2>
+
+          @if (game.shortDescription) {
+            <p>{{ game.shortDescription }}</p>
+          }
+
+          @if (game.genres.length) {
+            <div class="genres">
+              @for (genre of game.genres; track genre) {
+                <span>{{ genre }}</span>
+              }
+            </div>
+          }
+
+          <a
+            [href]="game.storeUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ 'gaming.game.steam' | i18n | async }}
+            →
+          </a>
+        </div>
+      </article>
+    } @else if (stream?.category; as category) {
+      <article hero-right class="game-card fallback">
+        <app-icon name="gaming" class="secondary" />
+        <div class="details">
+          <span>
+            {{ 'gaming.game.next' | i18n | async }}
+          </span>
+          <h2>{{ category.name }}</h2>
+          <p>
+            {{ 'gaming.game.noSteamData' | i18n | async }}
+          </p>
+        </div>
+      </article>
+    }
+  </app-hero>
+
+  <section class="info">
+    <div>
+      <span>
+        {{ 'gaming.info.eyebrow' | i18n | async }}
+      </span>
+      <h2>
+        {{ 'gaming.info.title' | i18n | async }}
+      </h2>
+    </div>
+
+    <p>
+      {{ 'gaming.info.description' | i18n | async }}
+    </p>
+  </section>
+</section>
