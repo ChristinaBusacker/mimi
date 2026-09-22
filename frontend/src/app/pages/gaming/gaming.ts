@@ -1,25 +1,11 @@
-import type {
-  GamingLocale,
-  GamingNextStream,
-} from '@shared/gaming/gaming';
+import type { GamingLocale, GamingNextStream } from '@shared/gaming/gaming';
 
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-} from '@angular/core';
-import {
-  toObservable,
-  toSignal,
-} from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
-import {
-  distinctUntilChanged,
-  of,
-  switchMap,
-} from 'rxjs';
+import { distinctUntilChanged, of, switchMap } from 'rxjs';
 
 import { Button } from '../../components/button/button';
 import { Hero } from '../../components/hero/hero';
@@ -30,53 +16,31 @@ import { I18nState } from '../../core/i18n/i18n.state';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    Button,
-    Hero,
-    Icon,
-    I18nPipe,
-  ],
+  imports: [AsyncPipe, Button, Hero, Icon, I18nPipe],
   selector: 'app-gaming',
   styleUrl: './gaming.scss',
   templateUrl: './gaming.html',
 })
 export class Gaming {
-  private readonly route =
-    inject(ActivatedRoute);
-  private readonly store =
-    inject(Store);
-  private readonly gaming =
-    inject(GamingService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly store = inject(Store);
+  private readonly gaming = inject(GamingService);
 
-  private readonly initialData =
-    this.route.snapshot.data[
-      'data'
-    ] as GamingNextStream;
+  private readonly initialData = this.route.snapshot.data['data'] as GamingNextStream;
 
-  private readonly language =
-    this.store.selectSignal(
-      I18nState.language,
-    );
+  private readonly language = this.store.selectSignal(I18nState.language);
 
-  private readonly initialLanguage =
-    this.store.selectSnapshot(
-      I18nState.language,
-    ) as GamingLocale;
+  private readonly initialLanguage = this.store.selectSnapshot(I18nState.language) as GamingLocale;
 
   protected readonly data = toSignal(
     toObservable(this.language).pipe(
       distinctUntilChanged(),
       switchMap((locale) => {
-        const gamingLocale =
-          locale as GamingLocale;
+        const gamingLocale = locale as GamingLocale;
 
-        return gamingLocale ===
-          this.initialLanguage
+        return gamingLocale === this.initialLanguage
           ? of(this.initialData)
-          : this.gaming.getNextStream(
-              gamingLocale,
-            );
+          : this.gaming.getNextStream(gamingLocale);
       }),
     ),
     {
@@ -84,23 +48,15 @@ export class Gaming {
     },
   );
 
-  protected readonly locale =
-    this.language;
+  protected readonly locale = this.language;
 
-  protected formatDateTime(
-    value: string,
-  ): string {
-    return new Intl.DateTimeFormat(
-      this.locale() === 'de'
-        ? 'de-DE'
-        : 'en-US',
-      {
-        weekday: 'long',
-        day: '2-digit',
-        month: 'long',
-        hour: '2-digit',
-        minute: '2-digit',
-      },
-    ).format(new Date(value));
+  protected formatDateTime(value: string): string {
+    return new Intl.DateTimeFormat(this.locale() === 'de' ? 'de-DE' : 'en-US', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value));
   }
 }

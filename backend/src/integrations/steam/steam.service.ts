@@ -1,12 +1,6 @@
-import type {
-  GamingLocale,
-  SteamGameInfo,
-} from '@shared/gaming/gaming';
+import type { GamingLocale, SteamGameInfo } from '@shared/gaming/gaming';
 
-import {
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash } from 'node:crypto';
 
@@ -21,11 +15,9 @@ import {
 
 @Injectable()
 export class SteamService {
-  private static readonly APP_MATCH_TTL_MS =
-    30 * 24 * 60 * 60_000;
+  private static readonly APP_MATCH_TTL_MS = 30 * 24 * 60 * 60_000;
 
-  private static readonly GAME_DETAILS_TTL_MS =
-    24 * 60 * 60_000;
+  private static readonly GAME_DETAILS_TTL_MS = 24 * 60 * 60_000;
 
   private readonly logger = new Logger(SteamService.name);
 
@@ -34,52 +26,33 @@ export class SteamService {
     private readonly cache: CacheService,
   ) {}
 
-  async findExactGameByName(
-    name: string,
-  ): Promise<SteamAppMatch | null> {
-    const normalizedName =
-      this.normalizeName(name);
+  async findExactGameByName(name: string): Promise<SteamAppMatch | null> {
+    const normalizedName = this.normalizeName(name);
 
     if (!normalizedName) {
       return null;
     }
 
-    const cacheKey = this.createMatchCacheKey(
-      normalizedName,
-    );
+    const cacheKey = this.createMatchCacheKey(normalizedName);
 
-    const cached = await this.cache.getOrRefresh<
-      SteamAppMatch | null
-    >(
+    const cached = await this.cache.getOrRefresh<SteamAppMatch | null>(
       cacheKey,
       SteamService.APP_MATCH_TTL_MS,
-      () =>
-        this.findExactGameByNameFromSteam(
-          normalizedName,
-        ),
+      () => this.findExactGameByNameFromSteam(normalizedName),
     );
 
     return cached.value;
   }
 
-  async getGame(
-    match: SteamAppMatch,
-    locale: GamingLocale,
-  ): Promise<SteamGameInfo> {
-    const cacheKey =
-      `steam.game.v2.${match.appId}.${locale}`;
+  async getGame(match: SteamAppMatch, locale: GamingLocale): Promise<SteamGameInfo> {
+    const cacheKey = `steam.game.v2.${match.appId}.${locale}`;
 
     try {
-      const cached =
-        await this.cache.getOrRefresh<SteamGameInfo>(
-          cacheKey,
-          SteamService.GAME_DETAILS_TTL_MS,
-          () =>
-            this.loadStoreGame(
-              match,
-              locale,
-            ),
-        );
+      const cached = await this.cache.getOrRefresh<SteamGameInfo>(
+        cacheKey,
+        SteamService.GAME_DETAILS_TTL_MS,
+        () => this.loadStoreGame(match, locale),
+      );
 
       return cached.value;
     } catch (error: unknown) {
@@ -112,33 +85,22 @@ export class SteamService {
         input['last_appid'] = lastAppId;
       }
 
-      const url = new URL(
-        'https://partner.steam-api.com/IStoreService/GetAppList/v1/',
-      );
+      const url = new URL('https://api.steampowered.com/IStoreService/GetAppList/v1/');
 
       url.searchParams.set('key', apiKey);
-      url.searchParams.set(
-        'input_json',
-        JSON.stringify(input),
-      );
+      url.searchParams.set('input_json', JSON.stringify(input));
 
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(
-          `Steam app list returned ${response.status}.`,
-        );
+        throw new Error(`Steam app list returned ${response.status}.`);
       }
 
-      const result =
-        (await response.json()) as SteamAppListResponse;
+      const result = (await response.json()) as SteamAppListResponse;
       const apps = result.response.apps ?? [];
 
       for (const app of apps) {
-        if (
-          this.normalizeName(app.name) !==
-          normalizedName
-        ) {
+        if (this.normalizeName(app.name) !== normalizedName) {
           continue;
         }
 
@@ -156,14 +118,9 @@ export class SteamService {
         break;
       }
 
-      const nextLastAppId =
-        result.response.last_appid ??
-        apps.at(-1)?.appid;
+      const nextLastAppId = result.response.last_appid ?? apps.at(-1)?.appid;
 
-      if (
-        nextLastAppId === undefined ||
-        nextLastAppId === lastAppId
-      ) {
+      if (nextLastAppId === undefined || nextLastAppId === lastAppId) {
         break;
       }
 
@@ -173,36 +130,22 @@ export class SteamService {
     return matches[0] ?? null;
   }
 
-  private async loadStoreGame(
-    match: SteamAppMatch,
-    locale: GamingLocale,
-  ): Promise<SteamGameInfo> {
+  private async loadStoreGame(match: SteamAppMatch, locale: GamingLocale): Promise<SteamGameInfo> {
     // Steam does not document a rich public game-details
     // Web API. Keep the Store endpoint isolated here and
     // treat it as best-effort enrichment.
-    const url = new URL(
-      'https://store.steampowered.com/api/appdetails',
-    );
+    const url = new URL('https://store.steampowered.com/api/appdetails');
 
-    url.searchParams.set(
-      'appids',
-      String(match.appId),
-    );
-    url.searchParams.set(
-      'l',
-      steamStoreLanguage(locale),
-    );
+    url.searchParams.set('appids', String(match.appId));
+    url.searchParams.set('l', steamStoreLanguage(locale));
 
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error(
-        `Steam Store details returned ${response.status}.`,
-      );
+      throw new Error(`Steam Store details returned ${response.status}.`);
     }
 
-    const result =
-      (await response.json()) as SteamStoreAppDetailsResponse;
+    const result = (await response.json()) as SteamStoreAppDetailsResponse;
     const app = result[String(match.appId)];
 
     if (!app?.success || !app.data) {
@@ -212,50 +155,26 @@ export class SteamService {
     return {
       appId: match.appId,
       name: app.data.name || match.name,
-      shortDescription:
-        app.data.short_description?.trim() ||
-        null,
-      headerImageUrl:
-        app.data.header_image ?? null,
-      capsuleImageUrl:
-        app.data.capsule_image ?? null,
+      shortDescription: app.data.short_description?.trim() || null,
+      headerImageUrl: app.data.header_image ?? null,
+      capsuleImageUrl: app.data.capsule_image ?? null,
       screenshots:
-        app.data.screenshots?.map(
-          (screenshot) => ({
-            thumbnailUrl:
-              screenshot.path_thumbnail,
-            fullSizeUrl:
-              screenshot.path_full,
-          }),
-        ) ?? [],
-      genres:
-        app.data.genres?.map(
-          (genre) => genre.description,
-        ) ?? [],
-      categories:
-        app.data.categories?.map(
-          (category) => category.description,
-        ) ?? [],
-      developers:
-        app.data.developers ?? [],
-      publishers:
-        app.data.publishers ?? [],
-      releaseDate:
-        app.data.release_date?.date || null,
-      websiteUrl:
-        app.data.website?.trim() || null,
-      storeUrl:
-        `https://store.steampowered.com/app/${match.appId}/`,
+        app.data.screenshots?.map((screenshot) => ({
+          thumbnailUrl: screenshot.path_thumbnail,
+          fullSizeUrl: screenshot.path_full,
+        })) ?? [],
+      genres: app.data.genres?.map((genre) => genre.description) ?? [],
+      categories: app.data.categories?.map((category) => category.description) ?? [],
+      developers: app.data.developers ?? [],
+      publishers: app.data.publishers ?? [],
+      releaseDate: app.data.release_date?.date || null,
+      websiteUrl: app.data.website?.trim() || null,
+      storeUrl: `https://store.steampowered.com/app/${match.appId}/`,
     };
   }
 
-  private createMatchCacheKey(
-    normalizedName: string,
-  ): string {
-    const hash = createHash('sha256')
-      .update(normalizedName)
-      .digest('hex')
-      .slice(0, 24);
+  private createMatchCacheKey(normalizedName: string): string {
+    const hash = createHash('sha256').update(normalizedName).digest('hex').slice(0, 24);
 
     return `steam.match.${hash}`;
   }
@@ -271,23 +190,16 @@ export class SteamService {
   }
 
   private getApiKey(): string {
-    const apiKey =
-      this.configService
-        .get<string>('STEAM_WEB_API_KEY')
-        ?.trim();
+    const apiKey = this.configService.get<string>('STEAM_WEB_API_KEY')?.trim();
 
     if (!apiKey) {
-      throw new Error(
-        'STEAM_WEB_API_KEY is not configured.',
-      );
+      throw new Error('STEAM_WEB_API_KEY is not configured.');
     }
 
     return apiKey;
   }
 
   private getErrorMessage(error: unknown): string {
-    return error instanceof Error
-      ? error.message
-      : String(error);
+    return error instanceof Error ? error.message : String(error);
   }
 }

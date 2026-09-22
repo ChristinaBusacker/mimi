@@ -18,10 +18,6 @@
         {{ 'gaming.page.title' | i18n | async }}
       </h1>
 
-      <p>
-        {{ 'gaming.page.intro' | i18n | async }}
-      </p>
-
       @if (stream) {
         <div class="next-stream">
           <span>
@@ -36,11 +32,7 @@
           </small>
         </div>
 
-        <app-button
-          class="primary round font-black"
-          [href]="stream.channelUrl"
-          target="_blank"
-        >
+        <app-button class="primary round font-black" [href]="stream.channelUrl" target="_blank">
           <app-icon name="twitch" />
           {{ 'gaming.next.twitch' | i18n | async }}
         </app-button>
@@ -54,19 +46,12 @@
     @if (game) {
       <article hero-right class="game-card">
         @if (game.headerImageUrl) {
-          <div
-            class="artwork"
-            [style.background-image]="'url(' + game.headerImageUrl + ')'"
-          ></div>
+          <div class="artwork" [style.background-image]="'url(' + game.headerImageUrl + ')'"></div>
         }
 
         <div class="game-summary">
           @if (game.capsuleImageUrl) {
-            <img
-              class="capsule"
-              [src]="game.capsuleImageUrl"
-              [alt]="game.name"
-            />
+            <img class="capsule" [src]="game.capsuleImageUrl" [alt]="game.name" />
           }
 
           <div class="details">
@@ -90,11 +75,7 @@
               </small>
             }
 
-            <a
-              [href]="game.storeUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a [href]="game.storeUrl" target="_blank" rel="noopener noreferrer">
               {{ 'gaming.game.steam' | i18n | async }}
               →
             </a>
@@ -129,21 +110,13 @@
 
         <div class="actions">
           @if (game.websiteUrl) {
-            <a
-              [href]="game.websiteUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a [href]="game.websiteUrl" target="_blank" rel="noopener noreferrer">
               {{ 'gaming.game.website' | i18n | async }}
               →
             </a>
           }
 
-          <a
-            [href]="game.storeUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a [href]="game.storeUrl" target="_blank" rel="noopener noreferrer">
             {{ 'gaming.game.steam' | i18n | async }}
             →
           </a>
@@ -199,20 +172,6 @@
         </dl>
       </div>
 
-      @if (game.categories.length) {
-        <div class="features">
-          <span>
-            {{ 'gaming.game.features' | i18n | async }}
-          </span>
-
-          <div>
-            @for (category of game.categories; track category) {
-              <span>{{ category }}</span>
-            }
-          </div>
-        </div>
-      }
-
       @if (game.screenshots.length) {
         <div class="screenshots">
           <div class="section-title">
@@ -225,20 +184,9 @@
           </div>
 
           <div class="gallery">
-            @for (
-              screenshot of game.screenshots.slice(0, 6);
-              track screenshot.fullSizeUrl
-            ) {
-              <a
-                [href]="screenshot.fullSizeUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  [src]="screenshot.thumbnailUrl"
-                  [alt]="game.name"
-                  loading="lazy"
-                />
+            @for (screenshot of game.screenshots.slice(0, 6); track screenshot.fullSizeUrl) {
+              <a [href]="screenshot.fullSizeUrl" target="_blank" rel="noopener noreferrer">
+                <img [src]="screenshot.thumbnailUrl" [alt]="game.name" loading="lazy" />
               </a>
             }
           </div>

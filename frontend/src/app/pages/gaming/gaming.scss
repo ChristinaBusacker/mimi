@@ -74,7 +74,6 @@
 
   position: relative;
   width: 100%;
-  min-height: 300px;
   overflow: hidden;
   background: rgb(29 17 28 / 82%);
 
@@ -89,12 +88,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background:
-        linear-gradient(
-          180deg,
-          rgb(29 17 28 / 8%),
-          rgb(29 17 28 / 95%)
-        );
+      background: linear-gradient(180deg, rgb(29 17 28 / 8%), rgb(29 17 28 / 95%));
     }
   }
 
@@ -105,7 +99,6 @@
     grid-template-columns: minmax(120px, 170px) minmax(0, 1fr);
     gap: var(--spacing-md);
     align-items: end;
-    min-height: 300px;
     padding: var(--spacing-md);
   }
 
