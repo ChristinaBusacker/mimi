@@ -55,6 +55,17 @@ export class RequestService {
     );
   }
 
+  put<TResponse, TBody>(
+    path: string,
+    body: TBody,
+  ): Observable<TResponse> {
+    return this.http.put<TResponse>(
+      this.buildUrl(path),
+      body,
+      this.createRequestOptions(),
+    );
+  }
+
   patch<TResponse, TBody>(
     path: string,
     body: TBody,

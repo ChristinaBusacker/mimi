@@ -1,0 +1,90 @@
+<section class="admin-blog">
+  <header class="header">
+    <div>
+      <h1>{{ 'admin.blog.title' | i18n | async }}</h1>
+      <p>{{ 'admin.blog.description' | i18n | async }}</p>
+    </div>
+
+    @if (canCreate()) {
+      <a
+        class="primary-action"
+        routerLink="/admin/blog/posts/new"
+      >
+        {{ 'admin.blog.create' | i18n | async }}
+      </a>
+    }
+  </header>
+
+  @if (!canCreate() && user()?.role === 'author') {
+    <p class="notice">
+      {{ 'admin.blog.authorProfileRequired' | i18n | async }}
+    </p>
+  }
+
+  @if (error()) {
+    <p class="error" role="alert">
+      {{ 'admin.blog.loadFailed' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.blog.loading' | i18n | async }}</p>
+  } @else if (posts().length) {
+    <div class="list">
+      @for (post of posts(); track post.id) {
+        <article class="item">
+          <div class="post">
+            <strong>{{ title(post) }}</strong>
+            <span>{{ post.slug }}</span>
+            <small>
+              {{ authorName(post.authorId) }}
+              ·
+              {{ ('admin.blog.status.' + post.status) | i18n | async }}
+            </small>
+          </div>
+
+          <div class="actions">
+            <a
+              [routerLink]="['/admin/blog/posts', post.id]"
+            >
+              {{
+                (canModify(post)
+                  ? 'admin.blog.edit'
+                  : 'admin.blog.view')
+                  | i18n
+                  | async
+              }}
+            </a>
+
+            @if (canModify(post)) {
+              @if (confirmingId() === post.id) {
+                <button
+                  type="button"
+                  (click)="deletePost(post.id)"
+                >
+                  {{ 'admin.blog.deleteConfirm' | i18n | async }}
+                </button>
+
+                <button
+                  type="button"
+                  (click)="confirmingId.set(null)"
+                >
+                  {{ 'admin.blog.cancel' | i18n | async }}
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  (click)="confirmingId.set(post.id)"
+                >
+                  {{ 'admin.blog.delete' | i18n | async }}
+                </button>
+              }
+            }
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <p>{{ 'admin.blog.empty' | i18n | async }}</p>
+  }
+</section>

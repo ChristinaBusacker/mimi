@@ -1,0 +1,114 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.editor {
+  display: grid;
+  gap: var(--spacing-lg);
+
+  > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+
+    h1,
+    p {
+      margin: 0;
+    }
+
+    a {
+      color: inherit;
+    }
+  }
+
+  form {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+
+  fieldset {
+    @include framed(var(--control-border-width));
+
+    display: grid;
+    gap: var(--spacing-md);
+    margin: 0;
+    padding: var(--spacing-md);
+  }
+
+  legend {
+    padding: 0 var(--spacing-xs);
+    font-weight: 800;
+  }
+
+  label {
+    display: grid;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    font-weight: 700;
+  }
+
+  input,
+  select,
+  textarea {
+    @include framed(var(--control-border-width));
+
+    width: 100%;
+    min-width: 0;
+    padding: var(--spacing-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    outline: none;
+
+    &:focus-visible {
+      border-color: var(--color-primary);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.header-actions,
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+  align-items: start;
+}
+
+.message {
+  margin: 0;
+  font-weight: 700;
+
+  &.error {
+    color: var(--color-primary);
+  }
+}
+
+.readonly-note {
+  margin-top: var(--spacing-xs) !important;
+  opacity: 0.75;
+}
+
+@include compact-layout {
+  .editor > header {
+    display: grid;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

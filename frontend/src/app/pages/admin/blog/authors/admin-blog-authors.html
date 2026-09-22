@@ -1,0 +1,152 @@
+<section class="authors">
+  <header>
+    <div>
+      <h1>{{ 'admin.blog.authors.title' | i18n | async }}</h1>
+      <p>{{ 'admin.blog.authors.description' | i18n | async }}</p>
+    </div>
+  </header>
+
+  @if (errorKey(); as error) {
+    <p class="message error" role="alert">
+      {{ error | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.blog.loading' | i18n | async }}</p>
+  } @else {
+    <div class="layout">
+      <div class="candidate-list">
+        @for (candidate of candidates(); track candidate.userId) {
+          <button
+            type="button"
+            class="candidate"
+            [class.active]="selected()?.userId === candidate.userId"
+            (click)="edit(candidate)"
+          >
+            <strong>
+              {{ candidate.profile?.displayName || candidate.name }}
+            </strong>
+
+            <span>{{ candidate.email }}</span>
+
+            <small>
+              {{
+                (candidate.profile
+                  ? 'admin.blog.authors.configured'
+                  : 'admin.blog.authors.notConfigured')
+                  | i18n
+                  | async
+              }}
+              ·
+              {{ ('admin.blog.role.' + candidate.role) | i18n | async }}
+            </small>
+          </button>
+        }
+      </div>
+
+      @if (selected(); as current) {
+        <form
+          [formGroup]="form"
+          (ngSubmit)="save()"
+        >
+          <header class="editor-header">
+            <div>
+              <h2>
+                {{
+                  current.profile
+                    ? current.profile.displayName
+                    : current.name
+                }}
+              </h2>
+              <small>{{ current.email }}</small>
+            </div>
+
+            <button
+              type="button"
+              class="close"
+              [attr.aria-label]="'admin.blog.authors.close' | i18n | async"
+              (click)="closeEditor()"
+            >
+              ×
+            </button>
+          </header>
+
+          <div class="grid">
+            <label>
+              <span>{{ 'admin.blog.authors.slug' | i18n | async }}</span>
+              <input
+                type="text"
+                formControlName="slug"
+              />
+            </label>
+
+            <label>
+              <span>{{ 'admin.blog.authors.displayName' | i18n | async }}</span>
+              <input
+                type="text"
+                formControlName="displayName"
+              />
+            </label>
+
+            <label>
+              <span>{{ 'admin.blog.authors.role' | i18n | async }}</span>
+              <select formControlName="role">
+                <option value="author">
+                  {{ 'admin.blog.role.author' | i18n | async }}
+                </option>
+                <option value="editor">
+                  {{ 'admin.blog.role.editor' | i18n | async }}
+                </option>
+              </select>
+
+              @if (current.role === 'admin') {
+                <small>
+                  {{ 'admin.blog.authors.adminRolePreserved' | i18n | async }}
+                </small>
+              }
+            </label>
+
+            <app-asset-picker
+              type="image"
+              formControlName="avatarAssetId"
+              [label]="('admin.blog.authors.avatar' | i18n | async) || ''"
+              [buttonLabel]="('admin.blog.authors.avatarButton' | i18n | async) || ''"
+              [assets]="images()"
+              (assetUploaded)="addImage($event)"
+              (assetDeleted)="removeImage($event)"
+            />
+          </div>
+
+          <label>
+            <span>{{ 'admin.blog.authors.bio' | i18n | async }}</span>
+            <textarea
+              rows="7"
+              formControlName="bio"
+            ></textarea>
+          </label>
+
+          <div class="form-actions">
+            <app-button
+              class="primary round"
+              type="submit"
+              [disabled]="saving()"
+            >
+              {{ 'admin.blog.authors.save' | i18n | async }}
+            </app-button>
+
+            @if (saved()) {
+              <p class="message">
+                {{ 'admin.blog.authors.saved' | i18n | async }}
+              </p>
+            }
+          </div>
+        </form>
+      } @else {
+        <div class="empty">
+          {{ 'admin.blog.authors.selectHint' | i18n | async }}
+        </div>
+      }
+    </div>
+  }
+</section>

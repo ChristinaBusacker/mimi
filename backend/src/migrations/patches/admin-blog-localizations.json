@@ -1,0 +1,294 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.blog",
+      "de": "Blog",
+      "en": "Blog"
+    },
+    {
+      "key": "admin.nav.blogAuthors",
+      "de": "Blog-Autoren",
+      "en": "Blog authors"
+    },
+    {
+      "key": "admin.blog.title",
+      "de": "Blog",
+      "en": "Blog"
+    },
+    {
+      "key": "admin.blog.description",
+      "de": "Beiträge erstellen, bearbeiten und veröffentlichen.",
+      "en": "Create, edit and publish posts."
+    },
+    {
+      "key": "admin.blog.create",
+      "de": "Beitrag erstellen",
+      "en": "Create post"
+    },
+    {
+      "key": "admin.blog.loading",
+      "de": "Blog wird geladen …",
+      "en": "Loading blog …"
+    },
+    {
+      "key": "admin.blog.loadFailed",
+      "de": "Der Blog konnte nicht geladen werden.",
+      "en": "The blog could not be loaded."
+    },
+    {
+      "key": "admin.blog.empty",
+      "de": "Noch keine Beiträge vorhanden.",
+      "en": "There are no posts yet."
+    },
+    {
+      "key": "admin.blog.edit",
+      "de": "Bearbeiten",
+      "en": "Edit"
+    },
+    {
+      "key": "admin.blog.view",
+      "de": "Ansehen",
+      "en": "View"
+    },
+    {
+      "key": "admin.blog.delete",
+      "de": "Löschen",
+      "en": "Delete"
+    },
+    {
+      "key": "admin.blog.deleteConfirm",
+      "de": "Wirklich löschen",
+      "en": "Delete permanently"
+    },
+    {
+      "key": "admin.blog.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.blog.save",
+      "de": "Speichern",
+      "en": "Save"
+    },
+    {
+      "key": "admin.blog.saved",
+      "de": "Gespeichert.",
+      "en": "Saved."
+    },
+    {
+      "key": "admin.blog.back",
+      "de": "Zurück zum Blog",
+      "en": "Back to blog"
+    },
+    {
+      "key": "admin.blog.authorProfileRequired",
+      "de": "Für deinen Account ist noch kein Autorenprofil eingerichtet. Ein Administrator muss es zuerst anlegen.",
+      "en": "No author profile has been configured for your account yet. An administrator needs to create it first."
+    },
+    {
+      "key": "admin.blog.status.draft",
+      "de": "Entwurf",
+      "en": "Draft"
+    },
+    {
+      "key": "admin.blog.status.published",
+      "de": "Veröffentlicht",
+      "en": "Published"
+    },
+    {
+      "key": "admin.blog.language.de",
+      "de": "Deutsch",
+      "en": "German"
+    },
+    {
+      "key": "admin.blog.language.en",
+      "de": "Englisch",
+      "en": "English"
+    },
+    {
+      "key": "admin.blog.editor.createTitle",
+      "de": "Beitrag erstellen",
+      "en": "Create post"
+    },
+    {
+      "key": "admin.blog.editor.editTitle",
+      "de": "Beitrag bearbeiten",
+      "en": "Edit post"
+    },
+    {
+      "key": "admin.blog.editor.readOnly",
+      "de": "Veröffentlichte Beiträge können von Autoren nur angesehen werden. Änderungen übernimmt ein Editor oder Administrator.",
+      "en": "Authors can only view published posts. Changes must be made by an editor or administrator."
+    },
+    {
+      "key": "admin.blog.editor.general",
+      "de": "Allgemein",
+      "en": "General"
+    },
+    {
+      "key": "admin.blog.editor.slug",
+      "de": "Slug",
+      "en": "Slug"
+    },
+    {
+      "key": "admin.blog.editor.author",
+      "de": "Autor",
+      "en": "Author"
+    },
+    {
+      "key": "admin.blog.editor.selectAuthor",
+      "de": "Autor auswählen",
+      "en": "Select author"
+    },
+    {
+      "key": "admin.blog.editor.status",
+      "de": "Status",
+      "en": "Status"
+    },
+    {
+      "key": "admin.blog.editor.cover",
+      "de": "Titelbild",
+      "en": "Cover image"
+    },
+    {
+      "key": "admin.blog.editor.title",
+      "de": "Titel",
+      "en": "Title"
+    },
+    {
+      "key": "admin.blog.editor.excerpt",
+      "de": "Kurzbeschreibung",
+      "en": "Excerpt"
+    },
+    {
+      "key": "admin.blog.editor.content",
+      "de": "Inhalt",
+      "en": "Content"
+    },
+    {
+      "key": "admin.blog.editor.loadFailed",
+      "de": "Der Beitrag konnte nicht geladen werden.",
+      "en": "The post could not be loaded."
+    },
+    {
+      "key": "admin.blog.editor.saveFailed",
+      "de": "Der Beitrag konnte nicht gespeichert werden.",
+      "en": "The post could not be saved."
+    },
+    {
+      "key": "admin.blog.editor.noAuthors",
+      "de": "Es ist noch kein Autorenprofil eingerichtet. Lege zuerst mindestens einen Blog-Autor an.",
+      "en": "No author profile has been configured yet. Create at least one blog author first."
+    },
+    {
+      "key": "admin.blog.editor.englishTitleRequired",
+      "de": "Für englischen Inhalt oder eine englische Kurzbeschreibung wird auch ein englischer Titel benötigt.",
+      "en": "English content or an English excerpt also requires an English title."
+    },
+    {
+      "key": "admin.blog.authors.title",
+      "de": "Blog-Autoren",
+      "en": "Blog authors"
+    },
+    {
+      "key": "admin.blog.authors.description",
+      "de": "Benutzer als Autoren oder Editoren einrichten und ihr öffentliches Autorenprofil pflegen.",
+      "en": "Configure users as authors or editors and manage their public author profile."
+    },
+    {
+      "key": "admin.blog.authors.configured",
+      "de": "Eingerichtet",
+      "en": "Configured"
+    },
+    {
+      "key": "admin.blog.authors.notConfigured",
+      "de": "Nicht eingerichtet",
+      "en": "Not configured"
+    },
+    {
+      "key": "admin.blog.authors.selectHint",
+      "de": "Wähle links einen Benutzer aus.",
+      "en": "Select a user on the left."
+    },
+    {
+      "key": "admin.blog.authors.slug",
+      "de": "Autoren-Slug",
+      "en": "Author slug"
+    },
+    {
+      "key": "admin.blog.authors.displayName",
+      "de": "Öffentlicher Name",
+      "en": "Public name"
+    },
+    {
+      "key": "admin.blog.authors.role",
+      "de": "Blog-Rolle",
+      "en": "Blog role"
+    },
+    {
+      "key": "admin.blog.authors.bio",
+      "de": "Bio",
+      "en": "Bio"
+    },
+    {
+      "key": "admin.blog.authors.avatar",
+      "de": "Avatar",
+      "en": "Avatar"
+    },
+    {
+      "key": "admin.blog.authors.avatarButton",
+      "de": "Avatar auswählen",
+      "en": "Select avatar"
+    },
+    {
+      "key": "admin.blog.authors.adminRolePreserved",
+      "de": "Dieser Benutzer ist Administrator. Die Admin-Rolle bleibt erhalten.",
+      "en": "This user is an administrator. The admin role is preserved."
+    },
+    {
+      "key": "admin.blog.authors.save",
+      "de": "Autorenprofil speichern",
+      "en": "Save author profile"
+    },
+    {
+      "key": "admin.blog.authors.saved",
+      "de": "Autorenprofil gespeichert.",
+      "en": "Author profile saved."
+    },
+    {
+      "key": "admin.blog.authors.loadFailed",
+      "de": "Die Benutzer und Autorenprofile konnten nicht geladen werden.",
+      "en": "Users and author profiles could not be loaded."
+    },
+    {
+      "key": "admin.blog.authors.saveFailed",
+      "de": "Das Autorenprofil konnte nicht gespeichert werden.",
+      "en": "The author profile could not be saved."
+    },
+    {
+      "key": "admin.blog.authors.close",
+      "de": "Editor schließen",
+      "en": "Close editor"
+    },
+    {
+      "key": "admin.blog.role.user",
+      "de": "Benutzer",
+      "en": "User"
+    },
+    {
+      "key": "admin.blog.role.author",
+      "de": "Autor",
+      "en": "Author"
+    },
+    {
+      "key": "admin.blog.role.editor",
+      "de": "Editor",
+      "en": "Editor"
+    },
+    {
+      "key": "admin.blog.role.admin",
+      "de": "Administrator",
+      "en": "Administrator"
+    }
+  ]
+}

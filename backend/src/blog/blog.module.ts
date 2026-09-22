@@ -8,6 +8,8 @@ import { UsersModule } from '../users/users.module';
 import { BlogAdminAuthorsController } from './blog-admin-authors.controller';
 import { BlogAdminPostsController } from './blog-admin-posts.controller';
 import { BlogAdminService } from './blog-admin.service';
+import { BlogAuthorDirectoryController } from './blog-author-directory.controller';
+import { BlogAuthorDirectoryService } from './blog-author-directory.service';
 import { BlogController } from './blog.controller';
 import { BlogService } from './blog.service';
 import { BlogAuthorProfileEntry } from './entities/blog-author-profile.entry';
@@ -29,11 +31,13 @@ import { BlogContributorGuard } from './guards/blog-contributor.guard';
   ],
   controllers: [
     BlogController,
+    BlogAuthorDirectoryController,
     BlogAdminPostsController,
     BlogAdminAuthorsController,
   ],
   providers: [
     BlogService,
+    BlogAuthorDirectoryService,
     BlogAdminService,
     BlogContributorGuard,
   ],

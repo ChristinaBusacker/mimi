@@ -1,0 +1,184 @@
+<section class="editor">
+  <header>
+    <div>
+      <h1>
+        {{
+          (postId
+            ? 'admin.blog.editor.editTitle'
+            : 'admin.blog.editor.createTitle')
+            | i18n
+            | async
+        }}
+      </h1>
+
+      @if (readOnly() && postId) {
+        <p class="readonly-note">
+          {{ 'admin.blog.editor.readOnly' | i18n | async }}
+        </p>
+      }
+    </div>
+
+    <div class="header-actions">
+      @if (!readOnly()) {
+        <app-button
+          class="primary round"
+          [disabled]="loading() || saving()"
+          (click)="save()"
+        >
+          {{ 'admin.blog.save' | i18n | async }}
+        </app-button>
+      }
+
+      <a routerLink="/admin/blog">
+        {{ 'admin.blog.back' | i18n | async }}
+      </a>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p>{{ 'admin.blog.loading' | i18n | async }}</p>
+  } @else {
+    @if (errorKey(); as error) {
+      <p class="message error" role="alert">
+        {{ error | i18n | async }}
+      </p>
+    }
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="save()"
+    >
+      <fieldset>
+        <legend>
+          {{ 'admin.blog.editor.general' | i18n | async }}
+        </legend>
+
+        <div class="grid">
+          <label>
+            <span>{{ 'admin.blog.editor.slug' | i18n | async }}</span>
+            <input
+              type="text"
+              formControlName="slug"
+              autocomplete="off"
+            />
+          </label>
+
+          <label>
+            <span>{{ 'admin.blog.editor.author' | i18n | async }}</span>
+            <select formControlName="authorId">
+              <option value="">
+                {{ 'admin.blog.editor.selectAuthor' | i18n | async }}
+              </option>
+
+              @for (author of authors(); track author.userId) {
+                <option [value]="author.userId">
+                  {{ author.displayName }}
+                </option>
+              }
+            </select>
+          </label>
+
+          <label>
+            <span>{{ 'admin.blog.editor.status' | i18n | async }}</span>
+            <select formControlName="status">
+              <option value="draft">
+                {{ 'admin.blog.status.draft' | i18n | async }}
+              </option>
+              <option value="published">
+                {{ 'admin.blog.status.published' | i18n | async }}
+              </option>
+            </select>
+          </label>
+
+          <app-asset-picker
+            type="image"
+            formControlName="coverAssetId"
+            [label]="('admin.blog.editor.cover' | i18n | async) || ''"
+            [buttonLabel]="('admin.assetPicker.coverButton' | i18n | async) || ''"
+            [assets]="images()"
+            (assetUploaded)="addImage($event)"
+            (assetDeleted)="removeImage($event)"
+          />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>
+          {{ 'admin.blog.language.de' | i18n | async }}
+        </legend>
+
+        <label>
+          <span>{{ 'admin.blog.editor.title' | i18n | async }}</span>
+          <input
+            type="text"
+            formControlName="titleDe"
+          />
+        </label>
+
+        <label>
+          <span>{{ 'admin.blog.editor.excerpt' | i18n | async }}</span>
+          <textarea
+            rows="4"
+            formControlName="excerptDe"
+          ></textarea>
+        </label>
+
+        <app-markdown-editor
+          formControlName="contentDe"
+          [label]="'admin.blog.editor.content' | i18n | async"
+          [assets]="images()"
+          (assetUploaded)="addImage($event)"
+          (assetDeleted)="removeImage($event)"
+        />
+      </fieldset>
+
+      <fieldset>
+        <legend>
+          {{ 'admin.blog.language.en' | i18n | async }}
+        </legend>
+
+        <label>
+          <span>{{ 'admin.blog.editor.title' | i18n | async }}</span>
+          <input
+            type="text"
+            formControlName="titleEn"
+          />
+        </label>
+
+        <label>
+          <span>{{ 'admin.blog.editor.excerpt' | i18n | async }}</span>
+          <textarea
+            rows="4"
+            formControlName="excerptEn"
+          ></textarea>
+        </label>
+
+        <app-markdown-editor
+          formControlName="contentEn"
+          [label]="'admin.blog.editor.content' | i18n | async"
+          [assets]="images()"
+          (assetUploaded)="addImage($event)"
+          (assetDeleted)="removeImage($event)"
+        />
+      </fieldset>
+
+      @if (!readOnly()) {
+        <div class="form-actions">
+          <app-button
+            class="primary round"
+            type="submit"
+            [disabled]="saving()"
+          >
+            {{ 'admin.blog.save' | i18n | async }}
+          </app-button>
+
+          @if (saved()) {
+            <p class="message">
+              {{ 'admin.blog.saved' | i18n | async }}
+            </p>
+          }
+        </div>
+      }
+    </form>
+  }
+</section>

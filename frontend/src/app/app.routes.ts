@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/auth/admin.guard';
+import { contributorGuard } from './core/auth/contributor.guard';
 import { homeDataResolver } from './pages/home/home.resolver';
 import { musicAlbumResolver } from './pages/music/album/music-album.resolver';
 import { musicDataResolver } from './pages/music/music.resolver';
@@ -68,7 +69,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [adminGuard],
+    canActivate: [contributorGuard],
     loadComponent: () =>
       import('./pages/admin/shell/admin-shell').then(
         (module) => module.AdminShell,
@@ -82,7 +83,37 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'blog',
+        loadComponent: () =>
+          import('./pages/admin/blog/admin-blog').then(
+            (module) => module.AdminBlog,
+          ),
+      },
+      {
+        path: 'blog/posts/new',
+        loadComponent: () =>
+          import('./pages/admin/blog/posts/admin-blog-post-editor').then(
+            (module) => module.AdminBlogPostEditor,
+          ),
+      },
+      {
+        path: 'blog/posts/:id',
+        loadComponent: () =>
+          import('./pages/admin/blog/posts/admin-blog-post-editor').then(
+            (module) => module.AdminBlogPostEditor,
+          ),
+      },
+      {
+        path: 'blog/authors',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/blog/authors/admin-blog-authors').then(
+            (module) => module.AdminBlogAuthors,
+          ),
+      },
+      {
         path: 'music',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/music/admin-music').then(
             (module) => module.AdminMusic,
@@ -90,6 +121,7 @@ export const routes: Routes = [
       },
       {
         path: 'localizations',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/localizations/admin-localizations').then(
             (module) => module.AdminLocalizations,
@@ -97,6 +129,7 @@ export const routes: Routes = [
       },
       {
         path: 'music/albums/new',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/music/albums/admin-album-editor').then(
             (module) => module.AdminAlbumEditor,
@@ -104,6 +137,7 @@ export const routes: Routes = [
       },
       {
         path: 'music/albums/:id',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/music/albums/admin-album-editor').then(
             (module) => module.AdminAlbumEditor,
@@ -111,6 +145,7 @@ export const routes: Routes = [
       },
       {
         path: 'music/tracks/new',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/music/tracks/admin-track-editor').then(
             (module) => module.AdminTrackEditor,
@@ -118,6 +153,7 @@ export const routes: Routes = [
       },
       {
         path: 'music/tracks/:id',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/music/tracks/admin-track-editor').then(
             (module) => module.AdminTrackEditor,
