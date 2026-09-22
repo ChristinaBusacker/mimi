@@ -1,11 +1,20 @@
 import type {
   GamingNextStream,
   SteamGameInfo,
+  SteamScreenshot,
 } from '@shared/gaming/gaming';
 
 import { ApiProperty } from '@nestjs/swagger';
 
 import { TwitchScheduledStreamDto } from '../../integrations/twitch/dto/twitch-schedule.dto';
+
+export class SteamScreenshotDto implements SteamScreenshot {
+  @ApiProperty()
+  thumbnailUrl!: string;
+
+  @ApiProperty()
+  fullSizeUrl!: string;
+}
 
 export class SteamGameInfoDto implements SteamGameInfo {
   @ApiProperty()
@@ -33,10 +42,22 @@ export class SteamGameInfoDto implements SteamGameInfo {
   capsuleImageUrl!: string | null;
 
   @ApiProperty({
+    type: SteamScreenshotDto,
+    isArray: true,
+  })
+  screenshots!: SteamScreenshotDto[];
+
+  @ApiProperty({
     type: String,
     isArray: true,
   })
   genres!: string[];
+
+  @ApiProperty({
+    type: String,
+    isArray: true,
+  })
+  categories!: string[];
 
   @ApiProperty({
     type: String,
@@ -55,6 +76,12 @@ export class SteamGameInfoDto implements SteamGameInfo {
     type: String,
   })
   releaseDate!: string | null;
+
+  @ApiProperty({
+    nullable: true,
+    type: String,
+  })
+  websiteUrl!: string | null;
 
   @ApiProperty()
   storeUrl!: string;

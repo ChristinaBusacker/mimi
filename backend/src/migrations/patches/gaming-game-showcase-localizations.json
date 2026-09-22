@@ -1,0 +1,54 @@
+{
+  "localizations": [
+    {
+      "key": "gaming.game.by",
+      "de": "Von",
+      "en": "By"
+    },
+    {
+      "key": "gaming.game.website",
+      "de": "Zur Spiel-Website",
+      "en": "Game website"
+    },
+    {
+      "key": "gaming.game.developer",
+      "de": "Entwickler",
+      "en": "Developer"
+    },
+    {
+      "key": "gaming.game.publisher",
+      "de": "Publisher",
+      "en": "Publisher"
+    },
+    {
+      "key": "gaming.game.release",
+      "de": "Veröffentlicht",
+      "en": "Released"
+    },
+    {
+      "key": "gaming.game.features",
+      "de": "Features",
+      "en": "Features"
+    },
+    {
+      "key": "gaming.game.screenshots",
+      "de": "Screenshots",
+      "en": "Screenshots"
+    },
+    {
+      "key": "gaming.game.lookInside",
+      "de": "Ein Blick ins Spiel",
+      "en": "A look inside the game"
+    },
+    {
+      "key": "gaming.showcase.eyebrow",
+      "de": "Über das Spiel",
+      "en": "About the game"
+    },
+    {
+      "key": "gaming.showcase.noDescription",
+      "de": "Für dieses Spiel ist aktuell keine zusätzliche Beschreibung von Steam verfügbar.",
+      "en": "Steam currently provides no additional description for this game."
+    }
+  ]
+}

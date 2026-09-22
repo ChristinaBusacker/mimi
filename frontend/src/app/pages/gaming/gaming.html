@@ -54,38 +54,51 @@
     @if (game) {
       <article hero-right class="game-card">
         @if (game.headerImageUrl) {
-          <img
-            [src]="game.headerImageUrl"
-            [alt]="game.name"
-          />
+          <div
+            class="artwork"
+            [style.background-image]="'url(' + game.headerImageUrl + ')'"
+          ></div>
         }
 
-        <div class="details">
-          <span>
-            {{ 'gaming.game.label' | i18n | async }}
-          </span>
-          <h2>{{ game.name }}</h2>
-
-          @if (game.shortDescription) {
-            <p>{{ game.shortDescription }}</p>
+        <div class="game-summary">
+          @if (game.capsuleImageUrl) {
+            <img
+              class="capsule"
+              [src]="game.capsuleImageUrl"
+              [alt]="game.name"
+            />
           }
 
-          @if (game.genres.length) {
-            <div class="genres">
-              @for (genre of game.genres; track genre) {
-                <span>{{ genre }}</span>
-              }
-            </div>
-          }
+          <div class="details">
+            <span>
+              {{ 'gaming.game.label' | i18n | async }}
+            </span>
+            <h2>{{ game.name }}</h2>
 
-          <a
-            [href]="game.storeUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ 'gaming.game.steam' | i18n | async }}
-            →
-          </a>
+            @if (game.genres.length) {
+              <div class="genres">
+                @for (genre of game.genres; track genre) {
+                  <span>{{ genre }}</span>
+                }
+              </div>
+            }
+
+            @if (game.developers.length) {
+              <small>
+                {{ 'gaming.game.by' | i18n | async }}
+                {{ game.developers.join(', ') }}
+              </small>
+            }
+
+            <a
+              [href]="game.storeUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ 'gaming.game.steam' | i18n | async }}
+              →
+            </a>
+          </div>
         </div>
       </article>
     } @else if (stream?.category; as category) {
@@ -104,18 +117,148 @@
     }
   </app-hero>
 
-  <section class="info">
-    <div>
-      <span>
-        {{ 'gaming.info.eyebrow' | i18n | async }}
-      </span>
-      <h2>
-        {{ 'gaming.info.title' | i18n | async }}
-      </h2>
-    </div>
+  @if (game) {
+    <section class="showcase">
+      <header>
+        <div>
+          <span>
+            {{ 'gaming.showcase.eyebrow' | i18n | async }}
+          </span>
+          <h2>{{ game.name }}</h2>
+        </div>
 
-    <p>
-      {{ 'gaming.info.description' | i18n | async }}
-    </p>
-  </section>
+        <div class="actions">
+          @if (game.websiteUrl) {
+            <a
+              [href]="game.websiteUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ 'gaming.game.website' | i18n | async }}
+              →
+            </a>
+          }
+
+          <a
+            [href]="game.storeUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ 'gaming.game.steam' | i18n | async }}
+            →
+          </a>
+        </div>
+      </header>
+
+      <div class="game-info">
+        <div class="description">
+          @if (game.shortDescription) {
+            <p>{{ game.shortDescription }}</p>
+          } @else {
+            <p>
+              {{ 'gaming.showcase.noDescription' | i18n | async }}
+            </p>
+          }
+
+          @if (game.genres.length) {
+            <div class="genres">
+              @for (genre of game.genres; track genre) {
+                <span>{{ genre }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <dl class="facts">
+          @if (game.developers.length) {
+            <div>
+              <dt>
+                {{ 'gaming.game.developer' | i18n | async }}
+              </dt>
+              <dd>{{ game.developers.join(', ') }}</dd>
+            </div>
+          }
+
+          @if (game.publishers.length) {
+            <div>
+              <dt>
+                {{ 'gaming.game.publisher' | i18n | async }}
+              </dt>
+              <dd>{{ game.publishers.join(', ') }}</dd>
+            </div>
+          }
+
+          @if (game.releaseDate) {
+            <div>
+              <dt>
+                {{ 'gaming.game.release' | i18n | async }}
+              </dt>
+              <dd>{{ game.releaseDate }}</dd>
+            </div>
+          }
+        </dl>
+      </div>
+
+      @if (game.categories.length) {
+        <div class="features">
+          <span>
+            {{ 'gaming.game.features' | i18n | async }}
+          </span>
+
+          <div>
+            @for (category of game.categories; track category) {
+              <span>{{ category }}</span>
+            }
+          </div>
+        </div>
+      }
+
+      @if (game.screenshots.length) {
+        <div class="screenshots">
+          <div class="section-title">
+            <span>
+              {{ 'gaming.game.screenshots' | i18n | async }}
+            </span>
+            <h3>
+              {{ 'gaming.game.lookInside' | i18n | async }}
+            </h3>
+          </div>
+
+          <div class="gallery">
+            @for (
+              screenshot of game.screenshots.slice(0, 6);
+              track screenshot.fullSizeUrl
+            ) {
+              <a
+                [href]="screenshot.fullSizeUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  [src]="screenshot.thumbnailUrl"
+                  [alt]="game.name"
+                  loading="lazy"
+                />
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </section>
+  } @else {
+    <section class="info">
+      <div>
+        <span>
+          {{ 'gaming.info.eyebrow' | i18n | async }}
+        </span>
+        <h2>
+          {{ 'gaming.info.title' | i18n | async }}
+        </h2>
+      </div>
+
+      <p>
+        {{ 'gaming.info.description' | i18n | async }}
+      </p>
+    </section>
+  }
 </section>

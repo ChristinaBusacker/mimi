@@ -67,7 +67,7 @@ export class SteamService {
     locale: GamingLocale,
   ): Promise<SteamGameInfo> {
     const cacheKey =
-      `steam.game.${match.appId}.${locale}`;
+      `steam.game.v2.${match.appId}.${locale}`;
 
     try {
       const cached =
@@ -219,9 +219,22 @@ export class SteamService {
         app.data.header_image ?? null,
       capsuleImageUrl:
         app.data.capsule_image ?? null,
+      screenshots:
+        app.data.screenshots?.map(
+          (screenshot) => ({
+            thumbnailUrl:
+              screenshot.path_thumbnail,
+            fullSizeUrl:
+              screenshot.path_full,
+          }),
+        ) ?? [],
       genres:
         app.data.genres?.map(
           (genre) => genre.description,
+        ) ?? [],
+      categories:
+        app.data.categories?.map(
+          (category) => category.description,
         ) ?? [],
       developers:
         app.data.developers ?? [],
@@ -229,6 +242,8 @@ export class SteamService {
         app.data.publishers ?? [],
       releaseDate:
         app.data.release_date?.date || null,
+      websiteUrl:
+        app.data.website?.trim() || null,
       storeUrl:
         `https://store.steampowered.com/app/${match.appId}/`,
     };

@@ -26,11 +26,21 @@ export interface SteamStoreAppDetails {
   short_description?: string;
   header_image?: string;
   capsule_image?: string;
+  website?: string;
   developers?: string[];
   publishers?: string[];
   genres?: Array<{
     id: string;
     description: string;
+  }>;
+  categories?: Array<{
+    id: number;
+    description: string;
+  }>;
+  screenshots?: Array<{
+    id: number;
+    path_thumbnail: string;
+    path_full: string;
   }>;
   release_date?: {
     coming_soon: boolean;
@@ -55,10 +65,13 @@ export function createFallbackSteamGame(
     shortDescription: null,
     headerImageUrl: null,
     capsuleImageUrl: null,
+    screenshots: [],
     genres: [],
+    categories: [],
     developers: [],
     publishers: [],
     releaseDate: null,
+    websiteUrl: null,
     storeUrl: `https://store.steampowered.com/app/${match.appId}/`,
   };
 }
