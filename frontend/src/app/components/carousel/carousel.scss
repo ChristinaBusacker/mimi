@@ -1,0 +1,63 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.carousel {
+  min-width: 0;
+}
+
+.glide__track {
+  border-radius: var(--radius-card);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+
+  position: absolute;
+  top: 50%;
+  width: 104%;
+  left: -2%;
+  transform: translateY(-50%);
+
+  @include compact-layout {
+    justify-content: space-around;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: var(--control-border-width) solid var(--color-secondary);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: 1.7rem;
+    line-height: 1;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+@include reduced-motion {
+  .controls button {
+    transition: none;
+  }
+}

@@ -1,0 +1,18 @@
+@if (view(); as countdown) {
+  <div
+    class="countdown"
+    role="timer"
+    aria-live="off"
+    [attr.aria-label]="countdown.accessibleText"
+  >
+    @if (countdown.label) {
+      <span class="label">
+        {{ countdown.label }}
+      </span>
+    }
+
+    <strong class="value">
+      {{ countdown.value }}
+    </strong>
+  </div>
+}

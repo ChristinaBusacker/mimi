@@ -8,13 +8,8 @@
           </a>
         </li>
         <li>
-          <a href="#" aria-label="X">
-            <img class="icon" src="images/icons/logos/x.png" alt="" />
-          </a>
-        </li>
-        <li>
-          <a href="#" aria-label="Instagram">
-            <img class="icon" src="images/icons/logos/instagram.png" alt="" />
+          <a href="#" aria-label="Twitch">
+            <img class="icon" src="images/icons/logos/twitch.png" alt="" />
           </a>
         </li>
         <li>
@@ -23,8 +18,13 @@
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Twitch">
-            <img class="icon" src="images/icons/logos/twitch.png" alt="" />
+          <a href="#" aria-label="Instagram">
+            <img class="icon" src="images/icons/logos/instagram.png" alt="" />
+          </a>
+        </li>
+        <li>
+          <a href="#" aria-label="X">
+            <img class="icon" src="images/icons/logos/x.png" alt="" />
           </a>
         </li>
       </ul>
@@ -81,10 +81,7 @@
       [attr.aria-expanded]="menuOpen()"
       aria-controls="mobile-menu"
       [attr.aria-label]="
-        (menuOpen()
-          ? 'mobile.navigation.closeMenu'
-          : 'mobile.navigation.openMenu'
-        ) | i18n | async
+        (menuOpen() ? 'mobile.navigation.closeMenu' : 'mobile.navigation.openMenu') | i18n | async
       "
       (click)="toggleMenu()"
     >
@@ -95,12 +92,7 @@
       </span>
     </button>
 
-    <a
-      routerLink="/"
-      class="mobile-logo"
-      aria-label="Mimishow"
-      (click)="closeMenu()"
-    >
+    <a routerLink="/" class="mobile-logo" aria-label="Mimishow" (click)="closeMenu()">
       <img src="/images/logo.png" alt="" />
     </a>
 
@@ -141,11 +133,7 @@
         </a>
       </nav>
 
-      <nav
-        id="mobile-social"
-        class="mobile-menu__social"
-        aria-label="Social Media"
-      >
+      <nav id="mobile-social" class="mobile-menu__social" aria-label="Social Media">
         <a href="#" aria-label="Discord">
           <img src="images/icons/logos/discord.png" alt="" />
         </a>

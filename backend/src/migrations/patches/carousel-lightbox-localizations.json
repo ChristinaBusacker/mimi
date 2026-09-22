@@ -1,0 +1,39 @@
+{
+  "localizations": [
+    {
+      "key": "carousel.previous",
+      "de": "Vorheriger Eintrag",
+      "en": "Previous item"
+    },
+    {
+      "key": "carousel.next",
+      "de": "Nächster Eintrag",
+      "en": "Next item"
+    },
+    {
+      "key": "lightbox.dialog",
+      "de": "Bildvorschau",
+      "en": "Image preview"
+    },
+    {
+      "key": "lightbox.close",
+      "de": "Bildvorschau schließen",
+      "en": "Close image preview"
+    },
+    {
+      "key": "lightbox.previous",
+      "de": "Vorheriges Bild",
+      "en": "Previous image"
+    },
+    {
+      "key": "lightbox.next",
+      "de": "Nächstes Bild",
+      "en": "Next image"
+    },
+    {
+      "key": "gaming.game.openScreenshot",
+      "de": "Screenshot öffnen",
+      "en": "Open screenshot"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import type { LocalizationDictionary } from '../../core/i18n/i18n.types';
 
-import { createCountdownViewModel } from './home-countdown';
+import { createCountdownViewModel } from './countdown';
 
 const dictionary: LocalizationDictionary = {
   'hero.upcoming.countdown.label': 'Noch',
@@ -11,7 +11,9 @@ const dictionary: LocalizationDictionary = {
 };
 
 describe('createCountdownViewModel', () => {
-  const now = Date.parse('2026-09-20T12:00:00.000Z');
+  const now = Date.parse(
+    '2026-09-20T12:00:00.000Z',
+  );
 
   it('shows days above 48 hours', () => {
     expect(

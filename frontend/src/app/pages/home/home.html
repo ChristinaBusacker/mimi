@@ -29,26 +29,9 @@
 
       @if (heroView.isUpcoming) {
         <div class="upcoming-details">
-          <div class="countdown-slot">
-            @if (countdown(); as countdownView) {
-              <div
-                class="countdown"
-                role="timer"
-                aria-live="off"
-                [attr.aria-label]="countdownView.accessibleText"
-              >
-                @if (countdownView.label) {
-                  <span class="label">
-                    {{ countdownView.label }}
-                  </span>
-                }
-
-                <strong class="value">
-                  {{ countdownView.value }}
-                </strong>
-              </div>
-            }
-          </div>
+          @if (heroView.startsAt; as startsAt) {
+            <app-countdown [startsAt]="startsAt" />
+          }
 
           @if (heroView.streamTitle) {
             <div class="stream-meta upcoming">

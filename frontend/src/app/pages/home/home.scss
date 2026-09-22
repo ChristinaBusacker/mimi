@@ -52,34 +52,9 @@
         margin: var(--spacing-md) 0 var(--spacing-sm);
       }
 
-      .countdown-slot {
+      app-countdown {
         width: 220px;
         min-height: 58px;
-      }
-
-      .countdown {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 2px;
-
-        .label {
-          color: var(--color-text);
-          font-size: 0.75rem;
-          font-weight: 800;
-          letter-spacing: 0.08em;
-          line-height: 1;
-          text-transform: uppercase;
-        }
-
-        .value {
-          color: var(--color-primary);
-          font-family: var(--font-display);
-          font-size: clamp(1.55rem, 2.6vw, 2.2rem);
-          line-height: 1;
-          text-transform: uppercase;
-          white-space: nowrap;
-        }
       }
 
       .stream-meta {
@@ -130,7 +105,7 @@
 
   .content {
     @include framed;
-
+    box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.5);
     min-height: 200px;
     background-color: var(--color-surface-translucent);
     margin-top: var(--spacing-md);
@@ -221,7 +196,7 @@
           gap: var(--spacing-sm);
         }
 
-        .countdown-slot {
+        app-countdown {
           width: 100%;
           min-height: 54px;
         }

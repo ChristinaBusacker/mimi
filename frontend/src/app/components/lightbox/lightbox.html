@@ -1,0 +1,64 @@
+@if (current(); as item) {
+  <div
+    class="backdrop"
+    role="presentation"
+    (click)="closeFromBackdrop($event)"
+  >
+    <section
+      class="dialog"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="'lightbox.dialog' | i18n | async"
+    >
+      <button
+        type="button"
+        class="close"
+        [attr.aria-label]="'lightbox.close' | i18n | async"
+        (click)="close()"
+      >
+        ×
+      </button>
+
+      <div class="stage">
+        @if (hasMultiple()) {
+          <button
+            type="button"
+            class="previous"
+            [attr.aria-label]="'lightbox.previous' | i18n | async"
+            (click)="previous()"
+          >
+            ‹
+          </button>
+        }
+
+        <img
+          [src]="item.src"
+          [alt]="item.alt"
+        />
+
+        @if (hasMultiple()) {
+          <button
+            type="button"
+            class="next"
+            [attr.aria-label]="'lightbox.next' | i18n | async"
+            (click)="next()"
+          >
+            ›
+          </button>
+        }
+      </div>
+
+      <footer>
+        @if (item.alt) {
+          <span>{{ item.alt }}</span>
+        }
+
+        @if (hasMultiple()) {
+          <span>
+            {{ index() + 1 }} / {{ count() }}
+          </span>
+        }
+      </footer>
+    </section>
+  </div>
+}

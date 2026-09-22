@@ -20,16 +20,20 @@
 
       @if (stream) {
         <div class="next-stream">
-          <span>
-            {{ 'gaming.next.label' | i18n | async }}
-          </span>
-          <strong>{{ stream.title }}</strong>
-          <small>
-            {{ formatDateTime(stream.startsAt) }}
-            @if (stream.category) {
-              · {{ stream.category.name }}
-            }
-          </small>
+          <app-countdown [startsAt]="stream.startsAt" />
+
+          <div class="stream-details">
+            <span>
+              {{ 'gaming.next.label' | i18n | async }}
+            </span>
+            <strong>{{ stream.title }}</strong>
+            <small>
+              {{ formatDateTime(stream.startsAt) }}
+              @if (stream.category) {
+                · {{ stream.category.name }}
+              }
+            </small>
+          </div>
         </div>
 
         <app-button class="primary round font-black" [href]="stream.channelUrl" target="_blank">
@@ -173,7 +177,7 @@
       </div>
 
       @if (game.screenshots.length) {
-        <div class="screenshots">
+        <div class="screenshots" appLightbox>
           <div class="section-title">
             <span>
               {{ 'gaming.game.screenshots' | i18n | async }}
@@ -183,13 +187,32 @@
             </h3>
           </div>
 
-          <div class="gallery">
-            @for (screenshot of game.screenshots.slice(0, 6); track screenshot.fullSizeUrl) {
-              <a [href]="screenshot.fullSizeUrl" target="_blank" rel="noopener noreferrer">
-                <img [src]="screenshot.thumbnailUrl" [alt]="game.name" loading="lazy" />
-              </a>
+          <app-carousel
+            [perView]="3"
+            [gap]="20"
+            [breakpoints]="screenshotBreakpoints"
+            [previousLabel]="('carousel.previous' | i18n | async) ?? ''"
+            [nextLabel]="('carousel.next' | i18n | async) ?? ''"
+          >
+            @for (screenshot of game.screenshots.slice(0, 3); track screenshot.fullSizeUrl) {
+              <button
+                carouselSlide
+                type="button"
+                class="screenshot"
+                data-lightbox-item
+                [attr.aria-label]="
+                  (('gaming.game.openScreenshot' | i18n | async) ?? '') + ' ' + ($index + 1)
+                "
+              >
+                <img
+                  [src]="screenshot.thumbnailUrl"
+                  [attr.data-lightbox-src]="screenshot.fullSizeUrl"
+                  [alt]="game.name"
+                  loading="lazy"
+                />
+              </button>
             }
-          </div>
+          </app-carousel>
         </div>
       }
     </section>

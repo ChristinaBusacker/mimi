@@ -1,0 +1,120 @@
+@use 'mixins' as *;
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: var(--spacing-md);
+  background: rgb(0 0 0 / 88%);
+}
+
+.dialog {
+  position: relative;
+  display: grid;
+  gap: var(--spacing-sm);
+  width: min(1200px, 100%);
+  max-height: calc(100dvh - 2 * var(--spacing-md));
+  color: var(--color-text);
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: min(70vh, 700px);
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 78dvh;
+    border-radius: var(--radius-card);
+    object-fit: contain;
+  }
+}
+
+button {
+  border: var(--control-border-width) solid var(--color-secondary);
+  background: rgb(36 17 34 / 88%);
+  color: var(--color-text);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.close {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.previous,
+.next {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 64px;
+  padding: 0;
+  border-radius: var(--radius-card);
+  transform: translateY(-50%);
+  font-size: 2rem;
+}
+
+.previous {
+  left: var(--spacing-sm);
+}
+
+.next {
+  right: var(--spacing-sm);
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  min-height: 1.4rem;
+  font-size: 0.85rem;
+  opacity: 0.82;
+}
+
+@include compact-layout {
+  .backdrop {
+    padding: var(--spacing-sm);
+  }
+
+  .stage {
+    min-height: 60vh;
+  }
+
+  .previous,
+  .next {
+    width: 42px;
+    height: 56px;
+  }
+
+  footer {
+    padding: 0 var(--spacing-xs);
+  }
+}

@@ -44,23 +44,36 @@
 
   .next-stream {
     display: grid;
-    gap: 2px;
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: end;
+    gap: var(--spacing-md);
     margin: var(--spacing-md) 0;
 
-    > span {
-      color: var(--color-primary);
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+    app-countdown {
+      width: 220px;
     }
 
-    strong {
-      font-size: 1.1rem;
-    }
+    .stream-details {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
 
-    small {
-      opacity: 0.75;
+      > span {
+        color: var(--color-primary);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      strong {
+        font-size: 1.1rem;
+        line-height: 1.25;
+      }
+
+      small {
+        opacity: 0.75;
+      }
     }
   }
 
@@ -71,7 +84,7 @@
 
 .game-card {
   @include framed(var(--control-border-width));
-
+  margin: 40px;
   position: relative;
   width: 100%;
   overflow: hidden;
@@ -104,6 +117,7 @@
 
   .capsule {
     display: block;
+    align-self: start;
     width: 100%;
     border: var(--control-border-width) solid var(--color-secondary);
     border-radius: var(--radius-card);
@@ -186,7 +200,7 @@
 .showcase,
 .info {
   @include framed;
-
+  box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.5);
   padding: var(--spacing-md);
   background: var(--color-surface-translucent);
 }
@@ -332,22 +346,20 @@
     }
   }
 
-  .gallery {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--spacing-sm);
+  .screenshot {
+    display: block;
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--radius-card);
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface);
+    cursor: zoom-in;
 
-    a {
-      display: block;
-      overflow: hidden;
-      border-radius: var(--radius-card);
-      aspect-ratio: 16 / 9;
-      background: var(--color-surface);
-
-      &:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
-      }
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: -2px;
     }
 
     img {
@@ -356,10 +368,11 @@
       height: 100%;
       object-fit: cover;
       transition: transform 160ms ease;
+    }
 
-      &:hover {
-        transform: scale(1.025);
-      }
+    &:hover img,
+    &:focus-visible img {
+      transform: scale(1.025);
     }
   }
 }
@@ -415,9 +428,17 @@
     .game-info {
       grid-template-columns: 1fr;
     }
+  }
 
-    .gallery {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  .intro {
+    .next-stream {
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: var(--spacing-sm);
+
+      app-countdown {
+        width: 100%;
+      }
     }
   }
 
@@ -436,12 +457,6 @@
 
     .capsule {
       width: min(180px, 60%);
-    }
-  }
-
-  .showcase {
-    .gallery {
-      grid-template-columns: 1fr;
     }
   }
 }
