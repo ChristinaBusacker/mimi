@@ -330,6 +330,52 @@ const migrations: readonly SchemaMigration[] = [
       `);
     },
   },
+  {
+    name:
+      '20260923-mail-deliveries',
+    run: async (manager) => {
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "mail_deliveries" (
+          "uuid" uuid NOT NULL DEFAULT gen_random_uuid(),
+          "type" varchar(50) NOT NULL,
+          "recipient" varchar(320) NOT NULL,
+          "subject" varchar(255) NOT NULL,
+          "status" varchar(20) NOT NULL DEFAULT 'pending',
+          "userUuid" uuid,
+          "context" jsonb,
+          "providerMessageId" varchar(512),
+          "errorMessage" text,
+          "attempts" integer NOT NULL DEFAULT 1,
+          "createdAt" timestamptz NOT NULL DEFAULT now(),
+          "sentAt" timestamptz,
+          "failedAt" timestamptz,
+          CONSTRAINT "PK_mail_deliveries"
+            PRIMARY KEY ("uuid"),
+          CONSTRAINT "FK_mail_deliveries_user"
+            FOREIGN KEY ("userUuid")
+            REFERENCES "users"("uuid")
+            ON DELETE SET NULL
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_mail_deliveries_status_created"
+        ON "mail_deliveries" (
+          "status",
+          "createdAt"
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_mail_deliveries_user_created"
+        ON "mail_deliveries" (
+          "userUuid",
+          "createdAt"
+        )
+        WHERE "userUuid" IS NOT NULL
+      `);
+    },
+  },
 ];
 
 export async function runSchemaMigrations(

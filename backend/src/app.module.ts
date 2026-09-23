@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { LocalizationsModule } from './localizations/localizations.module';
+import { MailModule } from './mail/mail.module';
 import { MigrationsModule } from './migrations/migrations.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { GamingModule } from './gaming/gaming.module';
@@ -25,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AssetsModule,
     BlogModule,
     LocalizationsModule,
+    MailModule,
     MigrationsModule,
     IntegrationsModule,
     GamingModule,

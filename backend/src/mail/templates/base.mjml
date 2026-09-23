@@ -1,0 +1,68 @@
+<mjml>
+  <mj-head>
+    <mj-title>Mimis Show</mj-title>
+    <mj-preview>{{preview}}</mj-preview>
+
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text color="#ffffff" font-size="16px" line-height="1.65" />
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body background-color="#160c15">
+    <mj-section background-color="#241122" padding="30px 24px 18px">
+      <mj-column>
+        <mj-image
+          src="{{logoUrl}}"
+          alt="Mimis Show"
+          width="230px"
+          padding="0"
+        />
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#241122" padding="0 32px 12px">
+      <mj-column>
+        <mj-divider
+          border-color="#af68a7"
+          border-width="2px"
+          padding="0"
+        />
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#241122" padding="20px 32px 34px">
+      <mj-column>
+        <mj-text
+          color="#fcaac1"
+          font-size="20px"
+          font-weight="700"
+          padding="0 0 14px"
+        >
+          {{hello}}
+        </mj-text>
+
+        <mj-text padding="0 0 16px">
+          {{content}}
+        </mj-text>
+
+        {{cta}}
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="22px 24px 0">
+      <mj-column>
+        <mj-text
+          align="center"
+          color="#a98fa5"
+          font-size="12px"
+          line-height="1.5"
+          padding="0"
+        >
+          Mimis Show &middot;
+          <a href="{{siteUrl}}" style="color: #fcaac1; text-decoration: none;">Website</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
