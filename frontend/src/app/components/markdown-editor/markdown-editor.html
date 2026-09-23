@@ -4,6 +4,10 @@
     role="toolbar"
     [attr.aria-label]="'admin.markdown.toolbar' | i18n | async"
   >
+    <button type="button" [disabled]="isDisabled()" (click)="setParagraph()">
+      {{ 'admin.markdown.paragraph' | i18n | async }}
+    </button>
+
     <button
       type="button"
       [class.active]="isHeadingActive(2)"
