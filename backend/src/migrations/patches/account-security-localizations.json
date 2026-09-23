@@ -1,0 +1,184 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.account",
+      "de": "Konto & Sicherheit",
+      "en": "Account & security"
+    },
+    {
+      "key": "account.security.title",
+      "de": "Konto & Sicherheit",
+      "en": "Account & security"
+    },
+    {
+      "key": "account.security.description",
+      "de": "Verwalte deine Anmeldewege und die Sicherheit deines Kontos.",
+      "en": "Manage your sign-in methods and account security."
+    },
+    {
+      "key": "account.security.loading",
+      "de": "Kontodaten werden geladen …",
+      "en": "Loading account details…"
+    },
+    {
+      "key": "account.security.loadFailed",
+      "de": "Die Kontodaten konnten nicht geladen werden.",
+      "en": "The account details could not be loaded."
+    },
+    {
+      "key": "account.security.accountTitle",
+      "de": "Konto",
+      "en": "Account"
+    },
+    {
+      "key": "account.security.email",
+      "de": "E-Mail-Adresse",
+      "en": "Email address"
+    },
+    {
+      "key": "account.security.passwordStatus",
+      "de": "Passwort",
+      "en": "Password"
+    },
+    {
+      "key": "account.security.passwordSet",
+      "de": "Eingerichtet",
+      "en": "Configured"
+    },
+    {
+      "key": "account.security.passwordNotSet",
+      "de": "Noch nicht eingerichtet",
+      "en": "Not configured yet"
+    },
+    {
+      "key": "account.security.passwordTitle",
+      "de": "Passwort",
+      "en": "Password"
+    },
+    {
+      "key": "account.security.passwordDescription",
+      "de": "Ändere dein Passwort. Deine anderen bestehenden Sitzungen werden dabei beendet.",
+      "en": "Change your password. Your other existing sessions will be signed out."
+    },
+    {
+      "key": "account.security.passwordCreateDescription",
+      "de": "Für dieses Konto ist noch kein Passwort eingerichtet. Du kannst hier zusätzlich zum SSO-Login ein Passwort festlegen.",
+      "en": "This account does not have a password yet. You can add one alongside SSO sign-in."
+    },
+    {
+      "key": "account.security.currentPassword",
+      "de": "Aktuelles Passwort",
+      "en": "Current password"
+    },
+    {
+      "key": "account.security.newPassword",
+      "de": "Neues Passwort",
+      "en": "New password"
+    },
+    {
+      "key": "account.security.confirmPassword",
+      "de": "Neues Passwort bestätigen",
+      "en": "Confirm new password"
+    },
+    {
+      "key": "account.security.changePassword",
+      "de": "Passwort ändern",
+      "en": "Change password"
+    },
+    {
+      "key": "account.security.setPassword",
+      "de": "Passwort einrichten",
+      "en": "Set password"
+    },
+    {
+      "key": "account.security.passwordChanged",
+      "de": "Dein Passwort wurde gespeichert.",
+      "en": "Your password has been saved."
+    },
+    {
+      "key": "account.security.passwordMismatch",
+      "de": "Die beiden neuen Passwörter stimmen nicht überein.",
+      "en": "The two new passwords do not match."
+    },
+    {
+      "key": "account.security.currentPasswordInvalid",
+      "de": "Das aktuelle Passwort ist nicht korrekt.",
+      "en": "The current password is incorrect."
+    },
+    {
+      "key": "account.security.passwordFailed",
+      "de": "Das Passwort konnte nicht geändert werden.",
+      "en": "The password could not be changed."
+    },
+    {
+      "key": "account.security.discordTitle",
+      "de": "Discord",
+      "en": "Discord"
+    },
+    {
+      "key": "account.security.discordConnected",
+      "de": "Discord ist mit diesem Konto verbunden.",
+      "en": "Discord is connected to this account."
+    },
+    {
+      "key": "account.security.discordNotConnected",
+      "de": "Discord ist noch nicht mit diesem Konto verbunden.",
+      "en": "Discord is not connected to this account yet."
+    },
+    {
+      "key": "account.security.discordConnect",
+      "de": "Discord verbinden",
+      "en": "Connect Discord"
+    },
+    {
+      "key": "account.security.discordDisconnect",
+      "de": "Discord trennen",
+      "en": "Disconnect Discord"
+    },
+    {
+      "key": "account.security.discordDisconnected",
+      "de": "Die Discord-Verknüpfung wurde entfernt.",
+      "en": "The Discord connection has been removed."
+    },
+    {
+      "key": "account.security.discordConnectedSuccess",
+      "de": "Discord wurde mit deinem Konto verbunden.",
+      "en": "Discord has been connected to your account."
+    },
+    {
+      "key": "account.security.discordConflict",
+      "de": "Dieses Discord-Konto ist bereits mit einem anderen Benutzerkonto verbunden.",
+      "en": "This Discord account is already connected to another user account."
+    },
+    {
+      "key": "account.security.discordFailed",
+      "de": "Die Discord-Verknüpfung konnte nicht geändert werden.",
+      "en": "The Discord connection could not be changed."
+    },
+    {
+      "key": "account.security.discordRequiresPassword",
+      "de": "Richte zuerst ein Passwort ein, bevor du Discord trennst.",
+      "en": "Set a password before disconnecting Discord."
+    },
+    {
+      "key": "account.security.discordRequiresPasswordHint",
+      "de": "Du kannst Discord erst trennen, wenn du zusätzlich ein Passwort eingerichtet hast. Sonst würdest du dich aus deinem eigenen Konto aussperren, was selbst für Websoftware unnötig dramatisch wäre.",
+      "en": "You can disconnect Discord after setting a password as an alternative sign-in method."
+    },
+    {
+      "key": "account.security.backAdmin",
+      "de": "Zur Verwaltung",
+      "en": "Back to administration"
+    },
+    {
+      "key": "account.security.backWebsite",
+      "de": "Zur Website",
+      "en": "Back to website"
+    },
+    {
+      "key": "account.security.logout",
+      "de": "Abmelden",
+      "en": "Sign out"
+    }
+  ]
+}

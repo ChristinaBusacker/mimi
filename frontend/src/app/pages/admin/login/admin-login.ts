@@ -22,6 +22,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { Button } from '../../../components/button/button';
 import { Login } from '../../../core/auth/auth.actions';
+import { AuthState } from '../../../core/auth/auth.state';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 
 @Component({
@@ -84,7 +85,16 @@ export class AdminLogin {
         ),
       );
 
-      await this.router.navigate(['/admin']);
+      const user =
+        this.store.selectSnapshot(
+          AuthState.user,
+        );
+
+      await this.router.navigate([
+        user?.role === 'user'
+          ? '/account'
+          : '/admin',
+      ]);
     } catch (error: unknown) {
       this.errorKey.set(
         error instanceof HttpErrorResponse &&

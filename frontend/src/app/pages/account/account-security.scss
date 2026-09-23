@@ -1,0 +1,184 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.account-page {
+  display: grid;
+  gap: var(--spacing-lg);
+  width: min(
+    calc(100% - 2 * var(--spacing-md)),
+    860px
+  );
+  margin:
+    var(--spacing-lg)
+    auto;
+
+  > header {
+    h1 {
+      margin:
+        0
+        0
+        var(--spacing-xs);
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.8;
+    }
+  }
+}
+
+.card {
+  @include framed(
+    var(--control-border-width)
+  );
+
+  display: grid;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background:
+    var(--color-surface-translucent);
+
+  header {
+    h2 {
+      margin:
+        0
+        0
+        var(--spacing-xs);
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.75;
+      line-height: 1.5;
+    }
+  }
+}
+
+dl {
+  display: grid;
+  gap: var(--spacing-sm);
+  margin: 0;
+
+  div {
+    display: grid;
+    grid-template-columns:
+      minmax(140px, 0.35fr)
+      minmax(0, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  dt {
+    opacity: 0.7;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+form {
+  display: grid;
+  gap: var(--spacing-md);
+
+  label {
+    display: grid;
+    gap: var(--spacing-xs);
+    font-weight: 700;
+  }
+
+  input {
+    @include framed(
+      var(--control-border-width)
+    );
+
+    width: 100%;
+    padding: var(--spacing-sm);
+    background:
+      var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    outline: none;
+
+    &:focus-visible {
+      border-color:
+        var(--color-primary);
+    }
+  }
+
+  app-button {
+    justify-self: start;
+  }
+}
+
+.discord-action {
+  justify-self: start;
+  padding:
+    var(--spacing-sm)
+    var(--spacing-md);
+  border-radius:
+    var(--radius-pill);
+  background:
+    var(--color-secondary);
+  color: var(--color-text);
+  font-weight: 800;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    background:
+      var(--color-primary);
+    color:
+      var(--color-text-inverse);
+  }
+}
+
+.hint {
+  margin: 0;
+  opacity: 0.75;
+}
+
+.message {
+  margin: 0;
+  font-weight: 700;
+
+  &.error {
+    color:
+      var(--color-primary);
+  }
+
+  &.success {
+    color:
+      var(--color-text);
+  }
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+
+  a {
+    color:
+      var(--color-secondary);
+    font-weight: 800;
+  }
+}
+
+@include compact-layout {
+  .account-page {
+    width:
+      calc(
+        100% -
+        2 * var(--spacing-sm)
+      );
+  }
+
+  dl div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

@@ -31,6 +31,18 @@ export class UsersService {
     });
   }
 
+  findByUuidWithPassword(
+    uuid: string,
+  ): Promise<UserEntry | null> {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.uuid = :uuid', {
+        uuid,
+      })
+      .getOne();
+  }
+
   findByEmail(email: string): Promise<UserEntry | null> {
     return this.usersRepository.findOneBy({
       email: email.toLowerCase(),
@@ -88,6 +100,16 @@ export class UsersService {
     user.discordId = discordId;
 
     return this.usersRepository.save(user);
+  }
+
+  async disconnectDiscord(
+    user: UserEntry,
+  ): Promise<UserEntry> {
+    user.discordId = null;
+
+    return this.usersRepository.save(
+      user,
+    );
   }
 
   async setPassword(

@@ -1,0 +1,198 @@
+<section class="account-page">
+  <header>
+    <h1>
+      {{ 'account.security.title' | i18n | async }}
+    </h1>
+    <p>
+      {{ 'account.security.description' | i18n | async }}
+    </p>
+  </header>
+
+  @if (errorKey(); as error) {
+    <p
+      class="message error"
+      role="alert"
+    >
+      {{ error | i18n | async }}
+    </p>
+  }
+
+  @if (successKey(); as success) {
+    <p
+      class="message success"
+      role="status"
+    >
+      {{ success | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>
+      {{ 'account.security.loading' | i18n | async }}
+    </p>
+  } @else if (security(); as account) {
+    <section class="card">
+      <header>
+        <h2>
+          {{ 'account.security.accountTitle' | i18n | async }}
+        </h2>
+      </header>
+
+      <dl>
+        <div>
+          <dt>
+            {{ 'account.security.email' | i18n | async }}
+          </dt>
+          <dd>{{ account.email }}</dd>
+        </div>
+
+        <div>
+          <dt>
+            {{ 'account.security.passwordStatus' | i18n | async }}
+          </dt>
+          <dd>
+            {{
+              (account.hasPassword
+                ? 'account.security.passwordSet'
+                : 'account.security.passwordNotSet')
+                | i18n
+                | async
+            }}
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="card">
+      <header>
+        <h2>
+          {{ 'account.security.passwordTitle' | i18n | async }}
+        </h2>
+        <p>
+          {{
+            (account.hasPassword
+              ? 'account.security.passwordDescription'
+              : 'account.security.passwordCreateDescription')
+              | i18n
+              | async
+          }}
+        </p>
+      </header>
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="savePassword()"
+      >
+        @if (account.hasPassword) {
+          <label>
+            <span>
+              {{ 'account.security.currentPassword' | i18n | async }}
+            </span>
+            <input
+              type="password"
+              formControlName="currentPassword"
+              autocomplete="current-password"
+            />
+          </label>
+        }
+
+        <label>
+          <span>
+            {{ 'account.security.newPassword' | i18n | async }}
+          </span>
+          <input
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+        </label>
+
+        <label>
+          <span>
+            {{ 'account.security.confirmPassword' | i18n | async }}
+          </span>
+          <input
+            type="password"
+            formControlName="passwordConfirmation"
+            autocomplete="new-password"
+          />
+        </label>
+
+        <app-button
+          class="primary round"
+          type="submit"
+          [disabled]="savingPassword()"
+        >
+          {{
+            (account.hasPassword
+              ? 'account.security.changePassword'
+              : 'account.security.setPassword')
+              | i18n
+              | async
+          }}
+        </app-button>
+      </form>
+    </section>
+
+    <section class="card">
+      <header>
+        <h2>
+          {{ 'account.security.discordTitle' | i18n | async }}
+        </h2>
+        <p>
+          {{
+            (account.discordConnected
+              ? 'account.security.discordConnected'
+              : 'account.security.discordNotConnected')
+              | i18n
+              | async
+          }}
+        </p>
+      </header>
+
+      @if (account.discordConnected) {
+        @if (!account.hasPassword) {
+          <p class="hint">
+            {{ 'account.security.discordRequiresPasswordHint' | i18n | async }}
+          </p>
+        }
+
+        <app-button
+          class="secondary round"
+          type="button"
+          [disabled]="disconnecting() || !account.hasPassword"
+          (click)="disconnectDiscord()"
+        >
+          {{ 'account.security.discordDisconnect' | i18n | async }}
+        </app-button>
+      } @else {
+        <a
+          class="discord-action"
+          href="/api/auth/discord/connect"
+        >
+          {{ 'account.security.discordConnect' | i18n | async }}
+        </a>
+      }
+    </section>
+
+    <nav class="links">
+      @if (canOpenAdmin()) {
+        <a routerLink="/admin">
+          {{ 'account.security.backAdmin' | i18n | async }}
+        </a>
+      }
+
+      <a routerLink="/">
+        {{ 'account.security.backWebsite' | i18n | async }}
+      </a>
+
+      <app-button
+        class="secondary round"
+        type="button"
+        (click)="logout()"
+      >
+        {{ 'account.security.logout' | i18n | async }}
+      </app-button>
+    </nav>
+  }
+</section>

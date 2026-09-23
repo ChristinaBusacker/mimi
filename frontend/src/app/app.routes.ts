@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/auth/admin.guard';
+import { authenticatedGuard } from './core/auth/authenticated.guard';
 import { blogAuthorResolver } from './pages/blog/author/blog-author.resolver';
 import { blogDataResolver } from './pages/blog/blog.resolver';
 import { blogPostResolver } from './pages/blog/post/blog-post.resolver';
@@ -96,6 +97,17 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/contact/contact').then(
         (module) => module.Contact,
+      ),
+  },
+  {
+    path: 'account',
+    canActivate: [
+      authenticatedGuard,
+    ],
+    loadComponent: () =>
+      import('./pages/account/account-security').then(
+        (module) =>
+          module.AccountSecurityPage,
       ),
   },
   {
