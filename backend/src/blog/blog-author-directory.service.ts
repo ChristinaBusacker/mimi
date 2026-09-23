@@ -1,9 +1,5 @@
-import type {
-  UserRole,
-} from '@shared/auth/authenticated-user';
-import type {
-  BlogAdminAuthor,
-} from '@shared/blog/blog-admin';
+import type { UserRole } from '@shared/auth/authenticated-user';
+import type { BlogAdminAuthor } from '@shared/blog/blog-admin';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,19 +11,13 @@ import { BlogAuthorProfileEntry } from './entities/blog-author-profile.entry';
 @Injectable()
 export class BlogAuthorDirectoryService {
   constructor(
-    private readonly usersService:
-      UsersService,
+    private readonly usersService: UsersService,
     @InjectRepository(BlogAuthorProfileEntry)
-    private readonly authorRepository:
-      Repository<BlogAuthorProfileEntry>,
+    private readonly authorRepository: Repository<BlogAuthorProfileEntry>,
   ) {}
 
-  async getAuthors():
-    Promise<BlogAdminAuthor[]> {
-    const [
-      users,
-      profiles,
-    ] = await Promise.all([
+  async getAuthors(): Promise<BlogAdminAuthor[]> {
+    const [users, profiles] = await Promise.all([
       this.usersService.findAll(),
       this.authorRepository.find({
         order: {
@@ -35,50 +25,27 @@ export class BlogAuthorDirectoryService {
         },
       }),
     ]);
-    const roles = new Map<
-      string,
-      UserRole
-    >(
-      users.map((user) => [
-        user.uuid,
-        user.role,
-      ]),
-    );
+    const roles = new Map<string, UserRole>(users.map((user) => [user.uuid, user.role]));
 
-    return profiles
-      .map((profile) => {
-        const role =
-          roles.get(
-            profile.userUuid,
-          );
+    return profiles.flatMap((profile): BlogAdminAuthor[] => {
+      const role = roles.get(profile.userUuid);
 
-        return role === 'author' ||
-          role === 'editor' ||
-          role === 'admin'
-          ? {
-              userId:
-                profile.userUuid,
-              slug: profile.slug,
-              displayName:
-                profile.displayName,
-              bio: profile.bio,
-              avatarAssetId:
-                profile.avatarAssetId,
-              role,
-              createdAt:
-                profile.createdAt
-                  .toISOString(),
-              updatedAt:
-                profile.updatedAt
-                  .toISOString(),
-            }
-          : null;
-      })
-      .filter(
-        (
-          author,
-        ): author is BlogAdminAuthor =>
-          author !== null,
-      );
+      if (role !== 'author' && role !== 'editor' && role !== 'admin') {
+        return [];
+      }
+
+      return [
+        {
+          userId: profile.userUuid,
+          slug: profile.slug,
+          displayName: profile.displayName,
+          bio: profile.bio,
+          avatarAssetId: profile.avatarAssetId,
+          role,
+          createdAt: profile.createdAt.toISOString(),
+          updatedAt: profile.updatedAt.toISOString(),
+        },
+      ];
+    });
   }
 }
