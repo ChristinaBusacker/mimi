@@ -1,8 +1,4 @@
-<div
-  class="markdown-editor"
-  role="group"
-  [attr.aria-label]="label()"
->
+<div class="markdown-editor" role="group" [attr.aria-label]="label()">
   <div
     class="markdown-editor__toolbar"
     role="toolbar"
@@ -10,20 +6,12 @@
   >
     <button
       type="button"
-      [disabled]="isDisabled()"
-      (click)="setParagraph()"
-    >
-      {{ 'admin.markdown.paragraph' | i18n | async }}
-    </button>
-
-    <button
-      type="button"
       [class.active]="isHeadingActive(2)"
       [disabled]="isDisabled()"
       [attr.aria-pressed]="isHeadingActive(2)"
       (click)="toggleHeading(2)"
     >
-      H2
+      <app-icon name="h2" class="white" />
     </button>
 
     <button
@@ -33,7 +21,7 @@
       [attr.aria-pressed]="isHeadingActive(3)"
       (click)="toggleHeading(3)"
     >
-      H3
+      <app-icon name="h3" class="white" />
     </button>
 
     <button
@@ -63,7 +51,7 @@
       [attr.aria-pressed]="isBulletListActive()"
       (click)="toggleBulletList()"
     >
-      {{ 'admin.markdown.bulletList' | i18n | async }}
+      <app-icon name="list-checked" class="white" />
     </button>
 
     <button
@@ -73,7 +61,7 @@
       [attr.aria-pressed]="isOrderedListActive()"
       (click)="toggleOrderedList()"
     >
-      {{ 'admin.markdown.orderedList' | i18n | async }}
+      <app-icon name="list-numbered" class="white" />
     </button>
 
     <button
@@ -83,15 +71,11 @@
       [attr.aria-pressed]="isBlockquoteActive()"
       (click)="toggleBlockquote()"
     >
-      {{ 'admin.markdown.quote' | i18n | async }}
+      <app-icon name="quote" class="white" />
     </button>
 
-    <button
-      type="button"
-      [disabled]="isDisabled()"
-      (click)="openPanel('link')"
-    >
-      {{ 'admin.markdown.link' | i18n | async }}
+    <button type="button" [disabled]="isDisabled()" (click)="openPanel('link')">
+      <app-icon name="link" class="white" />
     </button>
 
     <button
@@ -101,7 +85,7 @@
       [attr.aria-pressed]="panel() === 'image' || isImageSelected()"
       (click)="openPanel('image')"
     >
-      {{ 'admin.markdown.image' | i18n | async }}
+      <app-icon name="image" class="white" />
     </button>
 
     <button
@@ -111,25 +95,17 @@
       [attr.aria-pressed]="panel() === 'youtube' || isYoutubeSelected()"
       (click)="openPanel('youtube')"
     >
-      {{ 'admin.markdown.youtube' | i18n | async }}
+      <app-icon name="youtube" class="white" />
     </button>
 
     <span class="markdown-editor__toolbar-spacer"></span>
 
-    <button
-      type="button"
-      [disabled]="isDisabled()"
-      (click)="undo()"
-    >
-      {{ 'admin.markdown.undo' | i18n | async }}
+    <button type="button" [disabled]="isDisabled()" (click)="undo()">
+      <app-icon name="undo" class="white" />
     </button>
 
-    <button
-      type="button"
-      [disabled]="isDisabled()"
-      (click)="redo()"
-    >
-      {{ 'admin.markdown.redo' | i18n | async }}
+    <button type="button" [disabled]="isDisabled()" (click)="redo()">
+      <app-icon name="redo" class="white" />
     </button>
   </div>
 
@@ -137,32 +113,19 @@
     <div class="markdown-editor__panel">
       <label>
         <span>{{ 'admin.markdown.linkUrl' | i18n | async }}</span>
-        <input
-          type="url"
-          [value]="linkUrl()"
-          (input)="setLinkUrl($event)"
-        />
+        <input type="url" [value]="linkUrl()" (input)="setLinkUrl($event)" />
       </label>
 
       <div class="markdown-editor__panel-actions">
-        <button
-          type="button"
-          (click)="applyLink()"
-        >
+        <button type="button" (click)="applyLink()">
           {{ 'admin.markdown.applyLink' | i18n | async }}
         </button>
 
-        <button
-          type="button"
-          (click)="removeLink()"
-        >
+        <button type="button" (click)="removeLink()">
           {{ 'admin.markdown.removeLink' | i18n | async }}
         </button>
 
-        <button
-          type="button"
-          (click)="closePanel()"
-        >
+        <button type="button" (click)="closePanel()">
           {{ 'admin.markdown.close' | i18n | async }}
         </button>
       </div>
@@ -175,26 +138,15 @@
         <span>{{ 'admin.markdown.imageAsset' | i18n | async }}</span>
 
         @if (selectedImage(); as asset) {
-          <button
-            type="button"
-            class="selected-asset"
-            (click)="openImageLibrary()"
-          >
-            <img
-              [src]="asset.thumbnailUrl ?? asset.url"
-              [alt]="asset.originalFilename"
-            />
+          <button type="button" class="selected-asset" (click)="openImageLibrary()">
+            <img [src]="asset.thumbnailUrl ?? asset.url" [alt]="asset.originalFilename" />
             <strong>{{ asset.originalFilename }}</strong>
           </button>
         } @else {
           <p>{{ 'admin.assetPicker.noneSelected' | i18n | async }}</p>
         }
 
-        <button
-          type="button"
-          class="choose-asset"
-          (click)="openImageLibrary()"
-        >
+        <button type="button" class="choose-asset" (click)="openImageLibrary()">
           {{ 'admin.markdown.selectImage' | i18n | async }}
         </button>
       </div>
@@ -210,11 +162,7 @@
 
       <label>
         <span>{{ 'admin.markdown.imageAlt' | i18n | async }}</span>
-        <input
-          type="text"
-          [value]="imageAlt()"
-          (input)="setImageAlt($event)"
-        />
+        <input type="text" [value]="imageAlt()" (input)="setImageAlt($event)" />
       </label>
 
       <div class="markdown-editor__media-options">
@@ -288,33 +236,24 @@
       </div>
 
       <div class="markdown-editor__panel-actions">
-        <button
-          type="button"
-          [disabled]="!imageAssetId()"
-          (click)="saveImage()"
-        >
+        <button type="button" [disabled]="!imageAssetId()" (click)="saveImage()">
           {{
             (editingMedia() === 'image'
               ? 'admin.markdown.updateImage'
-              : 'admin.markdown.insertImage')
+              : 'admin.markdown.insertImage'
+            )
               | i18n
               | async
           }}
         </button>
 
         @if (editingMedia() === 'image') {
-          <button
-            type="button"
-            (click)="removeSelectedMedia()"
-          >
+          <button type="button" (click)="removeSelectedMedia()">
             {{ 'admin.markdown.removeFromContent' | i18n | async }}
           </button>
         }
 
-        <button
-          type="button"
-          (click)="closePanel()"
-        >
+        <button type="button" (click)="closePanel()">
           {{ 'admin.markdown.close' | i18n | async }}
         </button>
       </div>
@@ -325,11 +264,7 @@
     <div class="markdown-editor__panel">
       <label>
         <span>{{ 'admin.markdown.youtubeUrl' | i18n | async }}</span>
-        <input
-          type="url"
-          [value]="youtubeValue()"
-          (input)="setYoutubeValue($event)"
-        />
+        <input type="url" [value]="youtubeValue()" (input)="setYoutubeValue($event)" />
       </label>
 
       <div class="markdown-editor__media-options">
@@ -403,32 +338,24 @@
       </div>
 
       <div class="markdown-editor__panel-actions">
-        <button
-          type="button"
-          (click)="saveYoutube()"
-        >
+        <button type="button" (click)="saveYoutube()">
           {{
             (editingMedia() === 'youtube'
               ? 'admin.markdown.updateYoutube'
-              : 'admin.markdown.insertYoutube')
+              : 'admin.markdown.insertYoutube'
+            )
               | i18n
               | async
           }}
         </button>
 
         @if (editingMedia() === 'youtube') {
-          <button
-            type="button"
-            (click)="removeSelectedMedia()"
-          >
+          <button type="button" (click)="removeSelectedMedia()">
             {{ 'admin.markdown.removeFromContent' | i18n | async }}
           </button>
         }
 
-        <button
-          type="button"
-          (click)="closePanel()"
-        >
+        <button type="button" (click)="closePanel()">
           {{ 'admin.markdown.close' | i18n | async }}
         </button>
       </div>
@@ -436,16 +363,10 @@
   }
 
   @if (errorKey(); as error) {
-    <p
-      class="markdown-editor__error"
-      role="alert"
-    >
+    <p class="markdown-editor__error" role="alert">
       {{ error | i18n | async }}
     </p>
   }
 
-  <div
-    #editorHost
-    class="markdown-editor__surface"
-  ></div>
+  <div #editorHost class="markdown-editor__surface"></div>
 </div>

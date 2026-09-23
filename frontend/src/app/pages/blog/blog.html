@@ -1,0 +1,208 @@
+@let blogData = data();
+@let featuredPost = featured();
+
+<section class="page">
+  <app-hero
+    type="chatting"
+    class="right-align-center"
+  >
+    <div hero-left class="intro">
+      <div class="eyebrow">
+        <app-icon
+          name="heart"
+          class="secondary"
+        />
+        <span>
+          {{ 'blog.page.eyebrow' | i18n | async }}
+        </span>
+      </div>
+
+      <div class="logo">
+        <img
+          src="/images/logo.png"
+          alt=""
+        />
+      </div>
+
+      <h1 class="sue-ellen">
+        {{ 'blog.page.title' | i18n | async }}
+      </h1>
+
+      <p>
+        {{ 'blog.page.intro' | i18n | async }}
+      </p>
+    </div>
+
+    @if (featuredPost) {
+      <article hero-right class="featured">
+        @if (featuredPost.coverAssetId; as coverId) {
+          <picture class="cover">
+            <source
+              [srcset]="imageVariantUrl(coverId, 'medium')"
+              type="image/webp"
+            />
+            <img
+              [src]="assetUrl(coverId)"
+              [alt]="featuredPost.title"
+            />
+          </picture>
+        } @else {
+          <div class="cover placeholder">
+            <app-icon
+              name="heart"
+              class="secondary"
+            />
+          </div>
+        }
+
+        <div class="details">
+          <span>
+            {{ 'blog.page.latest' | i18n | async }}
+          </span>
+
+          <h2>{{ featuredPost.title }}</h2>
+
+          <small>
+            {{
+              formatDate(
+                featuredPost.publishedAt,
+                blogData.locale
+              )
+            }}
+            ·
+            {{ featuredPost.author.displayName }}
+          </small>
+
+          @if (featuredPost.excerpt) {
+            <p>{{ featuredPost.excerpt }}</p>
+          }
+
+          <a
+            [routerLink]="[
+              '/blog',
+              featuredPost.slug
+            ]"
+          >
+            {{ 'blog.page.read' | i18n | async }}
+            →
+          </a>
+        </div>
+      </article>
+    }
+  </app-hero>
+
+  <section class="posts">
+    <header>
+      <div>
+        <span>
+          {{ 'blog.page.postsEyebrow' | i18n | async }}
+        </span>
+        <h2>
+          {{ 'blog.page.postsTitle' | i18n | async }}
+        </h2>
+      </div>
+
+      <p>
+        {{ 'blog.page.postsDescription' | i18n | async }}
+      </p>
+    </header>
+
+    @if (blogData.posts.length) {
+      <div class="grid">
+        @for (
+          post of blogData.posts;
+          track trackPost(post)
+        ) {
+          <article class="card">
+            <a
+              class="media"
+              [routerLink]="[
+                '/blog',
+                post.slug
+              ]"
+              [attr.aria-label]="post.title"
+            >
+              @if (post.coverAssetId; as coverId) {
+                <picture>
+                  <source
+                    [srcset]="imageVariantUrl(coverId, 'medium')"
+                    type="image/webp"
+                  />
+                  <img
+                    [src]="assetUrl(coverId)"
+                    [alt]="post.title"
+                    loading="lazy"
+                  />
+                </picture>
+              } @else {
+                <div class="placeholder">
+                  <app-icon
+                    name="heart"
+                    class="secondary"
+                  />
+                </div>
+              }
+            </a>
+
+            <div class="card-content">
+              <div class="meta">
+                <time
+                  [attr.datetime]="post.publishedAt"
+                >
+                  {{
+                    formatDate(
+                      post.publishedAt,
+                      blogData.locale
+                    )
+                  }}
+                </time>
+                <span>
+                  {{ post.author.displayName }}
+                </span>
+              </div>
+
+              <h3>
+                <a
+                  [routerLink]="[
+                    '/blog',
+                    post.slug
+                  ]"
+                >
+                  {{ post.title }}
+                </a>
+              </h3>
+
+              @if (post.excerpt) {
+                <p>{{ post.excerpt }}</p>
+              }
+
+              <a
+                class="read"
+                [routerLink]="[
+                  '/blog',
+                  post.slug
+                ]"
+              >
+                {{ 'blog.page.read' | i18n | async }}
+                →
+              </a>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty">
+        <app-icon
+          name="heart"
+          class="secondary"
+        />
+        <h2>
+          {{ 'blog.page.emptyTitle' | i18n | async }}
+        </h2>
+        <p>
+          {{ 'blog.page.emptyDescription' | i18n | async }}
+        </p>
+      </div>
+    }
+  </section>
+</section>

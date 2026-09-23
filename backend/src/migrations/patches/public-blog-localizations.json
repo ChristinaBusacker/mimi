@@ -1,0 +1,79 @@
+{
+  "localizations": [
+    {
+      "key": "navigation.blog",
+      "de": "Blog",
+      "en": "Blog"
+    },
+    {
+      "key": "blog.page.eyebrow",
+      "de": "Mimis Blog",
+      "en": "Mimi's blog"
+    },
+    {
+      "key": "blog.page.title",
+      "de": "Geschichten, Gedanken & Neuigkeiten",
+      "en": "Stories, thoughts & updates"
+    },
+    {
+      "key": "blog.page.intro",
+      "de": "Hier ist Platz für die Dinge, die in einen Streamtitel nicht hineinpassen: Musik, Gaming, Gedanken und Geschichten rund um Mimi.",
+      "en": "A place for everything that does not fit into a stream title: music, gaming, thoughts and stories around Mimi."
+    },
+    {
+      "key": "blog.page.latest",
+      "de": "Neuester Beitrag",
+      "en": "Latest post"
+    },
+    {
+      "key": "blog.page.read",
+      "de": "Weiterlesen",
+      "en": "Read more"
+    },
+    {
+      "key": "blog.page.postsEyebrow",
+      "de": "Aus dem Blog",
+      "en": "From the blog"
+    },
+    {
+      "key": "blog.page.postsTitle",
+      "de": "Alle Beiträge",
+      "en": "All posts"
+    },
+    {
+      "key": "blog.page.postsDescription",
+      "de": "Neuigkeiten, Hintergründe und längere Gedanken an einem Ort.",
+      "en": "Updates, background stories and longer thoughts in one place."
+    },
+    {
+      "key": "blog.page.emptyTitle",
+      "de": "Noch ist es hier ruhig",
+      "en": "It is still quiet here"
+    },
+    {
+      "key": "blog.page.emptyDescription",
+      "de": "Sobald der erste Beitrag veröffentlicht ist, erscheint er hier.",
+      "en": "The first published post will appear here."
+    },
+    {
+      "key": "blog.article.back",
+      "de": "Zurück zum Blog",
+      "en": "Back to the blog"
+    },
+    {
+      "key": "blog.article.label",
+      "de": "Blogbeitrag",
+      "en": "Blog post"
+    },
+    {
+      "key": "blog.article.by",
+      "de": "von",
+      "en": "by"
+    },
+    {
+      "key": "blog.article.authorLabel",
+      "de": "Zur Person",
+      "en": "About the author"
+    }
+  ]
+}

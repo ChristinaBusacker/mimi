@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/auth/admin.guard';
+import { blogDataResolver } from './pages/blog/blog.resolver';
+import { blogPostResolver } from './pages/blog/post/blog-post.resolver';
 import { contributorGuard } from './core/auth/contributor.guard';
 import { gamingDataResolver } from './pages/gaming/gaming.resolver';
 import { homeDataResolver } from './pages/home/home.resolver';
@@ -37,6 +39,26 @@ export const routes: Routes = [
       ),
     resolve: {
       data: musicAlbumResolver,
+    },
+  },
+  {
+    path: 'blog',
+    loadComponent: () =>
+      import('./pages/blog/blog').then(
+        (module) => module.Blog,
+      ),
+    resolve: {
+      data: blogDataResolver,
+    },
+  },
+  {
+    path: 'blog/:slug',
+    loadComponent: () =>
+      import('./pages/blog/post/blog-post').then(
+        (module) => module.BlogPostPage,
+      ),
+    resolve: {
+      data: blogPostResolver,
     },
   },
   {

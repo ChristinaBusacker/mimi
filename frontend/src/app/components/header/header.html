@@ -33,13 +33,14 @@
     <nav>
       <ul>
         <li>
-          <a routerLink="/gaming">{{ 'navigation.gaming' | i18n | async }}</a>
+          <a routerLink="/blog">News</a>
         </li>
+
         <li>
           <a routerLink="/music">{{ 'navigation.music' | i18n | async }}</a>
         </li>
         <li>
-          <a routerLink="/videos">{{ 'navigation.videos' | i18n | async }}</a>
+          <a routerLink="/gaming">{{ 'navigation.gaming' | i18n | async }}</a>
         </li>
       </ul>
     </nav>
@@ -123,6 +124,9 @@
         <span>{{ 'navigation.about' | i18n | async }}</span>
         <a routerLink="/videos" (click)="closeMenu()">
           {{ 'navigation.videos' | i18n | async }}
+        </a>
+        <a routerLink="/blog" (click)="closeMenu()">
+          {{ 'navigation.blog' | i18n | async }}
         </a>
         <a href="#mobile-social">
           {{ 'mobile.navigation.social' | i18n | async }}

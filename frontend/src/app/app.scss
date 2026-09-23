@@ -1,6 +1,8 @@
 @use 'mixins' as *;
 
 :host {
+  display: block;
+  display: relative;
   main {
     max-width: var(--content-max-width);
     margin: var(--spacing-md) auto 0;
@@ -8,12 +10,15 @@
   }
 
   app-header {
-    margin-top: var(--spacing-sm);
+    position: sticky;
+    top: 0px;
+    z-index: 99;
   }
 
   @include compact-layout {
     app-header {
       margin-top: 0;
+      top: 0;
     }
 
     main {

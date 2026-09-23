@@ -1,0 +1,112 @@
+@let postData = data();
+@let post = postData.post;
+
+<section class="page">
+  <a
+    class="back"
+    routerLink="/blog"
+  >
+    ←
+    {{ 'blog.article.back' | i18n | async }}
+  </a>
+
+  <app-hero type="chatting">
+    <div hero-left class="cover">
+      @if (post.coverAssetId; as coverId) {
+        <picture>
+          <source
+            [srcset]="imageVariantUrl(coverId, 'large')"
+            type="image/webp"
+          />
+          <img
+            [src]="assetUrl(coverId)"
+            [alt]="post.title"
+          />
+        </picture>
+      } @else {
+        <div class="placeholder">
+          <app-icon
+            name="heart"
+            class="secondary"
+          />
+        </div>
+      }
+    </div>
+
+    <div hero-right class="meta">
+      <span>
+        {{ 'blog.article.label' | i18n | async }}
+      </span>
+
+      <h1>{{ post.title }}</h1>
+
+      <div class="publication">
+        <time
+          [attr.datetime]="post.publishedAt"
+        >
+          {{
+            formatDate(
+              post.publishedAt,
+              postData.locale
+            )
+          }}
+        </time>
+
+        <span>
+          {{ 'blog.article.by' | i18n | async }}
+          {{ post.author.displayName }}
+        </span>
+      </div>
+
+      @if (post.excerpt) {
+        <p>{{ post.excerpt }}</p>
+      }
+    </div>
+  </app-hero>
+
+  <div class="content-layout">
+    <article class="article">
+      <app-rendered-content
+        [sanitizedHtml]="post.contentHtml"
+      />
+    </article>
+
+    <aside class="author">
+      @if (
+        post.author.avatarAssetId;
+        as avatarId
+      ) {
+        <picture class="avatar">
+          <source
+            [srcset]="imageVariantUrl(avatarId, 'thumbnail')"
+            type="image/webp"
+          />
+          <img
+            [src]="assetUrl(avatarId)"
+            [alt]="post.author.displayName"
+          />
+        </picture>
+      } @else {
+        <div class="avatar placeholder">
+          <app-icon
+            name="heart"
+            class="secondary"
+          />
+        </div>
+      }
+
+      <div>
+        <span>
+          {{ 'blog.article.authorLabel' | i18n | async }}
+        </span>
+        <h2>
+          {{ post.author.displayName }}
+        </h2>
+
+        @if (post.author.bio) {
+          <p>{{ post.author.bio }}</p>
+        }
+      </div>
+    </aside>
+  </div>
+</section>
