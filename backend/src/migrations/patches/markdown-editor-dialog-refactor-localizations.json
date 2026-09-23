@@ -1,0 +1,44 @@
+{
+  "localizations": [
+    {
+      "key": "admin.markdown.format",
+      "de": "Textformat",
+      "en": "Text format"
+    },
+    {
+      "key": "admin.markdown.heading2",
+      "de": "Überschrift 2",
+      "en": "Heading 2"
+    },
+    {
+      "key": "admin.markdown.heading3",
+      "de": "Überschrift 3",
+      "en": "Heading 3"
+    },
+    {
+      "key": "admin.markdown.underline",
+      "de": "Unterstreichen",
+      "en": "Underline"
+    },
+    {
+      "key": "admin.markdown.strike",
+      "de": "Durchstreichen",
+      "en": "Strikethrough"
+    },
+    {
+      "key": "admin.markdown.linkDialogTitle",
+      "de": "Link bearbeiten",
+      "en": "Edit link"
+    },
+    {
+      "key": "admin.markdown.imageDialogTitle",
+      "de": "Bild bearbeiten",
+      "en": "Edit image"
+    },
+    {
+      "key": "admin.markdown.youtubeDialogTitle",
+      "de": "YouTube-Video bearbeiten",
+      "en": "Edit YouTube video"
+    }
+  ]
+}

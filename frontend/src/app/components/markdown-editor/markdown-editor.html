@@ -1,57 +1,84 @@
-<div class="markdown-editor" role="group" [attr.aria-label]="label()">
+<div
+  class="markdown-editor"
+  role="group"
+  [attr.aria-label]="label()"
+>
   <div
     class="markdown-editor__toolbar"
     role="toolbar"
     [attr.aria-label]="'admin.markdown.toolbar' | i18n | async"
   >
-    <button type="button" [disabled]="isDisabled()" (click)="setParagraph()">
-      {{ 'admin.markdown.paragraph' | i18n | async }}
-    </button>
-
-    <button
-      type="button"
-      [class.active]="isHeadingActive(2)"
-      [disabled]="isDisabled()"
-      [attr.aria-pressed]="isHeadingActive(2)"
-      (click)="toggleHeading(2)"
-    >
-      <app-icon name="h2" class="white" />
-    </button>
-
-    <button
-      type="button"
-      [class.active]="isHeadingActive(3)"
-      [disabled]="isDisabled()"
-      [attr.aria-pressed]="isHeadingActive(3)"
-      (click)="toggleHeading(3)"
-    >
-      <app-icon name="h3" class="white" />
-    </button>
+    <label class="block-style">
+      <span class="visually-hidden">
+        {{ 'admin.markdown.format' | i18n | async }}
+      </span>
+      <select
+        [value]="blockType()"
+        [disabled]="isDisabled()"
+        [attr.aria-label]="'admin.markdown.format' | i18n | async"
+        (change)="setBlockType($event)"
+      >
+        <option value="paragraph">
+          {{ 'admin.markdown.paragraph' | i18n | async }}
+        </option>
+        <option value="heading2">
+          {{ 'admin.markdown.heading2' | i18n | async }}
+        </option>
+        <option value="heading3">
+          {{ 'admin.markdown.heading3' | i18n | async }}
+        </option>
+      </select>
+    </label>
 
     <button
       type="button"
       [class.active]="isBoldActive()"
       [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.bold' | i18n | async"
       [attr.aria-pressed]="isBoldActive()"
       (click)="toggleBold()"
     >
-      {{ 'admin.markdown.bold' | i18n | async }}
+      <strong>B</strong>
     </button>
 
     <button
       type="button"
       [class.active]="isItalicActive()"
       [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.italic' | i18n | async"
       [attr.aria-pressed]="isItalicActive()"
       (click)="toggleItalic()"
     >
-      {{ 'admin.markdown.italic' | i18n | async }}
+      <em>I</em>
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isUnderlineActive()"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.underline' | i18n | async"
+      [attr.aria-pressed]="isUnderlineActive()"
+      (click)="toggleUnderline()"
+    >
+      <span class="underline">U</span>
+    </button>
+
+    <button
+      type="button"
+      [class.active]="isStrikeActive()"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.strike' | i18n | async"
+      [attr.aria-pressed]="isStrikeActive()"
+      (click)="toggleStrike()"
+    >
+      <span class="strike">S</span>
     </button>
 
     <button
       type="button"
       [class.active]="isBulletListActive()"
       [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.bulletList' | i18n | async"
       [attr.aria-pressed]="isBulletListActive()"
       (click)="toggleBulletList()"
     >
@@ -62,6 +89,7 @@
       type="button"
       [class.active]="isOrderedListActive()"
       [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.orderedList' | i18n | async"
       [attr.aria-pressed]="isOrderedListActive()"
       (click)="toggleOrderedList()"
     >
@@ -72,305 +100,353 @@
       type="button"
       [class.active]="isBlockquoteActive()"
       [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.quote' | i18n | async"
       [attr.aria-pressed]="isBlockquoteActive()"
       (click)="toggleBlockquote()"
     >
       <app-icon name="quote" class="white" />
     </button>
 
-    <button type="button" [disabled]="isDisabled()" (click)="openPanel('link')">
+    <span class="divider"></span>
+
+    <button
+      type="button"
+      [class.active]="dialogType() === 'link' || isLinkActive()"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.link' | i18n | async"
+      [attr.aria-pressed]="dialogType() === 'link' || isLinkActive()"
+      (click)="openDialog('link')"
+    >
       <app-icon name="link" class="white" />
     </button>
 
     <button
       type="button"
-      [class.active]="panel() === 'image' || isImageSelected()"
+      [class.active]="dialogType() === 'image' || isImageSelected()"
       [disabled]="isDisabled()"
-      [attr.aria-pressed]="panel() === 'image' || isImageSelected()"
-      (click)="openPanel('image')"
+      [attr.aria-label]="'admin.markdown.image' | i18n | async"
+      [attr.aria-pressed]="dialogType() === 'image' || isImageSelected()"
+      (click)="openDialog('image')"
     >
       <app-icon name="image" class="white" />
     </button>
 
     <button
       type="button"
-      [class.active]="panel() === 'youtube' || isYoutubeSelected()"
+      [class.active]="dialogType() === 'youtube' || isYoutubeSelected()"
       [disabled]="isDisabled()"
-      [attr.aria-pressed]="panel() === 'youtube' || isYoutubeSelected()"
-      (click)="openPanel('youtube')"
+      [attr.aria-label]="'admin.markdown.youtube' | i18n | async"
+      [attr.aria-pressed]="dialogType() === 'youtube' || isYoutubeSelected()"
+      (click)="openDialog('youtube')"
     >
       <app-icon name="youtube" class="white" />
     </button>
 
-    <span class="markdown-editor__toolbar-spacer"></span>
+    <span class="spacer"></span>
 
-    <button type="button" [disabled]="isDisabled()" (click)="undo()">
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.undo' | i18n | async"
+      (click)="undo()"
+    >
       <app-icon name="undo" class="white" />
     </button>
 
-    <button type="button" [disabled]="isDisabled()" (click)="redo()">
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.redo' | i18n | async"
+      (click)="redo()"
+    >
       <app-icon name="redo" class="white" />
     </button>
   </div>
 
-  @if (panel() === 'link') {
-    <div class="markdown-editor__panel">
-      <label>
-        <span>{{ 'admin.markdown.linkUrl' | i18n | async }}</span>
-        <input type="url" [value]="linkUrl()" (input)="setLinkUrl($event)" />
-      </label>
-
-      <div class="markdown-editor__panel-actions">
-        <button type="button" (click)="applyLink()">
-          {{ 'admin.markdown.applyLink' | i18n | async }}
-        </button>
-
-        <button type="button" (click)="removeLink()">
-          {{ 'admin.markdown.removeLink' | i18n | async }}
-        </button>
-
-        <button type="button" (click)="closePanel()">
-          {{ 'admin.markdown.close' | i18n | async }}
-        </button>
-      </div>
-    </div>
-  }
-
-  @if (panel() === 'image') {
-    <div class="markdown-editor__panel">
-      <div class="image-asset">
-        <span>{{ 'admin.markdown.imageAsset' | i18n | async }}</span>
-
-        @if (selectedImage(); as asset) {
-          <button type="button" class="selected-asset" (click)="openImageLibrary()">
-            <img [src]="asset.thumbnailUrl ?? asset.url" [alt]="asset.originalFilename" />
-            <strong>{{ asset.originalFilename }}</strong>
-          </button>
-        } @else {
-          <p>{{ 'admin.assetPicker.noneSelected' | i18n | async }}</p>
-        }
-
-        <button type="button" class="choose-asset" (click)="openImageLibrary()">
-          {{ 'admin.markdown.selectImage' | i18n | async }}
-        </button>
-      </div>
-
-      <app-asset-library
-        type="image"
-        [assets]="availableAssets()"
-        [selectedId]="imageAssetId()"
-        (assetSelected)="selectImageAsset($event)"
-        (assetUploaded)="addImageAsset($event)"
-        (assetDeleted)="removeImageAsset($event)"
-      />
-
-      <label>
-        <span>{{ 'admin.markdown.imageAlt' | i18n | async }}</span>
-        <input type="text" [value]="imageAlt()" (input)="setImageAlt($event)" />
-      </label>
-
-      <div class="markdown-editor__media-options">
-        <span>{{ 'admin.markdown.position' | i18n | async }}</span>
-
-        <div class="markdown-editor__choices">
-          <button
-            type="button"
-            [class.active]="imageAlignment() === 'left'"
-            [attr.aria-pressed]="imageAlignment() === 'left'"
-            (click)="setImageAlignment('left')"
-          >
-            {{ 'admin.markdown.position.left' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="imageAlignment() === 'center'"
-            [attr.aria-pressed]="imageAlignment() === 'center'"
-            (click)="setImageAlignment('center')"
-          >
-            {{ 'admin.markdown.position.center' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="imageAlignment() === 'right'"
-            [attr.aria-pressed]="imageAlignment() === 'right'"
-            (click)="setImageAlignment('right')"
-          >
-            {{ 'admin.markdown.position.right' | i18n | async }}
-          </button>
-        </div>
-      </div>
-
-      <div class="markdown-editor__media-options">
-        <span>{{ 'admin.markdown.size' | i18n | async }}</span>
-
-        <div class="markdown-editor__choices">
-          <button
-            type="button"
-            [class.active]="imageSize() === 'small'"
-            [attr.aria-pressed]="imageSize() === 'small'"
-            (click)="setImageSize('small')"
-          >
-            {{ 'admin.markdown.size.small' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="imageSize() === 'medium'"
-            [attr.aria-pressed]="imageSize() === 'medium'"
-            (click)="setImageSize('medium')"
-          >
-            {{ 'admin.markdown.size.medium' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="imageSize() === 'large'"
-            [attr.aria-pressed]="imageSize() === 'large'"
-            (click)="setImageSize('large')"
-          >
-            {{ 'admin.markdown.size.large' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="imageSize() === 'full'"
-            [attr.aria-pressed]="imageSize() === 'full'"
-            (click)="setImageSize('full')"
-          >
-            {{ 'admin.markdown.size.full' | i18n | async }}
-          </button>
-        </div>
-      </div>
-
-      <div class="markdown-editor__panel-actions">
-        <button type="button" [disabled]="!imageAssetId()" (click)="saveImage()">
-          {{
-            (editingMedia() === 'image'
-              ? 'admin.markdown.updateImage'
-              : 'admin.markdown.insertImage'
-            )
-              | i18n
-              | async
-          }}
-        </button>
-
-        @if (editingMedia() === 'image') {
-          <button type="button" (click)="removeSelectedMedia()">
-            {{ 'admin.markdown.removeFromContent' | i18n | async }}
-          </button>
-        }
-
-        <button type="button" (click)="closePanel()">
-          {{ 'admin.markdown.close' | i18n | async }}
-        </button>
-      </div>
-    </div>
-  }
-
-  @if (panel() === 'youtube') {
-    <div class="markdown-editor__panel">
-      <label>
-        <span>{{ 'admin.markdown.youtubeUrl' | i18n | async }}</span>
-        <input type="url" [value]="youtubeValue()" (input)="setYoutubeValue($event)" />
-      </label>
-
-      <div class="markdown-editor__media-options">
-        <span>{{ 'admin.markdown.position' | i18n | async }}</span>
-
-        <div class="markdown-editor__choices">
-          <button
-            type="button"
-            [class.active]="youtubeAlignment() === 'left'"
-            [attr.aria-pressed]="youtubeAlignment() === 'left'"
-            (click)="setYoutubeAlignment('left')"
-          >
-            {{ 'admin.markdown.position.left' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="youtubeAlignment() === 'center'"
-            [attr.aria-pressed]="youtubeAlignment() === 'center'"
-            (click)="setYoutubeAlignment('center')"
-          >
-            {{ 'admin.markdown.position.center' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="youtubeAlignment() === 'right'"
-            [attr.aria-pressed]="youtubeAlignment() === 'right'"
-            (click)="setYoutubeAlignment('right')"
-          >
-            {{ 'admin.markdown.position.right' | i18n | async }}
-          </button>
-        </div>
-      </div>
-
-      <div class="markdown-editor__media-options">
-        <span>{{ 'admin.markdown.size' | i18n | async }}</span>
-
-        <div class="markdown-editor__choices">
-          <button
-            type="button"
-            [class.active]="youtubeSize() === 'small'"
-            [attr.aria-pressed]="youtubeSize() === 'small'"
-            (click)="setYoutubeSize('small')"
-          >
-            {{ 'admin.markdown.size.small' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="youtubeSize() === 'medium'"
-            [attr.aria-pressed]="youtubeSize() === 'medium'"
-            (click)="setYoutubeSize('medium')"
-          >
-            {{ 'admin.markdown.size.medium' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="youtubeSize() === 'large'"
-            [attr.aria-pressed]="youtubeSize() === 'large'"
-            (click)="setYoutubeSize('large')"
-          >
-            {{ 'admin.markdown.size.large' | i18n | async }}
-          </button>
-          <button
-            type="button"
-            [class.active]="youtubeSize() === 'full'"
-            [attr.aria-pressed]="youtubeSize() === 'full'"
-            (click)="setYoutubeSize('full')"
-          >
-            {{ 'admin.markdown.size.full' | i18n | async }}
-          </button>
-        </div>
-      </div>
-
-      <div class="markdown-editor__panel-actions">
-        <button type="button" (click)="saveYoutube()">
-          {{
-            (editingMedia() === 'youtube'
-              ? 'admin.markdown.updateYoutube'
-              : 'admin.markdown.insertYoutube'
-            )
-              | i18n
-              | async
-          }}
-        </button>
-
-        @if (editingMedia() === 'youtube') {
-          <button type="button" (click)="removeSelectedMedia()">
-            {{ 'admin.markdown.removeFromContent' | i18n | async }}
-          </button>
-        }
-
-        <button type="button" (click)="closePanel()">
-          {{ 'admin.markdown.close' | i18n | async }}
-        </button>
-      </div>
-    </div>
-  }
-
-  @if (errorKey(); as error) {
-    <p class="markdown-editor__error" role="alert">
-      {{ error | i18n | async }}
-    </p>
-  }
-
   <div #editorHost class="markdown-editor__surface"></div>
+
+  <dialog
+    #settingsDialog
+    class="markdown-dialog"
+    aria-labelledby="markdown-dialog-title"
+    (close)="onDialogClosed()"
+  >
+    <div class="dialog-body">
+      <header>
+        <h2 id="markdown-dialog-title">
+          @switch (dialogType()) {
+            @case ('link') {
+              {{ 'admin.markdown.linkDialogTitle' | i18n | async }}
+            }
+            @case ('image') {
+              {{ 'admin.markdown.imageDialogTitle' | i18n | async }}
+            }
+            @case ('youtube') {
+              {{ 'admin.markdown.youtubeDialogTitle' | i18n | async }}
+            }
+          }
+        </h2>
+
+        <button
+          type="button"
+          class="close"
+          [attr.aria-label]="'admin.markdown.close' | i18n | async"
+          (click)="closeDialog()"
+        >
+          ×
+        </button>
+      </header>
+
+      @if (dialogType() === 'link') {
+        <label>
+          <span>{{ 'admin.markdown.linkUrl' | i18n | async }}</span>
+          <input
+            type="url"
+            [value]="linkUrl()"
+            (input)="setLinkUrl($event)"
+          />
+        </label>
+
+        <div class="dialog-actions">
+          <button
+            type="button"
+            class="primary"
+            (click)="applyLink()"
+          >
+            {{ 'admin.markdown.applyLink' | i18n | async }}
+          </button>
+
+          @if (editingLink()) {
+            <button
+              type="button"
+              (click)="removeLink()"
+            >
+              {{ 'admin.markdown.removeLink' | i18n | async }}
+            </button>
+          }
+
+          <button
+            type="button"
+            (click)="closeDialog()"
+          >
+            {{ 'admin.markdown.close' | i18n | async }}
+          </button>
+        </div>
+      }
+
+      @if (dialogType() === 'image') {
+        <div class="image-asset">
+          <span>{{ 'admin.markdown.imageAsset' | i18n | async }}</span>
+
+          @if (selectedImage(); as asset) {
+            <button
+              type="button"
+              class="selected-asset"
+              (click)="openImageLibrary()"
+            >
+              <img
+                [src]="asset.thumbnailUrl ?? asset.url"
+                [alt]="asset.originalFilename"
+              />
+              <strong>{{ asset.originalFilename }}</strong>
+            </button>
+          } @else {
+            <p>{{ 'admin.assetPicker.noneSelected' | i18n | async }}</p>
+          }
+
+          <button
+            type="button"
+            class="choose-asset"
+            (click)="openImageLibrary()"
+          >
+            {{ 'admin.markdown.selectImage' | i18n | async }}
+          </button>
+        </div>
+
+        <label>
+          <span>{{ 'admin.markdown.imageAlt' | i18n | async }}</span>
+          <input
+            type="text"
+            [value]="imageAlt()"
+            (input)="setImageAlt($event)"
+          />
+        </label>
+
+        <div class="media-settings">
+          <label>
+            <span>{{ 'admin.markdown.position' | i18n | async }}</span>
+            <select
+              [value]="imageAlignment()"
+              (change)="setImageAlignment($event)"
+            >
+              <option value="left">
+                {{ 'admin.markdown.position.left' | i18n | async }}
+              </option>
+              <option value="center">
+                {{ 'admin.markdown.position.center' | i18n | async }}
+              </option>
+              <option value="right">
+                {{ 'admin.markdown.position.right' | i18n | async }}
+              </option>
+            </select>
+          </label>
+
+          <label>
+            <span>{{ 'admin.markdown.size' | i18n | async }}</span>
+            <select
+              [value]="imageSize()"
+              (change)="setImageSize($event)"
+            >
+              <option value="small">
+                {{ 'admin.markdown.size.small' | i18n | async }}
+              </option>
+              <option value="medium">
+                {{ 'admin.markdown.size.medium' | i18n | async }}
+              </option>
+              <option value="large">
+                {{ 'admin.markdown.size.large' | i18n | async }}
+              </option>
+              <option value="full">
+                {{ 'admin.markdown.size.full' | i18n | async }}
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <div class="dialog-actions">
+          <button
+            type="button"
+            class="primary"
+            [disabled]="!imageAssetId()"
+            (click)="saveImage()"
+          >
+            {{
+              (editingMedia() === 'image'
+                ? 'admin.markdown.updateImage'
+                : 'admin.markdown.insertImage'
+              )
+                | i18n
+                | async
+            }}
+          </button>
+
+          @if (editingMedia() === 'image') {
+            <button
+              type="button"
+              (click)="removeSelectedMedia()"
+            >
+              {{ 'admin.markdown.removeFromContent' | i18n | async }}
+            </button>
+          }
+
+          <button
+            type="button"
+            (click)="closeDialog()"
+          >
+            {{ 'admin.markdown.close' | i18n | async }}
+          </button>
+        </div>
+      }
+
+      @if (dialogType() === 'youtube') {
+        <label>
+          <span>{{ 'admin.markdown.youtubeUrl' | i18n | async }}</span>
+          <input
+            type="url"
+            [value]="youtubeValue()"
+            (input)="setYoutubeValue($event)"
+          />
+        </label>
+
+        <div class="media-settings">
+          <label>
+            <span>{{ 'admin.markdown.position' | i18n | async }}</span>
+            <select
+              [value]="youtubeAlignment()"
+              (change)="setYoutubeAlignment($event)"
+            >
+              <option value="left">
+                {{ 'admin.markdown.position.left' | i18n | async }}
+              </option>
+              <option value="center">
+                {{ 'admin.markdown.position.center' | i18n | async }}
+              </option>
+              <option value="right">
+                {{ 'admin.markdown.position.right' | i18n | async }}
+              </option>
+            </select>
+          </label>
+
+          <label>
+            <span>{{ 'admin.markdown.size' | i18n | async }}</span>
+            <select
+              [value]="youtubeSize()"
+              (change)="setYoutubeSize($event)"
+            >
+              <option value="small">
+                {{ 'admin.markdown.size.small' | i18n | async }}
+              </option>
+              <option value="medium">
+                {{ 'admin.markdown.size.medium' | i18n | async }}
+              </option>
+              <option value="large">
+                {{ 'admin.markdown.size.large' | i18n | async }}
+              </option>
+              <option value="full">
+                {{ 'admin.markdown.size.full' | i18n | async }}
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <div class="dialog-actions">
+          <button
+            type="button"
+            class="primary"
+            (click)="saveYoutube()"
+          >
+            {{
+              (editingMedia() === 'youtube'
+                ? 'admin.markdown.updateYoutube'
+                : 'admin.markdown.insertYoutube'
+              )
+                | i18n
+                | async
+            }}
+          </button>
+
+          @if (editingMedia() === 'youtube') {
+            <button
+              type="button"
+              (click)="removeSelectedMedia()"
+            >
+              {{ 'admin.markdown.removeFromContent' | i18n | async }}
+            </button>
+          }
+
+          <button
+            type="button"
+            (click)="closeDialog()"
+          >
+            {{ 'admin.markdown.close' | i18n | async }}
+          </button>
+        </div>
+      }
+
+      @if (errorKey(); as error) {
+        <p class="dialog-error" role="alert">
+          {{ error | i18n | async }}
+        </p>
+      }
+    </div>
+  </dialog>
+
+  <app-asset-library
+    type="image"
+    [assets]="availableAssets()"
+    [selectedId]="imageAssetId()"
+    (assetSelected)="selectImageAsset($event)"
+    (assetUploaded)="addImageAsset($event)"
+    (assetDeleted)="removeImageAsset($event)"
+  />
 </div>

@@ -3,31 +3,46 @@
 .markdown-editor {
   @include framed(var(--control-border-width));
 
-  overflow: hidden;
+  position: relative;
+  overflow: visible;
   background: var(--color-surface);
   color: var(--color-text);
   font-weight: 400;
 }
 
 .markdown-editor__toolbar {
+  position: sticky;
+  top: 60px;
+  z-index: 12;
+
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-xs);
+  align-items: center;
   padding: var(--spacing-xs);
   border-bottom: var(--control-border-width) solid var(--color-secondary);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
   background: var(--color-menu-surface);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 18%);
 
-  button {
+  button,
+  select {
     min-height: 34px;
-    padding: var(--spacing-xs) var(--spacing-sm);
     border: 1px solid transparent;
     border-radius: var(--radius-card);
     background: transparent;
     color: inherit;
-    cursor: pointer;
     font: inherit;
     font-size: 0.85rem;
     font-weight: 700;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    min-width: 34px;
+    padding: var(--spacing-xs);
+    cursor: pointer;
 
     &:hover:not(:disabled),
     &:focus-visible,
@@ -40,67 +55,164 @@
       cursor: not-allowed;
       opacity: 0.5;
     }
-  }
-}
 
-.markdown-editor__toolbar-spacer {
-  flex: 1 1 auto;
-}
-
-.markdown-editor__panel {
-  display: grid;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  border-bottom: var(--control-border-width) solid var(--color-secondary);
-  background: var(--color-surface-translucent);
-
-  label {
-    display: grid;
-    gap: var(--spacing-xs);
-    font-weight: 700;
+    app-icon {
+      width: 18px;
+    }
   }
 
-  input,
   select {
-    @include framed(var(--control-border-width));
+    padding: var(--spacing-xs) calc(var(--spacing-sm) + 16px) var(--spacing-xs) var(--spacing-sm);
+    border-color: var(--color-secondary);
+    cursor: pointer;
 
-    width: 100%;
-    min-width: 0;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--color-surface);
-    color: var(--color-text);
-    font: inherit;
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  .block-style {
+    display: flex;
+  }
+
+  .underline {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .strike {
+    text-decoration: line-through;
+  }
+
+  .divider {
+    align-self: stretch;
+    width: 1px;
+    margin-inline: 2px;
+    background: rgb(255 255 255 / 18%);
+  }
+
+  .spacer {
+    flex: 1 1 auto;
   }
 }
 
-.markdown-editor__media-options {
-  display: grid;
-  gap: var(--spacing-xs);
-
-  > span {
-    font-weight: 700;
-  }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
-.markdown-editor__choices {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
+.markdown-dialog {
+  @include framed;
 
-  button {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border: var(--control-border-width) solid var(--color-secondary);
-    border-radius: var(--radius-pill);
+  width: min(680px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: min(820px, calc(100vh - 2rem));
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-surface);
+  color: var(--color-text);
+
+  &::backdrop {
+    background: rgb(0 0 0 / 58%);
+  }
+
+  .dialog-body {
+    display: grid;
+    gap: var(--spacing-md);
+    max-height: min(820px, calc(100vh - 2rem));
+    padding: var(--spacing-lg);
+    overflow: auto;
+
+    > header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--spacing-md);
+
+      h2 {
+        margin: 0;
+        font-family: var(--font-display);
+      }
+    }
+
+    > label,
+    .media-settings label {
+      display: grid;
+      gap: var(--spacing-xs);
+      min-width: 0;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      @include framed(var(--control-border-width));
+
+      width: 100%;
+      min-width: 0;
+      padding: var(--spacing-sm);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font: inherit;
+    }
+  }
+
+  .close {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
     background: transparent;
     color: inherit;
     cursor: pointer;
     font: inherit;
+    font-size: 1.75rem;
+    line-height: 1;
+  }
 
-    &.active {
-      border-color: var(--color-primary);
-      background: var(--color-primary);
-      color: var(--color-text-inverse);
+  .media-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+
+    button {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: var(--control-border-width) solid var(--color-secondary);
+      border-radius: var(--radius-pill);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+
+      &.primary {
+        background: var(--color-primary);
+        color: var(--color-text-inverse);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
     }
+  }
+
+  .dialog-error {
+    margin: 0;
+    color: var(--color-primary);
+    font-weight: 700;
   }
 }
 
@@ -121,7 +233,9 @@
     @include framed(var(--control-border-width));
 
     display: grid;
-    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-columns:
+      72px
+      minmax(0, 1fr);
     gap: var(--spacing-sm);
     align-items: center;
     width: min(100%, 460px);
@@ -160,42 +274,12 @@
   }
 }
 
-.markdown-editor__panel-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-
-  button {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border: var(--control-border-width) solid var(--color-secondary);
-    border-radius: var(--radius-pill);
-    background: transparent;
-    color: inherit;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 700;
-
-    &:first-child {
-      background: var(--color-primary);
-      color: var(--color-text-inverse);
-    }
-  }
-}
-
-.markdown-editor__error {
-  margin: 0;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-bottom: var(--control-border-width) solid var(--color-secondary);
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-.markdown-editor__surface {
+.markdown-editor__surface,
+.markdown-editor__content {
   min-height: 220px;
 }
 
 .markdown-editor__content {
-  min-height: 220px;
   padding: var(--spacing-sm);
   outline: none;
   line-height: 1.6;
@@ -215,6 +299,14 @@
 
   a {
     color: var(--color-primary);
+    cursor: text;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+  }
+
+  u {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
   }
 
   blockquote {
@@ -291,6 +383,24 @@
 }
 
 @include compact-layout {
+  .markdown-editor__toolbar {
+    top: 0;
+
+    .spacer {
+      display: none;
+    }
+  }
+
+  .markdown-dialog {
+    .dialog-body {
+      padding: var(--spacing-md);
+    }
+
+    .media-settings {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .markdown-editor__content {
     .media-left,
     .media-right {

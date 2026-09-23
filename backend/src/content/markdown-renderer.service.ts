@@ -1,4 +1,7 @@
-import type { ContentMediaAlignment, ContentMediaSize } from '@shared/content/content-media';
+import type {
+  ContentMediaAlignment,
+  ContentMediaSize,
+} from '@shared/content/content-media';
 
 import { Injectable } from '@nestjs/common';
 import MarkdownIt from 'markdown-it';
@@ -7,8 +10,10 @@ import sanitizeHtml from 'sanitize-html';
 const ASSET_SOURCE_PATTERN =
   /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
 
-const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,20}$/;
-const MEDIA_METADATA_PATTERN = /^mimi-media:(left|center|right):(small|medium|large|full)$/;
+const YOUTUBE_ID_PATTERN =
+  /^[A-Za-z0-9_-]{6,20}$/;
+const MEDIA_METADATA_PATTERN =
+  /^mimi-media:(left|center|right):(small|medium|large|full)$/;
 const YOUTUBE_BLOCK_PATTERN =
   /^:::youtube\s+([A-Za-z0-9_-]{6,20})(?:\s+(left|center|right))?(?:\s+(small|medium|large|full))?\s*$/;
 
@@ -17,21 +22,24 @@ interface ContentMediaLayout {
   size: ContentMediaSize;
 }
 
-const DEFAULT_MEDIA_LAYOUT: ContentMediaLayout = {
-  alignment: 'center',
-  size: 'large',
-};
+const DEFAULT_MEDIA_LAYOUT:
+  ContentMediaLayout = {
+    alignment: 'center',
+    size: 'large',
+  };
 
 @Injectable()
 export class MarkdownRendererService {
-  private readonly markdown = new MarkdownIt({
-    breaks: false,
-    html: false,
-    linkify: false,
-    typographer: false,
-  });
+  private readonly markdown =
+    new MarkdownIt({
+      breaks: false,
+      html: false,
+      linkify: false,
+      typographer: false,
+    });
 
   constructor() {
+    this.configureUnderline();
     this.configureAssetImages();
     this.configureYouTubeBlocks();
   }
@@ -41,7 +49,10 @@ export class MarkdownRendererService {
       return '';
     }
 
-    const rendered = this.markdown.render(markdown);
+    const rendered =
+      this.markdown.render(
+        markdown,
+      );
 
     return sanitizeHtml(rendered, {
       allowedTags: [
@@ -50,6 +61,8 @@ export class MarkdownRendererService {
         'h3',
         'strong',
         'em',
+        'u',
+        's',
         'a',
         'ul',
         'ol',
@@ -64,12 +77,31 @@ export class MarkdownRendererService {
         'iframe',
       ],
       allowedAttributes: {
-        a: ['href', 'title'],
-        img: ['src', 'alt', 'title', 'loading', 'decoding'],
+        a: [
+          'href',
+          'title',
+        ],
+        img: [
+          'src',
+          'alt',
+          'title',
+          'loading',
+          'decoding',
+        ],
         picture: ['class'],
-        source: ['srcset', 'type'],
+        source: [
+          'srcset',
+          'type',
+        ],
         div: ['class'],
-        iframe: ['src', 'title', 'loading', 'allow', 'allowfullscreen', 'referrerpolicy'],
+        iframe: [
+          'src',
+          'title',
+          'loading',
+          'allow',
+          'allowfullscreen',
+          'referrerpolicy',
+        ],
       },
       allowedClasses: {
         picture: [
@@ -94,69 +126,220 @@ export class MarkdownRendererService {
           'size-full',
         ],
       },
-      allowedSchemes: ['http', 'https', 'mailto'],
-      allowedIframeHostnames: ['www.youtube-nocookie.com'],
+      allowedSchemes: [
+        'http',
+        'https',
+        'mailto',
+      ],
+      allowedIframeHostnames: [
+        'www.youtube-nocookie.com',
+      ],
       allowProtocolRelative: false,
     });
   }
 
-  private configureAssetImages(): void {
-    this.markdown.renderer.rules.image = (tokens, index): string => {
-      const token = tokens[index];
-      const source = token.attrGet('src') ?? '';
-      const assetMatch = ASSET_SOURCE_PATTERN.exec(source + '');
+  private configureUnderline():
+    void {
+    this.markdown.inline.ruler.before(
+      'emphasis',
+      'underline',
+      (
+        state,
+        silent,
+      ): boolean => {
+        const start =
+          state.pos;
 
-      if (!assetMatch) {
-        return this.markdown.utils.escapeHtml(token.content);
-      }
+        if (
+          state.src.slice(
+            start,
+            start + 2,
+          ) !== '++'
+        ) {
+          return false;
+        }
 
-      const assetId = assetMatch[1];
-      const alt = this.markdown.utils.escapeHtml(token.content);
-      const title = token.attrGet('title');
-      const layout = this.parseMediaMetadata(title + '');
-      const titleAttribute =
-        title && !MEDIA_METADATA_PATTERN.test(title + '')
-          ? ` title="${this.markdown.utils.escapeHtml(title + '')}"`
-          : '';
+        const end =
+          state.src.indexOf(
+            '++',
+            start + 2,
+          );
 
-      const variant = this.imageVariant(layout.size);
+        if (
+          end <= start + 2
+        ) {
+          return false;
+        }
 
-      return (
-        `<picture class="${this.mediaClasses(layout)}">` +
-        `<source srcset="/api/assets/${assetId}/image/${variant}/webp" type="image/webp">` +
-        `<img src="/api/assets/${assetId}/image/${variant}/fallback"` +
-        ` alt="${alt}"` +
-        `${titleAttribute}` +
-        ' loading="lazy" decoding="async">' +
-        '</picture>'
-      );
-    };
+        if (!silent) {
+          const open =
+            state.push(
+              'underline_open',
+              'u',
+              1,
+            );
+
+          open.markup = '++';
+
+          state.md.inline.parse(
+            state.src.slice(
+              start + 2,
+              end,
+            ),
+            state.md,
+            state.env,
+            state.tokens,
+          );
+
+          const close =
+            state.push(
+              'underline_close',
+              'u',
+              -1,
+            );
+
+          close.markup = '++';
+        }
+
+        state.pos = end + 2;
+
+        return true;
+      },
+    );
   }
 
-  private configureYouTubeBlocks(): void {
+  private configureAssetImages():
+    void {
+    this.markdown.renderer.rules.image =
+      (
+        tokens,
+        index,
+      ): string => {
+        const token =
+          tokens[index];
+        const source =
+          token.attrGet(
+            'src',
+          ) ?? '';
+        const assetMatch =
+          ASSET_SOURCE_PATTERN.exec(
+            source + '',
+          );
+
+        if (!assetMatch) {
+          return this.markdown.utils.escapeHtml(
+            token.content,
+          );
+        }
+
+        const assetId =
+          assetMatch[1];
+        const alt =
+          this.markdown.utils.escapeHtml(
+            token.content,
+          );
+        const title =
+          token.attrGet(
+            'title',
+          );
+        const layout =
+          this.parseMediaMetadata(
+            title + '',
+          );
+        const titleAttribute =
+          title &&
+          !MEDIA_METADATA_PATTERN.test(
+            title + '',
+          )
+            ? ` title="${this.markdown.utils.escapeHtml(
+                title + '',
+              )}"`
+            : '';
+
+        const variant =
+          this.imageVariant(
+            layout.size,
+          );
+
+        return (
+          `<picture class="${this.mediaClasses(layout)}">` +
+          `<source srcset="/api/assets/${assetId}/image/${variant}/webp" type="image/webp">` +
+          `<img src="/api/assets/${assetId}/image/${variant}/fallback"` +
+          ` alt="${alt}"` +
+          `${titleAttribute}` +
+          ' loading="lazy" decoding="async">' +
+          '</picture>'
+        );
+      };
+  }
+
+  private configureYouTubeBlocks():
+    void {
     this.markdown.block.ruler.before(
       'fence',
       'youtube',
-      (state, startLine, endLine, silent): boolean => {
-        const start = state.bMarks[startLine] + state.tShift[startLine];
-        const end = state.eMarks[startLine];
-        const openingLine = state.src.slice(start, end).trim();
-        const match = YOUTUBE_BLOCK_PATTERN.exec(openingLine);
+      (
+        state,
+        startLine,
+        endLine,
+        silent,
+      ): boolean => {
+        const start =
+          state.bMarks[startLine] +
+          state.tShift[startLine];
+        const end =
+          state.eMarks[startLine];
+        const openingLine =
+          state.src
+            .slice(
+              start,
+              end,
+            )
+            .trim();
+        const match =
+          YOUTUBE_BLOCK_PATTERN.exec(
+            openingLine,
+          );
 
-        if (!match || !YOUTUBE_ID_PATTERN.test(match[1])) {
+        if (
+          !match ||
+          !YOUTUBE_ID_PATTERN.test(
+            match[1],
+          )
+        ) {
           return false;
         }
 
-        const closingLine = startLine + 1;
+        const closingLine =
+          startLine + 1;
 
-        if (closingLine >= endLine) {
+        if (
+          closingLine >=
+          endLine
+        ) {
           return false;
         }
 
-        const closingStart = state.bMarks[closingLine] + state.tShift[closingLine];
-        const closingEnd = state.eMarks[closingLine];
+        const closingStart =
+          state.bMarks[
+            closingLine
+          ] +
+          state.tShift[
+            closingLine
+          ];
+        const closingEnd =
+          state.eMarks[
+            closingLine
+          ];
 
-        if (state.src.slice(closingStart, closingEnd).trim() !== ':::') {
+        if (
+          state.src
+            .slice(
+              closingStart,
+              closingEnd,
+            )
+            .trim() !== ':::'
+        ) {
           return false;
         }
 
@@ -164,68 +347,130 @@ export class MarkdownRendererService {
           return true;
         }
 
-        const token = state.push('youtube', '', 0);
+        const token =
+          state.push(
+            'youtube',
+            '',
+            0,
+          );
 
         token.block = true;
-        token.map = [startLine, closingLine + 1];
-        token.attrSet('video-id', match[1]);
-        token.attrSet('alignment', match[2] ?? DEFAULT_MEDIA_LAYOUT.alignment);
-        token.attrSet('size', match[3] ?? DEFAULT_MEDIA_LAYOUT.size);
+        token.map = [
+          startLine,
+          closingLine + 1,
+        ];
+        token.attrSet(
+          'video-id',
+          match[1],
+        );
+        token.attrSet(
+          'alignment',
+          match[2] ??
+            DEFAULT_MEDIA_LAYOUT.alignment,
+        );
+        token.attrSet(
+          'size',
+          match[3] ??
+            DEFAULT_MEDIA_LAYOUT.size,
+        );
 
-        state.line = closingLine + 1;
+        state.line =
+          closingLine + 1;
 
         return true;
       },
     );
 
-    this.markdown.renderer.rules.youtube = (tokens, index): string => {
-      const videoId = tokens[index].attrGet('video-id');
+    this.markdown.renderer.rules.youtube =
+      (
+        tokens,
+        index,
+      ): string => {
+        const videoId =
+          tokens[
+            index
+          ].attrGet(
+            'video-id',
+          );
 
-      if (!videoId || !YOUTUBE_ID_PATTERN.test(videoId + '')) {
-        return '';
-      }
+        if (
+          !videoId ||
+          !YOUTUBE_ID_PATTERN.test(
+            videoId + '',
+          )
+        ) {
+          return '';
+        }
 
-      const layout = this.normalizeMediaLayout(
-        tokens[index].attrGet('alignment') + '',
-        tokens[index].attrGet('size') + '',
-      );
+        const layout =
+          this.normalizeMediaLayout(
+            tokens[
+              index
+            ].attrGet(
+              'alignment',
+            ) + '',
+            tokens[
+              index
+            ].attrGet(
+              'size',
+            ) + '',
+          );
 
-      return (
-        `<div class="content-youtube ${this.mediaClasses(layout)}">` +
-        `<iframe src="https://www.youtube-nocookie.com/embed/${videoId}"` +
-        ' title="YouTube video player"' +
-        ' loading="lazy"' +
-        ' referrerpolicy="strict-origin-when-cross-origin"' +
-        ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"' +
-        ' allowfullscreen></iframe>' +
-        '</div>'
-      );
-    };
+        return (
+          `<div class="content-youtube ${this.mediaClasses(layout)}">` +
+          `<iframe src="https://www.youtube-nocookie.com/embed/${videoId}"` +
+          ' title="YouTube video player"' +
+          ' loading="lazy"' +
+          ' referrerpolicy="strict-origin-when-cross-origin"' +
+          ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"' +
+          ' allowfullscreen></iframe>' +
+          '</div>'
+        );
+      };
   }
 
-  private parseMediaMetadata(value: string | null): ContentMediaLayout {
+  private parseMediaMetadata(
+    value: string | null,
+  ): ContentMediaLayout {
     if (!value) {
       return DEFAULT_MEDIA_LAYOUT;
     }
 
-    const match = MEDIA_METADATA_PATTERN.exec(value);
+    const match =
+      MEDIA_METADATA_PATTERN.exec(
+        value,
+      );
 
     return match
       ? {
-          alignment: match[1] as ContentMediaAlignment,
-          size: match[2] as ContentMediaSize,
+          alignment:
+            match[1] as ContentMediaAlignment,
+          size:
+            match[2] as ContentMediaSize,
         }
       : DEFAULT_MEDIA_LAYOUT;
   }
 
-  private normalizeMediaLayout(alignment: string | null, size: string | null): ContentMediaLayout {
+  private normalizeMediaLayout(
+    alignment:
+      | string
+      | null,
+    size:
+      | string
+      | null,
+  ): ContentMediaLayout {
     return {
       alignment:
-        alignment === 'left' || alignment === 'right' || alignment === 'center'
+        alignment === 'left' ||
+        alignment === 'right' ||
+        alignment === 'center'
           ? alignment
           : DEFAULT_MEDIA_LAYOUT.alignment,
       size:
-        size === 'small' || size === 'medium' || size === 'large' || size === 'full'
+        size === 'small' ||
+        size === 'medium' ||
+        size === 'large' ||
+        size === 'full'
           ? size
           : DEFAULT_MEDIA_LAYOUT.size,
     };
@@ -233,7 +478,10 @@ export class MarkdownRendererService {
 
   private imageVariant(
     size: ContentMediaSize,
-  ): 'thumbnail' | 'medium' | 'large' {
+  ):
+    | 'thumbnail'
+    | 'medium'
+    | 'large' {
     if (size === 'small') {
       return 'thumbnail';
     }
@@ -245,7 +493,14 @@ export class MarkdownRendererService {
     return 'large';
   }
 
-  private mediaClasses(layout: ContentMediaLayout): string {
-    return ['content-media', `media-${layout.alignment}`, `size-${layout.size}`].join(' ');
+  private mediaClasses(
+    layout:
+      ContentMediaLayout,
+  ): string {
+    return [
+      'content-media',
+      `media-${layout.alignment}`,
+      `size-${layout.size}`,
+    ].join(' ');
   }
 }
