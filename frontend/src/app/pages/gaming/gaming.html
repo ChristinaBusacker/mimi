@@ -72,13 +72,6 @@
               </div>
             }
 
-            @if (game.developers.length) {
-              <small>
-                {{ 'gaming.game.by' | i18n | async }}
-                {{ game.developers.join(', ') }}
-              </small>
-            }
-
             <a [href]="game.storeUrl" target="_blank" rel="noopener noreferrer">
               {{ 'gaming.game.steam' | i18n | async }}
               →
@@ -152,7 +145,7 @@
               <dt>
                 {{ 'gaming.game.developer' | i18n | async }}
               </dt>
-              <dd>{{ game.developers.join(', ') }}</dd>
+              <dd [title]="game.developers.join(', ')">{{ game.developers.join(', ') }}</dd>
             </div>
           }
 
