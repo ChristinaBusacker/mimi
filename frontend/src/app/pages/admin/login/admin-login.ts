@@ -15,6 +15,7 @@ import {
 import {
   ActivatedRoute,
   Router,
+  RouterLink,
 } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { firstValueFrom } from 'rxjs';
@@ -30,6 +31,7 @@ import { I18nPipe } from '../../../core/i18n/i18n.pipe';
     Button,
     I18nPipe,
     ReactiveFormsModule,
+    RouterLink,
   ],
   selector: 'app-admin-login',
   styleUrl: './admin-login.scss',

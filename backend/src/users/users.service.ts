@@ -90,6 +90,20 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
+  async setPassword(
+    user: UserEntry,
+    password: string,
+  ): Promise<UserEntry> {
+    user.password = await hash(
+      password,
+      12,
+    );
+
+    return this.usersRepository.save(
+      user,
+    );
+  }
+
   async setRole(user: UserEntry, role: UserRole): Promise<UserEntry> {
     if (user.role === role) {
       return user;

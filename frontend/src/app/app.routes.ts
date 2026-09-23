@@ -106,6 +106,22 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'admin/password-forgot',
+    loadComponent: () =>
+      import('./pages/admin/password-forgot/admin-password-forgot').then(
+        (module) =>
+          module.AdminPasswordForgot,
+      ),
+  },
+  {
+    path: 'admin/password-reset',
+    loadComponent: () =>
+      import('./pages/admin/password-reset/admin-password-reset').then(
+        (module) =>
+          module.AdminPasswordReset,
+      ),
+  },
+  {
     path: 'admin',
     canActivate: [contributorGuard],
     loadComponent: () =>

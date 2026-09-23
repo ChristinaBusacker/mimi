@@ -1,12 +1,12 @@
-<section class="admin-login">
-  <div class="admin-login__card">
+<section class="auth-page">
+  <div class="auth-card">
     <header>
       <h1>{{ 'admin.login.title' | i18n | async }}</h1>
       <p>{{ 'admin.login.subtitle' | i18n | async }}</p>
     </header>
 
     @if (errorKey(); as error) {
-      <p class="admin-login__error" role="alert">
+      <p class="auth-error" role="alert">
         {{ error | i18n | async }}
       </p>
     }
@@ -33,13 +33,33 @@
         />
       </label>
 
-      <app-button
-        class="primary round"
-        type="submit"
-        [disabled]="submitting()"
-      >
-        {{ 'admin.login.action' | i18n | async }}
-      </app-button>
+      <div class="auth-form-actions">
+        <app-button
+          class="primary round"
+          type="submit"
+          [disabled]="submitting()"
+        >
+          {{ 'admin.login.action' | i18n | async }}
+        </app-button>
+
+        <a
+          class="auth-link"
+          routerLink="/admin/password-forgot"
+        >
+          {{ 'admin.login.forgotPassword' | i18n | async }}
+        </a>
+      </div>
     </form>
+
+    <div class="auth-divider">
+      <span>{{ 'admin.login.or' | i18n | async }}</span>
+    </div>
+
+    <a
+      class="auth-sso"
+      href="/api/auth/discord"
+    >
+      {{ 'admin.login.discord' | i18n | async }}
+    </a>
   </div>
 </section>

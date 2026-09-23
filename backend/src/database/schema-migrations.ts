@@ -376,6 +376,39 @@ const migrations: readonly SchemaMigration[] = [
       `);
     },
   },
+  {
+    name:
+      '20260923-password-reset-tokens',
+    run: async (manager) => {
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "password_reset_tokens" (
+          "tokenHash" varchar(64) NOT NULL,
+          "userUuid" uuid NOT NULL,
+          "createdAt" timestamptz NOT NULL DEFAULT now(),
+          "expiresAt" timestamptz NOT NULL,
+          CONSTRAINT "PK_password_reset_tokens"
+            PRIMARY KEY ("tokenHash"),
+          CONSTRAINT "FK_password_reset_tokens_user"
+            FOREIGN KEY ("userUuid")
+            REFERENCES "users"("uuid")
+            ON DELETE CASCADE
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_password_reset_tokens_user_created"
+        ON "password_reset_tokens" (
+          "userUuid",
+          "createdAt"
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_password_reset_tokens_expires"
+        ON "password_reset_tokens" ("expiresAt")
+      `);
+    },
+  },
 ];
 
 export async function runSchemaMigrations(

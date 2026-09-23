@@ -3,27 +3,27 @@
     <nav class="social" aria-label="Social Media">
       <ul>
         <li>
-          <a href="#" aria-label="Discord">
+          <a href="https://discord.com/invite/HjcHqwXPeH" target="_blank" aria-label="Discord">
             <img class="icon" src="images/icons/logos/discord.png" alt="" />
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Twitch">
+          <a href="https://www.twitch.tv/mimimausde" target="_blank" aria-label="Twitch">
             <img class="icon" src="images/icons/logos/twitch.png" alt="" />
           </a>
         </li>
         <li>
-          <a href="#" aria-label="YouTube">
+          <a href="https://www.youtube.com/@Mimis-Show" target="_blank" aria-label="YouTube">
             <img class="icon" src="images/icons/logos/youtube.png" alt="" />
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Instagram">
+          <a href="https://www.instagram.com/mimimaus80/" target="_blank" aria-label="Instagram">
             <img class="icon" src="images/icons/logos/instagram.png" alt="" />
           </a>
         </li>
         <li>
-          <a href="#" aria-label="X">
+          <a href="https://x.com/MimimausDe" target="_blank" aria-label="X">
             <img class="icon" src="images/icons/logos/x.png" alt="" />
           </a>
         </li>
@@ -35,7 +35,6 @@
         <li>
           <a routerLink="/blog">News</a>
         </li>
-
         <li>
           <a routerLink="/music">{{ 'navigation.music' | i18n | async }}</a>
         </li>
@@ -54,10 +53,10 @@
     <nav>
       <ul>
         <li>
-          <a href="#">{{ 'navigation.about' | i18n | async }}</a>
+          <a href="#">{{ 'navigation.community' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">{{ 'navigation.community' | i18n | async }}</a>
+          <a href="#">{{ 'navigation.about' | i18n | async }}</a>
         </li>
         <li>
           <a href="#">{{ 'navigation.shop' | i18n | async }}</a>
@@ -115,19 +114,13 @@
   >
     <div class="mobile-menu__content">
       <nav class="mobile-menu__navigation">
-        <a routerLink="/gaming" (click)="closeMenu()">
-          {{ 'navigation.gaming' | i18n | async }}
-        </a>
-        <a routerLink="/music" (click)="closeMenu()">
-          {{ 'navigation.music' | i18n | async }}
-        </a>
-        <span>{{ 'navigation.about' | i18n | async }}</span>
-        <a routerLink="/videos" (click)="closeMenu()">
-          {{ 'navigation.videos' | i18n | async }}
-        </a>
-        <a routerLink="/blog" (click)="closeMenu()">
-          {{ 'navigation.blog' | i18n | async }}
-        </a>
+        <a routerLink="/blog">{{ 'navigation.blog' | i18n | async }}</a>
+        <a routerLink="/music">{{ 'navigation.music' | i18n | async }}</a>
+        <a routerLink="/gaming">{{ 'navigation.gaming' | i18n | async }}</a>
+
+        <a href="#">{{ 'navigation.community' | i18n | async }}</a>
+        <a href="#">{{ 'navigation.about' | i18n | async }}</a>
+
         <a href="#mobile-social">
           {{ 'mobile.navigation.social' | i18n | async }}
         </a>
@@ -138,20 +131,24 @@
       </nav>
 
       <nav id="mobile-social" class="mobile-menu__social" aria-label="Social Media">
-        <a href="#" aria-label="Discord">
-          <img src="images/icons/logos/discord.png" alt="" />
+        <a href="https://discord.com/invite/HjcHqwXPeH" target="_blank" aria-label="Discord">
+          <img class="icon" src="images/icons/logos/discord.png" alt="" />
         </a>
-        <a href="#" aria-label="X">
-          <img src="images/icons/logos/x.png" alt="" />
+
+        <a href="https://www.twitch.tv/mimimausde" target="_blank" aria-label="Twitch">
+          <img class="icon" src="images/icons/logos/twitch.png" alt="" />
         </a>
-        <a href="#" aria-label="Instagram">
-          <img src="images/icons/logos/instagram.png" alt="" />
+
+        <a href="https://www.youtube.com/@Mimis-Show" target="_blank" aria-label="YouTube">
+          <img class="icon" src="images/icons/logos/youtube.png" alt="" />
         </a>
-        <a href="#" aria-label="YouTube">
-          <img src="images/icons/logos/youtube.png" alt="" />
+
+        <a href="https://www.instagram.com/mimimaus80/" target="_blank" aria-label="Instagram">
+          <img class="icon" src="images/icons/logos/instagram.png" alt="" />
         </a>
-        <a href="#" aria-label="Twitch">
-          <img src="images/icons/logos/twitch.png" alt="" />
+
+        <a href="https://x.com/MimimausDe" target="_blank" aria-label="X">
+          <img class="icon" src="images/icons/logos/x.png" alt="" />
         </a>
       </nav>
     </div>

@@ -1,0 +1,141 @@
+@use 'mixins' as *;
+
+@mixin layout {
+  :host {
+    display: block;
+  }
+
+  .auth-page {
+    display: grid;
+    place-items: center;
+    min-height: min(560px, 65vh);
+  }
+
+  .auth-card {
+    @include framed;
+
+    width: min(100%, 520px);
+    padding: var(--spacing-lg);
+    background: var(--color-surface-translucent);
+    color: var(--color-text);
+
+    header {
+      margin-bottom: var(--spacing-lg);
+
+      h1 {
+        margin: 0 0 var(--spacing-xs);
+      }
+
+      p {
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+
+    form {
+      display: grid;
+      gap: var(--spacing-md);
+    }
+
+    label {
+      display: grid;
+      gap: var(--spacing-xs);
+      font-weight: 700;
+    }
+
+    input {
+      @include framed(var(--control-border-width));
+
+      width: 100%;
+      padding: var(--spacing-sm);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font: inherit;
+      outline: none;
+
+      &:focus-visible {
+        border-color: var(--color-primary);
+      }
+    }
+  }
+
+  .auth-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm) var(--spacing-md);
+    align-items: center;
+  }
+
+  .auth-link {
+    color: var(--color-primary);
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+
+  .auth-divider {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--spacing-sm);
+    align-items: center;
+    margin: var(--spacing-lg) 0;
+    opacity: 0.7;
+    font-size: 0.85rem;
+
+    &::before,
+    &::after {
+      height: 1px;
+      background: currentColor;
+      content: '';
+      opacity: 0.45;
+    }
+  }
+
+  .auth-sso {
+    @include framed(var(--control-border-width));
+
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-weight: 800;
+    text-decoration: none;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--color-primary);
+      background: var(--color-menu-surface);
+    }
+  }
+
+  .auth-error,
+  .auth-success {
+    margin: 0 0 var(--spacing-md);
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .auth-error {
+    color: var(--color-primary);
+  }
+
+  .auth-success {
+    color: var(--color-text);
+  }
+
+  .auth-hint {
+    margin: calc(var(--spacing-xs) * -1) 0 0;
+    opacity: 0.72;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+}

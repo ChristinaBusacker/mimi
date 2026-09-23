@@ -92,6 +92,14 @@ export class AuthSessionService {
     });
   }
 
+  async revokeAllForUser(
+    userUuid: string,
+  ): Promise<void> {
+    await this.repository.delete({
+      userUuid,
+    });
+  }
+
   private hashToken(token: string): string {
     return createHash('sha256').update(token).digest('hex');
   }
