@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { adminGuard } from './core/auth/admin.guard';
+import { blogAuthorResolver } from './pages/blog/author/blog-author.resolver';
 import { blogDataResolver } from './pages/blog/blog.resolver';
 import { blogPostResolver } from './pages/blog/post/blog-post.resolver';
 import { contributorGuard } from './core/auth/contributor.guard';
@@ -49,6 +50,17 @@ export const routes: Routes = [
       ),
     resolve: {
       data: blogDataResolver,
+    },
+  },
+  {
+    path: 'blog/autoren/:slug',
+    loadComponent: () =>
+      import('./pages/blog/author/blog-author').then(
+        (module) =>
+          module.BlogAuthorPageComponent,
+      ),
+    resolve: {
+      data: blogAuthorResolver,
     },
   },
   {
@@ -130,11 +142,28 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'blog/authors',
+        path: 'profile',
+        loadComponent: () =>
+          import('./pages/admin/profile/admin-profile').then(
+            (module) =>
+              module.AdminProfile,
+          ),
+      },
+      {
+        path: 'users',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./pages/admin/blog/authors/admin-blog-authors').then(
-            (module) => module.AdminBlogAuthors,
+          import('./pages/admin/users/admin-users').then(
+            (module) =>
+              module.AdminUsers,
+          ),
+      },
+      {
+        path: 'blog/categories',
+        loadComponent: () =>
+          import('./pages/admin/blog/categories/admin-blog-categories').then(
+            (module) =>
+              module.AdminBlogCategories,
           ),
       },
       {

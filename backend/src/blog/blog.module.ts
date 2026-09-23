@@ -10,12 +10,18 @@ import { BlogAdminPostsController } from './blog-admin-posts.controller';
 import { BlogAdminService } from './blog-admin.service';
 import { BlogAuthorDirectoryController } from './blog-author-directory.controller';
 import { BlogAuthorDirectoryService } from './blog-author-directory.service';
+import { BlogCategoryController } from './blog-category.controller';
+import { BlogCategoryService } from './blog-category.service';
 import { BlogController } from './blog.controller';
 import { BlogService } from './blog.service';
 import { BlogAuthorProfileEntry } from './entities/blog-author-profile.entry';
+import { BlogCategoryTranslationEntry } from './entities/blog-category-translation.entry';
+import { BlogCategoryEntry } from './entities/blog-category.entry';
 import { BlogPostTranslationEntry } from './entities/blog-post-translation.entry';
 import { BlogPostEntry } from './entities/blog-post.entry';
 import { BlogContributorGuard } from './guards/blog-contributor.guard';
+import { UserManagementController } from './user-management.controller';
+import { UserManagementService } from './user-management.service';
 
 @Module({
   imports: [
@@ -25,6 +31,8 @@ import { BlogContributorGuard } from './guards/blog-contributor.guard';
     UsersModule,
     TypeOrmModule.forFeature([
       BlogAuthorProfileEntry,
+      BlogCategoryEntry,
+      BlogCategoryTranslationEntry,
       BlogPostEntry,
       BlogPostTranslationEntry,
     ]),
@@ -34,12 +42,16 @@ import { BlogContributorGuard } from './guards/blog-contributor.guard';
     BlogAuthorDirectoryController,
     BlogAdminPostsController,
     BlogAdminAuthorsController,
+    BlogCategoryController,
+    UserManagementController,
   ],
   providers: [
     BlogService,
     BlogAuthorDirectoryService,
+    BlogCategoryService,
     BlogAdminService,
     BlogContributorGuard,
+    UserManagementService,
   ],
   exports: [
     BlogService,

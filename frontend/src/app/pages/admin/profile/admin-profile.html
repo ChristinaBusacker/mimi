@@ -1,0 +1,88 @@
+<section class="profile">
+  <header>
+    <h1>
+      {{ 'admin.profile.title' | i18n | async }}
+    </h1>
+    <p>
+      {{ 'admin.profile.description' | i18n | async }}
+    </p>
+  </header>
+
+  @if (error()) {
+    <p
+      class="error"
+      role="alert"
+    >
+      {{ 'admin.profile.error' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>
+      {{ 'admin.profile.loading' | i18n | async }}
+    </p>
+  } @else {
+    <div class="identity">
+      <div>
+        <span>
+          {{ 'admin.profile.publicName' | i18n | async }}
+        </span>
+        <strong>
+          {{ displayName() }}
+        </strong>
+      </div>
+
+      <div>
+        <span>
+          {{ 'admin.profile.authorUrl' | i18n | async }}
+        </span>
+        <strong>
+          /blog/autoren/{{ slug() }}
+        </strong>
+      </div>
+
+      <p>
+        {{ 'admin.profile.identityHint' | i18n | async }}
+      </p>
+    </div>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="save()"
+    >
+      <app-asset-picker
+        type="image"
+        formControlName="avatarAssetId"
+        [label]="('admin.profile.avatar' | i18n | async) || ''"
+        [buttonLabel]="('admin.profile.avatarButton' | i18n | async) || ''"
+        [assets]="images()"
+        (assetUploaded)="addImage($event)"
+        (assetDeleted)="removeImage($event)"
+      />
+
+      <app-markdown-editor
+        formControlName="bio"
+        [label]="'admin.profile.bio' | i18n | async"
+        [assets]="images()"
+        (assetUploaded)="addImage($event)"
+        (assetDeleted)="removeImage($event)"
+      />
+
+      <div class="actions">
+        <app-button
+          type="submit"
+          class="primary round"
+          [disabled]="saving()"
+        >
+          {{ 'admin.profile.save' | i18n | async }}
+        </app-button>
+
+        @if (saved()) {
+          <span>
+            {{ 'admin.profile.saved' | i18n | async }}
+          </span>
+        }
+      </div>
+    </form>
+  }
+</section>

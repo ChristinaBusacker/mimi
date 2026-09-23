@@ -79,6 +79,25 @@
           </label>
 
           <label>
+            <span>
+              {{ 'admin.blog.editor.categories' | i18n | async }}
+            </span>
+            <select
+              formControlName="categoryIds"
+              multiple
+            >
+              @for (
+                category of categories();
+                track category.id
+              ) {
+                <option [value]="category.id">
+                  {{ category.translations.de.name }}
+                </option>
+              }
+            </select>
+          </label>
+
+          <label>
             <span>{{ 'admin.blog.editor.status' | i18n | async }}</span>
             <select formControlName="status">
               <option value="draft">

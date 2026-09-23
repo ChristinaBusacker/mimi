@@ -24,12 +24,31 @@
         {{ 'admin.nav.blog' | i18n | async }}
       </a>
 
-      @if (user()?.role === 'admin') {
+      <a
+        routerLink="/admin/profile"
+        routerLinkActive="active"
+      >
+        {{ 'admin.nav.profile' | i18n | async }}
+      </a>
+
+      @if (
+        user()?.role === 'editor' ||
+        user()?.role === 'admin'
+      ) {
         <a
-          routerLink="/admin/blog/authors"
+          routerLink="/admin/blog/categories"
           routerLinkActive="active"
         >
-          {{ 'admin.nav.blogAuthors' | i18n | async }}
+          {{ 'admin.nav.blogCategories' | i18n | async }}
+        </a>
+      }
+
+      @if (user()?.role === 'admin') {
+        <a
+          routerLink="/admin/users"
+          routerLinkActive="active"
+        >
+          {{ 'admin.nav.users' | i18n | async }}
         </a>
 
         <a

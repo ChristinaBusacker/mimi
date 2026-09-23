@@ -1,0 +1,81 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.profile {
+  display: grid;
+  gap: var(--spacing-lg);
+  max-width: 980px;
+
+  > header {
+    h1 {
+      margin:
+        0
+        0
+        var(--spacing-xs);
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.identity,
+form {
+  @include framed(var(--control-border-width));
+  padding: var(--spacing-md);
+}
+
+.identity {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+
+  > div {
+    display: grid;
+    gap: 4px;
+  }
+
+  span {
+    opacity: 0.7;
+    font-size: 0.82rem;
+  }
+
+  p {
+    grid-column: 1 / -1;
+    margin: 0;
+    opacity: 0.7;
+    line-height: 1.5;
+  }
+}
+
+form {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.error {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+@include compact-layout {
+  .identity {
+    grid-template-columns: 1fr;
+
+    p {
+      grid-column: auto;
+    }
+  }
+}

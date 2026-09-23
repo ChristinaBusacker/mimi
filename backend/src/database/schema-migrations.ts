@@ -272,6 +272,64 @@ const migrations: readonly SchemaMigration[] = [
       `);
     },
   },
+  {
+    name:
+      '20260923-blog-categories',
+    run: async (manager) => {
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "blog_categories" (
+          "uuid" uuid NOT NULL DEFAULT gen_random_uuid(),
+          "slug" varchar(160) NOT NULL,
+          CONSTRAINT "PK_blog_categories"
+            PRIMARY KEY ("uuid"),
+          CONSTRAINT "UQ_blog_categories_slug"
+            UNIQUE ("slug")
+        )
+      `);
+
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "blog_category_translations" (
+          "uuid" uuid NOT NULL DEFAULT gen_random_uuid(),
+          "categoryUuid" uuid NOT NULL,
+          "locale" varchar(5) NOT NULL,
+          "name" varchar(160) NOT NULL,
+          CONSTRAINT "PK_blog_category_translations"
+            PRIMARY KEY ("uuid"),
+          CONSTRAINT "UQ_blog_category_translations_locale"
+            UNIQUE ("categoryUuid", "locale"),
+          CONSTRAINT "FK_blog_category_translations_category"
+            FOREIGN KEY ("categoryUuid")
+            REFERENCES "blog_categories"("uuid")
+            ON DELETE CASCADE
+        )
+      `);
+
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "blog_post_categories" (
+          "postUuid" uuid NOT NULL,
+          "categoryUuid" uuid NOT NULL,
+          CONSTRAINT "PK_blog_post_categories"
+            PRIMARY KEY (
+              "postUuid",
+              "categoryUuid"
+            ),
+          CONSTRAINT "FK_blog_post_categories_post"
+            FOREIGN KEY ("postUuid")
+            REFERENCES "blog_posts"("uuid")
+            ON DELETE CASCADE,
+          CONSTRAINT "FK_blog_post_categories_category"
+            FOREIGN KEY ("categoryUuid")
+            REFERENCES "blog_categories"("uuid")
+            ON DELETE CASCADE
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_blog_post_categories_category"
+        ON "blog_post_categories" ("categoryUuid")
+      `);
+    },
+  },
 ];
 
 export async function runSchemaMigrations(

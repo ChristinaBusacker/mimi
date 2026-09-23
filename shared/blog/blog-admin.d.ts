@@ -20,6 +20,7 @@ export interface BlogAdminPost {
   id: string;
   slug: string;
   authorId: string;
+  categoryIds: string[];
   coverAssetId: string | null;
   status: BlogPublicationStatus;
   publishedAt: string | null;
@@ -31,6 +32,7 @@ export interface BlogAdminPost {
 export interface SaveBlogAdminPost {
   slug: string;
   authorId: string;
+  categoryIds: string[];
   coverAssetId: string | null;
   status: BlogPublicationStatus;
   translations: BlogAdminTranslations;
@@ -61,4 +63,24 @@ export interface BlogAdminAuthorCandidate {
   email: string;
   role: UserRole;
   profile: BlogAdminAuthor | null;
+}
+
+export interface BlogAdminCategoryTranslation {
+  name: string;
+}
+
+export interface BlogAdminCategoryTranslations {
+  de: BlogAdminCategoryTranslation;
+  en: BlogAdminCategoryTranslation | null;
+}
+
+export interface BlogAdminCategory {
+  id: string;
+  slug: string;
+  translations: BlogAdminCategoryTranslations;
+}
+
+export interface SaveBlogAdminCategory {
+  slug: string;
+  translations: BlogAdminCategoryTranslations;
 }

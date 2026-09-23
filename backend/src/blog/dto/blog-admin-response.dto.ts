@@ -1,6 +1,9 @@
 import type {
   BlogAdminAuthor,
   BlogAdminAuthorCandidate,
+  BlogAdminCategory,
+  BlogAdminCategoryTranslation,
+  BlogAdminCategoryTranslations,
   BlogAdminPost,
   BlogAdminTranslation,
   BlogAdminTranslations,
@@ -53,6 +56,12 @@ export class BlogAdminPostDto
     format: 'uuid',
   })
   authorId!: string;
+
+  @ApiProperty({
+    type: String,
+    isArray: true,
+  })
+  categoryIds!: string[];
 
   @ApiProperty({
     format: 'uuid',
@@ -165,4 +174,48 @@ export class BlogAdminAuthorCandidateDto
     nullable: true,
   })
   profile!: BlogAdminAuthorDto | null;
+}
+
+export class BlogAdminCategoryTranslationDto
+  implements BlogAdminCategoryTranslation
+{
+  @ApiProperty()
+  name!: string;
+}
+
+export class BlogAdminCategoryTranslationsDto
+  implements BlogAdminCategoryTranslations
+{
+  @ApiProperty({
+    type:
+      BlogAdminCategoryTranslationDto,
+  })
+  de!: BlogAdminCategoryTranslationDto;
+
+  @ApiProperty({
+    type:
+      BlogAdminCategoryTranslationDto,
+    nullable: true,
+  })
+  en!:
+    BlogAdminCategoryTranslationDto | null;
+}
+
+export class BlogAdminCategoryDto
+  implements BlogAdminCategory
+{
+  @ApiProperty({
+    format: 'uuid',
+  })
+  id!: string;
+
+  @ApiProperty()
+  slug!: string;
+
+  @ApiProperty({
+    type:
+      BlogAdminCategoryTranslationsDto,
+  })
+  translations!:
+    BlogAdminCategoryTranslationsDto;
 }

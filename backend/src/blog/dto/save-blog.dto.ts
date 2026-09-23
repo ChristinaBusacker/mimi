@@ -1,13 +1,16 @@
 import type {
+  BlogAdminCategoryTranslations,
   BlogAdminTranslations,
   BlogContributorRole,
   SaveBlogAdminAuthor,
+  SaveBlogAdminCategory,
   SaveBlogAdminPost,
 } from '@shared/blog/blog-admin';
 import type { BlogPublicationStatus } from '@shared/blog/blog';
 
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsIn,
   IsOptional,
   IsString,
@@ -58,6 +61,12 @@ export class SaveBlogAdminPostDto
   @IsUUID()
   authorId!: string;
 
+  @IsArray()
+  @IsUUID('4', {
+    each: true,
+  })
+  categoryIds!: string[];
+
   @IsOptional()
   @IsUUID()
   coverAssetId!: string | null;
@@ -98,4 +107,47 @@ export class SaveBlogAdminAuthorDto
     'editor',
   ])
   role!: BlogContributorRole;
+}
+
+export class BlogAdminCategoryTranslationInputDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(160)
+  name!: string;
+}
+
+export class BlogAdminCategoryTranslationsInputDto
+  implements BlogAdminCategoryTranslations
+{
+  @ValidateNested()
+  @Type(
+    () =>
+      BlogAdminCategoryTranslationInputDto,
+  )
+  de!: BlogAdminCategoryTranslationInputDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(
+    () =>
+      BlogAdminCategoryTranslationInputDto,
+  )
+  en!:
+    BlogAdminCategoryTranslationInputDto | null;
+}
+
+export class SaveBlogAdminCategoryDto
+  implements SaveBlogAdminCategory
+{
+  @IsString()
+  @Matches(SLUG_PATTERN)
+  slug!: string;
+
+  @ValidateNested()
+  @Type(
+    () =>
+      BlogAdminCategoryTranslationsInputDto,
+  )
+  translations!:
+    BlogAdminCategoryTranslationsInputDto;
 }

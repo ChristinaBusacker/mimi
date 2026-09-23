@@ -54,9 +54,29 @@
 
         <span>
           {{ 'blog.article.by' | i18n | async }}
-          {{ post.author.displayName }}
+          <a
+            [routerLink]="[
+              '/blog/autoren',
+              post.author.slug
+            ]"
+          >
+            {{ post.author.displayName }}
+          </a>
         </span>
       </div>
+
+      @if (post.categories.length) {
+        <div class="categories">
+          @for (
+            category of post.categories;
+            track category.slug
+          ) {
+            <span>
+              {{ category.name }}
+            </span>
+          }
+        </div>
+      }
 
       @if (post.excerpt) {
         <p>{{ post.excerpt }}</p>
@@ -100,11 +120,20 @@
           {{ 'blog.article.authorLabel' | i18n | async }}
         </span>
         <h2>
-          {{ post.author.displayName }}
+          <a
+            [routerLink]="[
+              '/blog/autoren',
+              post.author.slug
+            ]"
+          >
+            {{ post.author.displayName }}
+          </a>
         </h2>
 
-        @if (post.author.bio) {
-          <p>{{ post.author.bio }}</p>
+        @if (post.author.bioHtml) {
+          <app-rendered-content
+            [sanitizedHtml]="post.author.bioHtml"
+          />
         }
       </div>
     </aside>

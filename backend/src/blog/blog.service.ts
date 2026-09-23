@@ -1,5 +1,8 @@
 import type {
   BlogAuthor,
+  BlogAuthorPage,
+  BlogAuthorProfile,
+  BlogCategory,
   BlogPost,
   BlogPostSummary,
 } from '@shared/blog/blog';
@@ -16,6 +19,7 @@ import {
 } from 'typeorm';
 
 import { MarkdownRendererService } from '../content/markdown-renderer.service';
+import { BlogCategoryService } from './blog-category.service';
 import {
   DEFAULT_BLOG_LOCALE,
   type BlogLocale,
@@ -23,12 +27,22 @@ import {
 import { BlogAuthorProfileEntry } from './entities/blog-author-profile.entry';
 import { BlogPostTranslationEntry } from './entities/blog-post-translation.entry';
 import { BlogPostEntry } from './entities/blog-post.entry';
+import { UserManagementService } from './user-management.service';
+
+interface BlogPostFilter {
+  authorSlug?: string;
+  categorySlug?: string;
+}
 
 @Injectable()
 export class BlogService {
   constructor(
     private readonly markdownRenderer:
       MarkdownRendererService,
+    private readonly categories:
+      BlogCategoryService,
+    private readonly userManagement:
+      UserManagementService,
     @InjectRepository(BlogAuthorProfileEntry)
     private readonly authorRepository:
       Repository<BlogAuthorProfileEntry>,
@@ -42,6 +56,7 @@ export class BlogService {
 
   async getPosts(
     locale: BlogLocale,
+    filter: BlogPostFilter = {},
   ): Promise<BlogPostSummary[]> {
     const posts =
       await this.postRepository.find({
@@ -51,6 +66,11 @@ export class BlogService {
             LessThanOrEqual(
               new Date(),
             ),
+        },
+        relations: {
+          categories: {
+            translations: true,
+          },
         },
         order: {
           publishedAt: 'DESC',
@@ -70,7 +90,7 @@ export class BlogService {
         locale,
       );
     const authors =
-      await this.getAuthors(
+      await this.getAuthorProfiles(
         posts.map(
           (post) => post.authorUuid,
         ),
@@ -102,10 +122,30 @@ export class BlogService {
           return null;
         }
 
+        if (
+          filter.authorSlug &&
+          author.slug !==
+            filter.authorSlug
+        ) {
+          return null;
+        }
+
+        if (
+          filter.categorySlug &&
+          !post.categories.some(
+            (category) =>
+              category.slug ===
+              filter.categorySlug,
+          )
+        ) {
+          return null;
+        }
+
         return this.mapSummary(
           post,
           translation,
           author,
+          locale,
         );
       })
       .filter(
@@ -129,6 +169,11 @@ export class BlogService {
             LessThanOrEqual(
               new Date(),
             ),
+        },
+        relations: {
+          categories: {
+            translations: true,
+          },
         },
       });
 
@@ -165,10 +210,56 @@ export class BlogService {
         post,
         translation,
         author,
+        locale,
       ),
+      author:
+        this.mapAuthorProfile(
+          author,
+        ),
       contentHtml:
         this.markdownRenderer.render(
           translation.contentMarkdown,
+        ),
+    };
+  }
+
+  async getAuthors():
+    Promise<BlogAuthor[]> {
+    return (
+      await this.userManagement
+        .getPublicProfiles()
+    ).map((author) =>
+      this.mapAuthor(author),
+    );
+  }
+
+  async getAuthorPage(
+    slug: string,
+    locale: BlogLocale,
+  ): Promise<BlogAuthorPage> {
+    const author =
+      await this.userManagement
+        .findPublicProfileBySlug(
+          slug,
+        );
+
+    if (!author) {
+      throw new NotFoundException(
+        `Blog author "${slug}" not found.`,
+      );
+    }
+
+    return {
+      author:
+        this.mapAuthorProfile(
+          author,
+        ),
+      posts:
+        await this.getPosts(
+          locale,
+          {
+            authorSlug: slug,
+          },
         ),
     };
   }
@@ -215,7 +306,7 @@ export class BlogService {
     });
   }
 
-  private async getAuthors(
+  private async getAuthorProfiles(
     userUuids: string[],
   ): Promise<BlogAuthorProfileEntry[]> {
     const uniqueUserUuids = [
@@ -241,6 +332,7 @@ export class BlogService {
       BlogPostTranslationEntry,
     author:
       BlogAuthorProfileEntry,
+    locale: BlogLocale,
   ): BlogPostSummary {
     return {
       id: post.uuid,
@@ -253,6 +345,21 @@ export class BlogService {
         post.publishedAt!.toISOString(),
       author:
         this.mapAuthor(author),
+      categories:
+        post.categories
+          .map((category) =>
+            this.categories
+              .mapPublicCategory(
+                category,
+                locale,
+              ),
+          )
+          .filter(
+            (
+              category,
+            ): category is BlogCategory =>
+              category !== null,
+          ),
     };
   }
 
@@ -263,9 +370,20 @@ export class BlogService {
       slug: author.slug,
       displayName:
         author.displayName,
-      bio: author.bio,
       avatarAssetId:
         author.avatarAssetId,
+    };
+  }
+
+  private mapAuthorProfile(
+    author: BlogAuthorProfileEntry,
+  ): BlogAuthorProfile {
+    return {
+      ...this.mapAuthor(author),
+      bioHtml:
+        this.markdownRenderer.render(
+          author.bio,
+        ),
     };
   }
 

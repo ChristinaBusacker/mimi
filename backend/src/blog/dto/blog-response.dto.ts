@@ -1,5 +1,8 @@
 import type {
   BlogAuthor,
+  BlogAuthorPage,
+  BlogAuthorProfile,
+  BlogCategory,
   BlogPost,
   BlogPostSummary,
 } from '@shared/blog/blog';
@@ -15,14 +18,29 @@ export class BlogAuthorDto
   @ApiProperty()
   displayName!: string;
 
-  @ApiProperty()
-  bio!: string;
-
   @ApiProperty({
     format: 'uuid',
     nullable: true,
   })
   avatarAssetId!: string | null;
+}
+
+export class BlogAuthorProfileDto
+  extends BlogAuthorDto
+  implements BlogAuthorProfile
+{
+  @ApiProperty()
+  bioHtml!: string;
+}
+
+export class BlogCategoryDto
+  implements BlogCategory
+{
+  @ApiProperty()
+  slug!: string;
+
+  @ApiProperty()
+  name!: string;
 }
 
 export class BlogPostSummaryDto
@@ -57,12 +75,39 @@ export class BlogPostSummaryDto
     type: BlogAuthorDto,
   })
   author!: BlogAuthorDto;
+
+  @ApiProperty({
+    type: BlogCategoryDto,
+    isArray: true,
+  })
+  categories!: BlogCategoryDto[];
 }
 
 export class BlogPostDto
   extends BlogPostSummaryDto
   implements BlogPost
 {
+  @ApiProperty({
+    type: BlogAuthorProfileDto,
+  })
+  declare author:
+    BlogAuthorProfileDto;
+
   @ApiProperty()
   contentHtml!: string;
+}
+
+export class BlogAuthorPageDto
+  implements BlogAuthorPage
+{
+  @ApiProperty({
+    type: BlogAuthorProfileDto,
+  })
+  author!: BlogAuthorProfileDto;
+
+  @ApiProperty({
+    type: BlogPostSummaryDto,
+    isArray: true,
+  })
+  posts!: BlogPostSummaryDto[];
 }

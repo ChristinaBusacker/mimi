@@ -6,6 +6,8 @@ import {
   Entity,
   Index,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,6 +15,7 @@ import {
 
 import { AssetEntry } from '../../assets/entities/asset.entry';
 import { UserEntry } from '../../users/entities/user.entry';
+import { BlogCategoryEntry } from './blog-category.entry';
 
 @Index(
   'IDX_blog_posts_publication',
@@ -45,6 +48,22 @@ export class BlogPostEntry {
     name: 'authorUuid',
   })
   author!: UserEntry;
+
+  @ManyToMany(
+    () => BlogCategoryEntry,
+  )
+  @JoinTable({
+    name: 'blog_post_categories',
+    joinColumn: {
+      name: 'postUuid',
+      referencedColumnName: 'uuid',
+    },
+    inverseJoinColumn: {
+      name: 'categoryUuid',
+      referencedColumnName: 'uuid',
+    },
+  })
+  categories!: BlogCategoryEntry[];
 
   @Column({
     type: 'uuid',

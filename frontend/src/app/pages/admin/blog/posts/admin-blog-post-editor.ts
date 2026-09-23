@@ -1,6 +1,7 @@
 import type { Asset } from '@shared/assets/asset';
 import type {
   BlogAdminAuthor,
+  BlogAdminCategory,
   BlogAdminPost,
   SaveBlogAdminPost,
 } from '@shared/blog/blog-admin';
@@ -84,6 +85,8 @@ export class AdminBlogPostEditor
     signal<Asset[]>([]);
   protected readonly authors =
     signal<BlogAdminAuthor[]>([]);
+  protected readonly categories =
+    signal<BlogAdminCategory[]>([]);
   protected readonly loading =
     signal(true);
   protected readonly saving =
@@ -113,6 +116,13 @@ export class AdminBlogPostEditor
             Validators.required,
           ],
         }),
+      categoryIds:
+        new FormControl<string[]>(
+          [],
+          {
+            nonNullable: true,
+          },
+        ),
       coverAssetId:
         new FormControl('', {
           nonNullable: true,
@@ -164,6 +174,8 @@ export class AdminBlogPostEditor
               ),
             authors:
               this.blog.getAuthors(),
+            categories:
+              this.blog.getCategories(),
             post: this.postId
               ? this.blog.getPost(
                   this.postId,
@@ -179,6 +191,9 @@ export class AdminBlogPostEditor
       );
       this.authors.set(
         result.authors,
+      );
+      this.categories.set(
+        result.categories,
       );
 
       if (result.post) {
@@ -393,6 +408,8 @@ export class AdminBlogPostEditor
       slug: value.slug.trim(),
       authorId:
         value.authorId,
+      categoryIds:
+        value.categoryIds,
       coverAssetId:
         value.coverAssetId ||
         null,
@@ -430,6 +447,8 @@ export class AdminBlogPostEditor
       slug: post.slug,
       authorId:
         post.authorId,
+      categoryIds:
+        post.categoryIds,
       coverAssetId:
         post.coverAssetId ?? '',
       status: post.status,

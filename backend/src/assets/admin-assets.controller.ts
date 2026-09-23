@@ -28,7 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { AdminGuard } from '../auth/guards/admin.guard';
+import { ContributorGuard } from '../auth/guards/contributor.guard';
 import { SessionAuthGuard } from '../auth/guards/session-auth.guard';
 import { AUTH_SESSION_COOKIE } from '../auth/session-cookie';
 import { AssetDto } from './dto/asset.dto';
@@ -37,7 +37,7 @@ import { AssetsService } from './assets.service';
 
 @ApiTags('Admin Assets')
 @ApiCookieAuth(AUTH_SESSION_COOKIE)
-@UseGuards(SessionAuthGuard, AdminGuard)
+@UseGuards(SessionAuthGuard, ContributorGuard)
 @Controller('admin/assets')
 export class AdminAssetsController {
   constructor(private readonly assetsService: AssetsService) {}

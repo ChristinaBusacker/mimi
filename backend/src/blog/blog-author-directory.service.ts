@@ -52,7 +52,9 @@ export class BlogAuthorDirectoryService {
             profile.userUuid,
           );
 
-        return role
+        return role === 'author' ||
+          role === 'editor' ||
+          role === 'admin'
           ? {
               userId:
                 profile.userUuid,

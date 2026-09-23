@@ -10,7 +10,7 @@ import { I18nState } from '../../core/i18n/i18n.state';
 
 export const blogDataResolver:
   ResolveFn<BlogLandingData> =
-    () => {
+    (route) => {
       const store = inject(Store);
       const blog =
         inject(BlogPublicService);
@@ -21,5 +21,11 @@ export const blogDataResolver:
 
       return blog.getLanding(
         locale,
+        route.queryParamMap.get(
+          'autor',
+        ),
+        route.queryParamMap.get(
+          'thema',
+        ),
       );
     };

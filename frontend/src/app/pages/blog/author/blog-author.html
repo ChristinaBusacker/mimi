@@ -1,0 +1,113 @@
+@let authorData = data();
+@let page = authorData.page;
+
+<section class="author-page">
+  <a
+    routerLink="/blog"
+    class="back"
+  >
+    ←
+    {{ 'blog.article.back' | i18n | async }}
+  </a>
+
+  <header class="profile">
+    @if (
+      page.author.avatarAssetId;
+      as avatarId
+    ) {
+      <img
+        class="avatar"
+        [src]="imageUrl(avatarId, 'thumbnail')"
+        [alt]="page.author.displayName"
+      />
+    } @else {
+      <div class="avatar placeholder">
+        <app-icon
+          name="heart"
+          class="secondary"
+        />
+      </div>
+    }
+
+    <div>
+      <span class="eyebrow">
+        {{ 'blog.author.label' | i18n | async }}
+      </span>
+
+      <h1>
+        {{ page.author.displayName }}
+      </h1>
+
+      @if (page.author.bioHtml) {
+        <app-rendered-content
+          [sanitizedHtml]="page.author.bioHtml"
+        />
+      }
+    </div>
+  </header>
+
+  <section class="posts">
+    <h2>
+      {{ 'blog.author.posts' | i18n | async }}
+    </h2>
+
+    @if (page.posts.length) {
+      <div class="grid">
+        @for (
+          post of page.posts;
+          track post.id
+        ) {
+          <article>
+            <a
+              class="cover"
+              [routerLink]="[
+                '/blog',
+                post.slug
+              ]"
+            >
+              @if (
+                post.coverAssetId;
+                as coverId
+              ) {
+                <img
+                  [src]="imageUrl(coverId, 'medium')"
+                  [alt]="post.title"
+                />
+              } @else {
+                <div class="placeholder">
+                  <app-icon
+                    name="heart"
+                    class="secondary"
+                  />
+                </div>
+              }
+            </a>
+
+            <div class="content">
+              <h3>
+                <a
+                  [routerLink]="[
+                    '/blog',
+                    post.slug
+                  ]"
+                >
+                  {{ post.title }}
+                </a>
+              </h3>
+
+              @if (post.excerpt) {
+                <p>
+                  {{ post.excerpt }}
+                </p>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <p>
+        {{ 'blog.author.empty' | i18n | async }}
+      </p>
+    }
+  </section>
+</section>

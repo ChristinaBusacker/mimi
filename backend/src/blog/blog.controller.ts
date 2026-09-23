@@ -15,6 +15,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { BlogCategoryService } from './blog-category.service';
 import {
   BLOG_LOCALES,
   DEFAULT_BLOG_LOCALE,
@@ -22,6 +23,9 @@ import {
   type BlogLocale,
 } from './blog-locale';
 import {
+  BlogAuthorDto,
+  BlogAuthorPageDto,
+  BlogCategoryDto,
   BlogPostDto,
   BlogPostSummaryDto,
 } from './dto/blog-response.dto';
@@ -33,6 +37,8 @@ export class BlogController {
   constructor(
     private readonly blogService:
       BlogService,
+    private readonly categories:
+      BlogCategoryService,
   ) {}
 
   @Get('posts')
@@ -45,6 +51,14 @@ export class BlogController {
     required: false,
     enum: [...BLOG_LOCALES],
   })
+  @ApiQuery({
+    name: 'author',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'category',
+    required: false,
+  })
   @ApiOkResponse({
     type: BlogPostSummaryDto,
     isArray: true,
@@ -56,10 +70,79 @@ export class BlogController {
   getPosts(
     @Query('locale')
     locale?: string,
+    @Query('author')
+    author?: string,
+    @Query('category')
+    category?: string,
   ): Promise<BlogPostSummaryDto[]> {
     return this.blogService.getPosts(
       this.resolveLocale(locale),
+      {
+        authorSlug:
+          author,
+        categorySlug:
+          category,
+      },
     );
+  }
+
+  @Get('authors')
+  @ApiOperation({
+    summary:
+      'List public blog authors',
+  })
+  @ApiOkResponse({
+    type: BlogAuthorDto,
+    isArray: true,
+  })
+  getAuthors():
+    Promise<BlogAuthorDto[]> {
+    return this.blogService
+      .getAuthors();
+  }
+
+  @Get('authors/:slug')
+  @ApiOperation({
+    summary:
+      'Get a public author page',
+  })
+  @ApiOkResponse({
+    type: BlogAuthorPageDto,
+  })
+  @ApiNotFoundResponse({
+    description:
+      'The author does not exist.',
+  })
+  getAuthor(
+    @Param('slug')
+    slug: string,
+    @Query('locale')
+    locale?: string,
+  ): Promise<BlogAuthorPageDto> {
+    return this.blogService
+      .getAuthorPage(
+        slug,
+        this.resolveLocale(locale),
+      );
+  }
+
+  @Get('categories')
+  @ApiOperation({
+    summary:
+      'List public blog categories',
+  })
+  @ApiOkResponse({
+    type: BlogCategoryDto,
+    isArray: true,
+  })
+  getCategories(
+    @Query('locale')
+    locale?: string,
+  ): Promise<BlogCategoryDto[]> {
+    return this.categories
+      .getPublicCategories(
+        this.resolveLocale(locale),
+      );
   }
 
   @Get('posts/:slug')

@@ -70,7 +70,14 @@
               )
             }}
             ·
-            {{ featuredPost.author.displayName }}
+            <a
+              [routerLink]="[
+                '/blog/autoren',
+                featuredPost.author.slug
+              ]"
+            >
+              {{ featuredPost.author.displayName }}
+            </a>
           </small>
 
           @if (featuredPost.excerpt) {
@@ -106,6 +113,54 @@
         {{ 'blog.page.postsDescription' | i18n | async }}
       </p>
     </header>
+
+    <div class="filters">
+      <label>
+        <span>
+          {{ 'blog.filter.author' | i18n | async }}
+        </span>
+        <select
+          [value]="filter().author || ''"
+          (change)="setAuthorFilter($event)"
+        >
+          <option value="">
+            {{ 'blog.filter.allAuthors' | i18n | async }}
+          </option>
+
+          @for (
+            author of blogData.authors;
+            track author.slug
+          ) {
+            <option [value]="author.slug">
+              {{ author.displayName }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>
+          {{ 'blog.filter.category' | i18n | async }}
+        </span>
+        <select
+          [value]="filter().category || ''"
+          (change)="setCategoryFilter($event)"
+        >
+          <option value="">
+            {{ 'blog.filter.allCategories' | i18n | async }}
+          </option>
+
+          @for (
+            category of blogData.categories;
+            track category.slug
+          ) {
+            <option [value]="category.slug">
+              {{ category.name }}
+            </option>
+          }
+        </select>
+      </label>
+    </div>
 
     @if (blogData.posts.length) {
       <div class="grid">
@@ -156,10 +211,28 @@
                     )
                   }}
                 </time>
-                <span>
+                <a
+                  [routerLink]="[
+                    '/blog/autoren',
+                    post.author.slug
+                  ]"
+                >
                   {{ post.author.displayName }}
-                </span>
+                </a>
               </div>
+
+              @if (post.categories.length) {
+                <div class="categories">
+                  @for (
+                    category of post.categories;
+                    track category.slug
+                  ) {
+                    <span>
+                      {{ category.name }}
+                    </span>
+                  }
+                </div>
+              }
 
               <h3>
                 <a

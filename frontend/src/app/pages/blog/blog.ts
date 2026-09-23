@@ -15,11 +15,14 @@ import {
 } from '@angular/core/rxjs-interop';
 import {
   ActivatedRoute,
+  Router,
   RouterLink,
 } from '@angular/router';
 import { Store } from '@ngxs/store';
 import {
+  combineLatest,
   distinctUntilChanged,
+  map,
   of,
   switchMap,
 } from 'rxjs';
@@ -33,6 +36,11 @@ import {
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { I18nState } from '../../core/i18n/i18n.state';
 import type { Language } from '../../core/i18n/i18n.types';
+
+interface BlogFilter {
+  author: string | null;
+  category: string | null;
+}
 
 @Component({
   changeDetection:
@@ -51,6 +59,8 @@ import type { Language } from '../../core/i18n/i18n.types';
 export class Blog {
   private readonly route =
     inject(ActivatedRoute);
+  private readonly router =
+    inject(Router);
   private readonly store =
     inject(Store);
   private readonly blog =
@@ -61,23 +71,72 @@ export class Blog {
       'data'
     ] as BlogLandingData;
 
+  private readonly initialFilter:
+    BlogFilter = {
+      author:
+        this.route.snapshot
+          .queryParamMap
+          .get('autor'),
+      category:
+        this.route.snapshot
+          .queryParamMap
+          .get('thema'),
+    };
+
   private readonly language =
     this.store.selectSignal(
       I18nState.language,
     );
 
+  private readonly filterStream =
+    this.route.queryParamMap.pipe(
+      map((params) => ({
+        author:
+          params.get('autor'),
+        category:
+          params.get('thema'),
+      })),
+      distinctUntilChanged(
+        (left, right) =>
+          left.author ===
+            right.author &&
+          left.category ===
+            right.category,
+      ),
+    );
+
+  protected readonly filter =
+    toSignal(
+      this.filterStream,
+      {
+        initialValue:
+          this.initialFilter,
+      },
+    );
+
   protected readonly data = toSignal(
-    toObservable(
-      this.language,
-    ).pipe(
-      distinctUntilChanged(),
-      switchMap((locale) =>
-        locale ===
-        this.initialData.locale
-          ? of(this.initialData)
-          : this.blog.getLanding(
-              locale,
-            ),
+    combineLatest([
+      toObservable(
+        this.language,
+      ).pipe(
+        distinctUntilChanged(),
+      ),
+      this.filterStream,
+    ]).pipe(
+      switchMap(
+        ([locale, filter]) =>
+          locale ===
+            this.initialData.locale &&
+          filter.author ===
+            this.initialFilter.author &&
+          filter.category ===
+            this.initialFilter.category
+            ? of(this.initialData)
+            : this.blog.getLanding(
+                locale,
+                filter.author,
+                filter.category,
+              ),
       ),
     ),
     {
@@ -131,5 +190,71 @@ export class Blog {
     post: BlogPostSummary,
   ): string {
     return post.id;
+  }
+
+  protected setAuthorFilter(
+    event: Event,
+  ): void {
+    const value =
+      this.readSelectValue(
+        event,
+      );
+
+    if (value === null) {
+      return;
+    }
+
+    void this.setFilter(
+      'autor',
+      value,
+    );
+  }
+
+  protected setCategoryFilter(
+    event: Event,
+  ): void {
+    const value =
+      this.readSelectValue(
+        event,
+      );
+
+    if (value === null) {
+      return;
+    }
+
+    void this.setFilter(
+      'thema',
+      value,
+    );
+  }
+
+  private setFilter(
+    key:
+      | 'autor'
+      | 'thema',
+    value: string,
+  ): Promise<boolean> {
+    return this.router.navigate(
+      [],
+      {
+        relativeTo:
+          this.route,
+        queryParams: {
+          [key]:
+            value || null,
+        },
+        queryParamsHandling:
+          'merge',
+      },
+    );
+  }
+
+  private readSelectValue(
+    event: Event,
+  ): string | null {
+    return event.target instanceof
+      HTMLSelectElement
+      ? event.target.value
+      : null;
   }
 }

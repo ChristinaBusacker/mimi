@@ -1,0 +1,136 @@
+<section class="users">
+  <header>
+    <div>
+      <h1>
+        {{ 'admin.users.title' | i18n | async }}
+      </h1>
+      <p>
+        {{ 'admin.users.description' | i18n | async }}
+      </p>
+    </div>
+  </header>
+
+  @if (error()) {
+    <p
+      class="message error"
+      role="alert"
+    >
+      {{ 'admin.users.error' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>
+      {{ 'admin.users.loading' | i18n | async }}
+    </p>
+  } @else {
+    <div class="layout">
+      <div class="user-list">
+        @for (
+          user of users();
+          track user.id
+        ) {
+          <button
+            type="button"
+            class="user"
+            [class.active]="selected()?.id === user.id"
+            (click)="edit(user)"
+          >
+            <strong>
+              {{
+                user.profile?.displayName ||
+                  user.name
+              }}
+            </strong>
+            <span>{{ user.email }}</span>
+            <small>
+              {{
+                ('admin.blog.role.' + user.role)
+                  | i18n
+                  | async
+              }}
+            </small>
+          </button>
+        }
+      </div>
+
+      @if (selected(); as current) {
+        <form
+          [formGroup]="form"
+          (ngSubmit)="save()"
+        >
+          <header>
+            <h2>{{ current.name }}</h2>
+            <small>{{ current.email }}</small>
+          </header>
+
+          <label>
+            <span>
+              {{ 'admin.users.role' | i18n | async }}
+            </span>
+            <select formControlName="role">
+              <option value="user">
+                {{ 'admin.blog.role.user' | i18n | async }}
+              </option>
+              <option value="author">
+                {{ 'admin.blog.role.author' | i18n | async }}
+              </option>
+              <option value="editor">
+                {{ 'admin.blog.role.editor' | i18n | async }}
+              </option>
+              <option value="admin">
+                {{ 'admin.blog.role.admin' | i18n | async }}
+              </option>
+            </select>
+          </label>
+
+          @if (isContributor()) {
+            <label>
+              <span>
+                {{ 'admin.users.publicName' | i18n | async }}
+              </span>
+              <input
+                type="text"
+                formControlName="displayName"
+              />
+            </label>
+
+            <label>
+              <span>
+                {{ 'admin.users.slug' | i18n | async }}
+              </span>
+              <input
+                type="text"
+                formControlName="slug"
+              />
+            </label>
+
+            <small>
+              {{ 'admin.users.profileHint' | i18n | async }}
+            </small>
+          }
+
+          <div class="actions">
+            <app-button
+              type="submit"
+              class="primary round"
+              [disabled]="saving()"
+            >
+              {{ 'admin.users.save' | i18n | async }}
+            </app-button>
+
+            @if (saved()) {
+              <span>
+                {{ 'admin.users.saved' | i18n | async }}
+              </span>
+            }
+          </div>
+        </form>
+      } @else {
+        <div class="empty">
+          {{ 'admin.users.selectHint' | i18n | async }}
+        </div>
+      }
+    </div>
+  }
+</section>

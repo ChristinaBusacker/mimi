@@ -44,6 +44,7 @@ import {
   SaveBlogAdminPostDto,
 } from './dto/save-blog.dto';
 import { BlogAuthorProfileEntry } from './entities/blog-author-profile.entry';
+import { BlogCategoryEntry } from './entities/blog-category.entry';
 import { BlogPostTranslationEntry } from './entities/blog-post-translation.entry';
 import { BlogPostEntry } from './entities/blog-post.entry';
 
@@ -62,6 +63,9 @@ export class BlogAdminService {
     @InjectRepository(BlogAuthorProfileEntry)
     private readonly authorRepository:
       Repository<BlogAuthorProfileEntry>,
+    @InjectRepository(BlogCategoryEntry)
+    private readonly categoryRepository:
+      Repository<BlogCategoryEntry>,
     @InjectRepository(BlogPostEntry)
     private readonly postRepository:
       Repository<BlogPostEntry>,
@@ -75,6 +79,9 @@ export class BlogAdminService {
   ): Promise<BlogAdminPost[]> {
     const posts =
       await this.postRepository.find({
+        relations: {
+          categories: true,
+        },
         ...(actor.role === 'author'
           ? {
               where: {
@@ -138,6 +145,10 @@ export class BlogAdminService {
       dto.authorId,
       actor,
     );
+    const categories =
+      await this.getCategories(
+        dto.categoryIds,
+      );
     await this.validatePostAssets(
       dto,
     );
@@ -162,6 +173,7 @@ export class BlogAdminService {
                 slug: dto.slug,
                 authorUuid:
                   dto.authorId,
+                categories,
                 coverAssetId:
                   dto.coverAssetId,
                 status: dto.status,
@@ -213,6 +225,10 @@ export class BlogAdminService {
       dto.authorId,
       actor,
     );
+    const categories =
+      await this.getCategories(
+        dto.categoryIds,
+      );
     await this.validatePostAssets(
       dto,
     );
@@ -236,6 +252,7 @@ export class BlogAdminService {
             slug: dto.slug,
             authorUuid:
               dto.authorId,
+            categories,
             coverAssetId:
               dto.coverAssetId,
             status: dto.status,
@@ -449,8 +466,13 @@ export class BlogAdminService {
     uuid: string,
   ): Promise<BlogPostEntry> {
     const post =
-      await this.postRepository.findOneBy({
-        uuid,
+      await this.postRepository.findOne({
+        where: {
+          uuid,
+        },
+        relations: {
+          categories: true,
+        },
       });
 
     if (!post) {
@@ -473,14 +495,29 @@ export class BlogAdminService {
       throw new ForbiddenException();
     }
 
-    const profile =
-      await this.authorRepository.findOneBy({
+    const [
+      profile,
+      user,
+    ] = await Promise.all([
+      this.authorRepository.findOneBy({
         userUuid: authorUuid,
-      });
+      }),
+      this.usersService.findByUuid(
+        authorUuid,
+      ),
+    ]);
 
-    if (!profile) {
+    if (
+      !profile ||
+      !user ||
+      (
+        user.role !== 'author' &&
+        user.role !== 'editor' &&
+        user.role !== 'admin'
+      )
+    ) {
       throw new BadRequestException(
-        'The selected author does not have a blog author profile.',
+        'The selected user is not an active blog contributor.',
       );
     }
   }
@@ -783,6 +820,11 @@ export class BlogAdminService {
       slug: post.slug,
       authorId:
         post.authorUuid,
+      categoryIds:
+        post.categories?.map(
+          (category) =>
+            category.uuid,
+        ) ?? [],
       coverAssetId:
         post.coverAssetId,
       status: post.status,
@@ -848,6 +890,33 @@ export class BlogAdminService {
       contentMarkdown:
         translation.contentMarkdown,
     };
+  }
+
+  private async getCategories(
+    categoryIds: string[],
+  ): Promise<BlogCategoryEntry[]> {
+    if (categoryIds.length === 0) {
+      return [];
+    }
+
+    const uniqueIds = [
+      ...new Set(categoryIds),
+    ];
+    const categories =
+      await this.categoryRepository.findBy({
+        uuid: In(uniqueIds),
+      });
+
+    if (
+      categories.length !==
+      uniqueIds.length
+    ) {
+      throw new BadRequestException(
+        'At least one selected blog category does not exist.',
+      );
+    }
+
+    return categories;
   }
 
   private mapAuthor(

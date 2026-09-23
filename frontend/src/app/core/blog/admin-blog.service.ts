@@ -1,8 +1,10 @@
 import type {
   BlogAdminAuthor,
   BlogAdminAuthorCandidate,
+  BlogAdminCategory,
   BlogAdminPost,
   SaveBlogAdminAuthor,
+  SaveBlogAdminCategory,
   SaveBlogAdminPost,
 } from '@shared/blog/blog-admin';
 
@@ -105,6 +107,51 @@ export class AdminBlogService {
     >(
       `/admin/blog/authors/${userId}`,
       input,
+    );
+  }
+
+  getCategories():
+    Observable<BlogAdminCategory[]> {
+    return this.request.get<
+      BlogAdminCategory[]
+    >(
+      '/admin/blog/categories',
+      this.privateGetOptions(),
+    );
+  }
+
+  createCategory(
+    input:
+      SaveBlogAdminCategory,
+  ): Observable<BlogAdminCategory> {
+    return this.request.post<
+      BlogAdminCategory,
+      SaveBlogAdminCategory
+    >(
+      '/admin/blog/categories',
+      input,
+    );
+  }
+
+  updateCategory(
+    id: string,
+    input:
+      SaveBlogAdminCategory,
+  ): Observable<BlogAdminCategory> {
+    return this.request.patch<
+      BlogAdminCategory,
+      SaveBlogAdminCategory
+    >(
+      `/admin/blog/categories/${id}`,
+      input,
+    );
+  }
+
+  deleteCategory(
+    id: string,
+  ): Observable<void> {
+    return this.request.delete<void>(
+      `/admin/blog/categories/${id}`,
     );
   }
 

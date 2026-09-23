@@ -9,6 +9,7 @@ import { AuthSessionService } from './auth-session.service';
 import { AuthService } from './auth.service';
 import { AuthSessionEntry } from './entities/auth-session.entry';
 import { AdminGuard } from './guards/admin.guard';
+import { ContributorGuard } from './guards/contributor.guard';
 import { SessionAuthGuard } from './guards/session-auth.guard';
 import { DiscordStrategy } from './strategies/discord.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
@@ -29,12 +30,14 @@ import { LocalStrategy } from './strategies/local.strategy';
     DiscordStrategy,
     SessionAuthGuard,
     AdminGuard,
+    ContributorGuard,
   ],
   exports: [
     AuthService,
     AuthSessionService,
     SessionAuthGuard,
     AdminGuard,
+    ContributorGuard,
   ],
 })
 export class AuthModule {}

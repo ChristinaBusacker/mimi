@@ -1,0 +1,128 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.users {
+  display: grid;
+  gap: var(--spacing-lg);
+
+  > header {
+    h1 {
+      margin:
+        0
+        0
+        var(--spacing-xs);
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.layout {
+  display: grid;
+  grid-template-columns:
+    minmax(240px, 0.7fr)
+    minmax(0, 1.3fr);
+  gap: var(--spacing-md);
+  align-items: start;
+}
+
+.user-list {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.user {
+  @include framed(var(--control-border-width));
+
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: var(--spacing-sm);
+  background: var(--color-surface);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+
+  span,
+  small {
+    overflow: hidden;
+    opacity: 0.7;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &.active {
+    border-color: var(--color-primary);
+  }
+}
+
+form,
+.empty {
+  @include framed(var(--control-border-width));
+  padding: var(--spacing-md);
+}
+
+form {
+  display: grid;
+  gap: var(--spacing-md);
+
+  header {
+    h2 {
+      margin: 0;
+    }
+
+    small {
+      opacity: 0.7;
+    }
+  }
+
+  label {
+    display: grid;
+    gap: var(--spacing-xs);
+    font-weight: 700;
+  }
+
+  input,
+  select {
+    @include framed(var(--control-border-width));
+
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  > small {
+    opacity: 0.7;
+    line-height: 1.5;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.message.error {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.empty {
+  opacity: 0.7;
+}
+
+@include compact-layout {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

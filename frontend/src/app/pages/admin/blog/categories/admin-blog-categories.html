@@ -1,0 +1,120 @@
+<section class="categories">
+  <header>
+    <div>
+      <h1>
+        {{ 'admin.blog.categories.title' | i18n | async }}
+      </h1>
+      <p>
+        {{ 'admin.blog.categories.description' | i18n | async }}
+      </p>
+    </div>
+
+    @if (canManage()) {
+      <app-button
+        class="primary round"
+        (click)="createNew()"
+      >
+        {{ 'admin.blog.categories.create' | i18n | async }}
+      </app-button>
+    }
+  </header>
+
+  @if (!canManage()) {
+    <p class="notice">
+      {{ 'admin.blog.categories.readOnly' | i18n | async }}
+    </p>
+  }
+
+  @if (error()) {
+    <p
+      class="error"
+      role="alert"
+    >
+      {{ 'admin.blog.categories.error' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>
+      {{ 'admin.blog.loading' | i18n | async }}
+    </p>
+  } @else {
+    <div class="layout">
+      <div class="list">
+        @for (
+          category of categories();
+          track category.id
+        ) {
+          <button
+            type="button"
+            class="category"
+            [class.active]="selected()?.id === category.id"
+            (click)="edit(category)"
+          >
+            <strong>
+              {{ category.translations.de.name }}
+            </strong>
+            <span>{{ category.slug }}</span>
+          </button>
+        }
+      </div>
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="save()"
+      >
+        <label>
+          <span>
+            {{ 'admin.blog.categories.slug' | i18n | async }}
+          </span>
+          <input
+            type="text"
+            formControlName="slug"
+          />
+        </label>
+
+        <label>
+          <span>
+            {{ 'admin.blog.categories.nameDe' | i18n | async }}
+          </span>
+          <input
+            type="text"
+            formControlName="nameDe"
+          />
+        </label>
+
+        <label>
+          <span>
+            {{ 'admin.blog.categories.nameEn' | i18n | async }}
+          </span>
+          <input
+            type="text"
+            formControlName="nameEn"
+          />
+        </label>
+
+        @if (canManage()) {
+          <div class="actions">
+            <app-button
+              type="submit"
+              class="primary round"
+              [disabled]="saving()"
+            >
+              {{ 'admin.blog.categories.save' | i18n | async }}
+            </app-button>
+
+            @if (selected(); as current) {
+              <button
+                type="button"
+                class="delete"
+                (click)="remove(current)"
+              >
+                {{ 'admin.blog.categories.delete' | i18n | async }}
+              </button>
+            }
+          </div>
+        }
+      </form>
+    </div>
+  }
+</section>

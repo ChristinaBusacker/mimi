@@ -1,0 +1,224 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.profile",
+      "de": "Mein Profil",
+      "en": "My profile"
+    },
+    {
+      "key": "admin.nav.users",
+      "de": "Benutzer",
+      "en": "Users"
+    },
+    {
+      "key": "admin.nav.blogCategories",
+      "de": "Blog-Themen",
+      "en": "Blog topics"
+    },
+    {
+      "key": "admin.users.title",
+      "de": "Benutzerverwaltung",
+      "en": "User management"
+    },
+    {
+      "key": "admin.users.description",
+      "de": "Rollen sowie öffentliche Namen und Autoren-Slugs verwalten.",
+      "en": "Manage roles, public names and author slugs."
+    },
+    {
+      "key": "admin.users.role",
+      "de": "Rolle",
+      "en": "Role"
+    },
+    {
+      "key": "admin.users.publicName",
+      "de": "Öffentlicher Name",
+      "en": "Public name"
+    },
+    {
+      "key": "admin.users.slug",
+      "de": "Autoren-Slug",
+      "en": "Author slug"
+    },
+    {
+      "key": "admin.users.profileHint",
+      "de": "Bio und Profilbild pflegt dieser Benutzer anschließend selbst in seinem Profil.",
+      "en": "The user can manage their bio and avatar from their own profile."
+    },
+    {
+      "key": "admin.users.save",
+      "de": "Benutzer speichern",
+      "en": "Save user"
+    },
+    {
+      "key": "admin.users.saved",
+      "de": "Benutzer gespeichert.",
+      "en": "User saved."
+    },
+    {
+      "key": "admin.users.loading",
+      "de": "Benutzer werden geladen …",
+      "en": "Loading users …"
+    },
+    {
+      "key": "admin.users.error",
+      "de": "Die Benutzerverwaltung konnte nicht geladen oder gespeichert werden.",
+      "en": "User management could not be loaded or saved."
+    },
+    {
+      "key": "admin.users.selectHint",
+      "de": "Wähle links einen Benutzer aus.",
+      "en": "Select a user on the left."
+    },
+    {
+      "key": "admin.profile.title",
+      "de": "Mein öffentliches Profil",
+      "en": "My public profile"
+    },
+    {
+      "key": "admin.profile.description",
+      "de": "Bio und Profilbild werden auf deiner öffentlichen Autorenseite und bei deinen Blogbeiträgen verwendet.",
+      "en": "Your bio and avatar are shown on your public author page and blog posts."
+    },
+    {
+      "key": "admin.profile.publicName",
+      "de": "Öffentlicher Name",
+      "en": "Public name"
+    },
+    {
+      "key": "admin.profile.authorUrl",
+      "de": "Autorenseite",
+      "en": "Author page"
+    },
+    {
+      "key": "admin.profile.identityHint",
+      "de": "Öffentlichen Namen, Autoren-Slug und Rolle können nur Administratoren ändern.",
+      "en": "Only administrators can change the public name, author slug and role."
+    },
+    {
+      "key": "admin.profile.bio",
+      "de": "Bio",
+      "en": "Bio"
+    },
+    {
+      "key": "admin.profile.avatar",
+      "de": "Profilbild",
+      "en": "Avatar"
+    },
+    {
+      "key": "admin.profile.avatarButton",
+      "de": "Profilbild auswählen / hochladen",
+      "en": "Select / upload avatar"
+    },
+    {
+      "key": "admin.profile.save",
+      "de": "Profil speichern",
+      "en": "Save profile"
+    },
+    {
+      "key": "admin.profile.saved",
+      "de": "Profil gespeichert.",
+      "en": "Profile saved."
+    },
+    {
+      "key": "admin.profile.loading",
+      "de": "Profil wird geladen …",
+      "en": "Loading profile …"
+    },
+    {
+      "key": "admin.profile.error",
+      "de": "Das Profil konnte nicht geladen oder gespeichert werden.",
+      "en": "The profile could not be loaded or saved."
+    },
+    {
+      "key": "admin.blog.categories.title",
+      "de": "Blog-Themenbereiche",
+      "en": "Blog topics"
+    },
+    {
+      "key": "admin.blog.categories.description",
+      "de": "Themenbereiche für Blogbeiträge verwalten.",
+      "en": "Manage topics for blog posts."
+    },
+    {
+      "key": "admin.blog.categories.create",
+      "de": "Neuer Themenbereich",
+      "en": "New topic"
+    },
+    {
+      "key": "admin.blog.categories.readOnly",
+      "de": "Autoren können vorhandene Themenbereiche ansehen und Beiträgen zuordnen. Neue Themenbereiche verwalten Redakteure und Administratoren.",
+      "en": "Authors can view and assign existing topics. Editors and administrators manage the topic list."
+    },
+    {
+      "key": "admin.blog.categories.slug",
+      "de": "Slug",
+      "en": "Slug"
+    },
+    {
+      "key": "admin.blog.categories.nameDe",
+      "de": "Name (Deutsch)",
+      "en": "Name (German)"
+    },
+    {
+      "key": "admin.blog.categories.nameEn",
+      "de": "Name (Englisch)",
+      "en": "Name (English)"
+    },
+    {
+      "key": "admin.blog.categories.save",
+      "de": "Themenbereich speichern",
+      "en": "Save topic"
+    },
+    {
+      "key": "admin.blog.categories.delete",
+      "de": "Löschen",
+      "en": "Delete"
+    },
+    {
+      "key": "admin.blog.categories.error",
+      "de": "Der Themenbereich konnte nicht geladen oder gespeichert werden.",
+      "en": "The topic could not be loaded or saved."
+    },
+    {
+      "key": "admin.blog.editor.categories",
+      "de": "Themenbereiche",
+      "en": "Topics"
+    },
+    {
+      "key": "blog.filter.author",
+      "de": "Autor",
+      "en": "Author"
+    },
+    {
+      "key": "blog.filter.allAuthors",
+      "de": "Alle Autoren",
+      "en": "All authors"
+    },
+    {
+      "key": "blog.filter.category",
+      "de": "Themenbereich",
+      "en": "Topic"
+    },
+    {
+      "key": "blog.filter.allCategories",
+      "de": "Alle Themenbereiche",
+      "en": "All topics"
+    },
+    {
+      "key": "blog.author.label",
+      "de": "Autor",
+      "en": "Author"
+    },
+    {
+      "key": "blog.author.posts",
+      "de": "Beiträge",
+      "en": "Posts"
+    },
+    {
+      "key": "blog.author.empty",
+      "de": "Von diesem Autor sind noch keine veröffentlichten Beiträge vorhanden.",
+      "en": "This author has no published posts yet."
+    }
+  ]
+}
