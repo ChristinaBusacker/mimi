@@ -12,10 +12,12 @@ export type CommunityEventType =
   | 'twitch.subscription.started'
   | 'twitch.subscription.ended'
   | 'twitch.subscription.resub'
+  | 'twitch.subscription.month'
   | 'twitch.watch-streak'
   | 'twitch.stream.check-in'
   | 'blog.comment.created'
-  | 'blog.comment.featured';
+  | 'blog.comment.featured'
+  | 'achievement.unlocked';
 
 export interface CommunityEventRule {
   eventType: CommunityEventType;

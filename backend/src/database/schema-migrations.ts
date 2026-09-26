@@ -5,6 +5,7 @@ import type {
 } from 'typeorm';
 
 import { communityEventRewardsMigration } from '../community/community-event-rewards.schema-migration';
+import { communityProgressionMigration } from '../community/community-progression.schema-migration';
 
 interface SchemaMigration {
   name: string;
@@ -497,6 +498,7 @@ const migrations: readonly SchemaMigration[] = [
     },
   },
   communityEventRewardsMigration,
+  communityProgressionMigration,
 ];
 
 export async function runSchemaMigrations(

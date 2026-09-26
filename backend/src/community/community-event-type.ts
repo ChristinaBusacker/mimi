@@ -2,34 +2,83 @@ import type {
   CommunityEventType,
 } from '@shared/community/community-event';
 
+interface CommunityEventTypeConfig {
+  rewardRule: boolean;
+  contentLength: boolean;
+}
+
 const COMMUNITY_EVENT_TYPE_REGISTRY = {
-  'discord.message.activity': true,
-  'discord.membership.day': true,
-  'discord.event.attended': true,
-  'twitch.chat.activity': true,
-  'twitch.subscription.started': true,
-  'twitch.subscription.ended': true,
-  'twitch.subscription.resub': true,
-  'twitch.watch-streak': true,
-  'twitch.stream.check-in': true,
-  'blog.comment.created': true,
-  'blog.comment.featured': true,
+  'discord.message.activity': {
+    rewardRule: true,
+    contentLength: true,
+  },
+  'discord.membership.day': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'discord.event.attended': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'twitch.chat.activity': {
+    rewardRule: true,
+    contentLength: true,
+  },
+  'twitch.subscription.started': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'twitch.subscription.ended': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'twitch.subscription.resub': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'twitch.subscription.month': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'twitch.watch-streak': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'twitch.stream.check-in': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'blog.comment.created': {
+    rewardRule: true,
+    contentLength: true,
+  },
+  'blog.comment.featured': {
+    rewardRule: true,
+    contentLength: false,
+  },
+  'achievement.unlocked': {
+    rewardRule: false,
+    contentLength: false,
+  },
 } satisfies Record<
   CommunityEventType,
-  true
+  CommunityEventTypeConfig
 >;
 
 export const COMMUNITY_EVENT_TYPES =
-  Object.keys(
-    COMMUNITY_EVENT_TYPE_REGISTRY,
-  ) as CommunityEventType[];
-
-const CONTENT_LENGTH_EVENT_TYPES =
-  new Set<CommunityEventType>([
-    'discord.message.activity',
-    'twitch.chat.activity',
-    'blog.comment.created',
-  ]);
+  (
+    Object.entries(
+      COMMUNITY_EVENT_TYPE_REGISTRY,
+    ) as Array<[
+      CommunityEventType,
+      CommunityEventTypeConfig,
+    ]>
+  )
+    .filter(
+      ([, config]) =>
+        config.rewardRule,
+    )
+    .map(([eventType]) => eventType);
 
 export function isCommunityEventType(
   value: string,
@@ -40,10 +89,21 @@ export function isCommunityEventType(
   );
 }
 
+export function isRewardRuleEventType(
+  value: string,
+): value is CommunityEventType {
+  return (
+    isCommunityEventType(value) &&
+    COMMUNITY_EVENT_TYPE_REGISTRY[
+      value
+    ].rewardRule
+  );
+}
+
 export function supportsContentLength(
   eventType: CommunityEventType,
 ): boolean {
-  return CONTENT_LENGTH_EVENT_TYPES.has(
-    eventType,
-  );
+  return COMMUNITY_EVENT_TYPE_REGISTRY[
+    eventType
+  ].contentLength;
 }

@@ -13,7 +13,7 @@ import { Repository } from 'typeorm';
 
 import {
   COMMUNITY_EVENT_TYPES,
-  isCommunityEventType,
+  isRewardRuleEventType,
   supportsContentLength,
 } from './community-event-type';
 import { CommunityEventRuleEntry } from './entities/community-event-rule.entry';
@@ -52,12 +52,12 @@ export class CommunityEventRuleService {
     updatedByUserId: string | null,
   ): Promise<CommunityEventRule> {
     if (
-      !isCommunityEventType(
+      !isRewardRuleEventType(
         eventType,
       )
     ) {
       throw new BadRequestException(
-        `Unknown community event type "${eventType}".`,
+        `Event type "${eventType}" cannot be configured as an XP reward rule.`,
       );
     }
 

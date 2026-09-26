@@ -56,6 +56,12 @@ export class CommunityProfileEntry {
   })
   currentDiscordJoinAt!: Date | null;
 
+  @Column({
+    type: 'uuid',
+    nullable: true,
+  })
+  selectedTitleUuid!: string | null;
+
   @CreateDateColumn({
     type: 'timestamptz',
   })

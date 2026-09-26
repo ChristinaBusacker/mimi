@@ -1,7 +1,3 @@
-import type {
-  CommunityEventType,
-} from '@shared/community/community-event';
-
 import {
   BadRequestException,
   Injectable,
@@ -20,13 +16,16 @@ import type {
   RecordCommunityEventInput,
   RecordCommunityEventResult,
 } from './community-event';
+import { CommunityProgressionService } from './community-progression.service';
+import {
+  createCommunityDateFormatter,
+  DEFAULT_COMMUNITY_TIME_ZONE,
+  formatCommunityDate,
+} from './community-time';
 import { CommunityEventEntry } from './entities/community-event.entry';
 import { CommunityEventRuleEntry } from './entities/community-event-rule.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
 import { XpTransactionEntry } from './entities/xp-transaction.entry';
-
-const DEFAULT_REWARD_TIME_ZONE =
-  'Europe/Berlin';
 
 @Injectable()
 export class CommunityEventService {
@@ -37,30 +36,20 @@ export class CommunityEventService {
     @InjectDataSource()
     private readonly dataSource:
       DataSource,
+    private readonly progression:
+      CommunityProgressionService,
     config: ConfigService,
   ) {
     const timeZone =
       config.get<string>(
         'COMMUNITY_TIME_ZONE',
       ) ??
-      DEFAULT_REWARD_TIME_ZONE;
+      DEFAULT_COMMUNITY_TIME_ZONE;
 
-    try {
-      this.rewardDateFormatter =
-        new Intl.DateTimeFormat(
-          'en-CA',
-          {
-            timeZone,
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          },
-        );
-    } catch {
-      throw new Error(
-        `COMMUNITY_TIME_ZONE "${timeZone}" is not a valid IANA time zone.`,
+    this.rewardDateFormatter =
+      createCommunityDateFormatter(
+        timeZone,
       );
-    }
   }
 
   async recordEvent(
@@ -186,6 +175,13 @@ export class CommunityEventService {
             rule,
           );
 
+        await this.progression
+          .evaluateUserInTransaction(
+            manager,
+            event.userUuid,
+            event.uuid,
+          );
+
         return {
           status: 'recorded',
           rewardStatus:
@@ -198,33 +194,11 @@ export class CommunityEventService {
     );
   }
 
-  async getTotalXp(
+  getTotalXp(
     userUuid: string,
   ): Promise<number> {
-    const result =
-      await this.dataSource
-        .getRepository(
-          XpTransactionEntry,
-        )
-        .createQueryBuilder(
-          'transaction',
-        )
-        .select(
-          'COALESCE(SUM(transaction.amount), 0)',
-          'total',
-        )
-        .where(
-          'transaction.userUuid = :userUuid',
-          {
-            userUuid,
-          },
-        )
-        .getRawOne<{
-          total: string;
-        }>();
-
-    return Number(
-      result?.total ?? 0,
+    return this.progression.getTotalXp(
+      userUuid,
     );
   }
 
@@ -262,7 +236,8 @@ export class CommunityEventService {
         XpTransactionEntry,
       );
     const rewardDate =
-      this.getRewardDate(
+      formatCommunityDate(
+        this.rewardDateFormatter,
         event.occurredAt,
       );
 
@@ -409,26 +384,5 @@ export class CommunityEventService {
         'occurredAt must be a valid date.',
       );
     }
-  }
-
-  private getRewardDate(
-    date: Date,
-  ): string {
-    const parts =
-      this.rewardDateFormatter
-        .formatToParts(date);
-    const part = (
-      type: Intl.DateTimeFormatPartTypes,
-    ): string =>
-      parts.find(
-        (candidate) =>
-          candidate.type === type,
-      )?.value ?? '';
-
-    return [
-      part('year'),
-      part('month'),
-      part('day'),
-    ].join('-');
   }
 }
