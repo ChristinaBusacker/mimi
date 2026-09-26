@@ -106,6 +106,21 @@ export interface SaveCommunityAchievementDefinition {
   sortOrder: number;
 }
 
+
+export interface CommunityProfileColorUnlock {
+  achievementId: string;
+  color: string;
+}
+
+export interface CommunityProfileCustomization {
+  selectedTitleId: string | null;
+  selectedProfileColorAchievementId: string | null;
+  selectedProfileColor: string | null;
+  unlockedProfileColors:
+    CommunityProfileColorUnlock[];
+  pinnedAchievementIds: string[];
+}
+
 export interface CommunityProgressionSnapshot {
   totalXp: number;
   level:

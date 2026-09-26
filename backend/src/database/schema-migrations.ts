@@ -6,6 +6,7 @@ import type {
 
 import { communityAchievementRewardsMigration } from '../community/community-achievement-rewards.schema-migration';
 import { communityEventRewardsMigration } from '../community/community-event-rewards.schema-migration';
+import { communityProfileCustomizationMigration } from '../community/community-profile-customization.schema-migration';
 import { communityProgressionMigration } from '../community/community-progression.schema-migration';
 
 interface SchemaMigration {
@@ -501,6 +502,7 @@ const migrations: readonly SchemaMigration[] = [
   communityEventRewardsMigration,
   communityProgressionMigration,
   communityAchievementRewardsMigration,
+  communityProfileCustomizationMigration,
 ];
 
 export async function runSchemaMigrations(

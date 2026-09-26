@@ -11,6 +11,7 @@
     "frontend:serve:ssr": "node dist/frontend/server/server.mjs",
     "backend:start": "nest start --watch",
     "backend:build": "nest build",
+    "backend:test": "vitest run --config backend/vitest.config.ts",
     "backend:start:prod": "node dist/backend/main.js"
   },
   "private": true,

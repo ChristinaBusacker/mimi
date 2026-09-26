@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { CommunityEventService } from './community-event.service';
+import { CommunityProfileCustomizationService } from './community-profile-customization.service';
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
 import { CommunityProgressionService } from './community-progression.service';
 import { CommunityService } from './community.service';
@@ -12,6 +13,7 @@ import { CommunityAchievementConditionEntry } from './entities/community-achieve
 import { CommunityAchievementEntry } from './entities/community-achievement.entry';
 import { CommunityEventRuleEntry } from './entities/community-event-rule.entry';
 import { CommunityLevelEntry } from './entities/community-level.entry';
+import { CommunityPinnedAchievementEntry } from './entities/community-pinned-achievement.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
 import { CommunityTitleEntry } from './entities/community-title.entry';
 import { DiscordMembershipPeriodEntry } from './entities/discord-membership-period.entry';
@@ -27,6 +29,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
       CommunityEventEntry,
       CommunityEventRuleEntry,
       CommunityLevelEntry,
+      CommunityPinnedAchievementEntry,
       CommunityProfileEntry,
       CommunityTitleEntry,
       DiscordMembershipPeriodEntry,
@@ -39,6 +42,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityBalancingDefaultsService,
     CommunityEventRuleService,
     CommunityEventService,
+    CommunityProfileCustomizationService,
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
     CommunityService,
@@ -47,6 +51,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityBalancingDefaultsService,
     CommunityEventRuleService,
     CommunityEventService,
+    CommunityProfileCustomizationService,
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
     CommunityService,

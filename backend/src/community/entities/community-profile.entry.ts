@@ -62,6 +62,13 @@ export class CommunityProfileEntry {
   })
   selectedTitleUuid!: string | null;
 
+  @Column({
+    type: 'uuid',
+    nullable: true,
+  })
+  selectedProfileColorAchievementUuid!:
+    string | null;
+
   @CreateDateColumn({
     type: 'timestamptz',
   })
