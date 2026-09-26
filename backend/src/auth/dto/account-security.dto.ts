@@ -6,9 +6,10 @@ export class AccountSecurityDto
   implements AccountSecurity
 {
   @ApiProperty({
+    nullable: true,
     format: 'email',
   })
-  email!: string;
+  email!: string | null;
 
   @ApiProperty()
   hasPassword!: boolean;

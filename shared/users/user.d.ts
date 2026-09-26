@@ -10,7 +10,7 @@ export interface ManagedUserProfile {
 export interface ManagedUser {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   discordId: string | null;
   role: UserRole;
   profile: ManagedUserProfile | null;

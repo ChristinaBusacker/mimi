@@ -7,6 +7,7 @@ import type { AuthenticatedUser } from '@shared/auth/authenticated-user';
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -14,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { compare } from 'bcryptjs';
 
+import { CommunityService } from '../community/community.service';
 import { MailService } from '../mail/mail.service';
 import { UsersService } from '../users/users.service';
 import { AuthSessionService } from './auth-session.service';
@@ -31,6 +33,8 @@ export class AccountSecurityService {
   constructor(
     private readonly users:
       UsersService,
+    private readonly community:
+      CommunityService,
     private readonly sessions:
       AuthSessionService,
     private readonly mail:
@@ -83,6 +87,18 @@ export class AccountSecurityService {
 
     if (!user) {
       throw new NotFoundException();
+    }
+
+    if (user.role !== 'admin') {
+      throw new ForbiddenException(
+        'Password authentication is reserved for administrators.',
+      );
+    }
+
+    if (!user.email) {
+      throw new ConflictException(
+        'An email address is required for password authentication.',
+      );
     }
 
     if (user.password) {
@@ -174,16 +190,20 @@ export class AccountSecurityService {
     }
 
     if (
-      user.discordId ===
+      user.discordId !==
       discord.id
     ) {
-      return;
+      await this.users.connectDiscord(
+        user,
+        discord.id,
+      );
     }
 
-    await this.users.connectDiscord(
-      user,
-      discord.id,
-    );
+    await this.community
+      .upsertDiscordIdentity(
+        user.uuid,
+        discord.username,
+      );
   }
 
   async disconnectDiscord(
@@ -197,6 +217,12 @@ export class AccountSecurityService {
 
     if (!user) {
       throw new NotFoundException();
+    }
+
+    if (user.role !== 'admin') {
+      throw new ForbiddenException(
+        'Discord is the account identity for community users.',
+      );
     }
 
     if (!user.discordId) {

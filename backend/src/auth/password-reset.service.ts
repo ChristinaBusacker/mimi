@@ -93,7 +93,11 @@ export class PasswordResetService {
         email,
       );
 
-    if (!user) {
+    if (
+      !user ||
+      user.role !== 'admin' ||
+      !user.email
+    ) {
       return;
     }
 
@@ -225,7 +229,11 @@ export class PasswordResetService {
         reset.userUuid,
       );
 
-    if (!user) {
+    if (
+      !user ||
+      user.role !== 'admin' ||
+      !user.email
+    ) {
       throw new BadRequestException(
         'The password reset link is invalid or expired.',
       );

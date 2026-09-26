@@ -1,5 +1,5 @@
 export interface AccountSecurity {
-  email: string;
+  email: string | null;
   hasPassword: boolean;
   discordConnected: boolean;
 }

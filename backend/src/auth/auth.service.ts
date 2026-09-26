@@ -9,6 +9,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { compare } from 'bcryptjs';
 
+import { CommunityService } from '../community/community.service';
 import { UserEntry } from '../users/entities/user.entry';
 import { UsersService } from '../users/users.service';
 
@@ -19,6 +20,7 @@ export class AuthService implements OnApplicationBootstrap {
 
   constructor(
     private readonly usersService: UsersService,
+    private readonly communityService: CommunityService,
     configService: ConfigService,
   ) {
     this.configuredAdminEmails = new Set(
@@ -51,7 +53,10 @@ export class AuthService implements OnApplicationBootstrap {
   ): Promise<AuthenticatedUser> {
     const user = await this.usersService.findByEmailWithPassword(email);
 
-    if (!user?.password) {
+    if (
+      !user?.password ||
+      user.role !== 'admin'
+    ) {
       throw new UnauthorizedException();
     }
 
@@ -69,35 +74,32 @@ export class AuthService implements OnApplicationBootstrap {
   async validateDiscordUser(
     discordId: string,
     name: string,
-    email: string,
   ): Promise<AuthenticatedUser> {
     const existingDiscordUser =
       await this.usersService.findByDiscordId(discordId);
 
     if (existingDiscordUser) {
+      await this.communityService
+        .upsertDiscordIdentity(
+          existingDiscordUser.uuid,
+          name,
+        );
+
       return this.toAuthenticatedUser(
         await this.ensureConfiguredAdmin(existingDiscordUser),
-      );
-    }
-
-    const existingEmailUser = await this.usersService.findByEmail(email);
-
-    if (existingEmailUser) {
-      const connectedUser = await this.usersService.connectDiscord(
-        existingEmailUser,
-        discordId,
-      );
-
-      return this.toAuthenticatedUser(
-        await this.ensureConfiguredAdmin(connectedUser),
       );
     }
 
     const user = await this.usersService.createDiscord(
       discordId,
       name,
-      email,
     );
+
+    await this.communityService
+      .upsertDiscordIdentity(
+        user.uuid,
+        name,
+      );
 
     return this.toAuthenticatedUser(
       await this.ensureConfiguredAdmin(user),
@@ -129,6 +131,7 @@ export class AuthService implements OnApplicationBootstrap {
   ): Promise<UserEntry> {
     if (
       user.role === 'admin' ||
+      !user.email ||
       !this.configuredAdminEmails.has(user.email.toLowerCase())
     ) {
       return user;

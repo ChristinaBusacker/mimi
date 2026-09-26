@@ -7,7 +7,7 @@ export type UserRole =
 export interface AuthenticatedUser {
   uuid: string;
   name: string;
-  email: string;
+  email: string | null;
   discordId: string | null;
   role: UserRole;
 }

@@ -155,9 +155,10 @@ export class BlogAdminAuthorCandidateDto
   name!: string;
 
   @ApiProperty({
+    nullable: true,
     format: 'email',
   })
-  email!: string;
+  email!: string | null;
 
   @ApiProperty({
     enum: [

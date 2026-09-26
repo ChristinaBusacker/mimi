@@ -17,10 +17,11 @@ export class AuthenticatedUserDto implements AuthenticatedUser {
   name!: string;
 
   @ApiProperty({
+    nullable: true,
     example: 'mimi@example.com',
     format: 'email',
   })
-  email!: string;
+  email!: string | null;
 
   @ApiProperty({
     nullable: true,

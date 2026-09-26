@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-dc';
@@ -9,8 +9,6 @@ import type { AuthenticatedUser } from '@shared/auth/authenticated-user';
 interface DiscordProfile {
   id: string;
   username: string;
-  email?: string;
-  verified?: boolean;
 }
 
 @Injectable()
@@ -26,7 +24,7 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
 
       callbackURL: configService.getOrThrow<string>('DISCORD_CALLBACK_URL'),
 
-      scope: ['identify', 'email'],
+      scope: ['identify'],
     });
   }
 
@@ -35,19 +33,9 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
     _refreshToken: string,
     profile: DiscordProfile,
   ): Promise<AuthenticatedUser> {
-    if (
-      !profile.email ||
-      profile.verified !== true
-    ) {
-      throw new UnauthorizedException(
-        'Discord did not provide a verified email address.',
-      );
-    }
-
     return this.authService.validateDiscordUser(
       profile.id,
       profile.username,
-      profile.email,
     );
   }
 }

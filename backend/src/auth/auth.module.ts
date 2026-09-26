@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { CommunityModule } from '../community/community.module';
 import { MailModule } from '../mail/mail.module';
 import { UsersModule } from '../users/users.module';
 
@@ -23,11 +24,9 @@ import { LocalStrategy } from './strategies/local.strategy';
 @Module({
   imports: [
     UsersModule,
+    CommunityModule,
     MailModule,
-    TypeOrmModule.forFeature([
-      AuthSessionEntry,
-      PasswordResetTokenEntry,
-    ]),
+    TypeOrmModule.forFeature([AuthSessionEntry, PasswordResetTokenEntry]),
     PassportModule.register({
       session: false,
     }),
@@ -46,12 +45,6 @@ import { LocalStrategy } from './strategies/local.strategy';
     AdminGuard,
     ContributorGuard,
   ],
-  exports: [
-    AuthService,
-    AuthSessionService,
-    SessionAuthGuard,
-    AdminGuard,
-    ContributorGuard,
-  ],
+  exports: [AuthService, AuthSessionService, SessionAuthGuard, AdminGuard, ContributorGuard],
 })
 export class AuthModule {}

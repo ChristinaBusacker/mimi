@@ -11,9 +11,11 @@ export class UserEntry {
   name!: string;
 
   @Column({
+    type: 'varchar',
+    nullable: true,
     unique: true,
   })
-  email!: string;
+  email!: string | null;
 
   @Column({
     type: 'varchar',

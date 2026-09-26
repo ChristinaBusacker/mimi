@@ -84,12 +84,11 @@ export class UsersService {
   async createDiscord(
     discordId: string,
     name: string,
-    email: string,
   ): Promise<UserEntry> {
     const user = this.usersRepository.create({
       discordId,
       name,
-      email: email.toLowerCase(),
+      email: null,
       password: null,
     });
 

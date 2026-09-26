@@ -60,7 +60,7 @@ export interface SaveBlogAdminAuthor {
 export interface BlogAdminAuthorCandidate {
   userId: string;
   name: string;
-  email: string;
+  email: string | null;
   role: UserRole;
   profile: BlogAdminAuthor | null;
 }

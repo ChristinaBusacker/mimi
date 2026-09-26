@@ -237,6 +237,12 @@ export class AccountSecurityPage
     }
   }
 
+  protected isAdmin():
+    boolean {
+    return this.user()?.role ===
+      'admin';
+  }
+
   protected canOpenAdmin():
     boolean {
     const role =
@@ -271,6 +277,9 @@ export class AccountSecurityPage
 
   protected async logout():
     Promise<void> {
+    const returnToAdmin =
+      this.isAdmin();
+
     await firstValueFrom(
       this.store.dispatch(
         new Logout(),
@@ -278,7 +287,9 @@ export class AccountSecurityPage
     );
 
     await this.router.navigate([
-      '/admin/login',
+      returnToAdmin
+        ? '/admin/login'
+        : '/',
     ]);
   }
 }

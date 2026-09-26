@@ -409,6 +409,91 @@ const migrations: readonly SchemaMigration[] = [
       `);
     },
   },
+  {
+    name:
+      '20260926-community-identity-foundation',
+    run: async (manager) => {
+      await manager.query(`
+        ALTER TABLE "users"
+        ALTER COLUMN "email" DROP NOT NULL
+      `);
+
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "community_profiles" (
+          "userUuid" uuid NOT NULL,
+          "discordDisplayName" varchar(255) NOT NULL,
+          "discordAvatarHash" varchar(255),
+          "isDiscordMember" boolean NOT NULL DEFAULT false,
+          "firstKnownDiscordJoinAt" timestamptz,
+          "currentDiscordJoinAt" timestamptz,
+          "createdAt" timestamptz NOT NULL DEFAULT now(),
+          "updatedAt" timestamptz NOT NULL DEFAULT now(),
+          CONSTRAINT "PK_community_profiles"
+            PRIMARY KEY ("userUuid"),
+          CONSTRAINT "FK_community_profiles_user"
+            FOREIGN KEY ("userUuid")
+            REFERENCES "users"("uuid")
+            ON DELETE CASCADE
+        )
+      `);
+
+      await manager.query(`
+        CREATE TABLE IF NOT EXISTS "discord_membership_periods" (
+          "uuid" uuid NOT NULL DEFAULT gen_random_uuid(),
+          "userUuid" uuid NOT NULL,
+          "joinedAt" timestamptz NOT NULL,
+          "leftAt" timestamptz,
+          "createdAt" timestamptz NOT NULL DEFAULT now(),
+          CONSTRAINT "PK_discord_membership_periods"
+            PRIMARY KEY ("uuid"),
+          CONSTRAINT "FK_discord_membership_periods_user"
+            FOREIGN KEY ("userUuid")
+            REFERENCES "users"("uuid")
+            ON DELETE CASCADE,
+          CONSTRAINT "CHK_discord_membership_periods_dates"
+            CHECK (
+              "leftAt" IS NULL OR
+              "leftAt" >= "joinedAt"
+            )
+        )
+      `);
+
+      await manager.query(`
+        CREATE INDEX IF NOT EXISTS "IDX_discord_membership_periods_user_joined"
+        ON "discord_membership_periods" (
+          "userUuid",
+          "joinedAt"
+        )
+      `);
+
+      await manager.query(`
+        CREATE UNIQUE INDEX IF NOT EXISTS "UQ_discord_membership_periods_open"
+        ON "discord_membership_periods" ("userUuid")
+        WHERE "leftAt" IS NULL
+      `);
+
+      await manager.query(`
+        INSERT INTO "community_profiles" (
+          "userUuid",
+          "discordDisplayName",
+          "discordAvatarHash",
+          "isDiscordMember",
+          "firstKnownDiscordJoinAt",
+          "currentDiscordJoinAt"
+        )
+        SELECT
+          "uuid",
+          "name",
+          NULL,
+          false,
+          NULL,
+          NULL
+        FROM "users"
+        WHERE "discordId" IS NOT NULL
+        ON CONFLICT ("userUuid") DO NOTHING
+      `);
+    },
+  },
 ];
 
 export async function runSchemaMigrations(
