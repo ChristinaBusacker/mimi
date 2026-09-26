@@ -6,6 +6,10 @@
 
 button,
 a {
+  --button-accent: var(--page-accent, var(--color-primary));
+  --button-accent-hover: color-mix(in srgb, var(--button-accent) 84%, white);
+  --button-accent-active: color-mix(in srgb, var(--button-accent) 88%, black);
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,15 +26,16 @@ a {
   text-decoration: none;
 
   transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease;
+    background-color 120ms ease,
+    background-position 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 120ms ease,
+    color 120ms ease,
+    box-shadow 120ms ease;
 }
 
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--button-accent);
   outline-offset: 2px;
 }
 
@@ -51,21 +56,30 @@ button:disabled {
 
 :host(.primary) button,
 :host(.primary) a {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: var(--button-accent);
+  background-image: linear-gradient(
+    105deg,
+    transparent 0 42%,
+    rgb(255 255 255 / 18%) 50%,
+    transparent 58% 100%
+  );
+  background-position: 125% 50%;
+  background-size: 220% 100%;
+  border-color: var(--button-accent);
 }
 
 :host(.primary) button:not(:disabled):hover,
 :host(.primary) a:hover {
-  background-color: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
-  box-shadow: 0 0 0 3px rgb(252 170 193 / 10%);
+  background-color: var(--button-accent-hover);
+  background-position: -25% 50%;
+  border-color: var(--button-accent-hover);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--button-accent) 14%, transparent);
 }
 
 :host(.primary) button:not(:disabled):active,
 :host(.primary) a:active {
-  background-color: var(--color-primary-active);
-  border-color: var(--color-primary-active);
+  background-color: var(--button-accent-active);
+  border-color: var(--button-accent-active);
   box-shadow: none;
 }
 
@@ -76,15 +90,15 @@ button:disabled {
 
 :host(.secondary) button:not(:disabled):hover,
 :host(.secondary) a:hover {
-  border-color: var(--color-primary);
-  background-color: rgb(252 170 193 / 10%);
-  color: var(--color-primary-hover);
-  box-shadow: 0 0 0 3px rgb(252 170 193 / 6%);
+  border-color: var(--button-accent);
+  background-color: color-mix(in srgb, var(--button-accent) 10%, transparent);
+  color: var(--button-accent-hover);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--button-accent) 7%, transparent);
 }
 
 :host(.secondary) button:not(:disabled):active,
 :host(.secondary) a:active {
-  background-color: rgb(252 170 193 / 16%);
+  background-color: color-mix(in srgb, var(--button-accent) 16%, transparent);
   box-shadow: none;
 }
 

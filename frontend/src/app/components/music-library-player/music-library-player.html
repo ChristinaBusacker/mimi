@@ -124,15 +124,12 @@
 
       <div class="external">
         @if (currentTrack.supportUrl) {
-          <a
-            class="support"
+          <app-support-button
             [href]="currentTrack.supportUrl"
             target="_blank"
-            rel="noopener noreferrer"
           >
-            <app-icon name="heart" class="small" />
             {{ 'music.support.action' | i18n | async }}
-          </a>
+          </app-support-button>
         }
 
         @if (currentTrack.spotifyUrl) {

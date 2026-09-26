@@ -146,7 +146,8 @@ export class SteamService {
     }
 
     const result = (await response.json()) as SteamStoreAppDetailsResponse;
-    const app = result[String(match.appId)];
+    const keys = Object.keys(result);
+    const app = result[keys[0]];
 
     if (!app?.success || !app.data) {
       return createFallbackSteamGame(match);

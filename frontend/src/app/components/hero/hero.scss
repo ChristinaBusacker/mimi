@@ -55,20 +55,6 @@
     opacity: 0.36;
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: var(--spacing-md);
-    bottom: var(--spacing-md);
-    left: 0;
-    width: 4px;
-    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
-    z-index: 2;
-    background: var(--hero-accent);
-    box-shadow: 0 0 16px var(--hero-accent);
-    opacity: 0.95;
-  }
-
   &.music {
     --hero-accent: var(--color-accent-music);
     --hero-accent-soft: rgb(255 143 184 / 18%);

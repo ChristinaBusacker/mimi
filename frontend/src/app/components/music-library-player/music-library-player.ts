@@ -24,6 +24,7 @@ import type { Language } from '../../core/i18n/i18n.types';
 import { MusicPublicService } from '../../core/music/music-public.service';
 import { Icon } from '../icon/icon';
 import { RenderedContent } from '../rendered-content/rendered-content';
+import { SupportButton } from '../support-button/support-button';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +34,7 @@ import { RenderedContent } from '../rendered-content/rendered-content';
     Icon,
     RenderedContent,
     RouterLink,
+    SupportButton,
   ],
   selector: 'app-music-library-player',
   styleUrl: './music-library-player.scss',

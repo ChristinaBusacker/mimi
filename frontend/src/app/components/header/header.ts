@@ -13,12 +13,19 @@ import {
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
-import { Button } from '../button/button';
 import { Icon } from '../icon/icon';
+import { SupportButton } from '../support-button/support-button';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Button, I18nPipe, Icon, RouterLink, RouterLinkActive],
+  imports: [
+    AsyncPipe,
+    I18nPipe,
+    Icon,
+    RouterLink,
+    RouterLinkActive,
+    SupportButton,
+  ],
   selector: 'app-header',
   styleUrl: './header.scss',
   templateUrl: './header.html',

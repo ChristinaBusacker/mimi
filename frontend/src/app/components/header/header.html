@@ -85,10 +85,9 @@
       </ul>
     </nav>
 
-    <app-button class="primary">
-      <app-icon name="heart" class="black" />
+    <app-support-button>
       {{ 'navigation.support' | i18n | async }}
-    </app-button>
+    </app-support-button>
   </div>
 </header>
 
@@ -117,13 +116,11 @@
       <img src="/images/logo.png" alt="" />
     </a>
 
-    <button
-      type="button"
+    <app-support-button
       class="mobile-support"
-      [attr.aria-label]="'navigation.support' | i18n | async"
-    >
-      <app-icon name="heart" class="primary" />
-    </button>
+      [compact]="true"
+      [ariaLabel]="('navigation.support' | i18n | async) ?? ''"
+    />
   </header>
 
   <aside

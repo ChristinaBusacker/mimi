@@ -1,0 +1,130 @@
+@use 'mixins' as *;
+
+:host {
+  --support-accent: var(--color-support);
+  --support-accent-hover: var(--color-support-hover);
+  --support-accent-active: var(--color-support-active);
+
+  display: inline-flex;
+}
+
+.support-button {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  min-height: 32px;
+  margin: 0;
+  padding: var(--support-button-padding, var(--spacing-xs) var(--spacing-sm));
+  border: var(--control-border-width) solid var(--support-accent);
+  border-radius: var(--radius-pill);
+
+  background-color: var(--support-accent);
+  color: var(--color-text-inverse);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--support-button-font-size, inherit);
+  font-weight: 800;
+  text-decoration: none;
+
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--support-accent-hover);
+    border-color: var(--support-accent-hover);
+    box-shadow:
+      0 0 0 3px rgb(252 170 193 / 14%),
+      0 4px 14px rgb(36 17 34 / 18%);
+  }
+
+  &:active {
+    background-color: var(--support-accent-active);
+    border-color: var(--support-accent-active);
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--support-accent-hover);
+    outline-offset: 2px;
+  }
+
+  app-icon {
+    width: 100%;
+    fill: currentColor;
+  }
+
+  &:not(.compact) app-icon {
+    color: var(--color-text-inverse);
+  }
+
+  &.compact {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-color: transparent;
+    background: transparent;
+    color: var(--support-accent);
+    --support-heart-size: 20px;
+
+    &:hover,
+    &:focus-visible {
+      border-color: rgb(252 170 193 / 18%);
+      background: rgb(252 170 193 / 10%);
+      box-shadow: none;
+    }
+
+    &:active {
+      background: rgb(252 170 193 / 16%);
+    }
+  }
+}
+
+.support-button__heart {
+  display: flex;
+  width: var(--support-heart-size, 18px);
+  flex: 0 0 auto;
+  color: inherit;
+  transform-origin: center;
+  animation: support-heartbeat 3.6s ease-in-out infinite;
+}
+
+@keyframes support-heartbeat {
+  0%,
+  62%,
+  80%,
+  100% {
+    filter: drop-shadow(0 0 0 rgb(255 255 255 / 0%));
+    transform: scale(1);
+  }
+
+  68% {
+    filter: drop-shadow(0 0 4px rgb(255 255 255 / 42%));
+    transform: scale(1.14);
+  }
+
+  73% {
+    transform: scale(1);
+  }
+
+  76% {
+    filter: drop-shadow(0 0 3px rgb(255 255 255 / 30%));
+    transform: scale(1.08);
+  }
+}
+
+@include reduced-motion {
+  .support-button {
+    transition: none;
+  }
+
+  .support-button__heart {
+    animation: none;
+  }
+}

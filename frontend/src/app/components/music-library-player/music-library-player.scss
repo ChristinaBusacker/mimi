@@ -192,6 +192,12 @@
       justify-content: flex-end;
       gap: 4px;
 
+      app-support-button {
+        --support-button-font-size: 0.7rem;
+        --support-button-padding: 4px 7px;
+        --support-heart-size: 14px;
+      }
+
       a {
         display: inline-flex;
         align-items: center;
@@ -203,12 +209,6 @@
         font-size: 0.7rem;
         font-weight: 800;
         text-decoration: none;
-      }
-
-      .support {
-        border-color: var(--color-primary);
-        background: var(--color-primary);
-        color: var(--color-text-inverse);
       }
     }
   }
