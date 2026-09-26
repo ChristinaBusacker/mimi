@@ -9,7 +9,6 @@ import type {
   CommunityLocalizedText,
   SaveCommunityAchievementCondition,
   SaveCommunityAchievementDefinition,
-  SaveCommunityLevelDefinition,
   SaveCommunityTitleDefinition,
 } from '@shared/community/community-progression';
 
@@ -84,31 +83,12 @@ export class CommunityDescriptionDto
   en!: string | null;
 }
 
-export class SaveCommunityLevelDto
-  implements SaveCommunityLevelDefinition
-{
-  @IsBoolean()
-  enabled!: boolean;
-
-  @IsInt()
-  @Min(0)
-  requiredXp!: number;
-
-  @ValidateNested()
-  @Type(() => CommunityLocalizedTextDto)
-  name!: CommunityLocalizedTextDto;
-
-  @IsOptional()
-  @Matches(/^#[0-9a-fA-F]{6}$/)
-  displayColor!: string | null;
-
-  @IsOptional()
-  @Matches(/^\d{1,32}$/)
-  discordRoleId!: string | null;
-
-  @IsOptional()
-  @IsUUID()
-  badgeAssetId!: string | null;
+export class SaveCommunityLevelsDto {
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsInt({ each: true })
+  @Min(0, { each: true })
+  requiredXp!: number[];
 }
 
 export class SaveCommunityTitleDto
@@ -188,6 +168,10 @@ export class SaveCommunityAchievementDto
   @IsOptional()
   @IsUUID()
   unlockedTitleId!: string | null;
+
+  @IsOptional()
+  @Matches(/^#[0-9a-fA-F]{6}$/)
+  unlockedProfileColor!: string | null;
 
   @IsOptional()
   @Matches(/^\d{1,32}$/)

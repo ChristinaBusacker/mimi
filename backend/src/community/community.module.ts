@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { CommunityEventService } from './community-event.service';
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
@@ -35,6 +36,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     ]),
   ],
   providers: [
+    CommunityBalancingDefaultsService,
     CommunityEventRuleService,
     CommunityEventService,
     CommunityProgressionDefinitionService,
@@ -42,6 +44,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityService,
   ],
   exports: [
+    CommunityBalancingDefaultsService,
     CommunityEventRuleService,
     CommunityEventService,
     CommunityProgressionDefinitionService,

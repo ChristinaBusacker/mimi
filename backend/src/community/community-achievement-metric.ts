@@ -10,6 +10,9 @@ const COMMUNITY_ACHIEVEMENT_METRIC_REGISTRY = {
   'total-xp': {
     requiresEventType: false,
   },
+  'level-reached': {
+    requiresEventType: false,
+  },
   'event-count': {
     requiresEventType: true,
   },

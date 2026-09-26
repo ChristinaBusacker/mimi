@@ -11,6 +11,10 @@
                 "watchAssets": true
             },
             {
+                "include": "community/config/**/*.json",
+                "watchAssets": true
+            },
+            {
                 "include": "mail/templates/**/*.mjml",
                 "watchAssets": true
             }

@@ -1,0 +1,364 @@
+{
+  "localizations": [
+    {
+      "key": "admin.community.simple.title",
+      "de": "Community-Belohnungen",
+      "en": "Community rewards"
+    },
+    {
+      "key": "admin.community.simple.intro",
+      "de": "Hier legst du fest, wofür Community-Mitglieder XP bekommen, welche Level es gibt und welche besonderen Auszeichnungen sie freischalten können.",
+      "en": "Choose how community members earn XP, which levels exist and which special achievements they can unlock."
+    },
+    {
+      "key": "admin.community.simple.navigation",
+      "de": "Bereiche der Community-Belohnungen",
+      "en": "Community reward sections"
+    },
+    {
+      "key": "admin.community.simple.activity.title",
+      "de": "XP & Aktivität",
+      "en": "XP & activity"
+    },
+    {
+      "key": "admin.community.simple.activity.short",
+      "de": "Wofür es wie viele XP gibt",
+      "en": "What earns XP and how much"
+    },
+    {
+      "key": "admin.community.simple.activity.intro",
+      "de": "Die wichtigsten Werte stehen direkt an der Regel. Selten benötigte Grenzen findest du unter „Feineinstellungen“.",
+      "en": "The important values are shown directly. Less common limits are available under “Fine tuning”."
+    },
+    {
+      "key": "admin.community.simple.activity.xp",
+      "de": "XP pro gewerteter Aktivität",
+      "en": "XP per counted activity"
+    },
+    {
+      "key": "admin.community.simple.activity.dailyLimit",
+      "de": "Maximal gewertet pro Tag",
+      "en": "Maximum counted per day"
+    },
+    {
+      "key": "admin.community.simple.activity.contextLimit",
+      "de": "Maximal pro Stream / Event",
+      "en": "Maximum per stream / event"
+    },
+    {
+      "key": "admin.community.simple.activity.contextLimitHelp",
+      "de": "Nur sinnvoll, wenn die Aktivität zu einem bestimmten Stream oder Event gehört.",
+      "en": "Only relevant when the activity belongs to a specific stream or event."
+    },
+    {
+      "key": "admin.community.simple.activity.cooldown",
+      "de": "Pause zwischen zwei XP-Wertungen (Sekunden)",
+      "en": "Pause between XP rewards (seconds)"
+    },
+    {
+      "key": "admin.community.simple.activity.cooldownHelp",
+      "de": "Verhindert, dass sehr schnelle Wiederholungen direkt hintereinander XP geben.",
+      "en": "Prevents very rapid repeated activity from awarding XP back to back."
+    },
+    {
+      "key": "admin.community.simple.activity.minimumLength",
+      "de": "Mindestlänge eines Beitrags",
+      "en": "Minimum post length"
+    },
+    {
+      "key": "admin.community.simple.activity.minimumLengthHelp",
+      "de": "Kürzere Nachrichten dürfen weiterhin geschrieben werden, zählen aber nicht als XP-Aktivität.",
+      "en": "Shorter messages are still allowed, but do not count as XP activity."
+    },
+    {
+      "key": "admin.community.simple.levels.title",
+      "de": "Level",
+      "en": "Levels"
+    },
+    {
+      "key": "admin.community.simple.levels.short",
+      "de": "Fortschrittsstufen der Community",
+      "en": "Community progression stages"
+    },
+    {
+      "key": "admin.community.simple.levels.intro",
+      "de": "Ein Level wird erreicht, sobald die nötige Gesamtmenge an XP vorhanden ist. Discord-Verknüpfungen werden später separat ausgewählt und müssen hier nicht gepflegt werden.",
+      "en": "A level is reached once the required total XP has been earned. Discord links will be selected separately later and do not need to be managed here."
+    },
+    {
+      "key": "admin.community.simple.levels.add",
+      "de": "Level hinzufügen",
+      "en": "Add level"
+    },
+    {
+      "key": "admin.community.simple.levels.unnamed",
+      "de": "Neues Level",
+      "en": "New level"
+    },
+    {
+      "key": "admin.community.simple.levels.name",
+      "de": "Name",
+      "en": "Name"
+    },
+    {
+      "key": "admin.community.simple.levels.requiredXp",
+      "de": "Erreichbar ab Gesamt-XP",
+      "en": "Reached from total XP"
+    },
+    {
+      "key": "admin.community.simple.levels.color",
+      "de": "Farbe",
+      "en": "Color"
+    },
+    {
+      "key": "admin.community.simple.titles.title",
+      "de": "Titel",
+      "en": "Titles"
+    },
+    {
+      "key": "admin.community.simple.titles.short",
+      "de": "Besondere Namen zum Freischalten",
+      "en": "Special names to unlock"
+    },
+    {
+      "key": "admin.community.simple.titles.intro",
+      "de": "Titel können durch Achievements freigeschaltet und später im Community-Profil angezeigt werden. Technische Schlüssel werden automatisch erzeugt.",
+      "en": "Titles can be unlocked by achievements and shown on the community profile. Technical keys are created automatically."
+    },
+    {
+      "key": "admin.community.simple.titles.add",
+      "de": "Titel hinzufügen",
+      "en": "Add title"
+    },
+    {
+      "key": "admin.community.simple.titles.new",
+      "de": "Neuer Titel",
+      "en": "New title"
+    },
+    {
+      "key": "admin.community.simple.titles.name",
+      "de": "Titelname",
+      "en": "Title name"
+    },
+    {
+      "key": "admin.community.simple.titles.emptyTitle",
+      "de": "Noch keine Titel angelegt",
+      "en": "No titles yet"
+    },
+    {
+      "key": "admin.community.simple.titles.emptyText",
+      "de": "Das ist kein Fehler. Lege erst dann Titel an, wenn ein Achievement wirklich einen besonderen Namen freischalten soll.",
+      "en": "That is not an error. Add titles when an achievement should actually unlock a special name."
+    },
+    {
+      "key": "admin.community.simple.achievements.title",
+      "de": "Achievements",
+      "en": "Achievements"
+    },
+    {
+      "key": "admin.community.simple.achievements.short",
+      "de": "Meilensteine und besondere Auszeichnungen",
+      "en": "Milestones and special awards"
+    },
+    {
+      "key": "admin.community.simple.achievements.intro",
+      "de": "Achievements erzählen die Geschichte der Community. Lege fest, was erreicht werden muss und welche Belohnung dafür vergeben wird.",
+      "en": "Achievements tell the community story. Define what must be reached and which reward is granted."
+    },
+    {
+      "key": "admin.community.simple.achievements.add",
+      "de": "Achievement hinzufügen",
+      "en": "Add achievement"
+    },
+    {
+      "key": "admin.community.simple.achievements.new",
+      "de": "Neues Achievement",
+      "en": "New achievement"
+    },
+    {
+      "key": "admin.community.simple.achievements.emptyTitle",
+      "de": "Noch keine Achievements angelegt",
+      "en": "No achievements yet"
+    },
+    {
+      "key": "admin.community.simple.achievements.emptyText",
+      "de": "Das Grundsystem funktioniert trotzdem. Achievements kannst du hinzufügen, sobald die gewünschten Meilensteine feststehen.",
+      "en": "The core system still works. Add achievements once the desired milestones are clear."
+    },
+    {
+      "key": "admin.community.simple.achievements.name",
+      "de": "Name",
+      "en": "Name"
+    },
+    {
+      "key": "admin.community.simple.achievements.xpReward",
+      "de": "Zusätzliche XP beim Freischalten",
+      "en": "Extra XP when unlocked"
+    },
+    {
+      "key": "admin.community.simple.achievements.unlockTitle",
+      "de": "Zusätzlich freigeschalteter Titel",
+      "en": "Additional unlocked title"
+    },
+    {
+      "key": "admin.community.simple.achievements.noTitle",
+      "de": "Kein Titel",
+      "en": "No title"
+    },
+    {
+      "key": "admin.community.simple.achievements.conditionTitle",
+      "de": "Was muss erreicht werden?",
+      "en": "What must be achieved?"
+    },
+    {
+      "key": "admin.community.simple.achievements.conditionIntro",
+      "de": "Eine Bedingung reicht für die meisten Achievements. Weitere Bedingungen sind nur nötig, wenn mehrere Dinge zusammengehören.",
+      "en": "One condition is enough for most achievements. Add more only when several things belong together."
+    },
+    {
+      "key": "admin.community.simple.achievements.addCondition",
+      "de": "Weitere Bedingung",
+      "en": "Add condition"
+    },
+    {
+      "key": "admin.community.simple.achievements.conditionMode",
+      "de": "Bei mehreren Bedingungen",
+      "en": "When there are several conditions"
+    },
+    {
+      "key": "admin.community.simple.achievements.what",
+      "de": "Gemessen wird",
+      "en": "Measure"
+    },
+    {
+      "key": "admin.community.simple.achievements.activity",
+      "de": "Welche Aktivität?",
+      "en": "Which activity?"
+    },
+    {
+      "key": "admin.community.simple.achievements.minimum",
+      "de": "Mindestens",
+      "en": "At least"
+    },
+    {
+      "key": "admin.community.simple.description",
+      "de": "Beschreibung",
+      "en": "Description"
+    },
+    {
+      "key": "admin.community.simple.languageOptions",
+      "de": "Englische Texte",
+      "en": "English texts"
+    },
+    {
+      "key": "admin.community.simple.englishName",
+      "de": "Englischer Name",
+      "en": "English name"
+    },
+    {
+      "key": "admin.community.simple.englishDescription",
+      "de": "Englische Beschreibung",
+      "en": "English description"
+    },
+    {
+      "key": "admin.community.simple.advanced",
+      "de": "Feineinstellungen",
+      "en": "Fine tuning"
+    },
+    {
+      "key": "admin.community.simple.restoreDefault",
+      "de": "Standard wiederherstellen",
+      "en": "Restore default"
+    },
+    {
+      "key": "admin.community.simple.default",
+      "de": "Standard",
+      "en": "Default"
+    },
+    {
+      "key": "admin.community.simple.perDay",
+      "de": "pro Tag",
+      "en": "per day"
+    },
+    {
+      "key": "admin.community.simple.unlimited",
+      "de": "unbegrenzt",
+      "en": "unlimited"
+    },
+    {
+      "key": "admin.community.simple.none",
+      "de": "keine",
+      "en": "none"
+    },
+    {
+      "key": "admin.community.simple.remove",
+      "de": "Entfernen",
+      "en": "Remove"
+    },
+    {
+      "key": "admin.community.defaultRestored",
+      "de": "Der Standardwert wurde wiederhergestellt.",
+      "en": "The default value has been restored."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.discord.message.activity",
+      "de": "Eine ausreichend lange Nachricht auf Mimis Discord-Server.",
+      "en": "A sufficiently long message on Mimi's Discord server."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.discord.membership.day",
+      "de": "Ein weiterer Tag als Mitglied von Mimis Discord-Community.",
+      "en": "Another day as a member of Mimi's Discord community."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.discord.event.attended",
+      "de": "Teilnahme an einem bestätigten Community-Event auf Discord.",
+      "en": "Participation in a confirmed Discord community event."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.twitch.chat.activity",
+      "de": "Eine ausreichend lange Nachricht im Twitch-Chat während eines Streams.",
+      "en": "A sufficiently long Twitch chat message during a stream."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.twitch.subscription.started",
+      "de": "Ein Twitch-Abo beginnt. Die XP sind bewusst eher klein, damit Geld nicht zum Hauptweg für Level wird.",
+      "en": "A Twitch subscription starts. XP are deliberately modest so spending is not the main route to levels."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.twitch.subscription.ended",
+      "de": "Ein Twitch-Abo endet. Standardmäßig gibt es dafür keine XP.",
+      "en": "A Twitch subscription ends. By default this awards no XP."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.twitch.subscription.resub",
+      "de": "Ein bestehendes Twitch-Abo wird verlängert.",
+      "en": "An existing Twitch subscription is renewed."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.twitch.subscription.month",
+      "de": "Ein weiterer bestätigter Monat eines Twitch-Abos.",
+      "en": "Another confirmed month of a Twitch subscription."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.twitch.watch-streak",
+      "de": "Twitch meldet eine zusammenhängende Watch-Streak.",
+      "en": "Twitch reports a continuous watch streak."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.twitch.stream.check-in",
+      "de": "Ein bestätigter Check-in für einen einzelnen Stream.",
+      "en": "A confirmed check-in for one stream."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.blog.comment.created",
+      "de": "Ein ausreichend ausführlicher Kommentar im Blog.",
+      "en": "A sufficiently substantial blog comment."
+    },
+    {
+      "key": "admin.community.eventTypeHelp.blog.comment.featured",
+      "de": "Ein Kommentar wird von Mimi oder der Redaktion besonders hervorgehoben.",
+      "en": "A comment is specially featured by Mimi or the editorial team."
+    }
+  ]
+}

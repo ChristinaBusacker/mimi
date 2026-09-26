@@ -1,4 +1,7 @@
 import type {
+  CommunityBalancingDefaults,
+} from '@shared/community/community-balancing';
+import type {
   CommunityEventRule,
   CommunityEventType,
 } from '@shared/community/community-event';
@@ -14,7 +17,7 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
+  Post,
   Put,
   Req,
   UseGuards,
@@ -33,13 +36,14 @@ import {
   achievementMetricRequiresEventType,
   getCommunityAchievementMetrics,
 } from './community-achievement-metric';
+import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { supportsContentLength } from './community-event-type';
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
 import {
   SaveCommunityAchievementDto,
   SaveCommunityEventRuleDto,
-  SaveCommunityLevelDto,
+  SaveCommunityLevelsDto,
   SaveCommunityTitleDto,
 } from './dto/community-admin.dto';
 
@@ -66,7 +70,18 @@ export class CommunityAdminController {
       CommunityEventRuleService,
     private readonly definitions:
       CommunityProgressionDefinitionService,
+    private readonly defaults:
+      CommunityBalancingDefaultsService,
   ) {}
+
+  @Get('defaults')
+  @ApiOperation({
+    summary:
+      'Get versioned community balancing defaults',
+  })
+  getDefaults(): CommunityBalancingDefaults {
+    return this.defaults.getAdminDefaults();
+  }
 
   @Get('event-types')
   @ApiOperation({
@@ -116,6 +131,23 @@ export class CommunityAdminController {
     );
   }
 
+  @Post('event-rules/:eventType/restore-default')
+  @ApiOperation({
+    summary:
+      'Restore the versioned default for one XP rule',
+  })
+  restoreEventRule(
+    @Param('eventType')
+    eventType: string,
+    @Req()
+    request: AuthenticatedRequest,
+  ): Promise<CommunityEventRule> {
+    return this.defaults.restoreEventRule(
+      eventType,
+      request.user.uuid,
+    );
+  }
+
   @Get('achievement-metrics')
   @ApiOperation({
     summary:
@@ -143,25 +175,33 @@ export class CommunityAdminController {
     return this.definitions.getLevels();
   }
 
-  @Put('levels/:level')
+  @Put('levels')
   @ApiOperation({
     summary:
-      'Create or update a community level definition',
+      'Replace the consecutive community level XP thresholds',
   })
-  saveLevel(
-    @Param(
-      'level',
-      ParseIntPipe,
-    )
-    level: number,
+  saveLevels(
     @Body()
-    dto: SaveCommunityLevelDto,
+    dto: SaveCommunityLevelsDto,
     @Req()
     request: AuthenticatedRequest,
-  ): Promise<CommunityLevelDefinition> {
-    return this.definitions.saveLevel(
-      level,
-      dto,
+  ): Promise<CommunityLevelDefinition[]> {
+    return this.definitions.replaceLevels(
+      dto.requiredXp,
+      request.user.uuid,
+    );
+  }
+
+  @Post('levels/restore-default')
+  @ApiOperation({
+    summary:
+      'Restore the versioned default level thresholds',
+  })
+  restoreLevels(
+    @Req()
+    request: AuthenticatedRequest,
+  ): Promise<CommunityLevelDefinition[]> {
+    return this.defaults.restoreLevels(
       request.user.uuid,
     );
   }

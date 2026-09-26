@@ -80,6 +80,13 @@ export class CommunityAchievementEntry {
 
   @Column({
     type: 'varchar',
+    length: 7,
+    nullable: true,
+  })
+  unlockedProfileColor!: string | null;
+
+  @Column({
+    type: 'varchar',
     length: 32,
     nullable: true,
   })

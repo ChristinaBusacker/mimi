@@ -520,6 +520,16 @@ export class CommunityProgressionService {
       case 'total-xp':
         return totalXp;
 
+      case 'level-reached': {
+        const level =
+          await this.findCurrentLevel(
+            manager,
+            totalXp,
+          );
+
+        return level?.level ?? 0;
+      }
+
       case 'event-count':
         if (!condition.eventType) {
           return 0;
@@ -781,7 +791,6 @@ export class CommunityProgressionService {
       )
       .findOne({
         where: {
-          enabled: true,
           requiredXp:
             LessThanOrEqual(totalXp),
         },
@@ -797,19 +806,8 @@ export class CommunityProgressionService {
   ): CommunityLevelDefinition {
     return {
       level: level.level,
-      enabled: level.enabled,
       requiredXp:
         level.requiredXp,
-      name: {
-        de: level.nameDe,
-        en: level.nameEn,
-      },
-      displayColor:
-        level.displayColor,
-      discordRoleId:
-        level.discordRoleId,
-      badgeAssetId:
-        level.badgeAssetId,
       updatedByUserId:
         level.updatedByUserId,
       createdAt:

@@ -10,6 +10,7 @@
 
   h1,
   h2,
+  h3,
   p {
     margin: 0;
   }
@@ -62,12 +63,9 @@
   background: var(--color-menu-surface);
 }
 
-.admin-community__section {
-  display: grid;
-  gap: var(--spacing-md);
-}
-
-.admin-community__cards {
+.admin-community__section,
+.admin-community__cards,
+.admin-community__editor-section {
   display: grid;
   gap: var(--spacing-md);
 }
@@ -95,16 +93,6 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-sm);
-
-  > div {
-    display: grid;
-    gap: 2px;
-  }
-
-  code {
-    opacity: 0.65;
-    font-size: 0.75rem;
-  }
 }
 
 .admin-community__toggle {
@@ -144,27 +132,113 @@
     line-height: 1.4;
     resize: vertical;
   }
-
-  input[readonly] {
-    opacity: 0.7;
-  }
-
-  input:disabled {
-    opacity: 0.45;
-  }
 }
 
-.admin-community__grid--rules {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.admin-community__grid--rule-main {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .admin-community__wide {
   grid-column: 1 / -1;
 }
 
+.admin-community__details {
+  border-top: 1px solid rgb(175 104 167 / 45%);
+  padding-top: var(--spacing-sm);
+
+  summary {
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  &[open] summary {
+    margin-bottom: var(--spacing-sm);
+  }
+}
+
+.admin-community__card-actions,
+.admin-community__level-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.admin-community__spacer {
+  flex: 1 1 auto;
+}
+
+.admin-community__text-action {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--color-surface-translucent);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
+.admin-community__level-table-wrap {
+  @include framed(var(--control-border-width));
+
+  overflow: auto;
+  max-width: 620px;
+  background: var(--color-menu-surface);
+}
+
+.admin-community__level-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-bottom: 1px solid rgb(175 104 167 / 45%);
+    text-align: left;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  thead th {
+    background: var(--color-surface-translucent);
+  }
+
+  tbody th {
+    width: 120px;
+  }
+
+  input {
+    width: 100%;
+    max-width: 220px;
+    padding: var(--spacing-xs);
+    border: 1px solid var(--color-secondary);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  input[readonly] {
+    opacity: 0.65;
+  }
+}
+
 .admin-community__achievement-layout {
   display: grid;
-  grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
+  grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
   gap: var(--spacing-md);
   align-items: start;
 }
@@ -194,9 +268,8 @@
     font: inherit;
     text-align: left;
 
-    code {
-      opacity: 0.6;
-      font-size: 0.72rem;
+    small {
+      opacity: 0.65;
     }
 
     &.active,
@@ -212,17 +285,72 @@
   min-width: 0;
 }
 
-.admin-community__conditions {
-  display: grid;
-  gap: var(--spacing-sm);
+.admin-community__editor-section {
   padding-top: var(--spacing-sm);
-  border-top: 1px solid var(--color-secondary);
+  border-top: 1px solid rgb(175 104 167 / 45%);
 
+  h3 {
+    font-size: 1rem;
+  }
+}
+
+.admin-community__option-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+
+  > span {
+    display: grid;
+    gap: 2px;
+  }
+
+  small {
+    opacity: 0.7;
+    font-weight: 400;
+  }
+}
+
+.admin-community__nested-fields {
+  margin-left: var(--spacing-md);
+}
+
+.admin-community__color-field {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-left: var(--spacing-md);
+  font-size: 0.84rem;
+  font-weight: 700;
+
+  input[type='color'] {
+    width: 52px;
+    height: 36px;
+    padding: 2px;
+    border: 1px solid var(--color-secondary);
+    background: var(--color-surface);
+  }
+}
+
+.admin-community__conditions {
   > header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--spacing-sm);
+
+    > div {
+      display: grid;
+      gap: 3px;
+    }
+
+    p {
+      opacity: 0.72;
+      font-size: 0.85rem;
+    }
 
     button {
       padding: 5px 10px;
@@ -236,9 +364,25 @@
   }
 }
 
+.admin-community__condition-mode {
+  display: grid;
+  gap: 4px;
+  max-width: 420px;
+  font-size: 0.84rem;
+  font-weight: 700;
+
+  select {
+    padding: var(--spacing-xs);
+    border: 1px solid var(--color-secondary);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+}
+
 .admin-community__condition {
   display: grid;
-  grid-template-columns: minmax(180px, 1.2fr) minmax(180px, 1.2fr) minmax(140px, 0.8fr) auto;
+  grid-template-columns: minmax(190px, 1.2fr) minmax(190px, 1.2fr) minmax(140px, 0.7fr) auto;
   gap: var(--spacing-xs);
   align-items: end;
   padding: var(--spacing-sm);
@@ -265,17 +409,6 @@
   }
 }
 
-.admin-community__threshold {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-
-  > span {
-    white-space: nowrap;
-    opacity: 0.75;
-  }
-}
-
 .admin-community__remove {
   padding: var(--spacing-xs);
   border: 1px solid var(--color-secondary);
@@ -294,19 +427,25 @@
 @include compact-layout {
   .admin-community__cards--rules,
   .admin-community__grid,
-  .admin-community__grid--rules,
+  .admin-community__grid--rule-main,
   .admin-community__achievement-layout,
   .admin-community__condition {
     grid-template-columns: 1fr;
   }
 
   .admin-community__header,
-  .admin-community__section-header {
+  .admin-community__section-header,
+  .admin-community__conditions > header {
     flex-direction: column;
   }
 
   .admin-community__achievement-list {
     max-height: 280px;
     overflow: auto;
+  }
+
+  .admin-community__nested-fields,
+  .admin-community__color-field {
+    margin-left: 0;
   }
 }

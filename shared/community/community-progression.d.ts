@@ -8,6 +8,7 @@ export type CommunityAchievementConditionMode =
 
 export type CommunityAchievementMetric =
   | 'total-xp'
+  | 'level-reached'
   | 'event-count'
   | 'distinct-event-days'
   | 'discord-membership-current-days'
@@ -25,24 +26,14 @@ export interface CommunityLocalizedText {
 
 export interface CommunityLevelDefinition {
   level: number;
-  enabled: boolean;
   requiredXp: number;
-  name: CommunityLocalizedText;
-  displayColor: string | null;
-  discordRoleId: string | null;
-  badgeAssetId: string | null;
   updatedByUserId: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface SaveCommunityLevelDefinition {
-  enabled: boolean;
   requiredXp: number;
-  name: CommunityLocalizedText;
-  displayColor: string | null;
-  discordRoleId: string | null;
-  badgeAssetId: string | null;
 }
 
 export interface CommunityTitleDefinition {
@@ -91,6 +82,7 @@ export interface CommunityAchievementDefinition {
     CommunityAchievementCondition[];
   xpReward: number;
   unlockedTitleId: string | null;
+  unlockedProfileColor: string | null;
   discordRoleId: string | null;
   sortOrder: number;
   updatedByUserId: string | null;
@@ -109,6 +101,7 @@ export interface SaveCommunityAchievementDefinition {
     SaveCommunityAchievementCondition[];
   xpReward: number;
   unlockedTitleId: string | null;
+  unlockedProfileColor: string | null;
   discordRoleId: string | null;
   sortOrder: number;
 }

@@ -71,7 +71,6 @@ export class CommunityProgressionDefinitionService {
     const levels =
       await this.levels.find({
         order: {
-          requiredXp: 'ASC',
           level: 'ASC',
         },
       });
@@ -94,21 +93,6 @@ export class CommunityProgressionDefinitionService {
       input.requiredXp,
       'requiredXp',
     );
-    this.assertLocalizedName(
-      input.name.de,
-      'name.de',
-    );
-    this.assertOptionalLength(
-      input.name.en,
-      'name.en',
-      160,
-    );
-    this.assertOptionalColor(
-      input.displayColor,
-    );
-    this.assertOptionalDiscordRoleId(
-      input.discordRoleId,
-    );
 
     const existing =
       await this.levels.findOneBy({
@@ -119,53 +103,104 @@ export class CommunityProgressionDefinitionService {
         existing
           ? {
               ...existing,
-              enabled: input.enabled,
+              enabled: true,
               requiredXp:
                 input.requiredXp,
-              nameDe:
-                input.name.de.trim(),
-              nameEn:
-                this.normalizeOptional(
-                  input.name.en,
-                ),
-              displayColor:
-                this.normalizeColor(
-                  input.displayColor,
-                ),
-              discordRoleId:
-                this.normalizeOptional(
-                  input.discordRoleId,
-                ),
-              badgeAssetId:
-                input.badgeAssetId,
               updatedByUserId,
             }
           : this.levels.create({
               level,
-              enabled: input.enabled,
+              enabled: true,
               requiredXp:
                 input.requiredXp,
-              nameDe:
-                input.name.de.trim(),
-              nameEn:
-                this.normalizeOptional(
-                  input.name.en,
-                ),
-              displayColor:
-                this.normalizeColor(
-                  input.displayColor,
-                ),
-              discordRoleId:
-                this.normalizeOptional(
-                  input.discordRoleId,
-                ),
-              badgeAssetId:
-                input.badgeAssetId,
+              nameDe: `Level ${level}`,
+              nameEn: null,
+              displayColor: null,
+              discordRoleId: null,
+              badgeAssetId: null,
               updatedByUserId,
             }),
       );
 
     return this.mapLevel(saved);
+  }
+
+  async replaceLevels(
+    requiredXp: number[],
+    updatedByUserId: string | null,
+  ): Promise<CommunityLevelDefinition[]> {
+    this.validateLevelThresholds(requiredXp);
+
+    await this.dataSource.transaction(
+      async (manager) => {
+        await manager.query(
+          'DELETE FROM "community_levels"',
+        );
+
+        const repository =
+          manager.getRepository(
+            CommunityLevelEntry,
+          );
+
+        await repository.save(
+          requiredXp.map(
+            (threshold, index) =>
+              repository.create({
+                level: index + 1,
+                enabled: true,
+                requiredXp: threshold,
+                nameDe:
+                  `Level ${index + 1}`,
+                nameEn: null,
+                displayColor: null,
+                discordRoleId: null,
+                badgeAssetId: null,
+                updatedByUserId,
+              }),
+          ),
+        );
+      },
+    );
+
+    return this.getLevels();
+  }
+
+  private validateLevelThresholds(
+    requiredXp: number[],
+  ): void {
+    if (requiredXp.length === 0) {
+      throw new BadRequestException(
+        'At least one community level is required.',
+      );
+    }
+
+    if (requiredXp[0] !== 0) {
+      throw new BadRequestException(
+        'Level 1 must start at 0 XP.',
+      );
+    }
+
+    for (
+      let index = 0;
+      index < requiredXp.length;
+      index += 1
+    ) {
+      const threshold = requiredXp[index];
+
+      this.assertNonNegativeInteger(
+        threshold,
+        `requiredXp[${index}]`,
+      );
+
+      if (
+        index > 0 &&
+        threshold <= requiredXp[index - 1]
+      ) {
+        throw new BadRequestException(
+          'Level XP thresholds must increase strictly.',
+        );
+      }
+    }
   }
 
   async getTitles():
@@ -353,6 +388,10 @@ export class CommunityProgressionDefinitionService {
                     input.xpReward,
                   unlockedTitleUuid:
                     input.unlockedTitleId,
+                  unlockedProfileColor:
+                    this.normalizeColor(
+                      input.unlockedProfileColor,
+                    ),
                   discordRoleId:
                     this.normalizeOptional(
                       input.discordRoleId,
@@ -387,6 +426,10 @@ export class CommunityProgressionDefinitionService {
                       input.xpReward,
                     unlockedTitleUuid:
                       input.unlockedTitleId,
+                    unlockedProfileColor:
+                      this.normalizeColor(
+                        input.unlockedProfileColor,
+                      ),
                     discordRoleId:
                       this.normalizeOptional(
                         input.discordRoleId,
@@ -496,6 +539,9 @@ export class CommunityProgressionDefinitionService {
       );
     }
 
+    this.assertOptionalColor(
+      input.unlockedProfileColor,
+    );
     this.assertOptionalDiscordRoleId(
       input.discordRoleId,
     );
@@ -562,19 +608,8 @@ export class CommunityProgressionDefinitionService {
   ): CommunityLevelDefinition {
     return {
       level: level.level,
-      enabled: level.enabled,
       requiredXp:
         level.requiredXp,
-      name: {
-        de: level.nameDe,
-        en: level.nameEn,
-      },
-      displayColor:
-        level.displayColor,
-      discordRoleId:
-        level.discordRoleId,
-      badgeAssetId:
-        level.badgeAssetId,
       updatedByUserId:
         level.updatedByUserId,
       createdAt:
@@ -651,6 +686,8 @@ export class CommunityProgressionDefinitionService {
         achievement.xpReward,
       unlockedTitleId:
         achievement.unlockedTitleUuid,
+      unlockedProfileColor:
+        achievement.unlockedProfileColor,
       discordRoleId:
         achievement.discordRoleId,
       sortOrder:

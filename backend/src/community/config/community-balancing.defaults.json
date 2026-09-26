@@ -1,0 +1,304 @@
+{
+  "eventRules": [
+    {
+      "eventType": "discord.message.activity",
+      "enabled": true,
+      "xpAmount": 2,
+      "dailyRewardLimit": 10,
+      "contextRewardLimit": null,
+      "cooldownSeconds": 60,
+      "minimumContentLength": 20
+    },
+    {
+      "eventType": "discord.membership.day",
+      "enabled": false,
+      "xpAmount": 0,
+      "dailyRewardLimit": 1,
+      "contextRewardLimit": null,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    },
+    {
+      "eventType": "discord.event.attended",
+      "enabled": true,
+      "xpAmount": 25,
+      "dailyRewardLimit": null,
+      "contextRewardLimit": 1,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    },
+    {
+      "eventType": "twitch.chat.activity",
+      "enabled": true,
+      "xpAmount": 2,
+      "dailyRewardLimit": 10,
+      "contextRewardLimit": null,
+      "cooldownSeconds": 60,
+      "minimumContentLength": 15
+    },
+    {
+      "eventType": "twitch.subscription.started",
+      "enabled": true,
+      "xpAmount": 10,
+      "dailyRewardLimit": null,
+      "contextRewardLimit": 1,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    },
+    {
+      "eventType": "twitch.subscription.ended",
+      "enabled": false,
+      "xpAmount": 0,
+      "dailyRewardLimit": null,
+      "contextRewardLimit": null,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    },
+    {
+      "eventType": "twitch.subscription.resub",
+      "enabled": true,
+      "xpAmount": 10,
+      "dailyRewardLimit": null,
+      "contextRewardLimit": 1,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    },
+    {
+      "eventType": "twitch.subscription.month",
+      "enabled": true,
+      "xpAmount": 5,
+      "dailyRewardLimit": null,
+      "contextRewardLimit": 1,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    },
+    {
+      "eventType": "twitch.watch-streak",
+      "enabled": true,
+      "xpAmount": 5,
+      "dailyRewardLimit": 1,
+      "contextRewardLimit": 1,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    },
+    {
+      "eventType": "twitch.stream.check-in",
+      "enabled": true,
+      "xpAmount": 10,
+      "dailyRewardLimit": null,
+      "contextRewardLimit": 1,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    },
+    {
+      "eventType": "blog.comment.created",
+      "enabled": true,
+      "xpAmount": 5,
+      "dailyRewardLimit": 3,
+      "contextRewardLimit": null,
+      "cooldownSeconds": null,
+      "minimumContentLength": 40
+    },
+    {
+      "eventType": "blog.comment.featured",
+      "enabled": true,
+      "xpAmount": 20,
+      "dailyRewardLimit": null,
+      "contextRewardLimit": 1,
+      "cooldownSeconds": null,
+      "minimumContentLength": null
+    }
+  ],
+  "levels": [
+    0,
+    100,
+    220,
+    360,
+    520,
+    700,
+    900,
+    1120,
+    1360,
+    1620,
+    1900,
+    2200,
+    2520,
+    2860,
+    3220,
+    3600,
+    4000,
+    4420,
+    4860,
+    5320,
+    5800,
+    6300,
+    6820,
+    7360,
+    7920,
+    8500,
+    9100,
+    9720,
+    10360,
+    11020
+  ],
+  "titles": [
+    {
+      "key": "stammgast",
+      "enabled": true,
+      "name": {
+        "de": "Stammgast",
+        "en": "Regular"
+      },
+      "description": {
+        "de": "Für Mitglieder, die Level 5 erreicht haben.",
+        "en": "For members who reached level 5."
+      }
+    },
+    {
+      "key": "insider",
+      "enabled": true,
+      "name": {
+        "de": "Insider",
+        "en": "Insider"
+      },
+      "description": {
+        "de": "Für Mitglieder, die Level 10 erreicht haben.",
+        "en": "For members who reached level 10."
+      }
+    },
+    {
+      "key": "veteran",
+      "enabled": true,
+      "name": {
+        "de": "Veteran",
+        "en": "Veteran"
+      },
+      "description": {
+        "de": "Für Mitglieder, die Level 20 erreicht haben.",
+        "en": "For members who reached level 20."
+      }
+    },
+    {
+      "key": "urgestein",
+      "enabled": true,
+      "name": {
+        "de": "Urgestein",
+        "en": "Old Hand"
+      },
+      "description": {
+        "de": "Für Mitglieder, die Level 30 erreicht haben.",
+        "en": "For members who reached level 30."
+      }
+    }
+  ],
+  "achievements": [
+    {
+      "key": "level-5-reached",
+      "enabled": true,
+      "name": {
+        "de": "Level 5 erreicht",
+        "en": "Reached level 5"
+      },
+      "description": {
+        "de": "Du hast Community-Level 5 erreicht.",
+        "en": "You reached community level 5."
+      },
+      "badgeAssetId": null,
+      "conditionMode": "all",
+      "conditions": [
+        {
+          "metric": "level-reached",
+          "operator": "gte",
+          "threshold": 5,
+          "eventType": null
+        }
+      ],
+      "xpReward": 25,
+      "unlockedTitleKey": "stammgast",
+      "unlockedProfileColor": "#fcaac1",
+      "discordRoleId": null,
+      "sortOrder": 50
+    },
+    {
+      "key": "level-10-reached",
+      "enabled": true,
+      "name": {
+        "de": "Level 10 erreicht",
+        "en": "Reached level 10"
+      },
+      "description": {
+        "de": "Du hast Community-Level 10 erreicht.",
+        "en": "You reached community level 10."
+      },
+      "badgeAssetId": null,
+      "conditionMode": "all",
+      "conditions": [
+        {
+          "metric": "level-reached",
+          "operator": "gte",
+          "threshold": 10,
+          "eventType": null
+        }
+      ],
+      "xpReward": 50,
+      "unlockedTitleKey": "insider",
+      "unlockedProfileColor": "#a78cff",
+      "discordRoleId": null,
+      "sortOrder": 100
+    },
+    {
+      "key": "level-20-reached",
+      "enabled": true,
+      "name": {
+        "de": "Level 20 erreicht",
+        "en": "Reached level 20"
+      },
+      "description": {
+        "de": "Du hast Community-Level 20 erreicht.",
+        "en": "You reached community level 20."
+      },
+      "badgeAssetId": null,
+      "conditionMode": "all",
+      "conditions": [
+        {
+          "metric": "level-reached",
+          "operator": "gte",
+          "threshold": 20,
+          "eventType": null
+        }
+      ],
+      "xpReward": 100,
+      "unlockedTitleKey": "veteran",
+      "unlockedProfileColor": "#d69acb",
+      "discordRoleId": null,
+      "sortOrder": 200
+    },
+    {
+      "key": "level-30-reached",
+      "enabled": true,
+      "name": {
+        "de": "Level 30 erreicht",
+        "en": "Reached level 30"
+      },
+      "description": {
+        "de": "Du hast Community-Level 30 erreicht.",
+        "en": "You reached community level 30."
+      },
+      "badgeAssetId": null,
+      "conditionMode": "all",
+      "conditions": [
+        {
+          "metric": "level-reached",
+          "operator": "gte",
+          "threshold": 30,
+          "eventType": null
+        }
+      ],
+      "xpReward": 200,
+      "unlockedTitleKey": "urgestein",
+      "unlockedProfileColor": "#ff8fb8",
+      "discordRoleId": null,
+      "sortOrder": 300
+    }
+  ]
+}

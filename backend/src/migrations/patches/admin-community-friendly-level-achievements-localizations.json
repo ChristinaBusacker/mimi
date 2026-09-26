@@ -1,0 +1,214 @@
+{
+  "localizations": [
+    {
+      "key": "admin.community.title",
+      "de": "Community",
+      "en": "Community"
+    },
+    {
+      "key": "admin.community.intro",
+      "de": "Hier legst du fest, wofür es XP gibt, wann ein neues Level erreicht wird und welche Auszeichnungen Mitglieder freischalten können.",
+      "en": "Set how XP is earned, when a new level is reached, and which achievements members can unlock."
+    },
+    {
+      "key": "admin.community.defaultRestored",
+      "de": "Standard wiederhergestellt.",
+      "en": "Default restored."
+    },
+    {
+      "key": "admin.community.restoreDefault",
+      "de": "Standard wiederherstellen",
+      "en": "Restore default"
+    },
+    {
+      "key": "admin.community.eventRules.friendlyIntro",
+      "de": "Lege fest, welche Aktivitäten XP geben und wie oft sie zählen. Seltene Einstellungen findest du unter Feineinstellungen.",
+      "en": "Choose which activities grant XP and how often they count. Less common options are under advanced settings."
+    },
+    {
+      "key": "admin.community.eventRules.xpPerActivity",
+      "de": "XP pro Aktivität",
+      "en": "XP per activity"
+    },
+    {
+      "key": "admin.community.eventRules.dailyLimitShort",
+      "de": "Maximal pro Tag",
+      "en": "Maximum per day"
+    },
+    {
+      "key": "admin.community.eventRules.advanced",
+      "de": "Feineinstellungen",
+      "en": "Advanced settings"
+    },
+    {
+      "key": "admin.community.eventRules.contextLimitFriendly",
+      "de": "Maximal pro Stream / Ereignis",
+      "en": "Maximum per stream / event"
+    },
+    {
+      "key": "admin.community.eventRules.cooldownFriendly",
+      "de": "Mindestabstand in Sekunden",
+      "en": "Minimum interval in seconds"
+    },
+    {
+      "key": "admin.community.eventRules.minimumLengthFriendly",
+      "de": "Mindestlänge des Beitrags",
+      "en": "Minimum contribution length"
+    },
+    {
+      "key": "admin.community.eventRules.none",
+      "de": "keine Begrenzung",
+      "en": "no limit"
+    },
+    {
+      "key": "admin.community.levels.simpleIntro",
+      "de": "Jede Zeile ist genau ein Level. Trage nur ein, wie viele XP für dieses Level nötig sind. Level 1 beginnt immer bei 0 XP.",
+      "en": "Each row is exactly one level. Only enter the XP required for that level. Level 1 always starts at 0 XP."
+    },
+    {
+      "key": "admin.community.levels.requiredXpFriendly",
+      "de": "Benötigte XP",
+      "en": "Required XP"
+    },
+    {
+      "key": "admin.community.levels.add",
+      "de": "Level hinzufügen",
+      "en": "Add level"
+    },
+    {
+      "key": "admin.community.levels.removeLast",
+      "de": "Letztes Level entfernen",
+      "en": "Remove last level"
+    },
+    {
+      "key": "admin.community.levels.invalid",
+      "de": "Die XP-Werte müssen von Level zu Level steigen. Level 1 muss bei 0 XP beginnen.",
+      "en": "XP thresholds must increase from level to level. Level 1 must start at 0 XP."
+    },
+    {
+      "key": "admin.community.achievements.friendlyIntro",
+      "de": "Achievements erzählen, was ein Mitglied erreicht hat. Sie können XP, einen Titel und eine Profilfarbe freischalten.",
+      "en": "Achievements show what a member has accomplished. They can unlock XP, a title, and a profile color."
+    },
+    {
+      "key": "admin.community.achievements.create",
+      "de": "Achievement anlegen",
+      "en": "Create achievement"
+    },
+    {
+      "key": "admin.community.achievements.new",
+      "de": "Neues Achievement",
+      "en": "New achievement"
+    },
+    {
+      "key": "admin.community.achievements.conditionCount",
+      "de": "Bedingung(en)",
+      "en": "condition(s)"
+    },
+    {
+      "key": "admin.community.achievements.presentation",
+      "de": "Anzeige",
+      "en": "Display"
+    },
+    {
+      "key": "admin.community.achievements.name",
+      "de": "Name",
+      "en": "Name"
+    },
+    {
+      "key": "admin.community.achievements.description",
+      "de": "Beschreibung",
+      "en": "Description"
+    },
+    {
+      "key": "admin.community.achievements.nameEn",
+      "de": "Englischer Name",
+      "en": "English name"
+    },
+    {
+      "key": "admin.community.achievements.descriptionEn",
+      "de": "Englische Beschreibung",
+      "en": "English description"
+    },
+    {
+      "key": "admin.community.languages.optional",
+      "de": "Englische Texte (optional)",
+      "en": "English texts (optional)"
+    },
+    {
+      "key": "admin.community.achievements.rewards",
+      "de": "Belohnungen",
+      "en": "Rewards"
+    },
+    {
+      "key": "admin.community.achievements.xpRewardFriendly",
+      "de": "Zusätzliche XP",
+      "en": "Bonus XP"
+    },
+    {
+      "key": "admin.community.achievements.unlockTitleFriendly",
+      "de": "Titel freischalten",
+      "en": "Unlock a title"
+    },
+    {
+      "key": "admin.community.achievements.unlockTitleHint",
+      "de": "Der Titel kann später vom Mitglied im Community-Profil ausgewählt werden.",
+      "en": "The member can later select this title on their community profile."
+    },
+    {
+      "key": "admin.community.achievements.titleName",
+      "de": "Titel",
+      "en": "Title"
+    },
+    {
+      "key": "admin.community.achievements.titleNameEn",
+      "de": "Titel auf Englisch (optional)",
+      "en": "English title (optional)"
+    },
+    {
+      "key": "admin.community.achievements.unlockColor",
+      "de": "Profilfarbe freischalten",
+      "en": "Unlock a profile color"
+    },
+    {
+      "key": "admin.community.achievements.unlockColorHint",
+      "de": "Die Farbe wird freigeschaltet und kann später im Profil ausgewählt werden.",
+      "en": "The color is unlocked and can later be selected on the profile."
+    },
+    {
+      "key": "admin.community.achievements.color",
+      "de": "Farbe",
+      "en": "Color"
+    },
+    {
+      "key": "admin.community.achievements.conditionsHint",
+      "de": "Hier wird festgelegt, was erreicht werden muss. Technische Schlüssel oder Formeln sind nicht nötig.",
+      "en": "Choose what must be achieved. No technical keys or formulas are required."
+    },
+    {
+      "key": "admin.community.achievements.conditionModeFriendly",
+      "de": "Wie sollen mehrere Bedingungen gelten?",
+      "en": "How should multiple conditions be combined?"
+    },
+    {
+      "key": "admin.community.achievements.metricFriendly",
+      "de": "Gemessen wird",
+      "en": "Measure"
+    },
+    {
+      "key": "admin.community.achievements.eventTypeFriendly",
+      "de": "Welche Aktivität?",
+      "en": "Which activity?"
+    },
+    {
+      "key": "admin.community.achievements.thresholdFriendly",
+      "de": "Mindestens",
+      "en": "At least"
+    },
+    {
+      "key": "admin.community.metric.level-reached",
+      "de": "Erreichtes Level",
+      "en": "Level reached"
+    }
+  ]
+}

@@ -1,4 +1,7 @@
 import type {
+  CommunityBalancingDefaults,
+} from '@shared/community/community-balancing';
+import type {
   CommunityEventRule,
   CommunityEventType,
   SaveCommunityEventRule,
@@ -9,7 +12,6 @@ import type {
   CommunityLevelDefinition,
   CommunityTitleDefinition,
   SaveCommunityAchievementDefinition,
-  SaveCommunityLevelDefinition,
   SaveCommunityTitleDefinition,
 } from '@shared/community/community-progression';
 
@@ -37,6 +39,19 @@ export interface CommunityAchievementMetricInfo {
 export class AdminCommunityService {
   private readonly request =
     inject(RequestService);
+
+  getDefaults():
+    Observable<CommunityBalancingDefaults> {
+    return this.request.get<
+      CommunityBalancingDefaults
+    >(
+      '/admin/community/defaults',
+      {
+        deduplicateAcrossTabs: false,
+        transferCache: false,
+      },
+    );
+  }
 
   getEventTypes():
     Observable<CommunityEventTypeInfo[]> {
@@ -77,6 +92,18 @@ export class AdminCommunityService {
     );
   }
 
+  restoreEventRule(
+    eventType: CommunityEventType,
+  ): Observable<CommunityEventRule> {
+    return this.request.post<
+      CommunityEventRule,
+      Record<string, never>
+    >(
+      `/admin/community/event-rules/${encodeURIComponent(eventType)}/restore-default`,
+      {},
+    );
+  }
+
   getAchievementMetrics():
     Observable<CommunityAchievementMetricInfo[]> {
     return this.request.get<
@@ -103,16 +130,28 @@ export class AdminCommunityService {
     );
   }
 
-  saveLevel(
-    level: number,
-    input: SaveCommunityLevelDefinition,
-  ): Observable<CommunityLevelDefinition> {
+  saveLevels(
+    requiredXp: number[],
+  ): Observable<CommunityLevelDefinition[]> {
     return this.request.put<
-      CommunityLevelDefinition,
-      SaveCommunityLevelDefinition
+      CommunityLevelDefinition[],
+      { requiredXp: number[] }
     >(
-      `/admin/community/levels/${level}`,
-      input,
+      '/admin/community/levels',
+      {
+        requiredXp,
+      },
+    );
+  }
+
+  restoreLevels():
+    Observable<CommunityLevelDefinition[]> {
+    return this.request.post<
+      CommunityLevelDefinition[],
+      Record<string, never>
+    >(
+      '/admin/community/levels/restore-default',
+      {},
     );
   }
 

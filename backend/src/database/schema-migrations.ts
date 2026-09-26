@@ -4,6 +4,7 @@ import type {
   EntityManager,
 } from 'typeorm';
 
+import { communityAchievementRewardsMigration } from '../community/community-achievement-rewards.schema-migration';
 import { communityEventRewardsMigration } from '../community/community-event-rewards.schema-migration';
 import { communityProgressionMigration } from '../community/community-progression.schema-migration';
 
@@ -499,6 +500,7 @@ const migrations: readonly SchemaMigration[] = [
   },
   communityEventRewardsMigration,
   communityProgressionMigration,
+  communityAchievementRewardsMigration,
 ];
 
 export async function runSchemaMigrations(
