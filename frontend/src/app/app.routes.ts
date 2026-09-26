@@ -211,6 +211,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'community',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/community/admin-community').then(
+            (module) => module.AdminCommunity,
+          ),
+      },
+      {
         path: 'music/albums/new',
         canActivate: [adminGuard],
         loadComponent: () =>

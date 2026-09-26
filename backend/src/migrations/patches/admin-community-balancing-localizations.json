@@ -1,0 +1,364 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.community",
+      "de": "Community",
+      "en": "Community"
+    },
+    {
+      "key": "admin.community.title",
+      "de": "Community & Balancing",
+      "en": "Community & balancing"
+    },
+    {
+      "key": "admin.community.intro",
+      "de": "XP, Level, Titel und Achievements zentral konfigurieren.",
+      "en": "Configure XP, levels, titles and achievements centrally."
+    },
+    {
+      "key": "admin.community.loading",
+      "de": "Community-Konfiguration wird geladen …",
+      "en": "Loading community configuration …"
+    },
+    {
+      "key": "admin.community.loadFailed",
+      "de": "Die Community-Konfiguration konnte nicht geladen werden.",
+      "en": "The community configuration could not be loaded."
+    },
+    {
+      "key": "admin.community.saved",
+      "de": "Gespeichert.",
+      "en": "Saved."
+    },
+    {
+      "key": "admin.community.saveFailed",
+      "de": "Speichern fehlgeschlagen. Bitte Eingaben prüfen.",
+      "en": "Saving failed. Please check the input."
+    },
+    {
+      "key": "admin.community.tab.activity",
+      "de": "Aktivität & XP",
+      "en": "Activity & XP"
+    },
+    {
+      "key": "admin.community.tab.levels",
+      "de": "Level",
+      "en": "Levels"
+    },
+    {
+      "key": "admin.community.tab.titles",
+      "de": "Titel",
+      "en": "Titles"
+    },
+    {
+      "key": "admin.community.tab.achievements",
+      "de": "Achievements",
+      "en": "Achievements"
+    },
+    {
+      "key": "admin.community.enabled",
+      "de": "Aktiv",
+      "en": "Enabled"
+    },
+    {
+      "key": "admin.community.save",
+      "de": "Speichern",
+      "en": "Save"
+    },
+    {
+      "key": "admin.community.create",
+      "de": "Neu anlegen",
+      "en": "Create new"
+    },
+    {
+      "key": "admin.community.key",
+      "de": "Technischer Schlüssel",
+      "en": "Technical key"
+    },
+    {
+      "key": "admin.community.nameDe",
+      "de": "Name (DE)",
+      "en": "Name (DE)"
+    },
+    {
+      "key": "admin.community.nameEn",
+      "de": "Name (EN)",
+      "en": "Name (EN)"
+    },
+    {
+      "key": "admin.community.descriptionDe",
+      "de": "Beschreibung (DE)",
+      "en": "Description (DE)"
+    },
+    {
+      "key": "admin.community.descriptionEn",
+      "de": "Beschreibung (EN)",
+      "en": "Description (EN)"
+    },
+    {
+      "key": "admin.community.discordRoleId",
+      "de": "Discord-Rollen-ID",
+      "en": "Discord role ID"
+    },
+    {
+      "key": "admin.community.badgeAssetId",
+      "de": "Badge-Asset-ID",
+      "en": "Badge asset ID"
+    },
+    {
+      "key": "admin.community.optional",
+      "de": "optional",
+      "en": "optional"
+    },
+    {
+      "key": "admin.community.eventRules.intro",
+      "de": "Hier wird festgelegt, welche Community-Ereignisse XP geben und wie häufig sie belohnt werden.",
+      "en": "Define which community events grant XP and how often they can be rewarded."
+    },
+    {
+      "key": "admin.community.eventRules.xp",
+      "de": "XP",
+      "en": "XP"
+    },
+    {
+      "key": "admin.community.eventRules.dailyLimit",
+      "de": "Max. Belohnungen pro Tag",
+      "en": "Max rewards per day"
+    },
+    {
+      "key": "admin.community.eventRules.contextLimit",
+      "de": "Max. pro Kontext",
+      "en": "Max per context"
+    },
+    {
+      "key": "admin.community.eventRules.cooldown",
+      "de": "Cooldown (Sekunden)",
+      "en": "Cooldown (seconds)"
+    },
+    {
+      "key": "admin.community.eventRules.minimumLength",
+      "de": "Mindestlänge",
+      "en": "Minimum length"
+    },
+    {
+      "key": "admin.community.eventRules.unlimited",
+      "de": "unbegrenzt",
+      "en": "unlimited"
+    },
+    {
+      "key": "admin.community.levels.intro",
+      "de": "Level werden aus der gesamten XP-Summe berechnet. Änderungen an Schwellen wirken sofort auf die berechnete Stufe.",
+      "en": "Levels are calculated from total XP. Threshold changes immediately affect the calculated level."
+    },
+    {
+      "key": "admin.community.levels.level",
+      "de": "Level",
+      "en": "Level"
+    },
+    {
+      "key": "admin.community.levels.requiredXp",
+      "de": "XP ab",
+      "en": "XP from"
+    },
+    {
+      "key": "admin.community.levels.color",
+      "de": "Namensfarbe",
+      "en": "Name color"
+    },
+    {
+      "key": "admin.community.levels.empty",
+      "de": "Noch keine Level definiert.",
+      "en": "No levels defined yet."
+    },
+    {
+      "key": "admin.community.titles.intro",
+      "de": "Titel werden durch Achievements freigeschaltet und können später im Community-Profil ausgewählt werden.",
+      "en": "Titles are unlocked by achievements and can later be selected on the community profile."
+    },
+    {
+      "key": "admin.community.titles.empty",
+      "de": "Noch keine Titel definiert.",
+      "en": "No titles defined yet."
+    },
+    {
+      "key": "admin.community.achievements.intro",
+      "de": "Achievements bestehen aus einer oder mehreren Bedingungen und können XP, Titel und Discord-Rollen freischalten.",
+      "en": "Achievements consist of one or more conditions and can unlock XP, titles and Discord roles."
+    },
+    {
+      "key": "admin.community.achievements.empty",
+      "de": "Noch keine Achievements definiert.",
+      "en": "No achievements defined yet."
+    },
+    {
+      "key": "admin.community.achievements.select",
+      "de": "Achievement auswählen",
+      "en": "Select achievement"
+    },
+    {
+      "key": "admin.community.achievements.xpReward",
+      "de": "XP-Belohnung",
+      "en": "XP reward"
+    },
+    {
+      "key": "admin.community.achievements.sortOrder",
+      "de": "Sortierung",
+      "en": "Sort order"
+    },
+    {
+      "key": "admin.community.achievements.conditionMode",
+      "de": "Bedingungen verknüpfen",
+      "en": "Combine conditions"
+    },
+    {
+      "key": "admin.community.achievements.all",
+      "de": "Alle müssen erfüllt sein",
+      "en": "All must be met"
+    },
+    {
+      "key": "admin.community.achievements.any",
+      "de": "Eine Bedingung reicht",
+      "en": "Any condition is enough"
+    },
+    {
+      "key": "admin.community.achievements.unlockTitle",
+      "de": "Titel freischalten",
+      "en": "Unlock title"
+    },
+    {
+      "key": "admin.community.achievements.noTitle",
+      "de": "Kein Titel",
+      "en": "No title"
+    },
+    {
+      "key": "admin.community.achievements.conditions",
+      "de": "Bedingungen",
+      "en": "Conditions"
+    },
+    {
+      "key": "admin.community.achievements.addCondition",
+      "de": "Bedingung hinzufügen",
+      "en": "Add condition"
+    },
+    {
+      "key": "admin.community.achievements.removeCondition",
+      "de": "Bedingung entfernen",
+      "en": "Remove condition"
+    },
+    {
+      "key": "admin.community.achievements.metric",
+      "de": "Messwert",
+      "en": "Metric"
+    },
+    {
+      "key": "admin.community.achievements.eventType",
+      "de": "Ereignis",
+      "en": "Event"
+    },
+    {
+      "key": "admin.community.achievements.threshold",
+      "de": "Schwelle",
+      "en": "Threshold"
+    },
+    {
+      "key": "admin.community.achievements.gte",
+      "de": "mindestens",
+      "en": "at least"
+    },
+    {
+      "key": "admin.community.metric.total-xp",
+      "de": "Gesamt-XP",
+      "en": "Total XP"
+    },
+    {
+      "key": "admin.community.metric.event-count",
+      "de": "Anzahl Ereignisse",
+      "en": "Event count"
+    },
+    {
+      "key": "admin.community.metric.distinct-event-days",
+      "de": "Aktive Tage mit Ereignis",
+      "en": "Distinct event days"
+    },
+    {
+      "key": "admin.community.metric.discord-membership-current-days",
+      "de": "Aktuelle Discord-Mitgliedschaft in Tagen",
+      "en": "Current Discord membership days"
+    },
+    {
+      "key": "admin.community.metric.discord-membership-total-days",
+      "de": "Gesamte Discord-Mitgliedschaft in Tagen",
+      "en": "Total Discord membership days"
+    },
+    {
+      "key": "admin.community.metric.twitch-subscription-months",
+      "de": "Twitch-Abo-Monate",
+      "en": "Twitch subscription months"
+    },
+    {
+      "key": "admin.community.metric.twitch-watch-streak",
+      "de": "Twitch Watch Streak",
+      "en": "Twitch watch streak"
+    },
+    {
+      "key": "admin.community.eventType.discord.message.activity",
+      "de": "Discord-Nachrichtenaktivität",
+      "en": "Discord message activity"
+    },
+    {
+      "key": "admin.community.eventType.discord.membership.day",
+      "de": "Discord-Mitgliedschaftstag",
+      "en": "Discord membership day"
+    },
+    {
+      "key": "admin.community.eventType.discord.event.attended",
+      "de": "Discord-Eventteilnahme",
+      "en": "Discord event attendance"
+    },
+    {
+      "key": "admin.community.eventType.twitch.chat.activity",
+      "de": "Twitch-Chataktivität",
+      "en": "Twitch chat activity"
+    },
+    {
+      "key": "admin.community.eventType.twitch.subscription.started",
+      "de": "Twitch-Abo gestartet",
+      "en": "Twitch subscription started"
+    },
+    {
+      "key": "admin.community.eventType.twitch.subscription.ended",
+      "de": "Twitch-Abo beendet",
+      "en": "Twitch subscription ended"
+    },
+    {
+      "key": "admin.community.eventType.twitch.subscription.resub",
+      "de": "Twitch Resub",
+      "en": "Twitch resub"
+    },
+    {
+      "key": "admin.community.eventType.twitch.subscription.month",
+      "de": "Twitch-Abo-Monat",
+      "en": "Twitch subscription month"
+    },
+    {
+      "key": "admin.community.eventType.twitch.watch-streak",
+      "de": "Twitch Watch Streak",
+      "en": "Twitch watch streak"
+    },
+    {
+      "key": "admin.community.eventType.twitch.stream.check-in",
+      "de": "Twitch Stream Check-in",
+      "en": "Twitch stream check-in"
+    },
+    {
+      "key": "admin.community.eventType.blog.comment.created",
+      "de": "Blog-Kommentar",
+      "en": "Blog comment"
+    },
+    {
+      "key": "admin.community.eventType.blog.comment.featured",
+      "de": "Hervorgehobener Blog-Kommentar",
+      "en": "Featured blog comment"
+    }
+  ]
+}

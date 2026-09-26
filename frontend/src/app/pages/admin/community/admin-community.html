@@ -1,0 +1,495 @@
+<section class="admin-community">
+  <header class="admin-community__header">
+    <div>
+      <h1>{{ 'admin.community.title' | i18n | async }}</h1>
+      <p>{{ 'admin.community.intro' | i18n | async }}</p>
+    </div>
+  </header>
+
+  <nav
+    class="admin-community__tabs"
+    [attr.aria-label]="'admin.community.title' | i18n | async"
+  >
+    <button
+      type="button"
+      [class.active]="section() === 'activity'"
+      (click)="setSection('activity')"
+    >
+      {{ 'admin.community.tab.activity' | i18n | async }}
+    </button>
+    <button
+      type="button"
+      [class.active]="section() === 'levels'"
+      (click)="setSection('levels')"
+    >
+      {{ 'admin.community.tab.levels' | i18n | async }}
+    </button>
+    <button
+      type="button"
+      [class.active]="section() === 'titles'"
+      (click)="setSection('titles')"
+    >
+      {{ 'admin.community.tab.titles' | i18n | async }}
+    </button>
+    <button
+      type="button"
+      [class.active]="section() === 'achievements'"
+      (click)="setSection('achievements')"
+    >
+      {{ 'admin.community.tab.achievements' | i18n | async }}
+    </button>
+  </nav>
+
+  @if (statusKey(); as status) {
+    <p class="admin-community__status">
+      {{ status | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.community.loading' | i18n | async }}</p>
+  } @else {
+    @switch (section()) {
+      @case ('activity') {
+        <section class="admin-community__section">
+          <header>
+            <h2>{{ 'admin.community.tab.activity' | i18n | async }}</h2>
+            <p>{{ 'admin.community.eventRules.intro' | i18n | async }}</p>
+          </header>
+
+          <div class="admin-community__cards admin-community__cards--rules">
+            @for (rule of eventRules(); track rule.eventType) {
+              <article class="admin-community__card">
+                <header class="admin-community__card-header">
+                  <div>
+                    <strong>
+                      {{ eventTypeLabelKey(rule.eventType) | i18n | async }}
+                    </strong>
+                    <code>{{ rule.eventType }}</code>
+                  </div>
+
+                  <label class="admin-community__toggle">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="rule.enabled"
+                    />
+                    <span>{{ 'admin.community.enabled' | i18n | async }}</span>
+                  </label>
+                </header>
+
+                <div class="admin-community__grid admin-community__grid--rules">
+                  <label>
+                    <span>{{ 'admin.community.eventRules.xp' | i18n | async }}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      [(ngModel)]="rule.xpAmount"
+                    />
+                  </label>
+
+                  <label>
+                    <span>{{ 'admin.community.eventRules.dailyLimit' | i18n | async }}</span>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      [placeholder]="'admin.community.eventRules.unlimited' | i18n | async"
+                      [(ngModel)]="rule.dailyRewardLimit"
+                    />
+                  </label>
+
+                  <label>
+                    <span>{{ 'admin.community.eventRules.contextLimit' | i18n | async }}</span>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      [placeholder]="'admin.community.eventRules.unlimited' | i18n | async"
+                      [(ngModel)]="rule.contextRewardLimit"
+                    />
+                  </label>
+
+                  <label>
+                    <span>{{ 'admin.community.eventRules.cooldown' | i18n | async }}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      [placeholder]="'admin.community.eventRules.unlimited' | i18n | async"
+                      [(ngModel)]="rule.cooldownSeconds"
+                    />
+                  </label>
+
+                  <label>
+                    <span>{{ 'admin.community.eventRules.minimumLength' | i18n | async }}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      [disabled]="!rule.supportsContentLength"
+                      [placeholder]="'admin.community.optional' | i18n | async"
+                      [(ngModel)]="rule.minimumContentLength"
+                    />
+                  </label>
+                </div>
+
+                <footer>
+                  <app-button
+                    class="primary"
+                    [disabled]="savingKey() === 'rule:' + rule.eventType"
+                    (click)="saveRule(rule)"
+                  >
+                    {{ 'admin.community.save' | i18n | async }}
+                  </app-button>
+                </footer>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      @case ('levels') {
+        <section class="admin-community__section">
+          <header class="admin-community__section-header">
+            <div>
+              <h2>{{ 'admin.community.tab.levels' | i18n | async }}</h2>
+              <p>{{ 'admin.community.levels.intro' | i18n | async }}</p>
+            </div>
+            <app-button class="secondary" (click)="addLevel()">
+              {{ 'admin.community.create' | i18n | async }}
+            </app-button>
+          </header>
+
+          @if (levels().length === 0) {
+            <p>{{ 'admin.community.levels.empty' | i18n | async }}</p>
+          }
+
+          <div class="admin-community__cards">
+            @for (level of levels(); track level) {
+              <article class="admin-community__card">
+                <header class="admin-community__card-header">
+                  <strong>
+                    {{ 'admin.community.levels.level' | i18n | async }} {{ level.level }}
+                  </strong>
+                  <label class="admin-community__toggle">
+                    <input type="checkbox" [(ngModel)]="level.enabled" />
+                    <span>{{ 'admin.community.enabled' | i18n | async }}</span>
+                  </label>
+                </header>
+
+                <div class="admin-community__grid">
+                  <label>
+                    <span>{{ 'admin.community.levels.level' | i18n | async }}</span>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      [readonly]="level.persisted"
+                      [(ngModel)]="level.level"
+                    />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.levels.requiredXp' | i18n | async }}</span>
+                    <input type="number" min="0" step="1" [(ngModel)]="level.requiredXp" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.nameDe' | i18n | async }}</span>
+                    <input type="text" maxlength="160" [(ngModel)]="level.nameDe" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.nameEn' | i18n | async }}</span>
+                    <input type="text" maxlength="160" [(ngModel)]="level.nameEn" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.levels.color' | i18n | async }}</span>
+                    <input type="text" placeholder="#fcaac1" [(ngModel)]="level.displayColor" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.discordRoleId' | i18n | async }}</span>
+                    <input type="text" inputmode="numeric" [(ngModel)]="level.discordRoleId" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.badgeAssetId' | i18n | async }}</span>
+                    <input type="text" [(ngModel)]="level.badgeAssetId" />
+                  </label>
+                </div>
+
+                <footer>
+                  <app-button
+                    class="primary"
+                    [disabled]="savingKey() === 'level:' + level.level"
+                    (click)="saveLevel(level)"
+                  >
+                    {{ 'admin.community.save' | i18n | async }}
+                  </app-button>
+                </footer>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      @case ('titles') {
+        <section class="admin-community__section">
+          <header class="admin-community__section-header">
+            <div>
+              <h2>{{ 'admin.community.tab.titles' | i18n | async }}</h2>
+              <p>{{ 'admin.community.titles.intro' | i18n | async }}</p>
+            </div>
+            <app-button class="secondary" (click)="addTitle()">
+              {{ 'admin.community.create' | i18n | async }}
+            </app-button>
+          </header>
+
+          @if (titles().length === 0) {
+            <p>{{ 'admin.community.titles.empty' | i18n | async }}</p>
+          }
+
+          <div class="admin-community__cards">
+            @for (title of titles(); track title) {
+              <article class="admin-community__card">
+                <header class="admin-community__card-header">
+                  <div>
+                    <strong>{{ title.nameDe || title.key }}</strong>
+                    @if (title.key) {
+                      <code>{{ title.key }}</code>
+                    }
+                  </div>
+                  <label class="admin-community__toggle">
+                    <input type="checkbox" [(ngModel)]="title.enabled" />
+                    <span>{{ 'admin.community.enabled' | i18n | async }}</span>
+                  </label>
+                </header>
+
+                <div class="admin-community__grid">
+                  <label>
+                    <span>{{ 'admin.community.key' | i18n | async }}</span>
+                    <input
+                      type="text"
+                      maxlength="80"
+                      [readonly]="title.persisted"
+                      [(ngModel)]="title.key"
+                    />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.nameDe' | i18n | async }}</span>
+                    <input type="text" maxlength="160" [(ngModel)]="title.nameDe" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.nameEn' | i18n | async }}</span>
+                    <input type="text" maxlength="160" [(ngModel)]="title.nameEn" />
+                  </label>
+                  <label class="admin-community__wide">
+                    <span>{{ 'admin.community.descriptionDe' | i18n | async }}</span>
+                    <textarea rows="3" [(ngModel)]="title.descriptionDe"></textarea>
+                  </label>
+                  <label class="admin-community__wide">
+                    <span>{{ 'admin.community.descriptionEn' | i18n | async }}</span>
+                    <textarea rows="3" [(ngModel)]="title.descriptionEn"></textarea>
+                  </label>
+                </div>
+
+                <footer>
+                  <app-button
+                    class="primary"
+                    [disabled]="savingKey() === 'title:' + title.key"
+                    (click)="saveTitle(title)"
+                  >
+                    {{ 'admin.community.save' | i18n | async }}
+                  </app-button>
+                </footer>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      @case ('achievements') {
+        <section class="admin-community__section">
+          <header class="admin-community__section-header">
+            <div>
+              <h2>{{ 'admin.community.tab.achievements' | i18n | async }}</h2>
+              <p>{{ 'admin.community.achievements.intro' | i18n | async }}</p>
+            </div>
+            <app-button class="secondary" (click)="createAchievement()">
+              {{ 'admin.community.create' | i18n | async }}
+            </app-button>
+          </header>
+
+          <div class="admin-community__achievement-layout">
+            <aside class="admin-community__achievement-list">
+              <strong>{{ 'admin.community.achievements.select' | i18n | async }}</strong>
+
+              @if (achievements().length === 0) {
+                <p>{{ 'admin.community.achievements.empty' | i18n | async }}</p>
+              }
+
+              @for (achievement of achievements(); track achievement) {
+                <button
+                  type="button"
+                  [class.active]="selectedAchievement() === achievement"
+                  (click)="editAchievement(achievement)"
+                >
+                  @if (achievement.nameDe || achievement.key) {
+                    <span>{{ achievement.nameDe || achievement.key }}</span>
+                  } @else {
+                    <span>{{ 'admin.community.create' | i18n | async }}</span>
+                  }
+                  @if (achievement.key) {
+                    <code>{{ achievement.key }}</code>
+                  }
+                </button>
+              }
+            </aside>
+
+            @if (selectedAchievement(); as achievement) {
+              <article class="admin-community__card admin-community__achievement-editor">
+                <header class="admin-community__card-header">
+                  @if (achievement.nameDe || achievement.key) {
+                    <strong>{{ achievement.nameDe || achievement.key }}</strong>
+                  } @else {
+                    <strong>{{ 'admin.community.create' | i18n | async }}</strong>
+                  }
+                  <label class="admin-community__toggle">
+                    <input type="checkbox" [(ngModel)]="achievement.enabled" />
+                    <span>{{ 'admin.community.enabled' | i18n | async }}</span>
+                  </label>
+                </header>
+
+                <div class="admin-community__grid">
+                  <label>
+                    <span>{{ 'admin.community.key' | i18n | async }}</span>
+                    <input
+                      type="text"
+                      maxlength="80"
+                      [readonly]="achievement.persisted"
+                      [(ngModel)]="achievement.key"
+                    />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.nameDe' | i18n | async }}</span>
+                    <input type="text" maxlength="160" [(ngModel)]="achievement.nameDe" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.nameEn' | i18n | async }}</span>
+                    <input type="text" maxlength="160" [(ngModel)]="achievement.nameEn" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.achievements.xpReward' | i18n | async }}</span>
+                    <input type="number" min="0" step="1" [(ngModel)]="achievement.xpReward" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.achievements.sortOrder' | i18n | async }}</span>
+                    <input type="number" step="1" [(ngModel)]="achievement.sortOrder" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.achievements.conditionMode' | i18n | async }}</span>
+                    <select [(ngModel)]="achievement.conditionMode">
+                      <option value="all">{{ 'admin.community.achievements.all' | i18n | async }}</option>
+                      <option value="any">{{ 'admin.community.achievements.any' | i18n | async }}</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.achievements.unlockTitle' | i18n | async }}</span>
+                    <select [(ngModel)]="achievement.unlockedTitleId">
+                      <option [ngValue]="null">{{ 'admin.community.achievements.noTitle' | i18n | async }}</option>
+                      @for (title of titles(); track title) {
+                        @if (title.id) {
+                          <option [ngValue]="title.id">{{ title.nameDe || title.key }}</option>
+                        }
+                      }
+                    </select>
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.discordRoleId' | i18n | async }}</span>
+                    <input type="text" inputmode="numeric" [(ngModel)]="achievement.discordRoleId" />
+                  </label>
+                  <label>
+                    <span>{{ 'admin.community.badgeAssetId' | i18n | async }}</span>
+                    <input type="text" [(ngModel)]="achievement.badgeAssetId" />
+                  </label>
+                  <label class="admin-community__wide">
+                    <span>{{ 'admin.community.descriptionDe' | i18n | async }}</span>
+                    <textarea rows="3" [(ngModel)]="achievement.descriptionDe"></textarea>
+                  </label>
+                  <label class="admin-community__wide">
+                    <span>{{ 'admin.community.descriptionEn' | i18n | async }}</span>
+                    <textarea rows="3" [(ngModel)]="achievement.descriptionEn"></textarea>
+                  </label>
+                </div>
+
+                <section class="admin-community__conditions">
+                  <header>
+                    <strong>{{ 'admin.community.achievements.conditions' | i18n | async }}</strong>
+                    <button type="button" (click)="addCondition(achievement)">
+                      {{ 'admin.community.achievements.addCondition' | i18n | async }}
+                    </button>
+                  </header>
+
+                  @for (condition of achievement.conditions; track condition; let index = $index) {
+                    <div class="admin-community__condition">
+                      <label>
+                        <span>{{ 'admin.community.achievements.metric' | i18n | async }}</span>
+                        <select
+                          [(ngModel)]="condition.metric"
+                          (ngModelChange)="conditionMetricChanged(condition)"
+                        >
+                          @for (metricInfo of metricInfos(); track metricInfo.metric) {
+                            <option [ngValue]="metricInfo.metric">
+                              {{ metricLabelKey(metricInfo.metric) | i18n | async }}
+                            </option>
+                          }
+                        </select>
+                      </label>
+
+                      @if (metricRequiresEventType(condition.metric)) {
+                        <label>
+                          <span>{{ 'admin.community.achievements.eventType' | i18n | async }}</span>
+                          <select [(ngModel)]="condition.eventType">
+                            @for (eventType of eventTypes(); track eventType.eventType) {
+                              <option [ngValue]="eventType.eventType">
+                                {{ eventTypeLabelKey(eventType.eventType) | i18n | async }}
+                              </option>
+                            }
+                          </select>
+                        </label>
+                      }
+
+                      <label>
+                        <span>{{ 'admin.community.achievements.threshold' | i18n | async }}</span>
+                        <div class="admin-community__threshold">
+                          <span>{{ 'admin.community.achievements.gte' | i18n | async }}</span>
+                          <input type="number" min="1" step="1" [(ngModel)]="condition.threshold" />
+                        </div>
+                      </label>
+
+                      <button
+                        type="button"
+                        class="admin-community__remove"
+                        [disabled]="achievement.conditions.length <= 1"
+                        (click)="removeCondition(achievement, index)"
+                      >
+                        {{ 'admin.community.achievements.removeCondition' | i18n | async }}
+                      </button>
+                    </div>
+                  }
+                </section>
+
+                <footer>
+                  <app-button
+                    class="primary"
+                    [disabled]="savingKey() === 'achievement:' + achievement.key"
+                    (click)="saveAchievement(achievement)"
+                  >
+                    {{ 'admin.community.save' | i18n | async }}
+                  </app-button>
+                </footer>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    }
+  }
+</section>

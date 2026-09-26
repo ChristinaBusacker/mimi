@@ -33,6 +33,14 @@ const COMMUNITY_ACHIEVEMENT_METRIC_REGISTRY = {
   CommunityAchievementMetricConfig
 >;
 
+
+export function getCommunityAchievementMetrics():
+  CommunityAchievementMetric[] {
+  return Object.keys(
+    COMMUNITY_ACHIEVEMENT_METRIC_REGISTRY,
+  ) as CommunityAchievementMetric[];
+}
+
 export function isCommunityAchievementMetric(
   value: string,
 ): value is CommunityAchievementMetric {
