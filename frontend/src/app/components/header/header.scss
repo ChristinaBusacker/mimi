@@ -33,7 +33,7 @@
   nav ul {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: var(--spacing-xl);
 
     padding: 0;
 
@@ -45,6 +45,49 @@
     }
   }
 
+  nav:not(.social) ul a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+
+    transition:
+      color 160ms ease,
+      transform 160ms ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 3px;
+      left: 0;
+      height: 2px;
+      border-radius: var(--radius-pill);
+      background: var(--color-primary);
+      opacity: 0;
+      transform: scaleX(0.4);
+      transform-origin: center;
+      transition:
+        opacity 160ms ease,
+        transform 160ms ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+
+    &.is-active {
+      color: var(--color-primary);
+
+      &::after {
+        opacity: 1;
+        transform: scaleX(1);
+      }
+    }
+  }
+
   .social {
     ul {
       width: 160px;
@@ -52,14 +95,46 @@
       justify-content: space-between;
     }
 
+    a {
+      display: flex;
+    }
+
     .icon {
       display: block;
       width: 24px;
+      transition: transform 160ms ease;
+    }
+
+    a:hover .icon,
+    a:focus-visible .icon {
+      transform: translateY(-2px) scale(1.05);
     }
   }
 
   .desktop-logo {
+    position: relative;
     display: flex;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      width: 30px;
+      height: 2px;
+      border-radius: var(--radius-pill);
+      background: var(--color-primary);
+      opacity: 0;
+      transform: translateX(-50%) scaleX(0.4);
+      transition:
+        opacity 160ms ease,
+        transform 160ms ease;
+    }
+
+    &.is-active::after {
+      opacity: 1;
+      transform: translateX(-50%) scaleX(1);
+    }
   }
 
   .logo {
@@ -69,6 +144,24 @@
 
 .mobile-shell {
   display: none;
+}
+
+@include reduced-motion {
+  .desktop-header {
+    nav:not(.social) ul a,
+    nav:not(.social) ul a::after,
+    .social .icon,
+    .desktop-logo::after {
+      transition: none;
+    }
+
+    nav:not(.social) ul a:hover,
+    nav:not(.social) ul a:focus-visible,
+    .social a:hover .icon,
+    .social a:focus-visible .icon {
+      transform: none;
+    }
+  }
 }
 
 @include compact-layout {
@@ -272,6 +365,8 @@
     }
 
     a {
+      position: relative;
+
       transition:
         color 160ms ease,
         transform 160ms ease;
@@ -280,6 +375,22 @@
       &:focus-visible {
         color: var(--color-primary);
         transform: translateX(3px);
+      }
+
+      &.is-active {
+        color: var(--color-primary);
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: -16px;
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--color-primary);
+          transform: translateY(-50%);
+        }
       }
     }
   }

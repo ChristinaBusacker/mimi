@@ -41,7 +41,7 @@
       color: var(--color-text);
 
       p {
-        margin-top: 20px;
+        margin-top: var(--spacing-md);
       }
 
       .upcoming-details {
@@ -139,12 +139,21 @@
           align-items: flex-start;
           min-width: 220px;
 
+          transition:
+            transform 180ms ease,
+            border-color 180ms ease;
+
           p {
-            margin: 8px 0;
+            margin: var(--spacing-sm) 0;
           }
 
           app-button {
-            margin-top: 8px;
+            margin-top: var(--spacing-sm);
+          }
+
+          &:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-3px);
           }
 
           &::before {
@@ -157,6 +166,15 @@
             opacity: 0.9;
             margin: calc(-1 * var(--border-width));
             z-index: -1;
+
+            transition:
+              opacity 180ms ease,
+              transform 220ms ease;
+          }
+
+          &:hover::before {
+            opacity: 1;
+            transform: scale(1.025);
           }
 
           &.gaming::before {
@@ -206,5 +224,17 @@
     .visual {
       min-height: 320px;
     }
+  }
+}
+
+@include reduced-motion {
+  :host .content .wrapper .row .tile,
+  :host .content .wrapper .row .tile::before {
+    transition: none;
+  }
+
+  :host .content .wrapper .row .tile:hover,
+  :host .content .wrapper .row .tile:hover::before {
+    transform: none;
   }
 }

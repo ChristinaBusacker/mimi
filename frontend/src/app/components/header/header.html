@@ -33,19 +33,43 @@
     <nav>
       <ul>
         <li>
-          <a routerLink="/blog">News</a>
+          <a
+            routerLink="/blog"
+            routerLinkActive="is-active"
+            ariaCurrentWhenActive="page"
+          >
+            News
+          </a>
         </li>
         <li>
-          <a routerLink="/music">{{ 'navigation.music' | i18n | async }}</a>
+          <a
+            routerLink="/music"
+            routerLinkActive="is-active"
+            ariaCurrentWhenActive="page"
+          >
+            {{ 'navigation.music' | i18n | async }}
+          </a>
         </li>
         <li>
-          <a routerLink="/gaming">{{ 'navigation.gaming' | i18n | async }}</a>
+          <a
+            routerLink="/gaming"
+            routerLinkActive="is-active"
+            ariaCurrentWhenActive="page"
+          >
+            {{ 'navigation.gaming' | i18n | async }}
+          </a>
         </li>
       </ul>
     </nav>
   </div>
 
-  <a routerLink="/" class="desktop-logo">
+  <a
+    routerLink="/"
+    class="desktop-logo"
+    routerLinkActive="is-active"
+    [routerLinkActiveOptions]="rootActiveOptions"
+    ariaCurrentWhenActive="page"
+  >
     <img class="logo" src="/images/logo.png" alt="Mimishow" />
   </a>
 
@@ -92,7 +116,15 @@
       </span>
     </button>
 
-    <a routerLink="/" class="mobile-logo" aria-label="Mimishow" (click)="closeMenu()">
+    <a
+      routerLink="/"
+      class="mobile-logo"
+      routerLinkActive="is-active"
+      [routerLinkActiveOptions]="rootActiveOptions"
+      ariaCurrentWhenActive="page"
+      aria-label="Mimishow"
+      (click)="closeMenu()"
+    >
       <img src="/images/logo.png" alt="" />
     </a>
 
@@ -114,9 +146,30 @@
   >
     <div class="mobile-menu__content">
       <nav class="mobile-menu__navigation">
-        <a routerLink="/blog">{{ 'navigation.blog' | i18n | async }}</a>
-        <a routerLink="/music">{{ 'navigation.music' | i18n | async }}</a>
-        <a routerLink="/gaming">{{ 'navigation.gaming' | i18n | async }}</a>
+        <a
+          routerLink="/blog"
+          routerLinkActive="is-active"
+          ariaCurrentWhenActive="page"
+          (click)="closeMenu()"
+        >
+          {{ 'navigation.blog' | i18n | async }}
+        </a>
+        <a
+          routerLink="/music"
+          routerLinkActive="is-active"
+          ariaCurrentWhenActive="page"
+          (click)="closeMenu()"
+        >
+          {{ 'navigation.music' | i18n | async }}
+        </a>
+        <a
+          routerLink="/gaming"
+          routerLinkActive="is-active"
+          ariaCurrentWhenActive="page"
+          (click)="closeMenu()"
+        >
+          {{ 'navigation.gaming' | i18n | async }}
+        </a>
 
         <a href="#">{{ 'navigation.community' | i18n | async }}</a>
         <a href="#">{{ 'navigation.about' | i18n | async }}</a>

@@ -28,38 +28,75 @@
 }
 
 .content {
+  --hero-accent: var(--color-secondary);
+  --hero-accent-soft: rgb(175 104 167 / 10%);
+
   position: relative;
   display: flex;
   padding: var(--spacing-md);
+  border-radius: var(--radius-card);
+  background: linear-gradient(115deg, var(--hero-accent-soft), transparent 46%);
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: -1;
+    z-index: 0;
     border-radius: var(--radius-card);
     background-position: center;
     background-size: cover;
     opacity: 0.3;
   }
 
-  &.music::before {
-    background-image: url('/images/hero-bg-music.png');
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--spacing-md);
+    width: 72px;
+    height: 3px;
+    border-radius: 0 0 var(--radius-pill) var(--radius-pill);
+    z-index: 2;
+    background: var(--hero-accent);
+    box-shadow: 0 0 10px var(--hero-accent);
+    opacity: 0.9;
   }
 
-  &.gaming::before {
-    background-image: url('/images/gaming-tile.png');
+  &.music {
+    --hero-accent: var(--color-accent-music);
+    --hero-accent-soft: rgb(244 147 183 / 12%);
+
+    &::before {
+      background-image: url('/images/hero-bg-music.png');
+      background-position: center 42%;
+    }
+  }
+
+  &.chatting {
+    --hero-accent: var(--color-accent-chatting);
+    --hero-accent-soft: rgb(207 134 189 / 12%);
+  }
+
+  &.gaming {
+    --hero-accent: var(--color-accent-gaming);
+    --hero-accent-soft: rgb(157 134 212 / 12%);
+
+    &::before {
+      background-image: url('/images/gaming-tile.png');
+      background-position: center 55%;
+    }
   }
 }
 
 .left,
 .right {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-width: 0;
 }
 
 .right {
-  position: relative;
   width: 50%;
 }
 

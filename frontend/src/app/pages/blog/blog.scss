@@ -1,6 +1,9 @@
 @use 'mixins' as *;
 
 :host {
+  --page-accent: var(--color-accent-chatting);
+  --page-accent-soft: rgb(207 134 189 / 9%);
+
   display: block;
 }
 
@@ -17,7 +20,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    color: var(--color-primary);
+    color: var(--page-accent);
     font-size: 0.76rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -44,7 +47,7 @@
       var(--spacing-xs)
       0
       var(--spacing-sm);
-    color: var(--color-secondary);
+    color: var(--page-accent);
     font-size: 32px;
     line-height: 1.05;
   }
@@ -65,9 +68,7 @@
   align-items: center;
   width: 100%;
   padding: var(--spacing-sm);
-  border:
-    1px solid
-    rgb(175 104 167 / 64%);
+  border: 1px solid var(--page-accent);
   border-radius: var(--radius-card);
   background: rgb(29 17 28 / 74%);
   backdrop-filter: blur(8px);
@@ -107,7 +108,7 @@
     min-width: 0;
 
     > span {
-      color: var(--color-primary);
+      color: var(--page-accent);
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.07em;
@@ -152,7 +153,7 @@
     > a {
       justify-self: start;
       margin-top: var(--spacing-xs);
-      color: var(--color-secondary);
+      color: var(--page-accent);
       font-weight: 800;
       text-decoration: none;
 
@@ -167,10 +168,13 @@
 .posts {
   @include framed;
 
+  border-color: var(--page-accent);
+
   display: grid;
   gap: var(--spacing-md);
   padding: var(--spacing-md);
   background:
+    linear-gradient(180deg, var(--page-accent-soft), transparent 220px),
     var(--color-surface-translucent);
   box-shadow:
     0 0 16px 1px
@@ -185,7 +189,7 @@
     align-items: end;
 
     span {
-      color: var(--color-primary);
+      color: var(--page-accent);
       font-size: 0.72rem;
       font-weight: 800;
       letter-spacing: 0.08em;
@@ -222,6 +226,8 @@
 
   select {
     @include framed(var(--control-border-width));
+
+    border-color: var(--page-accent);
 
     padding:
       var(--spacing-xs)
@@ -263,6 +269,17 @@
   min-width: 0;
   overflow: hidden;
   background: var(--color-surface);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+
+  &:hover,
+  &:focus-within {
+    border-color: var(--page-accent);
+    box-shadow: 0 10px 24px rgb(0 0 0 / 22%);
+    transform: translateY(-3px);
+  }
 
   .media {
     display: block;
@@ -361,7 +378,7 @@
     margin-top: auto;
     padding-top:
       var(--spacing-xs);
-    color: var(--color-secondary);
+    color: var(--page-accent);
     font-weight: 800;
     text-decoration: none;
 
@@ -396,6 +413,17 @@
       var(--spacing-xs)
       auto
       0;
+  }
+}
+
+@include reduced-motion {
+  .card {
+    transition: none;
+
+    &:hover,
+    &:focus-within {
+      transform: none;
+    }
   }
 }
 

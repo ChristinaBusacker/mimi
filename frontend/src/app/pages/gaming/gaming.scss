@@ -1,6 +1,9 @@
 @use 'mixins' as *;
 
 :host {
+  --page-accent: var(--color-accent-gaming);
+  --page-accent-soft: rgb(157 134 212 / 10%);
+
   display: block;
 }
 
@@ -19,7 +22,7 @@
     gap: var(--spacing-xs);
     padding: 2px 8px;
     border-radius: var(--radius-card);
-    background: var(--color-secondary);
+    background: var(--page-accent);
     color: var(--color-text);
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -32,7 +35,7 @@
 
   h1 {
     margin: var(--spacing-xs) 0;
-    color: var(--color-secondary);
+    color: var(--page-accent);
     font-size: 32px;
     line-height: 1.05;
   }
@@ -84,14 +87,16 @@
 
 .game-card {
   @include framed(var(--control-border-width));
-  margin: 40px;
+
+  margin: var(--spacing-xl);
+  border-color: var(--page-accent);
   position: relative;
   width: 100%;
   overflow: hidden;
   background: rgb(29 17 28 / 82%);
 
   @include compact-layout {
-    margin: 0px;
+    margin: 0;
   }
 
   .artwork {
@@ -123,7 +128,7 @@
     display: block;
     align-self: start;
     width: 100%;
-    border: var(--control-border-width) solid var(--color-secondary);
+    border: var(--control-border-width) solid var(--page-accent);
     border-radius: var(--radius-card);
     box-shadow: 0 14px 28px rgb(0 0 0 / 28%);
   }
@@ -160,7 +165,7 @@
 
     > a {
       justify-self: start;
-      color: var(--color-secondary);
+      color: var(--page-accent);
       font-weight: 800;
       text-decoration: none;
 
@@ -204,9 +209,13 @@
 .showcase,
 .info {
   @include framed;
+
+  border-color: var(--page-accent);
   box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.5);
   padding: var(--spacing-md);
-  background: var(--color-surface-translucent);
+  background:
+    linear-gradient(135deg, var(--page-accent-soft), transparent 42%),
+    var(--color-surface-translucent);
 }
 
 .showcase {
@@ -221,7 +230,7 @@
 
     > div:first-child {
       > span {
-        color: var(--color-primary);
+        color: var(--page-accent);
         font-size: 0.72rem;
         font-weight: 800;
         letter-spacing: 0.08em;
@@ -244,7 +253,7 @@
     gap: var(--spacing-sm);
 
     a {
-      color: var(--color-secondary);
+      color: var(--page-accent);
       font-weight: 800;
       text-decoration: none;
 
@@ -277,6 +286,7 @@
   .facts {
     @include framed(var(--control-border-width));
 
+    border-color: var(--page-accent);
     display: grid;
     gap: var(--spacing-sm);
     margin: 0;
@@ -289,7 +299,7 @@
     }
 
     dt {
-      color: var(--color-primary);
+      color: var(--page-accent);
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.07em;
@@ -343,7 +353,7 @@
 
   .section-title {
     > span {
-      color: var(--color-primary);
+      color: var(--page-accent);
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.07em;
@@ -369,7 +379,7 @@
     cursor: zoom-in;
 
     &:focus-visible {
-      outline: 2px solid var(--color-primary);
+      outline: 2px solid var(--page-accent);
       outline-offset: -2px;
     }
 
@@ -397,7 +407,7 @@
   align-items: end;
 
   span {
-    color: var(--color-primary);
+    color: var(--page-accent);
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.08em;

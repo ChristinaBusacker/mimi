@@ -20,6 +20,28 @@ a {
   cursor: pointer;
   font: inherit;
   text-decoration: none;
+
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    filter 160ms ease;
+}
+
+button:not(:disabled):hover,
+a:hover {
+  transform: translateY(-2px);
+}
+
+button:not(:disabled):active,
+a:active {
+  transform: translateY(0);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 button:disabled {
@@ -42,9 +64,21 @@ button:disabled {
   background-color: var(--color-primary);
 }
 
+:host(.primary) button:not(:disabled):hover,
+:host(.primary) a:hover {
+  box-shadow: 0 6px 16px rgb(0 0 0 / 24%);
+  filter: brightness(1.04);
+}
+
 :host(.secondary) button,
 :host(.secondary) a {
   color: var(--color-text);
+}
+
+:host(.secondary) button:not(:disabled):hover,
+:host(.secondary) a:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 18%);
 }
 
 :host(.round) button,
@@ -61,4 +95,16 @@ button:disabled {
 :host(.font-black) button,
 :host(.font-black) a {
   color: var(--color-text-inverse);
+}
+
+@include reduced-motion {
+  button,
+  a {
+    transition: none;
+  }
+
+  button:not(:disabled):hover,
+  a:hover {
+    transform: none;
+  }
 }

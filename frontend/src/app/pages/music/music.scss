@@ -1,6 +1,9 @@
 @use 'mixins' as *;
 
 :host {
+  --page-accent: var(--color-accent-music);
+  --page-accent-soft: rgb(244 147 183 / 10%);
+
   display: block;
 }
 
@@ -17,7 +20,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    color: var(--color-primary);
+    color: var(--page-accent);
     font-size: 0.76rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -32,7 +35,7 @@
   h1 {
     max-width: 720px;
     margin: var(--spacing-xs) 0 var(--spacing-sm);
-    color: var(--color-secondary);
+    color: var(--page-accent);
     font-size: 32px;
     line-height: 1.05;
   }
@@ -51,7 +54,7 @@
   align-items: center;
   width: 100%;
   padding: var(--spacing-sm);
-  border: 1px solid rgb(175 104 167 / 64%);
+  border: 1px solid var(--page-accent);
   border-radius: var(--radius-card);
   background: rgb(29 17 28 / 74%);
   backdrop-filter: blur(8px);
@@ -88,7 +91,7 @@
     min-width: 0;
 
     > span {
-      color: var(--color-primary);
+      color: var(--page-accent);
       font-size: 0.68rem;
       line-height: 1.3rem;
       font-weight: 800;
@@ -112,7 +115,7 @@
     a {
       justify-self: start;
       margin-top: var(--spacing-xs);
-      color: var(--color-secondary);
+      color: var(--page-accent);
       font-weight: 800;
       text-decoration: none;
 
@@ -126,12 +129,16 @@
 
 .library {
   @include framed;
+
+  border-color: var(--page-accent);
   box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.5);
   display: grid;
   gap: var(--spacing-md);
   padding: var(--spacing-md);
   overflow: hidden;
-  background: var(--color-surface-translucent);
+  background:
+    radial-gradient(circle at 88% 0, var(--page-accent-soft), transparent 34%),
+    var(--color-surface-translucent);
 
   > header {
     display: grid;
@@ -140,7 +147,7 @@
     align-items: end;
 
     span {
-      color: var(--color-primary);
+      color: var(--page-accent);
       font-size: 0.72rem;
       font-weight: 800;
       letter-spacing: 0.08em;

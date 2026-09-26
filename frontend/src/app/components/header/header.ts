@@ -10,7 +10,11 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import {
+  type IsActiveMatchOptions,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { Button } from '../button/button';
@@ -18,7 +22,7 @@ import { Icon } from '../icon/icon';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Button, I18nPipe, Icon, RouterLink],
+  imports: [AsyncPipe, Button, I18nPipe, Icon, RouterLink, RouterLinkActive],
   selector: 'app-header',
   styleUrl: './header.scss',
   templateUrl: './header.html',
@@ -36,6 +40,13 @@ export class Header implements OnDestroy {
   private previousBodyOverflow = '';
 
   protected readonly menuOpen = signal(false);
+
+  protected readonly rootActiveOptions: IsActiveMatchOptions = {
+    paths: 'exact',
+    queryParams: 'ignored',
+    matrixParams: 'ignored',
+    fragment: 'ignored',
+  };
 
   ngOnDestroy(): void {
     this.unlockBodyScroll();
