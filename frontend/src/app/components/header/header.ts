@@ -10,11 +10,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {
-  type IsActiveMatchOptions,
-  RouterLink,
-  RouterLinkActive,
-} from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { Button } from '../button/button';
@@ -31,22 +27,13 @@ export class Header implements OnDestroy {
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  private readonly mobileShell =
-    viewChild<ElementRef<HTMLElement>>('mobileShell');
+  private readonly mobileShell = viewChild<ElementRef<HTMLElement>>('mobileShell');
 
-  private readonly menuToggle =
-    viewChild<ElementRef<HTMLButtonElement>>('menuToggle');
+  private readonly menuToggle = viewChild<ElementRef<HTMLButtonElement>>('menuToggle');
 
   private previousBodyOverflow = '';
 
   protected readonly menuOpen = signal(false);
-
-  protected readonly rootActiveOptions: IsActiveMatchOptions = {
-    paths: 'exact',
-    queryParams: 'ignored',
-    matrixParams: 'ignored',
-    fragment: 'ignored',
-  };
 
   ngOnDestroy(): void {
     this.unlockBodyScroll();
@@ -92,11 +79,7 @@ export class Header implements OnDestroy {
 
   @HostListener('window:resize')
   protected handleWindowResize(): void {
-    if (
-      this.isBrowser &&
-      this.menuOpen() &&
-      window.innerWidth > 900
-    ) {
+    if (this.isBrowser && this.menuOpen() && window.innerWidth > 900) {
       this.closeMenu();
     }
   }

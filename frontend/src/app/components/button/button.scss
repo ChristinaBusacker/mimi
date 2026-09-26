@@ -22,20 +22,10 @@ a {
   text-decoration: none;
 
   transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    border-color 160ms ease,
-    filter 160ms ease;
-}
-
-button:not(:disabled):hover,
-a:hover {
-  transform: translateY(-2px);
-}
-
-button:not(:disabled):active,
-a:active {
-  transform: translateY(0);
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 button:focus-visible,
@@ -62,12 +52,21 @@ button:disabled {
 :host(.primary) button,
 :host(.primary) a {
   background-color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 :host(.primary) button:not(:disabled):hover,
 :host(.primary) a:hover {
-  box-shadow: 0 6px 16px rgb(0 0 0 / 24%);
-  filter: brightness(1.04);
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 0 0 3px rgb(252 170 193 / 10%);
+}
+
+:host(.primary) button:not(:disabled):active,
+:host(.primary) a:active {
+  background-color: var(--color-primary-active);
+  border-color: var(--color-primary-active);
+  box-shadow: none;
 }
 
 :host(.secondary) button,
@@ -78,7 +77,15 @@ button:disabled {
 :host(.secondary) button:not(:disabled):hover,
 :host(.secondary) a:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 6px 16px rgb(0 0 0 / 18%);
+  background-color: rgb(252 170 193 / 10%);
+  color: var(--color-primary-hover);
+  box-shadow: 0 0 0 3px rgb(252 170 193 / 6%);
+}
+
+:host(.secondary) button:not(:disabled):active,
+:host(.secondary) a:active {
+  background-color: rgb(252 170 193 / 16%);
+  box-shadow: none;
 }
 
 :host(.round) button,
@@ -101,10 +108,5 @@ button:disabled {
   button,
   a {
     transition: none;
-  }
-
-  button:not(:disabled):hover,
-  a:hover {
-    transform: none;
   }
 }

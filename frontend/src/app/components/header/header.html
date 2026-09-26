@@ -35,6 +35,7 @@
         <li>
           <a
             routerLink="/blog"
+            class="section-blog"
             routerLinkActive="is-active"
             ariaCurrentWhenActive="page"
           >
@@ -44,6 +45,7 @@
         <li>
           <a
             routerLink="/music"
+            class="section-music"
             routerLinkActive="is-active"
             ariaCurrentWhenActive="page"
           >
@@ -53,6 +55,7 @@
         <li>
           <a
             routerLink="/gaming"
+            class="section-gaming"
             routerLinkActive="is-active"
             ariaCurrentWhenActive="page"
           >
@@ -63,13 +66,7 @@
     </nav>
   </div>
 
-  <a
-    routerLink="/"
-    class="desktop-logo"
-    routerLinkActive="is-active"
-    [routerLinkActiveOptions]="rootActiveOptions"
-    ariaCurrentWhenActive="page"
-  >
+  <a routerLink="/" class="desktop-logo">
     <img class="logo" src="/images/logo.png" alt="Mimishow" />
   </a>
 
@@ -116,15 +113,7 @@
       </span>
     </button>
 
-    <a
-      routerLink="/"
-      class="mobile-logo"
-      routerLinkActive="is-active"
-      [routerLinkActiveOptions]="rootActiveOptions"
-      ariaCurrentWhenActive="page"
-      aria-label="Mimishow"
-      (click)="closeMenu()"
-    >
+    <a routerLink="/" class="mobile-logo" aria-label="Mimishow" (click)="closeMenu()">
       <img src="/images/logo.png" alt="" />
     </a>
 
@@ -148,6 +137,7 @@
       <nav class="mobile-menu__navigation">
         <a
           routerLink="/blog"
+          class="section-blog"
           routerLinkActive="is-active"
           ariaCurrentWhenActive="page"
           (click)="closeMenu()"
@@ -156,6 +146,7 @@
         </a>
         <a
           routerLink="/music"
+          class="section-music"
           routerLinkActive="is-active"
           ariaCurrentWhenActive="page"
           (click)="closeMenu()"
@@ -164,6 +155,7 @@
         </a>
         <a
           routerLink="/gaming"
+          class="section-gaming"
           routerLinkActive="is-active"
           ariaCurrentWhenActive="page"
           (click)="closeMenu()"

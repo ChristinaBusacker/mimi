@@ -46,14 +46,26 @@
   }
 
   nav:not(.social) ul a {
+    --nav-accent: var(--color-primary);
+
     position: relative;
     display: inline-flex;
     align-items: center;
     min-height: 40px;
 
-    transition:
-      color 160ms ease,
-      transform 160ms ease;
+    transition: color 180ms ease;
+
+    &.section-blog {
+      --nav-accent: var(--color-accent-chatting);
+    }
+
+    &.section-music {
+      --nav-accent: var(--color-accent-music);
+    }
+
+    &.section-gaming {
+      --nav-accent: var(--color-accent-gaming);
+    }
 
     &::after {
       content: '';
@@ -63,28 +75,24 @@
       left: 0;
       height: 2px;
       border-radius: var(--radius-pill);
-      background: var(--color-primary);
+      background: currentColor;
       opacity: 0;
       transform: scaleX(0.4);
       transform-origin: center;
       transition:
-        opacity 160ms ease,
-        transform 160ms ease;
+        opacity 180ms ease,
+        transform 180ms ease;
     }
 
     &:hover,
-    &:focus-visible {
-      color: var(--color-primary);
-      transform: translateY(-1px);
+    &:focus-visible,
+    &.is-active {
+      color: var(--nav-accent);
     }
 
-    &.is-active {
-      color: var(--color-primary);
-
-      &::after {
-        opacity: 1;
-        transform: scaleX(1);
-      }
+    &.is-active::after {
+      opacity: 1;
+      transform: scaleX(1);
     }
   }
 
@@ -102,39 +110,20 @@
     .icon {
       display: block;
       width: 24px;
-      transition: transform 160ms ease;
+      transition:
+        filter 180ms ease,
+        opacity 180ms ease;
     }
 
     a:hover .icon,
     a:focus-visible .icon {
-      transform: translateY(-2px) scale(1.05);
+      filter: brightness(1.16);
+      opacity: 0.9;
     }
   }
 
   .desktop-logo {
-    position: relative;
     display: flex;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 50%;
-      width: 30px;
-      height: 2px;
-      border-radius: var(--radius-pill);
-      background: var(--color-primary);
-      opacity: 0;
-      transform: translateX(-50%) scaleX(0.4);
-      transition:
-        opacity 160ms ease,
-        transform 160ms ease;
-    }
-
-    &.is-active::after {
-      opacity: 1;
-      transform: translateX(-50%) scaleX(1);
-    }
   }
 
   .logo {
@@ -150,16 +139,8 @@
   .desktop-header {
     nav:not(.social) ul a,
     nav:not(.social) ul a::after,
-    .social .icon,
-    .desktop-logo::after {
+    .social .icon {
       transition: none;
-    }
-
-    nav:not(.social) ul a:hover,
-    nav:not(.social) ul a:focus-visible,
-    .social a:hover .icon,
-    .social a:focus-visible .icon {
-      transform: none;
     }
   }
 }
@@ -365,32 +346,39 @@
     }
 
     a {
+      --nav-accent: var(--color-primary);
+
       position: relative;
+      transition: color 180ms ease;
 
-      transition:
-        color 160ms ease,
-        transform 160ms ease;
-
-      &:hover,
-      &:focus-visible {
-        color: var(--color-primary);
-        transform: translateX(3px);
+      &.section-blog {
+        --nav-accent: var(--color-accent-chatting);
       }
 
-      &.is-active {
-        color: var(--color-primary);
+      &.section-music {
+        --nav-accent: var(--color-accent-music);
+      }
 
-        &::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: -16px;
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: var(--color-primary);
-          transform: translateY(-50%);
-        }
+      &.section-gaming {
+        --nav-accent: var(--color-accent-gaming);
+      }
+
+      &:hover,
+      &:focus-visible,
+      &.is-active {
+        color: var(--nav-accent);
+      }
+
+      &.is-active::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: -16px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+        transform: translateY(-50%);
       }
     }
   }
