@@ -4,6 +4,8 @@ import type {
   EntityManager,
 } from 'typeorm';
 
+import { communityEventRewardsMigration } from '../community/community-event-rewards.schema-migration';
+
 interface SchemaMigration {
   name: string;
   run: (manager: EntityManager) => Promise<void>;
@@ -494,6 +496,7 @@ const migrations: readonly SchemaMigration[] = [
       `);
     },
   },
+  communityEventRewardsMigration,
 ];
 
 export async function runSchemaMigrations(
