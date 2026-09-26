@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { compare } from 'bcryptjs';
 
 import { CommunityService } from '../community/community.service';
+import { DiscordBotService } from '../community/discord/discord-bot.service';
 import { UserEntry } from '../users/entities/user.entry';
 import { UsersService } from '../users/users.service';
 
@@ -21,6 +22,7 @@ export class AuthService implements OnApplicationBootstrap {
   constructor(
     private readonly usersService: UsersService,
     private readonly communityService: CommunityService,
+    private readonly discordBotService: DiscordBotService,
     configService: ConfigService,
   ) {
     this.configuredAdminEmails = new Set(
@@ -84,6 +86,9 @@ export class AuthService implements OnApplicationBootstrap {
           existingDiscordUser.uuid,
           name,
         );
+      await this.refreshDiscordMembership(
+        discordId,
+      );
 
       return this.toAuthenticatedUser(
         await this.ensureConfiguredAdmin(existingDiscordUser),
@@ -100,6 +105,9 @@ export class AuthService implements OnApplicationBootstrap {
         user.uuid,
         name,
       );
+    await this.refreshDiscordMembership(
+      discordId,
+    );
 
     return this.toAuthenticatedUser(
       await this.ensureConfiguredAdmin(user),
@@ -124,6 +132,23 @@ export class AuthService implements OnApplicationBootstrap {
       discordId: user.discordId,
       role: user.role,
     };
+  }
+
+  private async refreshDiscordMembership(
+    discordId: string,
+  ): Promise<void> {
+    try {
+      await this.discordBotService
+        .refreshMember(discordId);
+    } catch (error: unknown) {
+      this.logger.warn(
+        `Could not refresh Discord membership during sign-in: ${
+          error instanceof Error
+            ? error.message
+            : String(error)
+        }`,
+      );
+    }
   }
 
   private async ensureConfiguredAdmin(

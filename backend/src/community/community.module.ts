@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { UsersModule } from '../users/users.module';
+
 import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { CommunityEventService } from './community-event.service';
@@ -8,6 +10,8 @@ import { CommunityProfileCustomizationService } from './community-profile-custom
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
 import { CommunityProgressionService } from './community-progression.service';
 import { CommunityService } from './community.service';
+import { DiscordBotService } from './discord/discord-bot.service';
+import { DiscordCommunityService } from './discord/discord-community.service';
 import { CommunityEventEntry } from './entities/community-event.entry';
 import { CommunityAchievementConditionEntry } from './entities/community-achievement-condition.entry';
 import { CommunityAchievementEntry } from './entities/community-achievement.entry';
@@ -23,6 +27,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
 
 @Module({
   imports: [
+    UsersModule,
     TypeOrmModule.forFeature([
       CommunityAchievementConditionEntry,
       CommunityAchievementEntry,
@@ -46,6 +51,8 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
     CommunityService,
+    DiscordBotService,
+    DiscordCommunityService,
   ],
   exports: [
     CommunityBalancingDefaultsService,
@@ -55,6 +62,8 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
     CommunityService,
+    DiscordBotService,
+    DiscordCommunityService,
   ],
 })
 export class CommunityModule {}
