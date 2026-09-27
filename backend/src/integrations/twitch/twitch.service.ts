@@ -258,7 +258,7 @@ export class TwitchService implements OnApplicationBootstrap {
     }
   }
 
-  private async getBroadcasterId(): Promise<string> {
+  async getBroadcasterId(): Promise<string> {
     if (this.broadcasterId) {
       return this.broadcasterId;
     }
@@ -318,7 +318,7 @@ export class TwitchService implements OnApplicationBootstrap {
     return response.json() as Promise<T>;
   }
 
-  private async getAppAccessToken(): Promise<string> {
+  async getAppAccessToken(): Promise<string> {
     if (this.token && this.token.expiresAt > Date.now()) {
       return this.token.value;
     }

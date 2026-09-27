@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { TwitchModule } from '../integrations/twitch/twitch.module';
 import { UsersModule } from '../users/users.module';
 
 import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
@@ -25,6 +26,7 @@ import { CommunityProfileEntry } from './entities/community-profile.entry';
 import { CommunityTitleEntry } from './entities/community-title.entry';
 import { CommunityTwitchIdentityEntry } from './twitch/community-twitch-identity.entry';
 import { CommunityTwitchLinkStateEntry } from './twitch/community-twitch-link-state.entry';
+import { CommunityTwitchEventSubService } from './twitch/community-twitch-eventsub.service';
 import { CommunityTwitchIdentityService } from './twitch/community-twitch-identity.service';
 import { DiscordMembershipPeriodEntry } from './entities/discord-membership-period.entry';
 import { UserAchievementEntry } from './entities/user-achievement.entry';
@@ -33,6 +35,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
 
 @Module({
   imports: [
+    TwitchModule,
     UsersModule,
     TypeOrmModule.forFeature([
       CommunityAchievementConditionEntry,
@@ -60,6 +63,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
     CommunityService,
+    CommunityTwitchEventSubService,
     CommunityTwitchIdentityService,
     DiscordBotService,
     DiscordCommunityService,
@@ -74,6 +78,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
     CommunityService,
+    CommunityTwitchEventSubService,
     CommunityTwitchIdentityService,
     DiscordBotService,
     DiscordCommunityService,

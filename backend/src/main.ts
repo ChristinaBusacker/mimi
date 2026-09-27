@@ -6,7 +6,9 @@ import { AppModule } from './app.module';
 import { AUTH_SESSION_COOKIE } from './auth/session-cookie';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+  });
 
   app.setGlobalPrefix('api');
 
