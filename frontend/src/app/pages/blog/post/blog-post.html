@@ -138,4 +138,87 @@
       </div>
     </aside>
   </div>
+
+  <section class="comments">
+    <header class="comments__header">
+      <div>
+        <span>{{ 'blog.comments.eyebrow' | i18n | async }}</span>
+        <h2>{{ 'blog.comments.title' | i18n | async }}</h2>
+      </div>
+      <p>{{ 'blog.comments.intro' | i18n | async }}</p>
+    </header>
+
+    @if (commentsLoading()) {
+      <p class="comments__state">
+        {{ 'blog.comments.loading' | i18n | async }}
+      </p>
+    } @else {
+      <div class="comments__list">
+        @for (comment of comments(); track comment.id) {
+          <article class="comment">
+            <header>
+              <strong
+                [style.color]="comment.author.profileColor ?? null"
+              >
+                {{ comment.author.displayName }}
+              </strong>
+              <time [attr.datetime]="comment.createdAt">
+                {{ formatCommentDate(comment.createdAt, postData.locale) }}
+              </time>
+            </header>
+            <p>{{ comment.content }}</p>
+          </article>
+        } @empty {
+          <p class="comments__state">
+            {{ 'blog.comments.empty' | i18n | async }}
+          </p>
+        }
+      </div>
+    }
+
+    @if (user()) {
+      <div class="comment-form">
+        <label for="blog-comment">
+          {{ 'blog.comments.write' | i18n | async }}
+        </label>
+        <textarea
+          id="blog-comment"
+          rows="5"
+          maxlength="2000"
+          [value]="commentText()"
+          [placeholder]="'blog.comments.placeholder' | i18n | async"
+          (input)="commentText.set($any($event.target).value)"
+        ></textarea>
+        <div class="comment-form__actions">
+          <small>{{ commentText().length }}/2000</small>
+          <app-button
+            class="primary round"
+            [disabled]="commentSaving() || !commentText().trim()"
+            (click)="submitComment()"
+          >
+            {{
+              (commentSaving()
+                ? 'blog.comments.saving'
+                : 'blog.comments.submit')
+                | i18n
+                | async
+            }}
+          </app-button>
+        </div>
+      </div>
+    } @else {
+      <p class="comments__login">
+        {{ 'blog.comments.loginText' | i18n | async }}
+        <a href="/api/auth/discord">
+          {{ 'blog.comments.login' | i18n | async }}
+        </a>
+      </p>
+    }
+
+    @if (commentErrorKey(); as errorKey) {
+      <p class="comments__error" role="alert">
+        {{ errorKey | i18n | async }}
+      </p>
+    }
+  </section>
 </section>

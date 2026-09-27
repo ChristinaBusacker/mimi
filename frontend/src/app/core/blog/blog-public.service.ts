@@ -1,4 +1,8 @@
 import type {
+  BlogComment,
+  CreateBlogComment,
+} from '@shared/blog/blog-comment';
+import type {
   BlogAuthor,
   BlogAuthorPage,
   BlogCategory,
@@ -145,6 +149,33 @@ export class BlogPublicService {
       BlogCategory[]
     >(
       `/blog/categories?locale=${encodeURIComponent(locale)}`,
+    );
+  }
+
+  getComments(
+    slug: string,
+  ): Observable<BlogComment[]> {
+    return this.request.get<
+      BlogComment[]
+    >(
+      `/blog/posts/${encodeURIComponent(slug)}/comments`,
+      {
+        deduplicateAcrossTabs: false,
+        transferCache: false,
+      },
+    );
+  }
+
+  createComment(
+    slug: string,
+    content: string,
+  ): Observable<BlogComment> {
+    return this.request.post<
+      BlogComment,
+      CreateBlogComment
+    >(
+      `/blog/posts/${encodeURIComponent(slug)}/comments`,
+      { content },
     );
   }
 

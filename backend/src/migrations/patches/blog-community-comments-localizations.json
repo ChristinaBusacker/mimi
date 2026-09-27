@@ -1,0 +1,69 @@
+{
+  "localizations": [
+    {
+      "key": "blog.comments.eyebrow",
+      "de": "Community",
+      "en": "Community"
+    },
+    {
+      "key": "blog.comments.title",
+      "de": "Kommentare",
+      "en": "Comments"
+    },
+    {
+      "key": "blog.comments.intro",
+      "de": "Tauscht euch zum Beitrag aus. Sinnvolle Kommentare fließen in die Community-Aktivität ein, ohne dass daraus ein Wettrennen um möglichst viele Nachrichten wird.",
+      "en": "Talk about the post with the community. Meaningful comments contribute to community activity without turning the section into a race for message count."
+    },
+    {
+      "key": "blog.comments.loading",
+      "de": "Kommentare werden geladen …",
+      "en": "Loading comments …"
+    },
+    {
+      "key": "blog.comments.empty",
+      "de": "Noch keine Kommentare. Hier ist verdächtig viel Ruhe.",
+      "en": "No comments yet. Suspiciously quiet in here."
+    },
+    {
+      "key": "blog.comments.write",
+      "de": "Dein Kommentar",
+      "en": "Your comment"
+    },
+    {
+      "key": "blog.comments.placeholder",
+      "de": "Was möchtest du zum Beitrag sagen?",
+      "en": "What would you like to say about the post?"
+    },
+    {
+      "key": "blog.comments.submit",
+      "de": "Kommentieren",
+      "en": "Post comment"
+    },
+    {
+      "key": "blog.comments.saving",
+      "de": "Wird gesendet …",
+      "en": "Posting …"
+    },
+    {
+      "key": "blog.comments.loginText",
+      "de": "Zum Kommentieren brauchst du deinen Community-Account.",
+      "en": "You need your community account to comment."
+    },
+    {
+      "key": "blog.comments.login",
+      "de": "Mit Discord anmelden",
+      "en": "Sign in with Discord"
+    },
+    {
+      "key": "blog.comments.loadFailed",
+      "de": "Die Kommentare konnten nicht geladen werden.",
+      "en": "The comments could not be loaded."
+    },
+    {
+      "key": "blog.comments.saveFailed",
+      "de": "Der Kommentar konnte nicht gespeichert werden. Zum Kommentieren musst du aktuell Mitglied auf Mimis Discord-Server sein.",
+      "en": "The comment could not be saved. You currently need to be a member of Mimi's Discord server to comment."
+    }
+  ]
+}

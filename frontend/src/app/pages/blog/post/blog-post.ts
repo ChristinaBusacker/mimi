@@ -1,8 +1,12 @@
+import type { BlogComment } from '@shared/blog/blog-comment';
+
 import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
+  signal,
 } from '@angular/core';
 import {
   toObservable,
@@ -16,11 +20,13 @@ import { Store } from '@ngxs/store';
 import {
   combineLatest,
   distinctUntilChanged,
+  firstValueFrom,
   map,
   of,
   switchMap,
 } from 'rxjs';
 
+import { Button } from '../../../components/button/button';
 import { Hero } from '../../../components/hero/hero';
 import { Icon } from '../../../components/icon/icon';
 import { RenderedContent } from '../../../components/rendered-content/rendered-content';
@@ -28,6 +34,8 @@ import {
   type BlogPostPageData,
   BlogPublicService,
 } from '../../../core/blog/blog-public.service';
+import { LoadAuthSession } from '../../../core/auth/auth.actions';
+import { AuthState } from '../../../core/auth/auth.state';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { I18nState } from '../../../core/i18n/i18n.state';
 import type { Language } from '../../../core/i18n/i18n.types';
@@ -37,6 +45,7 @@ import type { Language } from '../../../core/i18n/i18n.types';
     ChangeDetectionStrategy.OnPush,
   imports: [
     AsyncPipe,
+    Button,
     Hero,
     Icon,
     I18nPipe,
@@ -64,6 +73,21 @@ export class BlogPostPage {
     this.store.selectSignal(
       I18nState.language,
     );
+
+  protected readonly user =
+    this.store.selectSignal(
+      AuthState.user,
+    );
+  protected readonly comments =
+    signal<BlogComment[]>([]);
+  protected readonly commentsLoading =
+    signal(false);
+  protected readonly commentSaving =
+    signal(false);
+  protected readonly commentText =
+    signal('');
+  protected readonly commentErrorKey =
+    signal<string | null>(null);
 
   protected readonly data = toSignal(
     combineLatest([
@@ -111,6 +135,52 @@ export class BlogPostPage {
     },
   );
 
+  constructor() {
+    this.store.dispatch(
+      new LoadAuthSession(),
+    ).subscribe();
+
+    effect(() => {
+      const slug = this.data().post.slug;
+      void this.loadComments(slug);
+    });
+  }
+
+  protected async submitComment():
+    Promise<void> {
+    const content =
+      this.commentText().trim();
+
+    if (!content || this.commentSaving()) {
+      return;
+    }
+
+    this.commentSaving.set(true);
+    this.commentErrorKey.set(null);
+
+    try {
+      const comment = await firstValueFrom(
+        this.blog.createComment(
+          this.data().post.slug,
+          content,
+        ),
+      );
+
+      this.comments.update((comments) => [
+        ...comments,
+        comment,
+      ]);
+      this.commentText.set('');
+    } catch {
+      this.commentErrorKey.set(
+        'blog.comments.saveFailed',
+      );
+    } finally {
+      this.commentSaving.set(false);
+    }
+  }
+
+
   protected imageVariantUrl(
     assetId: string,
     variant:
@@ -143,5 +213,41 @@ export class BlogPostPage {
     ).format(
       new Date(value),
     );
+  }
+
+  protected formatCommentDate(
+    value: string,
+    locale: Language,
+  ): string {
+    return new Intl.DateTimeFormat(
+      locale === 'de'
+        ? 'de-DE'
+        : 'en-US',
+      {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      },
+    ).format(new Date(value));
+  }
+
+  private async loadComments(
+    slug: string,
+  ): Promise<void> {
+    this.commentsLoading.set(true);
+    this.commentErrorKey.set(null);
+
+    try {
+      this.comments.set(
+        await firstValueFrom(
+          this.blog.getComments(slug),
+        ),
+      );
+    } catch {
+      this.commentErrorKey.set(
+        'blog.comments.loadFailed',
+      );
+    } finally {
+      this.commentsLoading.set(false);
+    }
   }
 }
