@@ -100,10 +100,14 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'community',
+    path: 'community/dashboard',
+    canActivate: [
+      authenticatedGuard,
+    ],
     loadComponent: () =>
-      import('./pages/community/community').then(
-        (module) => module.CommunityPage,
+      import('./pages/community/dashboard/community-dashboard').then(
+        (module) =>
+          module.CommunityDashboardPage,
       ),
   },
   {

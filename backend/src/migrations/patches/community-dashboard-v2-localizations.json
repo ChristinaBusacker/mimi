@@ -32,8 +32,8 @@
     },
     {
       "key": "community.landing.stats.online",
-      "de": "meist online",
-      "en": "usually online"
+      "de": "meist gleichzeitig online",
+      "en": "usually online at once"
     },
     {
       "key": "community.landing.stats.progress",

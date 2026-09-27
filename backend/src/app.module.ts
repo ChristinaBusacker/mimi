@@ -31,7 +31,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     CommunityModule,
     CommunityAdminModule,
     CommunityAccountModule,
-    CommunityAccountModule,
     LocalizationsModule,
     MailModule,
     MigrationsModule,
