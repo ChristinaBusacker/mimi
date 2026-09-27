@@ -16,6 +16,7 @@ import { MigrationsModule } from './migrations/migrations.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { GamingModule } from './gaming/gaming.module';
 import { MusicModule } from './music/music.module';
+import { PushModule } from './push/push.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -39,6 +40,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     IntegrationsModule,
     GamingModule,
     MusicModule,
+    PushModule,
   ],
   controllers: [AppController],
   providers: [],
