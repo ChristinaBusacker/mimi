@@ -67,6 +67,10 @@
       --nav-accent: var(--color-accent-gaming);
     }
 
+    &.section-community {
+      --nav-accent: var(--color-accent-community);
+    }
+
     &::after {
       content: '';
       position: absolute;
@@ -361,6 +365,10 @@
 
       &.section-gaming {
         --nav-accent: var(--color-accent-gaming);
+      }
+
+      &.section-community {
+        --nav-accent: var(--color-accent-community);
       }
 
       &:hover,

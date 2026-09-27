@@ -84,8 +84,8 @@
   }
 
   &.community {
-    --hero-accent: #5865f2;
-    --hero-accent-soft: rgb(88 101 242 / 22%);
+    --hero-accent: var(--color-accent-community);
+    --hero-accent-soft: color-mix(in srgb, var(--color-accent-community) 22%, transparent);
     --hero-tint: rgb(50 54 132 / 44%);
 
     &::before {
