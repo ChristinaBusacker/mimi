@@ -5,12 +5,22 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
+
+const noCacheStaticFiles = new Set([
+  'index.csr.html',
+  'index.html',
+  'manifest.webmanifest',
+  'ngsw-worker.js',
+  'ngsw.json',
+  'safety-worker.js',
+  'worker-basic.min.js',
+]);
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -32,6 +42,11 @@ app.use(
     maxAge: '1y',
     index: false,
     redirect: false,
+    setHeaders: (response, filePath) => {
+      if (noCacheStaticFiles.has(basename(filePath))) {
+        response.setHeader('Cache-Control', 'no-cache');
+      }
+    },
   }),
 );
 
