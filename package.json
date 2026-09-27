@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "concurrently --kill-others-on-fail \"npm:frontend:start\" \"npm:backend:start\"",
     "build": "npm run frontend:build && npm run backend:build",
+    "localizations:audit": "node scripts/audit-localizations.mjs",
     "frontend:start": "ng serve frontend",
     "frontend:build": "ng build frontend",
     "frontend:test": "ng test frontend",
