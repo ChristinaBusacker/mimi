@@ -7,6 +7,13 @@ export interface MimiExport<TData = unknown> {
   data: TData;
 }
 
+export interface MimiExportBundle {
+  format: 'mimi-export-bundle';
+  version: 1;
+  exportedAt: string;
+  sections: MimiExport[];
+}
+
 export interface DataTransferProviderInfo {
   type: string;
   schemaVersion: number;

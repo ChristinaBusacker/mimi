@@ -238,6 +238,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'data-transfer',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/data-transfer/admin-data-transfer').then(
+            (module) => module.AdminDataTransfer,
+          ),
+      },
+      {
         path: 'community/discord-roles',
         canActivate: [adminGuard],
         loadComponent: () =>

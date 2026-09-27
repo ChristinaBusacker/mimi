@@ -1,0 +1,146 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.admin-data-transfer {
+  display: grid;
+  gap: var(--spacing-md);
+
+  h1,
+  h2,
+  p,
+  dl,
+  dd {
+    margin: 0;
+  }
+
+  p {
+    line-height: 1.5;
+  }
+}
+
+.admin-data-transfer__header p,
+.admin-data-transfer__bundle p,
+.admin-data-transfer__card p {
+  margin-top: var(--spacing-xs);
+  opacity: 0.82;
+}
+
+.admin-data-transfer__bundle,
+.admin-data-transfer__card,
+.admin-data-transfer__preview,
+.admin-data-transfer__status {
+  @include framed(var(--control-border-width));
+
+  background: var(--color-menu-surface);
+}
+
+.admin-data-transfer__bundle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.admin-data-transfer__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.admin-data-transfer__card {
+  display: grid;
+  align-content: space-between;
+  gap: var(--spacing-md);
+  min-width: 0;
+  padding: var(--spacing-md);
+
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+}
+
+.admin-data-transfer__file-input {
+  display: none;
+}
+
+.admin-data-transfer__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+}
+
+.admin-data-transfer__status--error {
+  border-color: var(--color-error, #9d2f2f);
+}
+
+.admin-data-transfer__status--warning {
+  background: var(--color-surface-translucent);
+}
+
+.admin-data-transfer__status--success {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-data-transfer__preview {
+  display: grid;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+
+  > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+  }
+
+  > footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+}
+
+.admin-data-transfer__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-xs);
+
+  div {
+    padding: var(--spacing-sm);
+    background: var(--color-surface-translucent);
+    border-radius: var(--radius-card);
+  }
+
+  dt {
+    font-size: 0.84rem;
+    font-weight: 700;
+    opacity: 0.78;
+  }
+
+  dd {
+    margin-top: 4px;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+}
+
+@include compact-layout {
+  .admin-data-transfer__bundle,
+  .admin-data-transfer__preview > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-data-transfer__cards,
+  .admin-data-transfer__summary {
+    grid-template-columns: 1fr;
+  }
+}

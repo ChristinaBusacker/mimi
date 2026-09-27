@@ -73,6 +73,13 @@
         </a>
 
         <a
+          routerLink="/admin/data-transfer"
+          routerLinkActive="active"
+        >
+          {{ 'admin.nav.dataTransfer' | i18n | async }}
+        </a>
+
+        <a
           routerLink="/admin/community"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"

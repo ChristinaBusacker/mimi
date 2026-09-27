@@ -1,0 +1,169 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.dataTransfer",
+      "de": "Datentransfer",
+      "en": "Data transfer"
+    },
+    {
+      "key": "admin.dataTransfer.title",
+      "de": "Datentransfer",
+      "en": "Data transfer"
+    },
+    {
+      "key": "admin.dataTransfer.description",
+      "de": "Einstellungen exportieren, prüfen und gezielt wieder importieren.",
+      "en": "Export, validate and selectively restore settings."
+    },
+    {
+      "key": "admin.dataTransfer.bundle.title",
+      "de": "Sammel-Export",
+      "en": "Combined export"
+    },
+    {
+      "key": "admin.dataTransfer.bundle.description",
+      "de": "Exportiert alle aktuell verfügbaren Einstellungsbereiche gemeinsam in eine Datei.",
+      "en": "Exports all currently available settings sections into one file."
+    },
+    {
+      "key": "admin.dataTransfer.bundle.export",
+      "de": "Alle Einstellungen exportieren",
+      "en": "Export all settings"
+    },
+    {
+      "key": "admin.dataTransfer.bundle.exporting",
+      "de": "Export wird erstellt …",
+      "en": "Creating export …"
+    },
+    {
+      "key": "admin.dataTransfer.section.localizations.title",
+      "de": "Lokalisierungen",
+      "en": "Localizations"
+    },
+    {
+      "key": "admin.dataTransfer.section.localizations.description",
+      "de": "Deutsche und englische Texte anhand ihrer stabilen Schlüssel sichern oder wieder einspielen.",
+      "en": "Back up or restore German and English text values using their stable keys."
+    },
+    {
+      "key": "admin.dataTransfer.section.communitySettings.title",
+      "de": "Community-Einstellungen",
+      "en": "Community settings"
+    },
+    {
+      "key": "admin.dataTransfer.section.communitySettings.description",
+      "de": "XP-Regeln, Level, Titel, Achievements und Discord-Rollendefinitionen sichern oder wieder einspielen.",
+      "en": "Back up or restore XP rules, levels, titles, achievements and Discord role definitions."
+    },
+    {
+      "key": "admin.dataTransfer.action.export",
+      "de": "Exportieren",
+      "en": "Export"
+    },
+    {
+      "key": "admin.dataTransfer.action.import",
+      "de": "Importdatei auswählen",
+      "en": "Select import file"
+    },
+    {
+      "key": "admin.dataTransfer.action.working",
+      "de": "Wird verarbeitet …",
+      "en": "Processing …"
+    },
+    {
+      "key": "admin.dataTransfer.action.confirmImport",
+      "de": "Import bestätigen",
+      "en": "Confirm import"
+    },
+    {
+      "key": "admin.dataTransfer.action.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.dataTransfer.status.loading",
+      "de": "Verfügbare Bereiche werden geladen …",
+      "en": "Loading available sections …"
+    },
+    {
+      "key": "admin.dataTransfer.status.loadFailed",
+      "de": "Die verfügbaren Datentransfer-Bereiche konnten nicht geladen werden.",
+      "en": "The available data transfer sections could not be loaded."
+    },
+    {
+      "key": "admin.dataTransfer.status.unavailable",
+      "de": "Dieser Bereich ist im Backend derzeit nicht verfügbar.",
+      "en": "This section is currently unavailable in the backend."
+    },
+    {
+      "key": "admin.dataTransfer.status.exportFailed",
+      "de": "Der Export konnte nicht erstellt werden.",
+      "en": "The export could not be created."
+    },
+    {
+      "key": "admin.dataTransfer.status.bundleExportFailed",
+      "de": "Der Sammel-Export konnte nicht erstellt werden.",
+      "en": "The combined export could not be created."
+    },
+    {
+      "key": "admin.dataTransfer.status.readFailed",
+      "de": "Die ausgewählte Datei ist keine gültige JSON-Datei.",
+      "en": "The selected file is not valid JSON."
+    },
+    {
+      "key": "admin.dataTransfer.status.validationFailed",
+      "de": "Die Importdatei ist ungültig, inkompatibel oder enthält nicht unterstützte Einstellungen.",
+      "en": "The import file is invalid, incompatible or contains unsupported settings."
+    },
+    {
+      "key": "admin.dataTransfer.status.importFailed",
+      "de": "Der Import konnte nicht vollständig durchgeführt werden. Bitte prüfe die betroffenen Einstellungen.",
+      "en": "The import could not be completed. Please review the affected settings."
+    },
+    {
+      "key": "admin.dataTransfer.status.imported",
+      "de": "Import abgeschlossen.",
+      "en": "Import completed."
+    },
+    {
+      "key": "admin.dataTransfer.preview.title",
+      "de": "Import prüfen",
+      "en": "Review import"
+    },
+    {
+      "key": "admin.dataTransfer.preview.file",
+      "de": "Datei",
+      "en": "File"
+    },
+    {
+      "key": "admin.dataTransfer.preview.created",
+      "de": "Neu",
+      "en": "New"
+    },
+    {
+      "key": "admin.dataTransfer.preview.updated",
+      "de": "Geändert",
+      "en": "Changed"
+    },
+    {
+      "key": "admin.dataTransfer.preview.unchanged",
+      "de": "Unverändert",
+      "en": "Unchanged"
+    },
+    {
+      "key": "admin.dataTransfer.preview.deleted",
+      "de": "Entfernt",
+      "en": "Removed"
+    },
+    {
+      "key": "admin.dataTransfer.preview.retainedWarning",
+      "de": "Hinweis: Bestehende Einträge, die nicht in der Importdatei enthalten sind, bleiben erhalten.",
+      "en": "Note: Existing entries that are not included in the import file will be kept."
+    },
+    {
+      "key": "admin.dataTransfer.preview.confirmHint",
+      "de": "Bis zur Bestätigung wurde noch nichts gespeichert.",
+      "en": "Nothing has been saved before you confirm the import."
+    }
+  ]
+}

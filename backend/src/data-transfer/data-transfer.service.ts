@@ -3,6 +3,7 @@ import type {
   DataTransferProviderInfo,
   DataTransferValidationResult,
   MimiExport,
+  MimiExportBundle,
 } from '@shared/data-transfer/data-transfer';
 import {
   BadRequestException,
@@ -69,6 +70,24 @@ export class DataTransferService {
         right.type,
       ),
     );
+  }
+
+  async exportAll():
+    Promise<MimiExportBundle> {
+    const providers =
+      this.listProviders();
+
+    return {
+      format: 'mimi-export-bundle',
+      version: 1,
+      exportedAt:
+        new Date().toISOString(),
+      sections: await Promise.all(
+        providers.map(({ type }) =>
+          this.export(type),
+        ),
+      ),
+    };
   }
 
   async export(

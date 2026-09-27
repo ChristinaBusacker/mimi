@@ -1,0 +1,222 @@
+<section class="admin-data-transfer">
+  <header class="admin-data-transfer__header">
+    <div>
+      <h1>{{ 'admin.dataTransfer.title' | i18n | async }}</h1>
+      <p>{{ 'admin.dataTransfer.description' | i18n | async }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p class="admin-data-transfer__status">
+      {{ 'admin.dataTransfer.status.loading' | i18n | async }}
+    </p>
+  } @else {
+    <section class="admin-data-transfer__bundle">
+      <div>
+        <h2>{{ 'admin.dataTransfer.bundle.title' | i18n | async }}</h2>
+        <p>{{ 'admin.dataTransfer.bundle.description' | i18n | async }}</p>
+      </div>
+
+      <app-button
+        class="primary round"
+        [disabled]="exportingBundle() || busyType() !== null"
+        (click)="exportAll()"
+      >
+        @if (exportingBundle()) {
+          {{ 'admin.dataTransfer.bundle.exporting' | i18n | async }}
+        } @else {
+          {{ 'admin.dataTransfer.bundle.export' | i18n | async }}
+        }
+      </app-button>
+    </section>
+
+    <div class="admin-data-transfer__cards">
+      <article class="admin-data-transfer__card">
+        <div>
+          <h2>{{ 'admin.dataTransfer.section.localizations.title' | i18n | async }}</h2>
+          <p>{{ 'admin.dataTransfer.section.localizations.description' | i18n | async }}</p>
+        </div>
+
+        @if (!isAvailable('localizations')) {
+          <p class="admin-data-transfer__status admin-data-transfer__status--warning">
+            {{ 'admin.dataTransfer.status.unavailable' | i18n | async }}
+          </p>
+        }
+
+        <footer>
+          <app-button
+            class="secondary round"
+            [disabled]="!isAvailable('localizations') || busyType() !== null || exportingBundle()"
+            (click)="exportSection('localizations')"
+          >
+            @if (isBusy('localizations')) {
+              {{ 'admin.dataTransfer.action.working' | i18n | async }}
+            } @else {
+              {{ 'admin.dataTransfer.action.export' | i18n | async }}
+            }
+          </app-button>
+
+          <input
+            #localizationsImport
+            class="admin-data-transfer__file-input"
+            type="file"
+            accept="application/json,.json"
+            (change)="selectImport('localizations', $event)"
+          />
+          <app-button
+            class="secondary round"
+            [disabled]="!isAvailable('localizations') || busyType() !== null || exportingBundle()"
+            (click)="localizationsImport.click()"
+          >
+            {{ 'admin.dataTransfer.action.import' | i18n | async }}
+          </app-button>
+        </footer>
+      </article>
+
+      <article class="admin-data-transfer__card">
+        <div>
+          <h2>{{ 'admin.dataTransfer.section.communitySettings.title' | i18n | async }}</h2>
+          <p>{{ 'admin.dataTransfer.section.communitySettings.description' | i18n | async }}</p>
+        </div>
+
+        @if (!isAvailable('community-settings')) {
+          <p class="admin-data-transfer__status admin-data-transfer__status--warning">
+            {{ 'admin.dataTransfer.status.unavailable' | i18n | async }}
+          </p>
+        }
+
+        <footer>
+          <app-button
+            class="secondary round"
+            [disabled]="!isAvailable('community-settings') || busyType() !== null || exportingBundle()"
+            (click)="exportSection('community-settings')"
+          >
+            @if (isBusy('community-settings')) {
+              {{ 'admin.dataTransfer.action.working' | i18n | async }}
+            } @else {
+              {{ 'admin.dataTransfer.action.export' | i18n | async }}
+            }
+          </app-button>
+
+          <input
+            #communityImport
+            class="admin-data-transfer__file-input"
+            type="file"
+            accept="application/json,.json"
+            (change)="selectImport('community-settings', $event)"
+          />
+          <app-button
+            class="secondary round"
+            [disabled]="!isAvailable('community-settings') || busyType() !== null || exportingBundle()"
+            (click)="communityImport.click()"
+          >
+            {{ 'admin.dataTransfer.action.import' | i18n | async }}
+          </app-button>
+        </footer>
+      </article>
+    </div>
+  }
+
+  @if (error(); as currentError) {
+    <p class="admin-data-transfer__status admin-data-transfer__status--error">
+      @switch (currentError.action) {
+        @case ('load') {
+          {{ 'admin.dataTransfer.status.loadFailed' | i18n | async }}
+        }
+        @case ('export') {
+          {{ 'admin.dataTransfer.status.exportFailed' | i18n | async }}
+        }
+        @case ('bundle-export') {
+          {{ 'admin.dataTransfer.status.bundleExportFailed' | i18n | async }}
+        }
+        @case ('read') {
+          {{ 'admin.dataTransfer.status.readFailed' | i18n | async }}
+        }
+        @case ('validate') {
+          {{ 'admin.dataTransfer.status.validationFailed' | i18n | async }}
+        }
+        @case ('import') {
+          {{ 'admin.dataTransfer.status.importFailed' | i18n | async }}
+        }
+      }
+    </p>
+  }
+
+  @if (pendingImport(); as pending) {
+    <section class="admin-data-transfer__preview">
+      <header>
+        <div>
+          <h2>{{ 'admin.dataTransfer.preview.title' | i18n | async }}</h2>
+          <p>
+            <strong>{{ 'admin.dataTransfer.preview.file' | i18n | async }}:</strong>
+            {{ pending.fileName }}
+          </p>
+        </div>
+
+        @if (pending.type === 'localizations') {
+          <strong>{{ 'admin.dataTransfer.section.localizations.title' | i18n | async }}</strong>
+        } @else {
+          <strong>{{ 'admin.dataTransfer.section.communitySettings.title' | i18n | async }}</strong>
+        }
+      </header>
+
+      <dl class="admin-data-transfer__summary">
+        <div>
+          <dt>{{ 'admin.dataTransfer.preview.created' | i18n | async }}</dt>
+          <dd>{{ pending.validation.preview.summary.created }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'admin.dataTransfer.preview.updated' | i18n | async }}</dt>
+          <dd>{{ pending.validation.preview.summary.updated }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'admin.dataTransfer.preview.unchanged' | i18n | async }}</dt>
+          <dd>{{ pending.validation.preview.summary.unchanged }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'admin.dataTransfer.preview.deleted' | i18n | async }}</dt>
+          <dd>{{ pending.validation.preview.summary.deleted }}</dd>
+        </div>
+      </dl>
+
+      @if (pending.validation.preview.warnings.length > 0) {
+        <p class="admin-data-transfer__status admin-data-transfer__status--warning">
+          {{ 'admin.dataTransfer.preview.retainedWarning' | i18n | async }}
+        </p>
+      }
+
+      <p>{{ 'admin.dataTransfer.preview.confirmHint' | i18n | async }}</p>
+
+      <footer>
+        <app-button
+          class="primary round"
+          [disabled]="isBusy(pending.type)"
+          (click)="confirmImport()"
+        >
+          @if (isBusy(pending.type)) {
+            {{ 'admin.dataTransfer.action.working' | i18n | async }}
+          } @else {
+            {{ 'admin.dataTransfer.action.confirmImport' | i18n | async }}
+          }
+        </app-button>
+        <app-button
+          class="secondary round"
+          [disabled]="isBusy(pending.type)"
+          (click)="cancelImport()"
+        >
+          {{ 'admin.dataTransfer.action.cancel' | i18n | async }}
+        </app-button>
+      </footer>
+    </section>
+  }
+
+  @if (importSuccess(); as success) {
+    <section class="admin-data-transfer__status admin-data-transfer__status--success">
+      <strong>{{ 'admin.dataTransfer.status.imported' | i18n | async }}</strong>
+      <span>
+        {{ success.result.summary.created }} {{ 'admin.dataTransfer.preview.created' | i18n | async }},
+        {{ success.result.summary.updated }} {{ 'admin.dataTransfer.preview.updated' | i18n | async }}
+      </span>
+    </section>
+  }
+</section>

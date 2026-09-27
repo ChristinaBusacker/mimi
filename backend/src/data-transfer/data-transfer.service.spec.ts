@@ -147,6 +147,48 @@ describe(
     );
 
     it(
+      'exports all registered providers as one bundle',
+      async () => {
+        const service =
+          new DataTransferService();
+
+        service.register(
+          createProvider('second'),
+        );
+        service.register(
+          createProvider('first'),
+        );
+
+        const result =
+          await service.exportAll();
+
+        expect(result).toMatchObject({
+          format: 'mimi-export-bundle',
+          version: 1,
+          sections: [
+            {
+              format: 'mimi-export',
+              type: 'first',
+              schemaVersion: 1,
+            },
+            {
+              format: 'mimi-export',
+              type: 'second',
+              schemaVersion: 1,
+            },
+          ],
+        });
+        expect(
+          Number.isNaN(
+            Date.parse(
+              result.exportedAt,
+            ),
+          ),
+        ).toBe(false);
+      },
+    );
+
+    it(
       'validates an import without writing data',
       async () => {
         const service =

@@ -3,6 +3,7 @@ import type {
   DataTransferProviderInfo,
   DataTransferValidationResult,
   MimiExport,
+  MimiExportBundle,
 } from '@shared/data-transfer/data-transfer';
 import {
   Body,
@@ -51,6 +52,17 @@ export class DataTransferController {
     DataTransferProviderInfo[] {
     return this.dataTransfer
       .listProviders();
+  }
+
+  @Get('bundle')
+  @ApiOperation({
+    summary:
+      'Export all registered data transfer sections as one bundle',
+  })
+  exportAll():
+    Promise<MimiExportBundle> {
+    return this.dataTransfer
+      .exportAll();
   }
 
   @Get(':type/export')
