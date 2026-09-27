@@ -1,6 +1,9 @@
 import type {
   CommunityDashboard,
 } from '@shared/community/community-dashboard';
+import type {
+  CommunityPublicSummary,
+} from '@shared/community/community-public';
 
 import {
   AsyncPipe,
@@ -8,6 +11,8 @@ import {
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  afterNextRender,
   effect,
   inject,
   signal,
@@ -22,9 +27,12 @@ import {
   firstValueFrom,
 } from 'rxjs';
 
+import { Button } from '../../components/button/button';
+import { Hero } from '../../components/hero/hero';
 import { LoadAuthSession } from '../../core/auth/auth.actions';
 import { AuthState } from '../../core/auth/auth.state';
 import { CommunityDashboardService } from '../../core/community/community-dashboard.service';
+import { CommunityPublicService } from '../../core/community/community-public.service';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 
 @Component({
@@ -32,6 +40,8 @@ import { I18nPipe } from '../../core/i18n/i18n.pipe';
     ChangeDetectionStrategy.OnPush,
   imports: [
     AsyncPipe,
+    Button,
+    Hero,
     I18nPipe,
     RouterLink,
   ],
@@ -41,9 +51,12 @@ import { I18nPipe } from '../../core/i18n/i18n.pipe';
 })
 export class CommunityPage {
   private readonly store = inject(Store);
+  private readonly destroyRef =
+    inject(DestroyRef);
   private readonly dashboardService =
     inject(CommunityDashboardService);
-
+  private readonly publicService =
+    inject(CommunityPublicService);
   private loadedUserUuid: string | null =
     null;
 
@@ -59,10 +72,28 @@ export class CommunityPage {
     signal<CommunityDashboard | null>(
       null,
     );
+  protected readonly summary =
+    signal<CommunityPublicSummary | null>(
+      null,
+    );
   protected readonly loadingState =
     signal(false);
 
   constructor() {
+    void this.loadSummary();
+
+    afterNextRender(() => {
+      const intervalId =
+        window.setInterval(
+          () => void this.loadSummary(),
+          30_000,
+        );
+
+      this.destroyRef.onDestroy(() =>
+        window.clearInterval(intervalId),
+      );
+    });
+
     this.store.dispatch(
       new LoadAuthSession(),
     ).subscribe();
@@ -80,7 +111,6 @@ export class CommunityPage {
         this.membershipState.set(null);
         this.loadedUserUuid = null;
         this.loadingState.set(false);
-
         return;
       }
 
@@ -94,6 +124,22 @@ export class CommunityPage {
       this.loadedUserUuid = user.uuid;
       void this.loadMembershipState();
     });
+  }
+
+  protected inviteUrl(): string | null {
+    return this.summary()?.discord.inviteUrl ?? null;
+  }
+
+  private async loadSummary(): Promise<void> {
+    try {
+      this.summary.set(
+        await firstValueFrom(
+          this.publicService.getSummary(),
+        ),
+      );
+    } catch {
+      this.summary.set(null);
+    }
   }
 
   private async loadMembershipState():

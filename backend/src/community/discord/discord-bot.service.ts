@@ -9,6 +9,9 @@ import { Interval } from '@nestjs/schedule';
 import type {
   CommunityDiscordRoleCatalog,
 } from '@shared/community/community-discord';
+import type {
+  CommunityPublicSummary,
+} from '@shared/community/community-public';
 
 import {
   Client,
@@ -22,6 +25,7 @@ import {
   DiscordCommunityService,
   type DiscordCommunityMember,
 } from './discord-community.service';
+import { DiscordPublicCommunityService } from './discord-public-community.service';
 import { DiscordRoleSyncService } from './discord-role-sync.service';
 
 const MEMBERSHIP_RECONCILIATION_INTERVAL_MS =
@@ -42,17 +46,21 @@ export class DiscordBotService
     intents: [
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.GuildPresences,
       GatewayIntentBits.GuildMessages,
       GatewayIntentBits.MessageContent,
     ],
   });
   private handlersRegistered = false;
   private reconciliationRunning = false;
+  private membersLoaded = false;
 
   constructor(
     config: ConfigService,
     private readonly community:
       DiscordCommunityService,
+    private readonly publicCommunity:
+      DiscordPublicCommunityService,
     private readonly roleSync:
       DiscordRoleSyncService,
   ) {
@@ -166,6 +174,46 @@ export class DiscordBotService
     }
   }
 
+  async getPublicSummary():
+    Promise<CommunityPublicSummary> {
+    const configured =
+      this.token !== null &&
+      this.guildId !== null;
+
+    if (
+      !configured ||
+      !this.guildId ||
+      !this.client.isReady()
+    ) {
+      return this.publicCommunity
+        .disconnected(configured);
+    }
+
+    try {
+      const guild =
+        await this.client.guilds.fetch(
+          this.guildId,
+        );
+
+      if (!this.membersLoaded) {
+        await guild.members.fetch({
+          withPresences: true,
+        });
+        this.membersLoaded = true;
+      }
+
+      return this.publicCommunity
+        .getSummary(guild);
+    } catch (error: unknown) {
+      this.logger.warn(
+        `Could not load Discord community summary: ${this.errorMessage(error)}`,
+      );
+
+      return this.publicCommunity
+        .disconnected(true);
+    }
+  }
+
   async refreshMember(
     discordId: string,
   ): Promise<void> {
@@ -194,6 +242,7 @@ export class DiscordBotService
       await this.roleSync.syncMember(
         member,
       );
+      this.publicCommunity.invalidate();
     } catch (error: unknown) {
       if (
         this.discordErrorCode(error) ===
@@ -202,6 +251,7 @@ export class DiscordBotService
         await this.community.removeMember(
           discordId,
         );
+        this.publicCommunity.invalidate();
         return;
       }
 
@@ -230,7 +280,11 @@ export class DiscordBotService
           this.guildId,
         );
       const members =
-        await guild.members.fetch();
+        await guild.members.fetch({
+          withPresences: true,
+        });
+      this.membersLoaded = true;
+      this.publicCommunity.invalidate();
 
       await this.community.reconcileMembers(
         Array.from(
@@ -269,6 +323,8 @@ export class DiscordBotService
         this.logger.log(
           `Discord community bot connected as ${client.user.tag}.`,
         );
+        this.membersLoaded = false;
+        this.publicCommunity.invalidate();
 
         void this.reconcileMembership();
       },
@@ -280,6 +336,8 @@ export class DiscordBotService
         if (!this.isConfiguredGuild(member.guild.id)) {
           return;
         }
+
+        this.publicCommunity.invalidate();
 
         void this.community
           .syncMember(
@@ -305,6 +363,8 @@ export class DiscordBotService
           return;
         }
 
+        this.publicCommunity.invalidate();
+
         void this.community
           .removeMember(member.id)
           .catch((error: unknown) => {
@@ -312,6 +372,21 @@ export class DiscordBotService
               `Could not process Discord member leave: ${this.errorMessage(error)}`,
             );
           });
+      },
+    );
+
+    this.client.on(
+      Events.PresenceUpdate,
+      (_previous, current) => {
+        if (
+          !this.isConfiguredGuild(
+            current.guild?.id ?? null,
+          )
+        ) {
+          return;
+        }
+
+        this.publicCommunity.invalidate();
       },
     );
 

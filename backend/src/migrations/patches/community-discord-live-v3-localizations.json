@@ -1,0 +1,274 @@
+{
+  "localizations": [
+    {
+      "key": "community.live.hero.eyebrow",
+      "de": "Discord Community",
+      "en": "Discord community"
+    },
+    {
+      "key": "community.live.hero.title",
+      "de": "Nicht nur zuschauen. Dazugehören.",
+      "en": "Do more than watch. Belong."
+    },
+    {
+      "key": "community.live.hero.description",
+      "de": "Auf Mimis Discord wird aus Streams eine Community: reden, lachen, gemeinsam etwas erleben und ganz nebenbei Fortschritt für dein Community-Profil sammeln.",
+      "en": "Mimi's Discord turns streams into a community: talk, laugh, share moments and build progress for your community profile along the way."
+    },
+    {
+      "key": "community.live.hero.join",
+      "de": "Discord beitreten",
+      "en": "Join Discord"
+    },
+    {
+      "key": "community.live.hero.dashboard",
+      "de": "Mein Dashboard",
+      "en": "My dashboard"
+    },
+    {
+      "key": "community.live.hero.login",
+      "de": "Mit Discord anmelden",
+      "en": "Sign in with Discord"
+    },
+    {
+      "key": "community.live.card.server",
+      "de": "Mimis Server",
+      "en": "Mimi's server"
+    },
+    {
+      "key": "community.live.card.fallbackName",
+      "de": "Mimis Community",
+      "en": "Mimi's community"
+    },
+    {
+      "key": "community.live.card.members",
+      "de": "Mitglieder",
+      "en": "members"
+    },
+    {
+      "key": "community.live.card.online",
+      "de": "gerade online",
+      "en": "online now"
+    },
+    {
+      "key": "community.live.card.liveHint",
+      "de": "Die Zahlen kommen live vom Discord-Server und werden regelmäßig aktualisiert.",
+      "en": "These numbers come live from the Discord server and are refreshed regularly."
+    },
+    {
+      "key": "community.live.card.unavailable",
+      "de": "Discord ist gerade nicht erreichbar. Die Community läuft trotzdem nicht weg – versuch es gleich noch einmal.",
+      "en": "Discord is currently unavailable. The community is not going anywhere – try again in a moment."
+    },
+    {
+      "key": "community.live.showcase.eyebrow",
+      "de": "Mehr als ein Chat",
+      "en": "More than a chat"
+    },
+    {
+      "key": "community.live.showcase.title",
+      "de": "Hier passiert das Dazwischen",
+      "en": "This is where the in-between happens"
+    },
+    {
+      "key": "community.live.showcase.description",
+      "de": "Streams haben Anfang und Ende. Community nicht. Auf Discord bleibt Platz für Gespräche, spontane Aktionen und die Dinge, die zwischen zwei Sendungen entstehen.",
+      "en": "Streams have a beginning and an end. Community does not. Discord leaves room for conversations, spontaneous activities and everything that happens between broadcasts."
+    },
+    {
+      "key": "community.live.showcase.talkEyebrow",
+      "de": "Gespräche",
+      "en": "Conversations"
+    },
+    {
+      "key": "community.live.showcase.talkTitle",
+      "de": "Zwischen den Streams",
+      "en": "Between the streams"
+    },
+    {
+      "key": "community.live.showcase.talkText",
+      "de": "Weiterreden, Fragen stellen, Unsinn machen oder einfach mitlesen. Nicht alles muss in einen einzelnen Chat-Moment passen.",
+      "en": "Keep talking, ask questions, be silly or simply read along. Not everything has to fit into a single chat moment."
+    },
+    {
+      "key": "community.live.showcase.eventsEyebrow",
+      "de": "Gemeinsam",
+      "en": "Together"
+    },
+    {
+      "key": "community.live.showcase.eventsTitle",
+      "de": "Events & gemeinsame Abende",
+      "en": "Events & shared evenings"
+    },
+    {
+      "key": "community.live.showcase.eventsText",
+      "de": "Streams, Community-Aktionen und spontane Ideen lassen sich besser gemeinsam erleben, wenn man weiß, wo die anderen sind.",
+      "en": "Streams, community activities and spontaneous ideas are simply better together when you know where everyone is."
+    },
+    {
+      "key": "community.live.showcase.insiderEyebrow",
+      "de": "Mittendrin",
+      "en": "In the middle of it"
+    },
+    {
+      "key": "community.live.showcase.insiderTitle",
+      "de": "Insider & Community",
+      "en": "Inside jokes & community"
+    },
+    {
+      "key": "community.live.showcase.insiderText",
+      "de": "Running Gags, vertraute Namen und gemeinsame Erinnerungen entstehen nicht durch eine Follower-Zahl, sondern dadurch, dass Menschen wiederkommen.",
+      "en": "Running jokes, familiar names and shared memories do not come from a follower count, but from people coming back."
+    },
+    {
+      "key": "community.live.journey.eyebrow",
+      "de": "Dein Fortschritt",
+      "en": "Your progress"
+    },
+    {
+      "key": "community.live.journey.title",
+      "de": "Mitmachen wird sichtbar",
+      "en": "Participation becomes visible"
+    },
+    {
+      "key": "community.live.journey.description",
+      "de": "XP sind kein Selbstzweck. Sie verbinden deine Aktivität mit Leveln, Achievements und Dingen, die du später auf deinem Profil und auf Discord zeigen kannst.",
+      "en": "XP are not the point by themselves. They connect your activity with levels, achievements and things you can later show on your profile and Discord."
+    },
+    {
+      "key": "community.live.journey.participate",
+      "de": "Dabei sein",
+      "en": "Take part"
+    },
+    {
+      "key": "community.live.journey.participateText",
+      "de": "Discord, Streams und Community",
+      "en": "Discord, streams and community"
+    },
+    {
+      "key": "community.live.journey.xpText",
+      "de": "Aktivität wird Fortschritt",
+      "en": "Activity becomes progress"
+    },
+    {
+      "key": "community.live.journey.level",
+      "de": "Level steigen",
+      "en": "Level up"
+    },
+    {
+      "key": "community.live.journey.levelText",
+      "de": "Dein Weg wird sichtbar",
+      "en": "Make your journey visible"
+    },
+    {
+      "key": "community.live.journey.achievements",
+      "de": "Achievements",
+      "en": "Achievements"
+    },
+    {
+      "key": "community.live.journey.achievementsText",
+      "de": "Besondere Meilensteine behalten",
+      "en": "Keep special milestones"
+    },
+    {
+      "key": "community.live.journey.rewards",
+      "de": "Freischalten",
+      "en": "Unlock"
+    },
+    {
+      "key": "community.live.journey.rewardsText",
+      "de": "Titel, Farben, Rollen & mehr",
+      "en": "Titles, colors, roles & more"
+    },
+    {
+      "key": "community.live.cta.eyebrow",
+      "de": "Dein Platz",
+      "en": "Your place"
+    },
+    {
+      "key": "community.live.cta.loggedOutTitle",
+      "de": "Komm rein und lern die Community kennen",
+      "en": "Come in and meet the community"
+    },
+    {
+      "key": "community.live.cta.loggedOutText",
+      "de": "Mit Discord anmelden, Server beitreten und loslegen. Mehr Hürden braucht wirklich niemand.",
+      "en": "Sign in with Discord, join the server and get started. Nobody needs more hurdles than that."
+    },
+    {
+      "key": "community.live.cta.memberTitle",
+      "de": "Dein Fortschritt wartet schon",
+      "en": "Your progress is waiting"
+    },
+    {
+      "key": "community.live.cta.memberText",
+      "de": "Im Dashboard siehst du dein Level, deinen nächsten Meilenstein und alles, was du bereits freigeschaltet hast.",
+      "en": "Your dashboard shows your level, next milestone and everything you have already unlocked."
+    },
+    {
+      "key": "community.live.cta.joinTitle",
+      "de": "Noch ein Schritt bis zur Community",
+      "en": "One more step to the community"
+    },
+    {
+      "key": "community.live.cta.joinText",
+      "de": "Du bist schon angemeldet. Tritt jetzt Mimis Server bei, damit dein Community-Profil wirklich loslegen kann.",
+      "en": "You are already signed in. Join Mimi's server now so your community profile can really get started."
+    },
+    {
+      "key": "community.live.dashboard.lockedEyebrow",
+      "de": "Fast geschafft",
+      "en": "Almost there"
+    },
+    {
+      "key": "community.live.dashboard.lockedTitle",
+      "de": "Dein Dashboard startet mit dem Serverbeitritt",
+      "en": "Your dashboard starts when you join the server"
+    },
+    {
+      "key": "community.live.dashboard.lockedText",
+      "de": "Dein Discord-Login ist da. Sobald du Mimis Server beitrittst, werden Mitgliedschaft, XP und Achievements hier zusammengeführt.",
+      "en": "Your Discord login is ready. As soon as you join Mimi's server, membership, XP and achievements come together here."
+    },
+    {
+      "key": "community.live.dashboard.heroText",
+      "de": "Dein Community-Profil wächst mit deinen gemeinsamen Momenten. Der nächste Fortschritt ist näher, als eine Verwaltungsseite aussehen lassen würde.",
+      "en": "Your community profile grows with your shared moments. Your next bit of progress is closer than an admin page would ever make it look."
+    },
+    {
+      "key": "community.live.dashboard.nextEyebrow",
+      "de": "Als Nächstes",
+      "en": "Up next"
+    },
+    {
+      "key": "community.live.dashboard.nextTitle",
+      "de": "Dein nächster Meilenstein",
+      "en": "Your next milestone"
+    },
+    {
+      "key": "community.live.dashboard.remaining",
+      "de": "noch bis zum nächsten Level",
+      "en": "remaining until the next level"
+    },
+    {
+      "key": "community.live.dashboard.nextAchievement",
+      "de": "Nächstes Achievement",
+      "en": "Next achievement"
+    },
+    {
+      "key": "community.live.dashboard.allUnlocked",
+      "de": "Alle aktuellen Achievements freigeschaltet",
+      "en": "All current achievements unlocked"
+    },
+    {
+      "key": "community.live.dashboard.achievementsEyebrow",
+      "de": "Deine Geschichte",
+      "en": "Your story"
+    },
+    {
+      "key": "community.live.dashboard.profileEyebrow",
+      "de": "Zeig, was du freigeschaltet hast",
+      "en": "Show what you unlocked"
+    }
+  ]
+}

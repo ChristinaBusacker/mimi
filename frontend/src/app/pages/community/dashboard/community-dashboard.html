@@ -1,135 +1,202 @@
-<main class="community-dashboard-page">
+<section class="page community-dashboard-page">
   @if (!authInitialized() || loading()) {
-    <section class="community-dashboard-shell community-dashboard-shell--state">
+    <section class="state-panel">
       <p>{{ 'community.dashboard.loading' | i18n | async }}</p>
     </section>
   } @else if (dashboard(); as data) {
     @if (data.membership !== 'member') {
-      <section class="community-dashboard-shell community-dashboard-shell--state">
+      <section class="state-panel join-state">
         <div>
-          <span class="community-kicker">
-            {{ 'community.dashboard.locked.kicker' | i18n | async }}
-          </span>
-          <h1>{{ 'community.dashboard.locked.title' | i18n | async }}</h1>
-          <p>{{ 'community.dashboard.locked.text' | i18n | async }}</p>
+          <span>{{ 'community.live.dashboard.lockedEyebrow' | i18n | async }}</span>
+          <h1>{{ 'community.live.dashboard.lockedTitle' | i18n | async }}</h1>
+          <p>{{ 'community.live.dashboard.lockedText' | i18n | async }}</p>
         </div>
-        <a class="dashboard-link-button" routerLink="/community">
-          {{ 'community.dashboard.locked.action' | i18n | async }}
-        </a>
+
+        <div class="state-actions">
+          @if (inviteUrl(); as invite) {
+            <app-button class="primary round font-black discord-button" [href]="invite" target="_blank">
+              {{ 'community.live.hero.join' | i18n | async }}
+            </app-button>
+          }
+          <a routerLink="/community">
+            {{ 'community.dashboard.locked.action' | i18n | async }} →
+          </a>
+        </div>
       </section>
     } @else {
-      <section class="community-dashboard-shell">
-        <header class="community-dashboard-header community-panel">
-          <div class="community-dashboard-header__copy">
-            <span class="community-kicker">
-              {{ 'community.dashboard.header.kicker' | i18n | async }}
-            </span>
-            <h1>{{ data.discordDisplayName }}</h1>
-            @if (selectedTitle(data); as selectedTitle) {
-              <p class="community-dashboard-header__title">
-                {{ displayText(selectedTitle.name) }}
-              </p>
-            }
-            <p>
-              {{ 'community.dashboard.header.text' | i18n | async }}
+      <app-hero type="community" class="right-align-center">
+        <div hero-left class="dashboard-intro">
+          <div class="eyebrow">
+            <img src="/images/icons/logos/discord.png" alt="" />
+            {{ 'community.dashboard.header.kicker' | i18n | async }}
+          </div>
+
+          <h1>{{ data.discordDisplayName }}</h1>
+
+          @if (selectedTitle(data); as selectedTitle) {
+            <p class="selected-title sue-ellen">
+              {{ displayText(selectedTitle.name) }}
             </p>
+          }
+
+          <p>{{ 'community.live.dashboard.heroText' | i18n | async }}</p>
+
+          <div class="dashboard-links">
+            <a routerLink="/community">
+              {{ 'community.dashboard.header.back' | i18n | async }} →
+            </a>
+            @if (inviteUrl(); as invite) {
+              <a [href]="invite" target="_blank" rel="noopener noreferrer">
+                {{ 'community.dashboard.header.server' | i18n | async }} →
+              </a>
+            }
+          </div>
+        </div>
+
+        <aside hero-right class="progress-card">
+          <div class="progress-level">
+            <span>{{ 'community.dashboard.level' | i18n | async }}</span>
+            <strong>{{ data.level?.level ?? 1 }}</strong>
           </div>
 
-          <div class="community-dashboard-header__actions">
-            <a class="dashboard-link-button is-secondary" routerLink="/community">
-              {{ 'community.dashboard.header.back' | i18n | async }}
-            </a>
-            <a
-              class="dashboard-link-button"
-              href="https://discord.com/invite/HjcHqwXPeH"
-              target="_blank"
-              rel="noopener noreferrer"
+          <div class="progress-copy">
+            <div class="progress-meta">
+              <strong>{{ data.totalXp }} XP</strong>
+              @if (data.nextLevel; as nextLevel) {
+                <span>
+                  {{ xpUntilNextLevel(data) }} XP
+                  {{ 'community.dashboard.untilLevel' | i18n | async }}
+                  {{ nextLevel.level }}
+                </span>
+              } @else {
+                <span>{{ 'community.dashboard.maxLevel' | i18n | async }}</span>
+              }
+            </div>
+
+            <div
+              class="xp-progress"
+              role="progressbar"
+              [attr.aria-valuenow]="data.progressPercent"
+              aria-valuemin="0"
+              aria-valuemax="100"
             >
-              {{ 'community.dashboard.header.server' | i18n | async }}
-            </a>
+              <span [style.width.%]="data.progressPercent"></span>
+            </div>
           </div>
+        </aside>
+      </app-hero>
 
-          <div class="community-progress-strip">
-            <div class="community-level-pill">
+      <section class="milestone-panel">
+        <div>
+          <span>{{ 'community.live.dashboard.nextEyebrow' | i18n | async }}</span>
+          <h2>{{ 'community.live.dashboard.nextTitle' | i18n | async }}</h2>
+        </div>
+
+        <div class="milestone-content">
+          @if (data.nextLevel; as nextLevel) {
+            <article>
               <span>{{ 'community.dashboard.level' | i18n | async }}</span>
-              <strong>{{ data.level?.level ?? 1 }}</strong>
-            </div>
+              <strong>{{ nextLevel.level }}</strong>
+              <small>
+                {{ xpUntilNextLevel(data) }} XP
+                {{ 'community.live.dashboard.remaining' | i18n | async }}
+              </small>
+            </article>
+          }
 
-            <div class="community-progress-strip__main">
-              <div class="community-progress-strip__meta">
-                <strong>{{ data.totalXp }} XP</strong>
-                @if (data.nextLevel; as nextLevel) {
-                  <span>
-                    {{ xpUntilNextLevel(data) }} XP
-                    {{ 'community.dashboard.untilLevel' | i18n | async }}
-                    {{ nextLevel.level }}
-                  </span>
-                } @else {
-                  <span>{{ 'community.dashboard.maxLevel' | i18n | async }}</span>
-                }
-              </div>
+          @if (nextAchievement(data); as achievement) {
+            <article class="next-achievement">
+              <span>{{ 'community.live.dashboard.nextAchievement' | i18n | async }}</span>
+              <strong>{{ displayText(achievement.name) }}</strong>
+              <small>{{ displayText(achievement.description) }}</small>
+            </article>
+          } @else {
+            <article class="next-achievement">
+              <span>{{ 'community.dashboard.achievements' | i18n | async }}</span>
+              <strong>{{ 'community.live.dashboard.allUnlocked' | i18n | async }}</strong>
+            </article>
+          }
+        </div>
+      </section>
 
-              <div
-                class="community-progress"
-                role="progressbar"
-                [attr.aria-valuenow]="data.progressPercent"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                <span [style.width.%]="data.progressPercent"></span>
-              </div>
-            </div>
+      <section class="achievement-showcase">
+        <header>
+          <div>
+            <span>{{ 'community.live.dashboard.achievementsEyebrow' | i18n | async }}</span>
+            <h2>{{ 'community.dashboard.achievements' | i18n | async }}</h2>
           </div>
+          <p>{{ 'community.dashboard.achievementsText' | i18n | async }}</p>
+          <strong class="achievement-count">
+            {{ unlockedAchievements(data).length }}/{{ data.achievements.length }}
+          </strong>
         </header>
 
-        <div class="community-dashboard-grid">
-          <section class="community-panel community-stat-panel">
-            <header class="community-panel__header">
-              <div>
-                <h2>{{ 'community.dashboard.overview.title' | i18n | async }}</h2>
-                <p>{{ 'community.dashboard.overview.text' | i18n | async }}</p>
-              </div>
-            </header>
-
-            <div class="community-stat-cards">
-              <article>
-                <span>{{ 'community.dashboard.overview.totalXp' | i18n | async }}</span>
-                <strong>{{ data.totalXp }}</strong>
-              </article>
-              <article>
-                <span>{{ 'community.dashboard.overview.unlocked' | i18n | async }}</span>
-                <strong>{{ unlockedAchievements(data).length }}</strong>
-              </article>
-              <article>
-                <span>{{ 'community.dashboard.overview.featured' | i18n | async }}</span>
-                <strong>{{ pinnedAchievements(data).length }}/3</strong>
-              </article>
-            </div>
-          </section>
-
-          <aside class="community-panel community-profile-panel">
-            <header class="community-panel__header">
-              <div>
-                <h2>{{ 'community.dashboard.profile' | i18n | async }}</h2>
-                <p>{{ 'community.dashboard.profileText' | i18n | async }}</p>
-              </div>
-            </header>
-
-            <div class="community-profile-preview">
-              <span
-                class="community-profile-preview__dot"
-                [style.background]="data.customization?.selectedProfileColor ?? null"
-              ></span>
-              <div>
-                <strong>{{ data.discordDisplayName }}</strong>
-                @if (selectedTitle(data); as selectedTitle) {
-                  <span>{{ displayText(selectedTitle.name) }}</span>
-                } @else {
-                  <span>{{ 'community.dashboard.noTitle' | i18n | async }}</span>
+        <div class="achievement-grid">
+          @for (achievement of data.achievements; track achievement.id) {
+            <article
+              class="achievement-card"
+              [class.locked]="!achievement.unlocked"
+              [class.pinned]="achievement.pinned"
+            >
+              <div class="achievement-marker">
+                <span>{{ achievement.unlocked ? '◆' : '◇' }}</span>
+                @if (achievement.unlocked) {
+                  <button
+                    type="button"
+                    [disabled]="saving()"
+                    (click)="togglePinned(achievement)"
+                  >
+                    {{
+                      (achievement.pinned
+                        ? 'community.dashboard.unpin'
+                        : 'community.dashboard.pin')
+                        | i18n
+                        | async
+                    }}
+                  </button>
                 }
               </div>
+              <strong>{{ displayText(achievement.name) }}</strong>
+              <p>{{ displayText(achievement.description) }}</p>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="profile-settings">
+        <header>
+          <div>
+            <span>{{ 'community.live.dashboard.profileEyebrow' | i18n | async }}</span>
+            <h2>{{ 'community.dashboard.profile' | i18n | async }}</h2>
+          </div>
+          <p>{{ 'community.dashboard.profileText' | i18n | async }}</p>
+        </header>
+
+        <div class="profile-settings__content">
+          <div class="profile-preview">
+            <span
+              class="profile-color"
+              [style.background]="data.customization?.selectedProfileColor ?? null"
+            ></span>
+            <div>
+              <strong>{{ data.discordDisplayName }}</strong>
+              @if (selectedTitle(data); as selectedTitle) {
+                <span>{{ displayText(selectedTitle.name) }}</span>
+              } @else {
+                <span>{{ 'community.dashboard.noTitle' | i18n | async }}</span>
+              }
             </div>
 
+            <div class="featured-achievements">
+              @for (achievement of pinnedAchievements(data); track achievement.id) {
+                <small>{{ displayText(achievement.name) }}</small>
+              } @empty {
+                <small>{{ 'community.dashboard.noPinned' | i18n | async }}</small>
+              }
+            </div>
+          </div>
+
+          <div class="profile-controls">
             <label>
               <span>{{ 'community.dashboard.title' | i18n | async }}</span>
               <select
@@ -160,69 +227,12 @@
                 </option>
                 @for (color of data.customization?.unlockedProfileColors ?? []; track color.achievementId) {
                   <option [ngValue]="color.achievementId">
-                    {{ color.color }}
+                    {{ profileColorLabel(data, color.achievementId) }}
                   </option>
                 }
               </select>
             </label>
-
-            <div class="community-pinned-preview">
-              <span>{{ 'community.dashboard.pinned' | i18n | async }}</span>
-              <div>
-                @for (achievement of pinnedAchievements(data); track achievement.id) {
-                  <small>{{ displayText(achievement.name) }}</small>
-                } @empty {
-                  <small>{{ 'community.dashboard.noPinned' | i18n | async }}</small>
-                }
-              </div>
-            </div>
-          </aside>
-
-          <section class="community-panel community-achievement-panel">
-            <header class="community-panel__header">
-              <div>
-                <h2>{{ 'community.dashboard.achievements' | i18n | async }}</h2>
-                <p>{{ 'community.dashboard.achievementsText' | i18n | async }}</p>
-              </div>
-              <span class="community-panel__counter">
-                {{ unlockedAchievements(data).length }}/{{ data.achievements.length }}
-              </span>
-            </header>
-
-            <div class="community-achievement-grid">
-              @for (achievement of data.achievements; track achievement.id) {
-                <article
-                  class="community-achievement-card"
-                  [class.is-locked]="!achievement.unlocked"
-                  [class.is-pinned]="achievement.pinned"
-                >
-                  <div class="community-achievement-card__topline">
-                    <span class="community-achievement-card__marker">
-                      {{ achievement.unlocked ? '◆' : '◇' }}
-                    </span>
-                    @if (achievement.unlocked) {
-                      <button
-                        type="button"
-                        [disabled]="saving()"
-                        (click)="togglePinned(achievement)"
-                      >
-                        {{
-                          (achievement.pinned
-                            ? 'community.dashboard.unpin'
-                            : 'community.dashboard.pin')
-                            | i18n
-                            | async
-                        }}
-                      </button>
-                    }
-                  </div>
-
-                  <strong>{{ displayText(achievement.name) }}</strong>
-                  <p>{{ displayText(achievement.description) }}</p>
-                </article>
-              }
-            </div>
-          </section>
+          </div>
         </div>
       </section>
     }
@@ -233,4 +243,4 @@
       {{ error | i18n | async }}
     </p>
   }
-</main>
+</section>

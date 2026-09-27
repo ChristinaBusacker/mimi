@@ -1,228 +1,184 @@
-<main class="community-page">
-  <section class="community-hero community-panel">
-    <div class="community-hero__copy">
-      <span class="community-kicker">
-        {{ 'community.landing.hero.kicker' | i18n | async }}
-      </span>
-      <h1>
-        {{ 'community.landing.hero.title' | i18n | async }}
+<section class="page community-page">
+  <app-hero type="community" class="right-align-center">
+    <div hero-left class="intro">
+      <div class="eyebrow">
+        <img src="/images/icons/logos/discord.png" alt="" />
+        {{ 'community.live.hero.eyebrow' | i18n | async }}
+      </div>
+
+      <div class="logo">
+        <img src="/images/logo.png" alt="" />
+      </div>
+
+      <h1 class="sue-ellen">
+        {{ 'community.live.hero.title' | i18n | async }}
       </h1>
+
       <p>
-        {{ 'community.landing.hero.description' | i18n | async }}
+        {{ 'community.live.hero.description' | i18n | async }}
       </p>
 
-      <div class="community-hero__actions">
-        <a
-          class="community-action community-action--discord"
-          href="https://discord.com/invite/HjcHqwXPeH"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {{ 'community.landing.hero.joinServer' | i18n | async }}
-        </a>
+      <div class="hero-actions">
+        @if (inviteUrl(); as invite) {
+          <app-button
+            class="primary round font-black discord-button"
+            [href]="invite"
+            target="_blank"
+          >
+            {{ 'community.live.hero.join' | i18n | async }}
+          </app-button>
+        }
 
         @if (user() && membershipState()?.membership === 'member') {
-          <a
-            class="community-action community-action--secondary"
-            routerLink="/community/dashboard"
-          >
-            {{ 'community.landing.hero.openDashboard' | i18n | async }}
+          <a class="secondary-link" routerLink="/community/dashboard">
+            {{ 'community.live.hero.dashboard' | i18n | async }} →
           </a>
-        } @else {
-          <a
-            class="community-action community-action--secondary"
-            href="/api/auth/discord"
-          >
-            {{ 'community.landing.hero.discordLogin' | i18n | async }}
+        } @else if (!user()) {
+          <a class="secondary-link" href="/api/auth/discord">
+            {{ 'community.live.hero.login' | i18n | async }} →
           </a>
         }
       </div>
     </div>
 
-    <aside class="community-hero__aside">
-      <div class="community-stat-grid">
-        <article>
-          <strong>10+</strong>
-          <span>{{ 'community.landing.stats.online' | i18n | async }}</span>
-        </article>
-        <article>
-          <strong>XP</strong>
-          <span>{{ 'community.landing.stats.progress' | i18n | async }}</span>
-        </article>
-        <article>
-          <strong>3</strong>
-          <span>{{ 'community.landing.stats.featured' | i18n | async }}</span>
-        </article>
+    <aside hero-right class="discord-live-card">
+      <div class="discord-live-card__header">
+        <div class="discord-server-mark">
+          <img src="/images/icons/logos/discord.png" alt="" />
+        </div>
+        <div>
+          <span>{{ 'community.live.card.server' | i18n | async }}</span>
+          <strong>
+            {{ summary()?.discord.guildName ?? ('community.live.card.fallbackName' | i18n | async) }}
+          </strong>
+        </div>
       </div>
 
-      <div class="community-story-card">
-        <h2>
-          {{ 'community.landing.story.title' | i18n | async }}
-        </h2>
-        <p>
-          {{ 'community.landing.story.text' | i18n | async }}
-        </p>
-      </div>
+      @if (summary()?.discord.connected) {
+        <div class="discord-live-stats">
+          <div>
+            <strong>{{ summary()?.discord.memberCount }}</strong>
+            <span>{{ 'community.live.card.members' | i18n | async }}</span>
+          </div>
+          <div>
+            <strong class="online-count">
+              <span class="presence-dot"></span>
+              {{ summary()?.discord.onlineCount }}
+            </strong>
+            <span>{{ 'community.live.card.online' | i18n | async }}</span>
+          </div>
+        </div>
+        <p>{{ 'community.live.card.liveHint' | i18n | async }}</p>
+      } @else {
+        <p>{{ 'community.live.card.unavailable' | i18n | async }}</p>
+      }
     </aside>
-  </section>
+  </app-hero>
 
-  <section class="community-showcase community-panel">
-    <header class="community-section-header">
+  <section class="community-showcase">
+    <header>
       <div>
-        <span class="community-kicker">
-          {{ 'community.landing.server.kicker' | i18n | async }}
-        </span>
-        <h2>
-          {{ 'community.landing.server.title' | i18n | async }}
-        </h2>
+        <span>{{ 'community.live.showcase.eyebrow' | i18n | async }}</span>
+        <h2>{{ 'community.live.showcase.title' | i18n | async }}</h2>
       </div>
-      <p>
-        {{ 'community.landing.server.description' | i18n | async }}
-      </p>
+      <p>{{ 'community.live.showcase.description' | i18n | async }}</p>
     </header>
 
-    <div class="community-feature-grid">
-      <article>
-        <h3>
-          {{ 'community.landing.server.cardOneTitle' | i18n | async }}
-        </h3>
-        <p>
-          {{ 'community.landing.server.cardOneText' | i18n | async }}
-        </p>
+    <div class="community-tiles">
+      <article class="community-tile conversations">
+        <span>{{ 'community.live.showcase.talkEyebrow' | i18n | async }}</span>
+        <h3 class="sue-ellen">{{ 'community.live.showcase.talkTitle' | i18n | async }}</h3>
+        <p>{{ 'community.live.showcase.talkText' | i18n | async }}</p>
       </article>
-      <article>
-        <h3>
-          {{ 'community.landing.server.cardTwoTitle' | i18n | async }}
-        </h3>
-        <p>
-          {{ 'community.landing.server.cardTwoText' | i18n | async }}
-        </p>
+
+      <article class="community-tile events">
+        <span>{{ 'community.live.showcase.eventsEyebrow' | i18n | async }}</span>
+        <h3 class="sue-ellen">{{ 'community.live.showcase.eventsTitle' | i18n | async }}</h3>
+        <p>{{ 'community.live.showcase.eventsText' | i18n | async }}</p>
       </article>
-      <article>
-        <h3>
-          {{ 'community.landing.server.cardThreeTitle' | i18n | async }}
-        </h3>
-        <p>
-          {{ 'community.landing.server.cardThreeText' | i18n | async }}
-        </p>
+
+      <article class="community-tile insiders">
+        <span>{{ 'community.live.showcase.insiderEyebrow' | i18n | async }}</span>
+        <h3 class="sue-ellen">{{ 'community.live.showcase.insiderTitle' | i18n | async }}</h3>
+        <p>{{ 'community.live.showcase.insiderText' | i18n | async }}</p>
       </article>
     </div>
   </section>
 
-  <section class="community-rewards community-panel">
-    <header class="community-section-header community-section-header--split">
+  <section class="community-journey">
+    <header>
       <div>
-        <span class="community-kicker">
-          {{ 'community.landing.progress.kicker' | i18n | async }}
-        </span>
-        <h2>
-          {{ 'community.landing.progress.title' | i18n | async }}
-        </h2>
+        <span>{{ 'community.live.journey.eyebrow' | i18n | async }}</span>
+        <h2>{{ 'community.live.journey.title' | i18n | async }}</h2>
       </div>
-      <p>
-        {{ 'community.landing.progress.description' | i18n | async }}
-      </p>
+      <p>{{ 'community.live.journey.description' | i18n | async }}</p>
     </header>
 
-    <div class="community-reward-grid">
-      <article>
-        <strong>01</strong>
-        <h3>
-          {{ 'community.landing.progress.stepOneTitle' | i18n | async }}
-        </h3>
-        <p>
-          {{ 'community.landing.progress.stepOneText' | i18n | async }}
-        </p>
-      </article>
-      <article>
-        <strong>02</strong>
-        <h3>
-          {{ 'community.landing.progress.stepTwoTitle' | i18n | async }}
-        </h3>
-        <p>
-          {{ 'community.landing.progress.stepTwoText' | i18n | async }}
-        </p>
-      </article>
-      <article>
-        <strong>03</strong>
-        <h3>
-          {{ 'community.landing.progress.stepThreeTitle' | i18n | async }}
-        </h3>
-        <p>
-          {{ 'community.landing.progress.stepThreeText' | i18n | async }}
-        </p>
-      </article>
-    </div>
+    <ol class="journey-track">
+      <li>
+        <span class="journey-dot"></span>
+        <strong>{{ 'community.live.journey.participate' | i18n | async }}</strong>
+        <small>{{ 'community.live.journey.participateText' | i18n | async }}</small>
+      </li>
+      <li>
+        <span class="journey-dot"></span>
+        <strong>XP</strong>
+        <small>{{ 'community.live.journey.xpText' | i18n | async }}</small>
+      </li>
+      <li>
+        <span class="journey-dot"></span>
+        <strong>{{ 'community.live.journey.level' | i18n | async }}</strong>
+        <small>{{ 'community.live.journey.levelText' | i18n | async }}</small>
+      </li>
+      <li>
+        <span class="journey-dot"></span>
+        <strong>{{ 'community.live.journey.achievements' | i18n | async }}</strong>
+        <small>{{ 'community.live.journey.achievementsText' | i18n | async }}</small>
+      </li>
+      <li>
+        <span class="journey-dot"></span>
+        <strong>{{ 'community.live.journey.rewards' | i18n | async }}</strong>
+        <small>{{ 'community.live.journey.rewardsText' | i18n | async }}</small>
+      </li>
+    </ol>
   </section>
 
-  <section class="community-cta community-panel">
+  <section class="community-cta">
     <div>
-      <span class="community-kicker">
-        {{ 'community.landing.cta.kicker' | i18n | async }}
-      </span>
+      <span>{{ 'community.live.cta.eyebrow' | i18n | async }}</span>
 
-      @if (!authInitialized()) {
+      @if (!authInitialized() || loadingState()) {
         <h2>{{ 'community.dashboard.loading' | i18n | async }}</h2>
       } @else if (!user()) {
-        <h2>{{ 'community.landing.cta.loggedOutTitle' | i18n | async }}</h2>
-        <p>{{ 'community.landing.cta.loggedOutText' | i18n | async }}</p>
-      } @else if (loadingState()) {
-        <h2>{{ 'community.dashboard.loading' | i18n | async }}</h2>
+        <h2>{{ 'community.live.cta.loggedOutTitle' | i18n | async }}</h2>
+        <p>{{ 'community.live.cta.loggedOutText' | i18n | async }}</p>
       } @else if (membershipState()?.membership === 'member') {
-        <h2>{{ 'community.landing.cta.memberTitle' | i18n | async }}</h2>
-        <p>{{ 'community.landing.cta.memberText' | i18n | async }}</p>
-      } @else if (membershipState()?.membership === 'not-member') {
-        <h2>{{ 'community.landing.cta.joinTitle' | i18n | async }}</h2>
-        <p>{{ 'community.landing.cta.joinText' | i18n | async }}</p>
+        <h2>{{ 'community.live.cta.memberTitle' | i18n | async }}</h2>
+        <p>{{ 'community.live.cta.memberText' | i18n | async }}</p>
       } @else {
-        <h2>{{ 'community.landing.cta.connectTitle' | i18n | async }}</h2>
-        <p>{{ 'community.landing.cta.connectText' | i18n | async }}</p>
+        <h2>{{ 'community.live.cta.joinTitle' | i18n | async }}</h2>
+        <p>{{ 'community.live.cta.joinText' | i18n | async }}</p>
       }
     </div>
 
-    <div class="community-cta__actions">
-      @if (!authInitialized()) {
-        <span class="community-cta__hint">
-          {{ 'community.dashboard.loading' | i18n | async }}
-        </span>
-      } @else if (!user()) {
-        <a class="community-action community-action--discord" href="/api/auth/discord">
-          {{ 'community.landing.cta.login' | i18n | async }}
-        </a>
-        <a
-          class="community-action community-action--secondary"
-          href="https://discord.com/invite/HjcHqwXPeH"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {{ 'community.landing.cta.joinServer' | i18n | async }}
-        </a>
+    <div class="cta-actions">
+      @if (!user()) {
+        <app-button class="primary round font-black discord-button" href="/api/auth/discord">
+          {{ 'community.live.hero.login' | i18n | async }}
+        </app-button>
       } @else if (membershipState()?.membership === 'member') {
-        <a class="community-action community-action--discord" routerLink="/community/dashboard">
-          {{ 'community.landing.cta.openDashboard' | i18n | async }}
+        <a class="cta-dashboard" routerLink="/community/dashboard">
+          {{ 'community.live.hero.dashboard' | i18n | async }} →
         </a>
-        <a
-          class="community-action community-action--secondary"
-          href="https://discord.com/invite/HjcHqwXPeH"
+      } @else if (inviteUrl(); as invite) {
+        <app-button
+          class="primary round font-black discord-button"
+          [href]="invite"
           target="_blank"
-          rel="noopener noreferrer"
         >
-          {{ 'community.landing.cta.openServer' | i18n | async }}
-        </a>
-      } @else if (membershipState()?.membership === 'not-member') {
-        <a
-          class="community-action community-action--discord"
-          href="https://discord.com/invite/HjcHqwXPeH"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {{ 'community.landing.cta.joinNow' | i18n | async }}
-        </a>
-      } @else {
-        <a class="community-action community-action--discord" href="/api/auth/discord/connect">
-          {{ 'community.landing.cta.connectDiscord' | i18n | async }}
-        </a>
+          {{ 'community.live.hero.join' | i18n | async }}
+        </app-button>
       }
     </div>
   </section>
-</main>
+</section>

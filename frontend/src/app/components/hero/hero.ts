@@ -13,5 +13,5 @@ import {
   templateUrl: './hero.html',
 })
 export class Hero {
-  readonly type = input<HeroType>('music');
+  readonly type = input<HeroType | 'community'>('music');
 }

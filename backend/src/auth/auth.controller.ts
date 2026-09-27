@@ -320,7 +320,7 @@ export class AuthController {
       HttpStatus.FOUND,
       this.getFrontendUrl(
         request.user.role === 'user'
-          ? '/community'
+          ? '/community/dashboard'
           : '/admin',
       ),
     );

@@ -6,6 +6,9 @@ import type {
 import type {
   CommunityLocalizedText,
 } from '@shared/community/community-progression';
+import type {
+  CommunityPublicSummary,
+} from '@shared/community/community-public';
 
 import {
   AsyncPipe,
@@ -28,11 +31,15 @@ import {
 } from '@ngxs/store';
 import {
   firstValueFrom,
+  forkJoin,
 } from 'rxjs';
 
+import { Button } from '../../../components/button/button';
+import { Hero } from '../../../components/hero/hero';
 import { LoadAuthSession } from '../../../core/auth/auth.actions';
 import { AuthState } from '../../../core/auth/auth.state';
 import { CommunityDashboardService } from '../../../core/community/community-dashboard.service';
+import { CommunityPublicService } from '../../../core/community/community-public.service';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { I18nState } from '../../../core/i18n/i18n.state';
 
@@ -41,7 +48,9 @@ import { I18nState } from '../../../core/i18n/i18n.state';
     ChangeDetectionStrategy.OnPush,
   imports: [
     AsyncPipe,
+    Button,
     FormsModule,
+    Hero,
     I18nPipe,
     RouterLink,
   ],
@@ -56,6 +65,8 @@ export class CommunityDashboardPage {
   private readonly store = inject(Store);
   private readonly service =
     inject(CommunityDashboardService);
+  private readonly publicService =
+    inject(CommunityPublicService);
   private loadedUserUuid: string | null =
     null;
 
@@ -73,6 +84,10 @@ export class CommunityDashboardPage {
     );
   protected readonly dashboard =
     signal<CommunityDashboard | null>(
+      null,
+    );
+  protected readonly summary =
+    signal<CommunityPublicSummary | null>(
       null,
     );
   protected readonly loading =
@@ -146,6 +161,17 @@ export class CommunityDashboardPage {
     );
   }
 
+  protected nextAchievement(
+    dashboard: CommunityDashboard,
+  ): CommunityDashboardAchievement | null {
+    return (
+      dashboard.achievements.find(
+        (achievement) =>
+          !achievement.unlocked,
+      ) ?? null
+    );
+  }
+
   protected pinnedAchievements(
     dashboard: CommunityDashboard,
   ): CommunityDashboardAchievement[] {
@@ -180,6 +206,25 @@ export class CommunityDashboardPage {
           selectedTitleId,
       ) ?? null
     );
+  }
+
+  protected inviteUrl(): string | null {
+    return this.summary()?.discord.inviteUrl ?? null;
+  }
+
+  protected profileColorLabel(
+    dashboard: CommunityDashboard,
+    achievementId: string,
+  ): string {
+    const achievement =
+      dashboard.achievements.find(
+        (candidate) =>
+          candidate.id === achievementId,
+      );
+
+    return achievement
+      ? this.displayText(achievement.name)
+      : achievementId;
   }
 
   protected async selectTitle(
@@ -251,11 +296,18 @@ export class CommunityDashboardPage {
     this.errorKey.set(null);
 
     try {
-      this.dashboard.set(
+      const result =
         await firstValueFrom(
-          this.service.getDashboard(),
-        ),
-      );
+          forkJoin({
+            dashboard:
+              this.service.getDashboard(),
+            summary:
+              this.publicService.getSummary(),
+          }),
+        );
+
+      this.dashboard.set(result.dashboard);
+      this.summary.set(result.summary);
     } catch {
       this.errorKey.set(
         'community.dashboard.loadFailed',

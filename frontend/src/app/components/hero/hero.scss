@@ -82,6 +82,18 @@
       background-position: center 55%;
     }
   }
+
+  &.community {
+    --hero-accent: #5865f2;
+    --hero-accent-soft: rgb(88 101 242 / 22%);
+    --hero-tint: rgb(50 54 132 / 44%);
+
+    &::before {
+      background-image: url('/images/gaming-tile.png');
+      background-position: center 52%;
+      filter: hue-rotate(18deg) saturate(0.9);
+    }
+  }
 }
 
 .left,
