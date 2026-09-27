@@ -15,7 +15,9 @@ import {
 } from 'typeorm';
 
 import { CommunityProgressionService } from './community-progression.service';
+import { CommunityRewardSyncService } from './community-reward-sync.service';
 import { CommunityAchievementEntry } from './entities/community-achievement.entry';
+import { CommunityDiscordRoleEntry } from './entities/community-discord-role.entry';
 import { CommunityPinnedAchievementEntry } from './entities/community-pinned-achievement.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
 import { UserAchievementEntry } from './entities/user-achievement.entry';
@@ -30,6 +32,8 @@ export class CommunityProfileCustomizationService {
       DataSource,
     private readonly progression:
       CommunityProgressionService,
+    private readonly rewardSync:
+      CommunityRewardSyncService,
   ) {}
 
   async getCustomization(
@@ -106,6 +110,74 @@ export class CommunityProfileCustomizationService {
           )
           .save(profile);
       },
+    );
+  }
+
+  async selectDiscordShowcaseRole(
+    userUuid: string,
+    roleUuid: string | null,
+  ): Promise<void> {
+    await this.dataSource.transaction(
+      async (manager) => {
+        const profile =
+          await this.getProfileForUpdate(
+            manager,
+            userUuid,
+          );
+
+        if (roleUuid) {
+          const role =
+            await manager
+              .getRepository(
+                CommunityDiscordRoleEntry,
+              )
+              .findOneBy({
+                uuid: roleUuid,
+              });
+
+          if (
+            !role ||
+            !role.enabled ||
+            role.kind !== 'showcase' ||
+            !role.achievementUuid
+          ) {
+            throw new BadRequestException(
+              'The selected Discord showcase role is not available.',
+            );
+          }
+
+          const unlock =
+            await manager
+              .getRepository(
+                UserAchievementEntry,
+              )
+              .findOneBy({
+                userUuid,
+                achievementUuid:
+                  role.achievementUuid,
+              });
+
+          if (!unlock) {
+            throw new BadRequestException(
+              'The selected Discord showcase role is not unlocked.',
+            );
+          }
+        }
+
+        profile
+          .selectedDiscordShowcaseRoleUuid =
+          roleUuid;
+
+        await manager
+          .getRepository(
+            CommunityProfileEntry,
+          )
+          .save(profile);
+      },
+    );
+
+    this.rewardSync.request(
+      userUuid,
     );
   }
 

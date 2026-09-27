@@ -6,6 +6,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 
+import { CommunityDiscordRoleDefinitionService } from './community-discord-role-definition.service';
 import { CommunityProfileCustomizationService } from './community-profile-customization.service';
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
 import { CommunityProgressionService } from './community-progression.service';
@@ -23,6 +24,8 @@ export class CommunityDashboardService {
       CommunityProgressionDefinitionService,
     private readonly customization:
       CommunityProfileCustomizationService,
+    private readonly discordRoles:
+      CommunityDiscordRoleDefinitionService,
     private readonly twitch:
       CommunityTwitchIdentityService,
   ) {}
@@ -52,6 +55,8 @@ export class CommunityDashboardService {
         progressPercent: 0,
         achievements: [],
         titles: [],
+        discordShowcaseRoles: [],
+        selectedDiscordShowcaseRoleId: null,
         customization: null,
       };
     }
@@ -62,6 +67,7 @@ export class CommunityDashboardService {
       levels,
       achievements,
       titles,
+      discordRoles,
     ] = await Promise.all([
       this.progression.getSnapshot(
         userUuid,
@@ -72,6 +78,7 @@ export class CommunityDashboardService {
       this.definitions
         .getAchievements(),
       this.definitions.getTitles(),
+      this.discordRoles.getDefinitions(),
     ]);
     const currentLevel =
       snapshot.level;
@@ -171,6 +178,36 @@ export class CommunityDashboardService {
               .selectedTitleId ===
             title.id,
         })),
+      discordShowcaseRoles:
+        discordRoles.flatMap((role) =>
+          role.kind === 'showcase' &&
+          role.enabled &&
+          role.achievementId
+            ? [
+                {
+                  id: role.id,
+                  name: role.name,
+                  color: role.color,
+                  achievementId:
+                    role.achievementId,
+                  unlocked:
+                    unlockedAchievements.has(
+                      role.achievementId,
+                    ),
+                  selected:
+                    profile
+                      .selectedDiscordShowcaseRoleUuid ===
+                    role.id,
+                  availableOnDiscord:
+                    role.provisionedByCommunity &&
+                    role.discordRoleId !== null,
+                },
+              ]
+            : [],
+        ),
+      selectedDiscordShowcaseRoleId:
+        profile
+          .selectedDiscordShowcaseRoleUuid,
       customization,
     };
   }

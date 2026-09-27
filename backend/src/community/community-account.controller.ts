@@ -23,6 +23,7 @@ import { CommunityDashboardService } from './community-dashboard.service';
 import { CommunityProfileCustomizationService } from './community-profile-customization.service';
 import {
   PinCommunityAchievementsDto,
+  SelectCommunityDiscordShowcaseRoleDto,
   SelectCommunityProfileColorDto,
   SelectCommunityTitleDto,
 } from './dto/community-profile-customization.dto';
@@ -89,6 +90,28 @@ export class CommunityAccountController {
       .selectProfileColor(
         request.user.uuid,
         dto.achievementId,
+      );
+
+    return this.dashboard.getDashboard(
+      request.user.uuid,
+    );
+  }
+
+  @Put('discord-showcase-role')
+  @ApiOperation({
+    summary:
+      'Select an unlocked Discord showcase role',
+  })
+  async selectDiscordShowcaseRole(
+    @Req()
+    request: AuthenticatedRequest,
+    @Body()
+    dto: SelectCommunityDiscordShowcaseRoleDto,
+  ): Promise<CommunityDashboard> {
+    await this.customization
+      .selectDiscordShowcaseRole(
+        request.user.uuid,
+        dto.roleId,
       );
 
     return this.dashboard.getDashboard(

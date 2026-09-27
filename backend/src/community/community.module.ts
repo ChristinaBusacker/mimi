@@ -6,6 +6,7 @@ import { UsersModule } from '../users/users.module';
 
 import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
 import { CommunityDiscordRoleDefinitionService } from './community-discord-role-definition.service';
+import { CommunityDiscordUserRoleResolverService } from './community-discord-user-role-resolver.service';
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { CommunityEventService } from './community-event.service';
 import { CommunityProfileCustomizationService } from './community-profile-customization.service';
@@ -63,6 +64,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
   providers: [
     CommunityBalancingDefaultsService,
     CommunityDiscordRoleDefinitionService,
+    CommunityDiscordUserRoleResolverService,
     CommunityEventRuleService,
     CommunityEventService,
     CommunityProfileCustomizationService,

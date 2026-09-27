@@ -40,6 +40,16 @@ export interface CommunityDashboardTitle {
   selected: boolean;
 }
 
+export interface CommunityDashboardDiscordShowcaseRole {
+  id: string;
+  name: string;
+  color: string | null;
+  achievementId: string;
+  unlocked: boolean;
+  selected: boolean;
+  availableOnDiscord: boolean;
+}
+
 export interface CommunityDashboard {
   membership: CommunityDashboardMembership;
   discordDisplayName: string | null;
@@ -51,5 +61,7 @@ export interface CommunityDashboard {
   progressPercent: number;
   achievements: CommunityDashboardAchievement[];
   titles: CommunityDashboardTitle[];
+  discordShowcaseRoles: CommunityDashboardDiscordShowcaseRole[];
+  selectedDiscordShowcaseRoleId: string | null;
   customization: CommunityProfileCustomization | null;
 }

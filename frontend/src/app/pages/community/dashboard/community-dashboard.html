@@ -283,6 +283,30 @@
                 }
               </select>
             </label>
+
+            <label>
+              <span>{{ 'community.dashboard.discordShowcaseRole' | i18n | async }}</span>
+              <select
+                [disabled]="saving()"
+                [ngModel]="data.selectedDiscordShowcaseRoleId"
+                (ngModelChange)="selectDiscordShowcaseRole($event)"
+              >
+                <option [ngValue]="null">
+                  {{ 'community.dashboard.discordShowcaseRole.none' | i18n | async }}
+                </option>
+                @for (role of data.discordShowcaseRoles; track role.id) {
+                  <option
+                    [ngValue]="role.id"
+                    [disabled]="!role.unlocked"
+                  >
+                    {{ role.name }}{{ role.unlocked ? '' : ' 🔒' }}
+                  </option>
+                }
+              </select>
+              <small>
+                {{ 'community.dashboard.discordShowcaseRole.hint' | i18n | async }}
+              </small>
+            </label>
           </div>
         </div>
       </section>

@@ -274,6 +274,16 @@ export class CommunityDashboardPage {
     );
   }
 
+  protected async selectDiscordShowcaseRole(
+    roleId: string | null,
+  ): Promise<void> {
+    await this.save(() =>
+      this.service.selectDiscordShowcaseRole(
+        roleId || null,
+      ),
+    );
+  }
+
   protected async togglePinned(
     achievement:
       CommunityDashboardAchievement,

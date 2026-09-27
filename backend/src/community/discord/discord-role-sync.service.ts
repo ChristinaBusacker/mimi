@@ -8,14 +8,12 @@ import type {
   Role,
 } from 'discord.js';
 import {
-  In,
   Repository,
 } from 'typeorm';
 
 import { UsersService } from '../../users/users.service';
-import { CommunityAchievementEntry } from '../entities/community-achievement.entry';
+import { CommunityDiscordUserRoleResolverService } from '../community-discord-user-role-resolver.service';
 import { CommunityDiscordAssignedRoleEntry } from '../entities/community-discord-assigned-role.entry';
-import { UserAchievementEntry } from '../entities/user-achievement.entry';
 
 export interface DiscordRoleSyncResult {
   handled: boolean;
@@ -32,16 +30,8 @@ export class DiscordRoleSyncService {
 
   constructor(
     private readonly users: UsersService,
-    @InjectRepository(
-      CommunityAchievementEntry,
-    )
-    private readonly achievements:
-      Repository<CommunityAchievementEntry>,
-    @InjectRepository(
-      UserAchievementEntry,
-    )
-    private readonly userAchievements:
-      Repository<UserAchievementEntry>,
+    private readonly resolver:
+      CommunityDiscordUserRoleResolverService,
     @InjectRepository(
       CommunityDiscordAssignedRoleEntry,
     )
@@ -65,83 +55,99 @@ export class DiscordRoleSyncService {
       };
     }
 
-    const unlocked =
-      await this.userAchievements.findBy({
-        userUuid: user.uuid,
-      });
-    const unlockedIds = unlocked.map(
-      (entry) => entry.achievementUuid,
-    );
-    const definitions =
-      unlockedIds.length === 0
-        ? []
-        : await this.achievements.find({
-            where: {
-              uuid: In(unlockedIds),
-            },
-          });
-    const desiredRoleIds = new Set(
-      definitions.flatMap(
-        (achievement) =>
-          achievement.discordRoleId
-            ? [achievement.discordRoleId]
-            : [],
-      ),
-    );
+    const resolution =
+      await this.resolver.resolve(
+        user.uuid,
+      );
+    const desiredRoleIds =
+      resolution.desiredRoleIds;
+    const managedRoleIds =
+      resolution.managedRoleIds;
     const tracked =
       await this.assignedRoles.findBy({
         userUuid: user.uuid,
       });
+    const trackedRoleIds =
+      new Set(
+        tracked.map(
+          (entry) => entry.roleId,
+        ),
+      );
     let added = 0;
     let removed = 0;
 
     for (const entry of tracked) {
       if (
-        desiredRoleIds.has(entry.roleId)
+        managedRoleIds.has(entry.roleId)
       ) {
         continue;
       }
 
-      if (
-        !member.roles.cache.has(
-          entry.roleId,
-        )
-      ) {
-        await this.assignedRoles.delete({
-          userUuid: user.uuid,
-          roleId: entry.roleId,
-        });
+      await this.assignedRoles.delete({
+        userUuid: user.uuid,
+        roleId: entry.roleId,
+      });
+      trackedRoleIds.delete(
+        entry.roleId,
+      );
+    }
+
+    for (const roleId of managedRoleIds) {
+      if (desiredRoleIds.has(roleId)) {
+        continue;
+      }
+
+      if (!member.roles.cache.has(roleId)) {
+        if (trackedRoleIds.has(roleId)) {
+          await this.assignedRoles.delete({
+            userUuid: user.uuid,
+            roleId,
+          });
+          trackedRoleIds.delete(roleId);
+        }
+
         continue;
       }
 
       const role =
         await this.resolveRole(
           member,
-          entry.roleId,
+          roleId,
         );
 
       if (!role?.editable) {
         this.logger.warn(
-          `Cannot remove managed Discord role ${entry.roleId} from ${member.id}: role is missing or above the bot.`,
+          `Cannot remove managed Discord role ${roleId} from ${member.id}: role is missing or above the bot.`,
         );
         continue;
       }
 
       await member.roles.remove(
         role,
-        'Community achievement reward changed',
+        'Community role selection changed',
       );
-      await this.assignedRoles.delete({
-        userUuid: user.uuid,
-        roleId: entry.roleId,
-      });
+
+      if (trackedRoleIds.has(roleId)) {
+        await this.assignedRoles.delete({
+          userUuid: user.uuid,
+          roleId,
+        });
+        trackedRoleIds.delete(roleId);
+      }
+
       removed += 1;
     }
 
     for (const roleId of desiredRoleIds) {
-      if (
-        member.roles.cache.has(roleId)
-      ) {
+      if (member.roles.cache.has(roleId)) {
+        if (!trackedRoleIds.has(roleId)) {
+          await this.trackRole(
+            user.uuid,
+            roleId,
+          );
+          trackedRoleIds.add(roleId);
+        }
+
         continue;
       }
 
@@ -160,14 +166,13 @@ export class DiscordRoleSyncService {
 
       await member.roles.add(
         role,
-        'Community achievement reward',
+        'Community role selection',
       );
-      await this.assignedRoles.save(
-        this.assignedRoles.create({
-          userUuid: user.uuid,
-          roleId,
-        }),
+      await this.trackRole(
+        user.uuid,
+        roleId,
       );
+      trackedRoleIds.add(roleId);
       added += 1;
     }
 
@@ -213,6 +218,18 @@ export class DiscordRoleSyncService {
       added,
       removed,
     };
+  }
+
+  private trackRole(
+    userUuid: string,
+    roleId: string,
+  ): Promise<CommunityDiscordAssignedRoleEntry> {
+    return this.assignedRoles.save(
+      this.assignedRoles.create({
+        userUuid,
+        roleId,
+      }),
+    );
   }
 
   private async resolveRole(

@@ -58,6 +58,18 @@ export class CommunityDashboardService {
     });
   }
 
+  selectDiscordShowcaseRole(
+    roleId: string | null,
+  ): Observable<CommunityDashboard> {
+    return this.request.put<
+      CommunityDashboard,
+      { roleId: string | null }
+    >(
+      '/community/me/discord-showcase-role',
+      { roleId },
+    );
+  }
+
   setPinnedAchievements(
     achievementIds: string[],
   ): Observable<CommunityDashboard> {

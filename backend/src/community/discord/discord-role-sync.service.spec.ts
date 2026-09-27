@@ -14,14 +14,12 @@ import {
 } from 'vitest';
 
 import { UsersService } from '../../users/users.service';
-import { CommunityAchievementEntry } from '../entities/community-achievement.entry';
+import { CommunityDiscordUserRoleResolverService } from '../community-discord-user-role-resolver.service';
 import { CommunityDiscordAssignedRoleEntry } from '../entities/community-discord-assigned-role.entry';
-import { UserAchievementEntry } from '../entities/user-achievement.entry';
 import { DiscordRoleSyncService } from './discord-role-sync.service';
 
 function repository<T extends ObjectLiteral>(): Repository<T> {
   return {
-    find: vi.fn(),
     findBy: vi.fn(),
     create: vi.fn(
       (value: object) => value,
@@ -42,12 +40,8 @@ describe(
   'DiscordRoleSyncService',
   () => {
     it(
-      'adds earned roles and only removes roles previously managed by the community bot',
+      'keeps unrelated Discord roles and synchronizes only owned community roles',
       async () => {
-        const achievements =
-          repository<CommunityAchievementEntry>();
-        const userAchievements =
-          repository<UserAchievementEntry>();
         const assignedRoles =
           repository<CommunityDiscordAssignedRoleEntry>();
         const users = {
@@ -57,63 +51,70 @@ describe(
             }),
           ),
         } as unknown as UsersService;
+        const resolver = {
+          resolve: vi.fn(
+            async () => ({
+              desiredRoleIds: new Set([
+                'role-level-new',
+                'role-showcase',
+              ]),
+              managedRoleIds: new Set([
+                'role-level-old',
+                'role-level-new',
+                'role-showcase',
+              ]),
+            }),
+          ),
+        } as unknown as
+          CommunityDiscordUserRoleResolverService;
 
-        vi.mocked(
-          userAchievements.findBy,
-        ).mockResolvedValue([
-          {
-            achievementUuid:
-              'achievement-1',
-          } as UserAchievementEntry,
-        ]);
-        vi.mocked(
-          achievements.find,
-        ).mockResolvedValue([
-          {
-            uuid: 'achievement-1',
-            discordRoleId:
-              'role-earned',
-          } as CommunityAchievementEntry,
-        ]);
         vi.mocked(
           assignedRoles.findBy,
         ).mockResolvedValue([
           {
             userUuid: 'user-1',
-            roleId: 'role-old',
+            roleId: 'role-level-old',
+          } as CommunityDiscordAssignedRoleEntry,
+          {
+            userUuid: 'user-1',
+            roleId: 'legacy-role',
           } as CommunityDiscordAssignedRoleEntry,
         ]);
 
-        const earnedRole = {
-          id: 'role-earned',
+        const oldLevelRole = {
+          id: 'role-level-old',
           editable: true,
         } as Role;
-        const oldRole = {
-          id: 'role-old',
+        const newLevelRole = {
+          id: 'role-level-new',
+          editable: true,
+        } as Role;
+        const showcaseRole = {
+          id: 'role-showcase',
           editable: true,
         } as Role;
         const manualRole = {
-          id: 'role-manual',
+          id: 'manual-role',
           editable: true,
         } as Role;
-        const cache = new Map([
-          [oldRole.id, oldRole],
-          [manualRole.id, manualRole],
-        ]);
         const add = vi.fn();
         const remove = vi.fn();
         const member = {
           id: 'discord-user-1',
           roles: {
-            cache,
+            cache: new Map([
+              [oldLevelRole.id, oldLevelRole],
+              [manualRole.id, manualRole],
+            ]),
             add,
             remove,
           },
           guild: {
             roles: {
               cache: new Map([
-                [earnedRole.id, earnedRole],
-                [oldRole.id, oldRole],
+                [oldLevelRole.id, oldLevelRole],
+                [newLevelRole.id, newLevelRole],
+                [showcaseRole.id, showcaseRole],
                 [manualRole.id, manualRole],
               ]),
               fetch: vi.fn(),
@@ -123,8 +124,7 @@ describe(
         const service =
           new DiscordRoleSyncService(
             users,
-            achievements,
-            userAchievements,
+            resolver,
             assignedRoles,
           );
 
@@ -133,31 +133,43 @@ describe(
 
         expect(result).toEqual({
           handled: true,
-          added: 1,
+          added: 2,
           removed: 1,
         });
         expect(remove).toHaveBeenCalledWith(
-          oldRole,
-          'Community achievement reward changed',
+          oldLevelRole,
+          'Community role selection changed',
         );
         expect(remove).not.toHaveBeenCalledWith(
           manualRole,
           expect.anything(),
         );
         expect(add).toHaveBeenCalledWith(
-          earnedRole,
-          'Community achievement reward',
+          newLevelRole,
+          'Community role selection',
         );
+        expect(add).toHaveBeenCalledWith(
+          showcaseRole,
+          'Community role selection',
+        );
+        expect(remove).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: 'legacy-role',
+          }),
+          expect.anything(),
+        );
+        expect(
+          assignedRoles.delete,
+        ).toHaveBeenCalledWith({
+          userUuid: 'user-1',
+          roleId: 'legacy-role',
+        });
       },
     );
 
     it(
-      'does not claim a role that was already assigned outside the community bot',
+      'tracks an already present owned role without touching it on Discord',
       async () => {
-        const achievements =
-          repository<CommunityAchievementEntry>();
-        const userAchievements =
-          repository<UserAchievementEntry>();
         const assignedRoles =
           repository<CommunityDiscordAssignedRoleEntry>();
         const users = {
@@ -167,45 +179,42 @@ describe(
             }),
           ),
         } as unknown as UsersService;
+        const resolver = {
+          resolve: vi.fn(
+            async () => ({
+              desiredRoleIds: new Set([
+                'role-level',
+              ]),
+              managedRoleIds: new Set([
+                'role-level',
+              ]),
+            }),
+          ),
+        } as unknown as
+          CommunityDiscordUserRoleResolverService;
 
-        vi.mocked(
-          userAchievements.findBy,
-        ).mockResolvedValue([
-          {
-            achievementUuid:
-              'achievement-1',
-          } as UserAchievementEntry,
-        ]);
-        vi.mocked(
-          achievements.find,
-        ).mockResolvedValue([
-          {
-            uuid: 'achievement-1',
-            discordRoleId:
-              'role-existing',
-          } as CommunityAchievementEntry,
-        ]);
         vi.mocked(
           assignedRoles.findBy,
         ).mockResolvedValue([]);
 
-        const existingRole = {
-          id: 'role-existing',
+        const levelRole = {
+          id: 'role-level',
           editable: true,
         } as Role;
+        const add = vi.fn();
         const member = {
           id: 'discord-user-1',
           roles: {
             cache: new Map([
-              [existingRole.id, existingRole],
+              [levelRole.id, levelRole],
             ]),
-            add: vi.fn(),
+            add,
             remove: vi.fn(),
           },
           guild: {
             roles: {
               cache: new Map([
-                [existingRole.id, existingRole],
+                [levelRole.id, levelRole],
               ]),
               fetch: vi.fn(),
             },
@@ -214,16 +223,16 @@ describe(
         const service =
           new DiscordRoleSyncService(
             users,
-            achievements,
-            userAchievements,
+            resolver,
             assignedRoles,
           );
 
         await service.syncMember(member);
 
+        expect(add).not.toHaveBeenCalled();
         expect(
           assignedRoles.save,
-        ).not.toHaveBeenCalled();
+        ).toHaveBeenCalledOnce();
       },
     );
   },

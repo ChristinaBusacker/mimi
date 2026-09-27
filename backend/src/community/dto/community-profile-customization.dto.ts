@@ -18,6 +18,12 @@ export class SelectCommunityProfileColorDto {
   achievementId!: string | null;
 }
 
+export class SelectCommunityDiscordShowcaseRoleDto {
+  @IsOptional()
+  @IsUUID()
+  roleId!: string | null;
+}
+
 export class PinCommunityAchievementsDto {
   @IsArray()
   @ArrayMaxSize(3)

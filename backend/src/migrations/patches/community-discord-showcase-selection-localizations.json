@@ -1,0 +1,19 @@
+{
+  "localizations": [
+    {
+      "key": "community.dashboard.discordShowcaseRole",
+      "de": "Discord-Auszeichnung",
+      "en": "Discord showcase role"
+    },
+    {
+      "key": "community.dashboard.discordShowcaseRole.none",
+      "de": "Keine Auszeichnung anzeigen",
+      "en": "Show no showcase role"
+    },
+    {
+      "key": "community.dashboard.discordShowcaseRole.hint",
+      "de": "Deine Level-Rolle wird automatisch vergeben. Hier wählst du zusätzlich eine Rolle aus, die du über ein Achievement freigeschaltet hast.",
+      "en": "Your level role is assigned automatically. Here you can additionally choose a role unlocked through an achievement."
+    }
+  ]
+}
