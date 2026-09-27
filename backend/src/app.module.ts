@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AssetsModule } from './assets/assets.module';
 import { BlogModule } from './blog/blog.module';
 import { CommunityAdminModule } from './community/community-admin.module';
+import { CommunityAccountModule } from './community/community-account.module';
 import { CommunityModule } from './community/community.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
@@ -29,6 +30,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     BlogModule,
     CommunityModule,
     CommunityAdminModule,
+    CommunityAccountModule,
+    CommunityAccountModule,
     LocalizationsModule,
     MailModule,
     MigrationsModule,

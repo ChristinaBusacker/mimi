@@ -100,6 +100,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'community',
+    loadComponent: () =>
+      import('./pages/community/community').then(
+        (module) => module.CommunityPage,
+      ),
+  },
+  {
+    path: 'community',
+    loadComponent: () =>
+      import('./pages/community/community').then(
+        (module) => module.CommunityPage,
+      ),
+  },
+  {
     path: 'account',
     canActivate: [
       authenticatedGuard,

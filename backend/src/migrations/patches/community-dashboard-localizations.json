@@ -1,0 +1,189 @@
+{
+  "localizations": [
+    {
+      "key": "community.hero.kicker",
+      "de": "Mimis Community",
+      "en": "Mimi’s community"
+    },
+    {
+      "key": "community.hero.title",
+      "de": "Mehr als nur zuschauen.",
+      "en": "More than just watching."
+    },
+    {
+      "key": "community.hero.description",
+      "de": "Auf Discord wird aus dem Stream eine Community. Sei bei Gesprächen, Events und gemeinsamen Momenten dabei und sammle ganz nebenbei Fortschritt für dein Community-Profil.",
+      "en": "Discord turns the stream into a community. Join conversations, events and shared moments while building progress for your community profile."
+    },
+    {
+      "key": "community.hero.benefitTogether",
+      "de": "Gemeinsam statt Kommentarspalte",
+      "en": "Together, not just comments"
+    },
+    {
+      "key": "community.hero.benefitTogetherText",
+      "de": "Discord ist der Ort für Gespräche zwischen den Streams und für alles, was nicht in einen Chat-Moment passt.",
+      "en": "Discord is the place for conversations between streams and everything that does not fit into a chat moment."
+    },
+    {
+      "key": "community.hero.benefitProgress",
+      "de": "Dein Fortschritt",
+      "en": "Your progress"
+    },
+    {
+      "key": "community.hero.benefitProgressText",
+      "de": "Aktivität kann XP, Level und Achievements freischalten. Ohne Nachrichtenzähler-Wettbewerb und Spam-Farming.",
+      "en": "Activity can unlock XP, levels and achievements without message-count contests or spam farming."
+    },
+    {
+      "key": "community.hero.benefitRewards",
+      "de": "Dinge, die bleiben",
+      "en": "Things that stay"
+    },
+    {
+      "key": "community.hero.benefitRewardsText",
+      "de": "Titel, Profilfarben und besondere Achievements zeigen, was du mit der Community erlebt hast.",
+      "en": "Titles, profile colors and special achievements show what you have experienced with the community."
+    },
+    {
+      "key": "community.loggedOut.title",
+      "de": "Mit Discord Teil der Community werden",
+      "en": "Join the community with Discord"
+    },
+    {
+      "key": "community.loggedOut.text",
+      "de": "Dein Community-Account läuft über Discord. Ein Login reicht, danach erkennt die Seite, ob du bereits auf Mimis Server bist.",
+      "en": "Your community account uses Discord. Sign in once and the site will recognize whether you are already on Mimi’s server."
+    },
+    {
+      "key": "community.loggedOut.login",
+      "de": "Mit Discord anmelden",
+      "en": "Sign in with Discord"
+    },
+    {
+      "key": "community.notMember.title",
+      "de": "Fast geschafft",
+      "en": "Almost there"
+    },
+    {
+      "key": "community.notMember.connectText",
+      "de": "Dein aktueller Account ist noch nicht mit Discord verbunden. Verbinde Discord, damit dein Community-Profil zugeordnet werden kann.",
+      "en": "Your current account is not connected to Discord yet. Connect Discord so your community profile can be linked."
+    },
+    {
+      "key": "community.notMember.joinText",
+      "de": "Dein Discord-Account ist verbunden, aber du bist aktuell nicht auf Mimis Server. Tritt dem Server bei, dann wird dein Dashboard automatisch freigeschaltet.",
+      "en": "Your Discord account is connected, but you are not currently on Mimi’s server. Join the server and your dashboard will unlock automatically."
+    },
+    {
+      "key": "community.notMember.connect",
+      "de": "Discord verbinden",
+      "en": "Connect Discord"
+    },
+    {
+      "key": "community.notMember.join",
+      "de": "Discord-Server beitreten",
+      "en": "Join Discord server"
+    },
+    {
+      "key": "community.dashboard.loading",
+      "de": "Community wird geladen …",
+      "en": "Loading community …"
+    },
+    {
+      "key": "community.dashboard.loadFailed",
+      "de": "Dein Community-Dashboard konnte gerade nicht geladen werden.",
+      "en": "Your community dashboard could not be loaded right now."
+    },
+    {
+      "key": "community.dashboard.saveFailed",
+      "de": "Die Änderung konnte nicht gespeichert werden.",
+      "en": "The change could not be saved."
+    },
+    {
+      "key": "community.dashboard.pinLimit",
+      "de": "Du kannst höchstens drei Achievements gleichzeitig anpinnen.",
+      "en": "You can pin at most three achievements at a time."
+    },
+    {
+      "key": "community.dashboard.welcome",
+      "de": "Willkommen zurück",
+      "en": "Welcome back"
+    },
+    {
+      "key": "community.dashboard.level",
+      "de": "Level",
+      "en": "Level"
+    },
+    {
+      "key": "community.dashboard.untilLevel",
+      "de": "bis Level",
+      "en": "until level"
+    },
+    {
+      "key": "community.dashboard.maxLevel",
+      "de": "Du hast das aktuell höchste Level erreicht.",
+      "en": "You reached the current maximum level."
+    },
+    {
+      "key": "community.dashboard.achievements",
+      "de": "Achievements",
+      "en": "Achievements"
+    },
+    {
+      "key": "community.dashboard.achievementsText",
+      "de": "Deine Meilensteine in der Community. Bis zu drei davon kannst du auf deinem Profil hervorheben.",
+      "en": "Your milestones in the community. You can feature up to three on your profile."
+    },
+    {
+      "key": "community.dashboard.pin",
+      "de": "Anpinnen",
+      "en": "Pin"
+    },
+    {
+      "key": "community.dashboard.unpin",
+      "de": "Lösen",
+      "en": "Unpin"
+    },
+    {
+      "key": "community.dashboard.profile",
+      "de": "Dein Profil",
+      "en": "Your profile"
+    },
+    {
+      "key": "community.dashboard.profileText",
+      "de": "Wähle aus, was du bereits freigeschaltet hast.",
+      "en": "Choose from what you have already unlocked."
+    },
+    {
+      "key": "community.dashboard.title",
+      "de": "Titel",
+      "en": "Title"
+    },
+    {
+      "key": "community.dashboard.noTitle",
+      "de": "Kein Titel",
+      "en": "No title"
+    },
+    {
+      "key": "community.dashboard.profileColor",
+      "de": "Profilfarbe",
+      "en": "Profile color"
+    },
+    {
+      "key": "community.dashboard.defaultColor",
+      "de": "Standardfarbe",
+      "en": "Default color"
+    },
+    {
+      "key": "community.dashboard.pinned",
+      "de": "Angepinnte Achievements",
+      "en": "Pinned achievements"
+    },
+    {
+      "key": "community.dashboard.noPinned",
+      "de": "Noch nichts angepinnt.",
+      "en": "Nothing pinned yet."
+    }
+  ]
+}

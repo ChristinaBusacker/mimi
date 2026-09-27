@@ -74,7 +74,11 @@
     <nav>
       <ul>
         <li>
-          <a href="#">{{ 'navigation.community' | i18n | async }}</a>
+          <a
+            routerLink="/community"
+            routerLinkActive="is-active"
+            ariaCurrentWhenActive="page"
+          >{{ 'navigation.community' | i18n | async }}</a>
         </li>
         <li>
           <a href="#">{{ 'navigation.about' | i18n | async }}</a>
@@ -160,7 +164,14 @@
           {{ 'navigation.gaming' | i18n | async }}
         </a>
 
-        <a href="#">{{ 'navigation.community' | i18n | async }}</a>
+        <a
+          routerLink="/community"
+          routerLinkActive="is-active"
+          ariaCurrentWhenActive="page"
+          (click)="closeMenu()"
+        >
+          {{ 'navigation.community' | i18n | async }}
+        </a>
         <a href="#">{{ 'navigation.about' | i18n | async }}</a>
 
         <a href="#mobile-social">
