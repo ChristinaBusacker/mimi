@@ -1,0 +1,54 @@
+{
+  "localizations": [
+    {
+      "key": "community.dashboard.twitch.eyebrow",
+      "de": "Verknüpfte Dienste",
+      "en": "Connected services"
+    },
+    {
+      "key": "community.dashboard.twitch.title",
+      "de": "Twitch mitnehmen",
+      "en": "Bring Twitch along"
+    },
+    {
+      "key": "community.dashboard.twitch.description",
+      "de": "Verbinde deinen Twitch-Account einmal mit deinem Community-Profil. So können Twitch-Aktivitäten später demselben XP-, Level- und Achievement-System zugeordnet werden.",
+      "en": "Connect your Twitch account to your community profile once. This lets Twitch activity use the same XP, level and achievement system later on."
+    },
+    {
+      "key": "community.dashboard.twitch.notConnected",
+      "de": "Noch nicht verbunden",
+      "en": "Not connected yet"
+    },
+    {
+      "key": "community.dashboard.twitch.notConnectedText",
+      "de": "Discord bleibt dein Login. Twitch wird nur als zusätzliche Community-Identität verknüpft.",
+      "en": "Discord remains your login. Twitch is only linked as an additional community identity."
+    },
+    {
+      "key": "community.dashboard.twitch.connect",
+      "de": "Twitch verbinden",
+      "en": "Connect Twitch"
+    },
+    {
+      "key": "community.dashboard.twitch.disconnect",
+      "de": "Twitch trennen",
+      "en": "Disconnect Twitch"
+    },
+    {
+      "key": "community.dashboard.twitch.unavailable",
+      "de": "Die Twitch-Verknüpfung ist auf dem Server noch nicht konfiguriert.",
+      "en": "Twitch linking is not configured on the server yet."
+    },
+    {
+      "key": "community.dashboard.twitch.conflict",
+      "de": "Dieser Twitch-Account ist bereits mit einem anderen Community-Account verbunden.",
+      "en": "This Twitch account is already connected to another community account."
+    },
+    {
+      "key": "community.dashboard.twitch.failed",
+      "de": "Die Twitch-Verknüpfung konnte nicht abgeschlossen werden. Bitte starte sie erneut.",
+      "en": "Twitch linking could not be completed. Please start it again."
+    }
+  ]
+}

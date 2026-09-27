@@ -29,6 +29,13 @@ export class CommunityDashboardService {
     });
   }
 
+  disconnectTwitch():
+    Observable<CommunityDashboard> {
+    return this.request.delete<
+      CommunityDashboard
+    >('/community/twitch');
+  }
+
   selectTitle(
     titleId: string | null,
   ): Observable<CommunityDashboard> {

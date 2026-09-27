@@ -119,6 +119,57 @@
         </div>
       </section>
 
+      <section class="profile-settings integrations-panel">
+        <header>
+          <div>
+            <span>{{ 'community.dashboard.twitch.eyebrow' | i18n | async }}</span>
+            <h2>{{ 'community.dashboard.twitch.title' | i18n | async }}</h2>
+          </div>
+          <p>{{ 'community.dashboard.twitch.description' | i18n | async }}</p>
+        </header>
+
+        <div class="profile-settings__content">
+          <div class="profile-preview">
+            <img
+              src="/images/icons/logos/twitch.png"
+              width="24"
+              height="24"
+              alt=""
+            />
+            <div>
+              @if (data.twitch.connected) {
+                <strong>{{ data.twitch.displayName }}</strong>
+                <span>{{ '@' + data.twitch.login }}</span>
+              } @else {
+                <strong>{{ 'community.dashboard.twitch.notConnected' | i18n | async }}</strong>
+                <span>{{ 'community.dashboard.twitch.notConnectedText' | i18n | async }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="profile-controls">
+            @if (data.twitch.connected) {
+              <app-button
+                class="secondary round"
+                [disabled]="saving()"
+                (click)="disconnectTwitch()"
+              >
+                {{ 'community.dashboard.twitch.disconnect' | i18n | async }}
+              </app-button>
+            } @else if (data.twitch.configured) {
+              <app-button
+                class="primary round font-black"
+                [href]="'/api/community/twitch/connect'"
+              >
+                {{ 'community.dashboard.twitch.connect' | i18n | async }}
+              </app-button>
+            } @else {
+              <span>{{ 'community.dashboard.twitch.unavailable' | i18n | async }}</span>
+            }
+          </div>
+        </div>
+      </section>
+
       <section class="achievement-showcase">
         <header>
           <div>
@@ -236,6 +287,12 @@
         </div>
       </section>
     }
+  }
+
+  @if (twitchErrorKey(); as error) {
+    <p class="community-error" role="alert">
+      {{ error | i18n | async }}
+    </p>
   }
 
   @if (errorKey(); as error) {

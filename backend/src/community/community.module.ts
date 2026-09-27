@@ -23,6 +23,9 @@ import { CommunityLevelEntry } from './entities/community-level.entry';
 import { CommunityPinnedAchievementEntry } from './entities/community-pinned-achievement.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
 import { CommunityTitleEntry } from './entities/community-title.entry';
+import { CommunityTwitchIdentityEntry } from './twitch/community-twitch-identity.entry';
+import { CommunityTwitchLinkStateEntry } from './twitch/community-twitch-link-state.entry';
+import { CommunityTwitchIdentityService } from './twitch/community-twitch-identity.service';
 import { DiscordMembershipPeriodEntry } from './entities/discord-membership-period.entry';
 import { UserAchievementEntry } from './entities/user-achievement.entry';
 import { UserTitleEntry } from './entities/user-title.entry';
@@ -41,6 +44,8 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
       CommunityPinnedAchievementEntry,
       CommunityProfileEntry,
       CommunityTitleEntry,
+      CommunityTwitchIdentityEntry,
+      CommunityTwitchLinkStateEntry,
       DiscordMembershipPeriodEntry,
       UserAchievementEntry,
       UserTitleEntry,
@@ -55,6 +60,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
     CommunityService,
+    CommunityTwitchIdentityService,
     DiscordBotService,
     DiscordCommunityService,
     DiscordPublicCommunityService,
@@ -68,6 +74,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
     CommunityService,
+    CommunityTwitchIdentityService,
     DiscordBotService,
     DiscordCommunityService,
   ],

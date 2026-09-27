@@ -24,6 +24,15 @@ export interface CommunityDashboardAchievement {
   pinned: boolean;
 }
 
+export interface CommunityDashboardTwitchConnection {
+  configured: boolean;
+  connected: boolean;
+  login: string | null;
+  displayName: string | null;
+  profileImageUrl: string | null;
+  linkedAt: string | null;
+}
+
 export interface CommunityDashboardTitle {
   id: string;
   name: CommunityLocalizedText;
@@ -35,6 +44,7 @@ export interface CommunityDashboard {
   membership: CommunityDashboardMembership;
   discordDisplayName: string | null;
   memberSince: string | null;
+  twitch: CommunityDashboardTwitchConnection;
   totalXp: number;
   level: CommunityDashboardLevel | null;
   nextLevel: CommunityDashboardLevel | null;

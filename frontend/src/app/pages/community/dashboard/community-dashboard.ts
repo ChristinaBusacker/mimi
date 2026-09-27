@@ -24,6 +24,7 @@ import {
   FormsModule,
 } from '@angular/forms';
 import {
+  ActivatedRoute,
   RouterLink,
 } from '@angular/router';
 import {
@@ -63,6 +64,8 @@ import { I18nState } from '../../../core/i18n/i18n.state';
 })
 export class CommunityDashboardPage {
   private readonly store = inject(Store);
+  private readonly route =
+    inject(ActivatedRoute);
   private readonly service =
     inject(CommunityDashboardService);
   private readonly publicService =
@@ -96,8 +99,25 @@ export class CommunityDashboardPage {
     signal(false);
   protected readonly errorKey =
     signal<string | null>(null);
+  protected readonly twitchErrorKey =
+    signal<string | null>(null);
 
   constructor() {
+    const twitchResult =
+      this.route.snapshot.queryParamMap.get(
+        'twitch',
+      );
+
+    if (twitchResult === 'conflict') {
+      this.twitchErrorKey.set(
+        'community.dashboard.twitch.conflict',
+      );
+    } else if (twitchResult === 'failed') {
+      this.twitchErrorKey.set(
+        'community.dashboard.twitch.failed',
+      );
+    }
+
     this.store.dispatch(
       new LoadAuthSession(),
     ).subscribe();
@@ -225,6 +245,13 @@ export class CommunityDashboardPage {
     return achievement
       ? this.displayText(achievement.name)
       : achievementId;
+  }
+
+  protected async disconnectTwitch():
+    Promise<void> {
+    await this.save(() =>
+      this.service.disconnectTwitch(),
+    );
   }
 
   protected async selectTitle(

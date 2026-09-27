@@ -10,6 +10,7 @@ import { CommunityProfileCustomizationService } from './community-profile-custom
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
 import { CommunityProgressionService } from './community-progression.service';
 import { CommunityService } from './community.service';
+import { CommunityTwitchIdentityService } from './twitch/community-twitch-identity.service';
 
 @Injectable()
 export class CommunityDashboardService {
@@ -22,21 +23,29 @@ export class CommunityDashboardService {
       CommunityProgressionDefinitionService,
     private readonly customization:
       CommunityProfileCustomizationService,
+    private readonly twitch:
+      CommunityTwitchIdentityService,
   ) {}
 
   async getDashboard(
     userUuid: string,
   ): Promise<CommunityDashboard> {
-    const profile =
-      await this.community.getProfile(
-        userUuid,
-      );
+    const [profile, twitch] =
+      await Promise.all([
+        this.community.getProfile(
+          userUuid,
+        ),
+        this.twitch.getConnection(
+          userUuid,
+        ),
+      ]);
 
     if (!profile) {
       return {
         membership: 'not-connected',
         discordDisplayName: null,
         memberSince: null,
+        twitch,
         totalXp: 0,
         level: null,
         nextLevel: null,
@@ -101,6 +110,7 @@ export class CommunityDashboardService {
       memberSince:
         profile.currentDiscordJoinAt
           ?.toISOString() ?? null,
+      twitch,
       totalXp: snapshot.totalXp,
       level: currentLevel
         ? {
