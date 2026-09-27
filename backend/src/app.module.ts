@@ -6,6 +6,7 @@ import { CommunityAdminModule } from './community/community-admin.module';
 import { CommunityAccountModule } from './community/community-account.module';
 import { CommunityModule } from './community/community.module';
 import { DatabaseModule } from './database/database.module';
+import { DataTransferModule } from './data-transfer/data-transfer.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
@@ -24,6 +25,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     ScheduleModule.forRoot(),
     DatabaseModule,
+    DataTransferModule,
     UsersModule,
     AuthModule,
     AssetsModule,
