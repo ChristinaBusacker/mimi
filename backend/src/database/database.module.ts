@@ -72,7 +72,7 @@ async function ensureDatabaseExists(
           password: configService.getOrThrow<string>('DB_PASSWORD'),
           database: configService.getOrThrow<string>('DB_DATABASE'),
           autoLoadEntities: true,
-          synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true',
+          synchronize: false,
         };
       },
       dataSourceFactory: async (options) => {

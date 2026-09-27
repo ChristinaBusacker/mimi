@@ -29,11 +29,11 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: [
-      'backend/src/**/*.spec.ts',
-    ],
-    exclude: [
       'backend/src/**/*.integration.spec.ts',
     ],
+    fileParallelism: false,
+    testTimeout: 60_000,
+    hookTimeout: 60_000,
     restoreMocks: true,
   },
 });

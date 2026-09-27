@@ -7,6 +7,8 @@ import type {
   EntityManager,
 } from 'typeorm';
 
+import { schemaBaselineMigration } from './schema-baseline';
+import { communityAchievementLevelMetricMigration } from '../community/community-achievement-level-metric.schema-migration';
 import { communityAchievementRewardsMigration } from '../community/community-achievement-rewards.schema-migration';
 import { communityDiscordRoleModelMigration } from '../community/community-discord-role-model.schema-migration';
 import { communityDiscordRoleOwnershipMigration } from '../community/community-discord-role-ownership.schema-migration';
@@ -24,6 +26,7 @@ interface SchemaMigration {
 const logger = new Logger('SchemaMigrations');
 
 const migrations: readonly SchemaMigration[] = [
+  schemaBaselineMigration,
   {
     name: '20260921-asset-image-pipeline',
     run: async (manager) => {
@@ -508,6 +511,7 @@ const migrations: readonly SchemaMigration[] = [
   },
   communityEventRewardsMigration,
   communityProgressionMigration,
+  communityAchievementLevelMetricMigration,
   communityAchievementRewardsMigration,
   communityProfileCustomizationMigration,
   discordRoleSyncMigration,
