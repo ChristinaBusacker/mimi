@@ -15,24 +15,30 @@
       </p>
 
       <div class="hero-actions">
-        @if (inviteUrl(); as invite) {
-          <app-button
-            class="primary round font-black discord-button"
-            [href]="invite"
-            target="_blank"
-          >
-            {{ 'community.live.hero.join' | i18n | async }}
-          </app-button>
-        }
-
-        @if (user() && membershipState()?.membership === 'member') {
-          <a class="secondary-link" routerLink="/community/dashboard">
-            {{ 'community.live.hero.dashboard' | i18n | async }} →
-          </a>
-        } @else if (!user()) {
-          <a class="secondary-link" href="/api/auth/discord">
-            {{ 'community.live.hero.login' | i18n | async }} →
-          </a>
+        @if (authInitialized() && !loadingState()) {
+          @if (!user()) {
+            <app-button
+              class="primary round font-black discord-button"
+              href="/api/auth/discord"
+            >
+              {{ 'community.live.hero.login' | i18n | async }}
+            </app-button>
+          } @else if (membershipState()?.membership === 'member') {
+            <app-button
+              class="primary round font-black"
+              href="/community/dashboard"
+            >
+              {{ 'community.live.hero.dashboard' | i18n | async }}
+            </app-button>
+          } @else if (inviteUrl(); as invite) {
+            <app-button
+              class="primary round font-black discord-button"
+              [href]="invite"
+              target="_blank"
+            >
+              {{ 'community.live.hero.join' | i18n | async }}
+            </app-button>
+          }
         }
       </div>
     </div>
@@ -165,9 +171,12 @@
           {{ 'community.live.hero.login' | i18n | async }}
         </app-button>
       } @else if (membershipState()?.membership === 'member') {
-        <a class="cta-dashboard" routerLink="/community/dashboard">
-          {{ 'community.live.hero.dashboard' | i18n | async }} →
-        </a>
+        <app-button
+          class="primary round font-black"
+          href="/community/dashboard"
+        >
+          {{ 'community.live.hero.dashboard' | i18n | async }}
+        </app-button>
       } @else if (inviteUrl(); as invite) {
         <app-button class="primary round font-black discord-button" [href]="invite" target="_blank">
           {{ 'community.live.hero.join' | i18n | async }}

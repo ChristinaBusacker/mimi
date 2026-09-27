@@ -66,18 +66,22 @@ export class BlogCommentService {
           createdAt: 'ASC',
         },
       });
-    const colors =
-      await this.loadProfileColors(
-        comments.map(
-          (comment) => comment.userUuid,
-        ),
-      );
+    const userUuids = comments.map(
+      (comment) => comment.userUuid,
+    );
+    const [colors, displayNames] =
+      await Promise.all([
+        this.loadProfileColors(userUuids),
+        this.loadDiscordDisplayNames(userUuids),
+      ]);
 
     return comments
       .map((comment) =>
         this.mapComment(
           comment,
           colors.get(comment.userUuid) ?? null,
+          displayNames.get(comment.userUuid) ??
+            comment.user.name,
         ),
       )
       .sort((left, right) => {
@@ -104,18 +108,21 @@ export class BlogCommentService {
           createdAt: 'DESC',
         },
       });
-    const colors =
-      await this.loadProfileColors(
-        comments.map(
-          (comment) =>
-            comment.userUuid,
-        ),
-      );
+    const userUuids = comments.map(
+      (comment) => comment.userUuid,
+    );
+    const [colors, displayNames] =
+      await Promise.all([
+        this.loadProfileColors(userUuids),
+        this.loadDiscordDisplayNames(userUuids),
+      ]);
 
     return comments.map((comment) => ({
       ...this.mapComment(
         comment,
         colors.get(comment.userUuid) ?? null,
+        displayNames.get(comment.userUuid) ??
+          comment.user.name,
       ),
       postSlug: comment.post.slug,
       hidden: comment.hiddenAt !== null,
@@ -297,6 +304,8 @@ export class BlogCommentService {
     return this.mapComment(
       saved,
       customization.selectedProfileColor,
+      profile.discordDisplayName ||
+        saved.user.name,
     );
   }
 
@@ -349,16 +358,39 @@ export class BlogCommentService {
     return new Map(entries);
   }
 
+  private async loadDiscordDisplayNames(
+    userUuids: readonly string[],
+  ): Promise<Map<string, string | null>> {
+    const uniqueUserUuids = [
+      ...new Set(userUuids),
+    ];
+    const entries = await Promise.all(
+      uniqueUserUuids.map(
+        async (userUuid) => [
+          userUuid,
+          (
+            await this.community.getProfile(
+              userUuid,
+            )
+          )?.discordDisplayName ?? null,
+        ] as const,
+      ),
+    );
+
+    return new Map(entries);
+  }
+
   private mapComment(
     comment: BlogCommentEntry,
     profileColor: string | null,
+    displayName: string,
   ): BlogComment {
     return {
       id: comment.uuid,
       postId: comment.postUuid,
       content: comment.content,
       author: {
-        displayName: comment.user.name,
+        displayName,
         profileColor,
       },
       featured: comment.featuredAt !== null,
@@ -396,18 +428,25 @@ export class BlogCommentService {
   private async mapAdminComment(
     comment: BlogCommentEntry,
   ): Promise<BlogAdminComment> {
-    const customization =
-      await this.customization
-        .getCustomization(
+    const [customization, profile] =
+      await Promise.all([
+        this.customization
+          .getCustomization(
+            comment.userUuid,
+          )
+          .catch(() => null),
+        this.community.getProfile(
           comment.userUuid,
-        )
-        .catch(() => null);
+        ),
+      ]);
 
     return {
       ...this.mapComment(
         comment,
         customization
           ?.selectedProfileColor ?? null,
+        profile?.discordDisplayName ||
+          comment.user.name,
       ),
       postSlug: comment.post.slug,
       hidden: comment.hiddenAt !== null,

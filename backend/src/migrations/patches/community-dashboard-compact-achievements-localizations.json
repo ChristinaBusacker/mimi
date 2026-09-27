@@ -1,0 +1,14 @@
+{
+  "localizations": [
+    {
+      "key": "community.dashboard.achievements.showAll",
+      "de": "Alle Achievements anzeigen",
+      "en": "Show all achievements"
+    },
+    {
+      "key": "community.dashboard.achievements.showLess",
+      "de": "Weniger anzeigen",
+      "en": "Show less"
+    }
+  ]
+}

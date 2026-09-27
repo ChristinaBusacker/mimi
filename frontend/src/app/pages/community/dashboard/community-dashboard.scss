@@ -485,3 +485,148 @@
     grid-template-columns: 1fr;
   }
 }
+
+// Keep the dashboard visually aligned with the content pages: one framed workspace,
+// with lighter internal sections instead of a stack of competing cards.
+.dashboard-shell {
+  position: relative;
+}
+
+.dashboard-content {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.dashboard-workspace {
+  @include framed;
+
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--page-accent) 76%, transparent);
+  background:
+    radial-gradient(circle at 88% 0, color-mix(in srgb, var(--page-accent) 12%, transparent), transparent 34%),
+    var(--page-surface);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--page-accent) 8%, transparent),
+    0 14px 34px rgb(0 0 0 / 20%);
+}
+
+.dashboard-workspace > .milestone-panel,
+.dashboard-workspace > .achievement-showcase,
+.dashboard-workspace > .profile-settings {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dashboard-workspace > :not(:first-child) {
+  border-top: 1px solid color-mix(in srgb, var(--page-accent) 24%, transparent);
+}
+
+.achievement-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.achievement-card {
+  min-height: 118px;
+  padding: var(--spacing-sm);
+
+  > p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+.achievement-toggle {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #cdd1ff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.membership-overlay {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: start center;
+  padding: clamp(var(--spacing-lg), 9vh, 7rem) var(--spacing-md);
+  border-radius: var(--radius-card);
+  background: rgb(18 12 25 / 54%);
+  backdrop-filter: blur(5px) saturate(0.7);
+}
+
+.membership-gate {
+  @include framed;
+
+  position: sticky;
+  top: var(--spacing-md);
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-sm);
+  width: min(100%, 560px);
+  padding: clamp(var(--spacing-md), 4vw, var(--spacing-lg));
+  border-color: color-mix(in srgb, #5865f2 78%, transparent);
+  background:
+    radial-gradient(circle at 50% 0, rgb(88 101 242 / 24%), transparent 45%),
+    rgb(28 20 38 / 97%);
+  box-shadow: 0 22px 60px rgb(0 0 0 / 38%);
+  text-align: center;
+
+  > img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+  }
+
+  > span {
+    color: #b8bdfd;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: 'MoreSugar', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1;
+  }
+
+  p {
+    max-width: 52ch;
+    margin: 0;
+    color: var(--page-muted);
+    line-height: 1.6;
+  }
+
+  .state-actions {
+    justify-content: center;
+    margin-top: var(--spacing-xs);
+  }
+}
+
+@include compact-layout {
+  .dashboard-workspace > .milestone-panel,
+  .dashboard-workspace > .achievement-showcase,
+  .dashboard-workspace > .profile-settings {
+    padding: var(--spacing-md);
+  }
+
+  .achievement-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .membership-overlay {
+    padding: var(--spacing-md);
+  }
+}

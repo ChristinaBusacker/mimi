@@ -43,6 +43,7 @@ export class CommunityDashboardPage {
   protected readonly summary = signal<CommunityPublicSummary | null>(null);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
+  protected readonly achievementsExpanded = signal(false);
   protected readonly errorKey = signal<string | null>(null);
   protected readonly twitchErrorKey = signal<string | null>(null);
 
@@ -95,6 +96,20 @@ export class CommunityDashboardPage {
 
   protected unlockedAchievements(dashboard: CommunityDashboard): CommunityDashboardAchievement[] {
     return dashboard.achievements.filter((achievement) => achievement.unlocked);
+  }
+
+  protected visibleAchievements(
+    dashboard: CommunityDashboard,
+  ): CommunityDashboardAchievement[] {
+    const sorted = [...dashboard.achievements].sort(
+      (left, right) =>
+        Number(right.pinned) - Number(left.pinned) ||
+        Number(right.unlocked) - Number(left.unlocked),
+    );
+
+    return this.achievementsExpanded()
+      ? sorted
+      : sorted.slice(0, 6);
   }
 
   protected nextAchievement(dashboard: CommunityDashboard): CommunityDashboardAchievement | null {

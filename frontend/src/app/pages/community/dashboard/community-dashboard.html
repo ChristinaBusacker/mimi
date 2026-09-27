@@ -4,26 +4,11 @@
       <p>{{ 'community.dashboard.loading' | i18n | async }}</p>
     </section>
   } @else if (dashboard(); as data) {
-    @if (data.membership !== 'member') {
-      <section class="state-panel join-state">
-        <div>
-          <span>{{ 'community.live.dashboard.lockedEyebrow' | i18n | async }}</span>
-          <h1>{{ 'community.live.dashboard.lockedTitle' | i18n | async }}</h1>
-          <p>{{ 'community.live.dashboard.lockedText' | i18n | async }}</p>
-        </div>
-
-        <div class="state-actions">
-          @if (inviteUrl(); as invite) {
-            <app-button class="primary round font-black discord-button" [href]="invite" target="_blank">
-              {{ 'community.live.hero.join' | i18n | async }}
-            </app-button>
-          }
-          <a routerLink="/community">
-            {{ 'community.dashboard.locked.action' | i18n | async }} →
-          </a>
-        </div>
-      </section>
-    } @else {
+    <div class="dashboard-shell">
+      <div
+        class="dashboard-content"
+        [attr.inert]="data.membership !== 'member' ? '' : null"
+      >
       <app-hero type="community" class="right-align-center">
         <div hero-left class="dashboard-intro">
           <div class="eyebrow">
@@ -45,11 +30,6 @@
             <a routerLink="/community">
               {{ 'community.dashboard.header.back' | i18n | async }} →
             </a>
-            @if (inviteUrl(); as invite) {
-              <a [href]="invite" target="_blank" rel="noopener noreferrer">
-                {{ 'community.dashboard.header.server' | i18n | async }} →
-              </a>
-            }
           </div>
         </div>
 
@@ -86,6 +66,7 @@
         </aside>
       </app-hero>
 
+      <section class="dashboard-workspace">
       <section class="milestone-panel">
         <div>
           <span>{{ 'community.live.dashboard.nextEyebrow' | i18n | async }}</span>
@@ -117,6 +98,22 @@
             </article>
           }
         </div>
+
+        @if (data.achievements.length > 6) {
+          <button
+            type="button"
+            class="achievement-toggle"
+            (click)="achievementsExpanded.set(!achievementsExpanded())"
+          >
+            {{
+              (achievementsExpanded()
+                ? 'community.dashboard.achievements.showLess'
+                : 'community.dashboard.achievements.showAll')
+                | i18n
+                | async
+            }}
+          </button>
+        }
       </section>
 
       <section class="profile-settings integrations-panel">
@@ -183,7 +180,7 @@
         </header>
 
         <div class="achievement-grid">
-          @for (achievement of data.achievements; track achievement.id) {
+          @for (achievement of visibleAchievements(data); track achievement.id) {
             <article
               class="achievement-card"
               [class.locked]="!achievement.unlocked"
@@ -292,7 +289,42 @@
           </div>
         </div>
       </section>
-    }
+      </section>
+      </div>
+
+      @if (data.membership !== 'member') {
+        <div class="membership-overlay">
+          <section
+            class="membership-gate"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="community-membership-title"
+          >
+            <img src="/images/icons/logos/discord.png" alt="" />
+            <span>{{ 'community.live.dashboard.lockedEyebrow' | i18n | async }}</span>
+            <h1 id="community-membership-title">
+              {{ 'community.live.dashboard.lockedTitle' | i18n | async }}
+            </h1>
+            <p>{{ 'community.live.dashboard.lockedText' | i18n | async }}</p>
+
+            <div class="state-actions">
+              @if (inviteUrl(); as invite) {
+                <app-button
+                  class="primary round font-black discord-button"
+                  [href]="invite"
+                  target="_blank"
+                >
+                  {{ 'community.live.hero.join' | i18n | async }}
+                </app-button>
+              }
+              <a routerLink="/community">
+                {{ 'community.dashboard.locked.action' | i18n | async }} →
+              </a>
+            </div>
+          </section>
+        </div>
+      }
+    </div>
   }
 
   @if (twitchErrorKey(); as error) {
