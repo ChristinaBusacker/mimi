@@ -12,6 +12,7 @@ import {
 
 import { CommunityEventService } from './community-event.service';
 import { CommunityProgressionService } from './community-progression.service';
+import { CommunityRewardSyncService } from './community-reward-sync.service';
 import { CommunityEventEntry } from './entities/community-event.entry';
 import { CommunityEventRuleEntry } from './entities/community-event-rule.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
@@ -65,6 +66,8 @@ function createEventService(
   service: CommunityEventService;
   progression:
     CommunityProgressionService;
+  rewardSync:
+    CommunityRewardSyncService;
 } {
   const manager = {
     getRepository: vi.fn(
@@ -108,6 +111,10 @@ function createEventService(
       ),
   } as unknown as
     CommunityProgressionService;
+  const rewardSync = {
+    request: vi.fn(),
+  } as unknown as
+    CommunityRewardSyncService;
   const config = {
     get: vi.fn(
       () => undefined,
@@ -119,9 +126,11 @@ function createEventService(
       new CommunityEventService(
         dataSource,
         progression,
+        rewardSync,
         config,
       ),
     progression,
+    rewardSync,
   };
 }
 
@@ -183,6 +192,46 @@ function createRepositories():
 describe(
   'CommunityEventService',
   () => {
+    it(
+      'requests Discord reward synchronization after progression unlocks an achievement',
+      async () => {
+        const repositories =
+          createRepositories();
+        const {
+          service,
+          progression,
+          rewardSync,
+        } =
+          createEventService(
+            repositories,
+          );
+
+        vi.mocked(
+          progression
+            .evaluateUserInTransaction,
+        ).mockResolvedValue([
+          'achievement-1',
+        ]);
+
+        await service.recordEvent({
+          userUuid:
+            '00000000-0000-4000-8000-000000000001',
+          type:
+            'discord.message.activity',
+          source: 'discord',
+          sourceEventId:
+            'message-reward-sync',
+          contentLength: 42,
+        });
+
+        expect(
+          rewardSync.request,
+        ).toHaveBeenCalledWith(
+          '00000000-0000-4000-8000-000000000001',
+        );
+      },
+    );
+
     it(
       'rejects content below the configured minimum without storing an event',
       async () => {

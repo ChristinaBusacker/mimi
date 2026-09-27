@@ -10,6 +10,7 @@ import { CommunityEventService } from './community-event.service';
 import { CommunityProfileCustomizationService } from './community-profile-customization.service';
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
 import { CommunityProgressionService } from './community-progression.service';
+import { CommunityRewardSyncService } from './community-reward-sync.service';
 import { CommunityService } from './community.service';
 import { DiscordBotService } from './discord/discord-bot.service';
 import { DiscordCommunityService } from './discord/discord-community.service';
@@ -62,6 +63,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityProfileCustomizationService,
     CommunityProgressionDefinitionService,
     CommunityProgressionService,
+    CommunityRewardSyncService,
     CommunityService,
     CommunityTwitchEventSubService,
     CommunityTwitchIdentityService,

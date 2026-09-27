@@ -20,7 +20,10 @@ import {
   type GuildMember,
   type Message,
 } from 'discord.js';
+import type { Subscription } from 'rxjs';
 
+import { UsersService } from '../../users/users.service';
+import { CommunityRewardSyncService } from '../community-reward-sync.service';
 import {
   DiscordCommunityService,
   type DiscordCommunityMember,
@@ -54,9 +57,15 @@ export class DiscordBotService
   private handlersRegistered = false;
   private reconciliationRunning = false;
   private membersLoaded = false;
+  private rewardSyncSubscription:
+    Subscription | null = null;
 
   constructor(
     config: ConfigService,
+    private readonly users:
+      UsersService,
+    private readonly rewardSync:
+      CommunityRewardSyncService,
     private readonly community:
       DiscordCommunityService,
     private readonly publicCommunity:
@@ -79,6 +88,21 @@ export class DiscordBotService
   }
 
   onApplicationBootstrap(): void {
+    this.rewardSyncSubscription =
+      this.rewardSync
+        .requests()
+        .subscribe((userUuid) => {
+          void this.syncRewardRoles(
+            userUuid,
+          ).catch(
+            (error: unknown) => {
+              this.logger.warn(
+                `Could not synchronize Discord rewards for community user ${userUuid}: ${this.errorMessage(error)}`,
+              );
+            },
+          );
+        });
+
     if (!this.token && !this.guildId) {
       this.logger.log(
         'Discord community bot is disabled.',
@@ -105,6 +129,9 @@ export class DiscordBotService
   }
 
   onApplicationShutdown(): void {
+    this.rewardSyncSubscription
+      ?.unsubscribe();
+    this.rewardSyncSubscription = null;
     this.client.destroy();
   }
 
@@ -428,39 +455,53 @@ export class DiscordBotService
   private async handleMessage(
     message: Message,
   ): Promise<void> {
-    const handled =
-      await this.community.recordMessage({
-        messageId: message.id,
-        authorDiscordId:
-          message.author.id,
-        authorDisplayName:
-          message.member?.displayName ??
-          message.author.globalName ??
-          message.author.username,
-        authorAvatarHash:
-          message.author.avatar,
-        authorIsBot:
-          message.author.bot,
-        isSystemMessage:
-          message.system,
-        webhookId:
-          message.webhookId,
-        content:
-          message.content,
-        memberJoinedAt:
-          message.member?.joinedAt ?? null,
-        occurredAt:
-          message.createdAt,
-      });
+    await this.community.recordMessage({
+      messageId: message.id,
+      authorDiscordId:
+        message.author.id,
+      authorDisplayName:
+        message.member?.displayName ??
+        message.author.globalName ??
+        message.author.username,
+      authorAvatarHash:
+        message.author.avatar,
+      authorIsBot:
+        message.author.bot,
+      isSystemMessage:
+        message.system,
+      webhookId:
+        message.webhookId,
+      content:
+        message.content,
+      memberJoinedAt:
+        message.member?.joinedAt ?? null,
+      occurredAt:
+        message.createdAt,
+    });
+  }
 
+  private async syncRewardRoles(
+    userUuid: string,
+  ): Promise<void> {
     if (
-      handled &&
-      message.member
+      !this.guildId ||
+      !this.client.isReady()
     ) {
-      await this.roleSync.syncMember(
-        message.member,
-      );
+      return;
     }
+
+    const user =
+      await this.users.findByUuid(
+        userUuid,
+      );
+
+    if (!user?.discordId) {
+      return;
+    }
+
+    await this.refreshMember(
+      user.discordId,
+    );
   }
 
   private mapMember(

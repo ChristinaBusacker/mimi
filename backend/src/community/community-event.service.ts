@@ -17,6 +17,7 @@ import type {
   RecordCommunityEventResult,
 } from './community-event';
 import { CommunityProgressionService } from './community-progression.service';
+import { CommunityRewardSyncService } from './community-reward-sync.service';
 import {
   createCommunityDateFormatter,
   DEFAULT_COMMUNITY_TIME_ZONE,
@@ -38,6 +39,8 @@ export class CommunityEventService {
       DataSource,
     private readonly progression:
       CommunityProgressionService,
+    private readonly rewardSync:
+      CommunityRewardSyncService,
     config: ConfigService,
   ) {
     const timeZone =
@@ -57,8 +60,12 @@ export class CommunityEventService {
   ): Promise<RecordCommunityEventResult> {
     this.validateInput(input);
 
-    return this.dataSource.transaction(
-      async (manager) => {
+    let unlockedAchievementIds: string[] = [];
+
+    const result =
+      await this.dataSource.transaction<
+        RecordCommunityEventResult
+      >(async (manager) => {
         const profile =
           await manager
             .getRepository(
@@ -175,12 +182,13 @@ export class CommunityEventService {
             rule,
           );
 
-        await this.progression
-          .evaluateUserInTransaction(
-            manager,
-            event.userUuid,
-            event.uuid,
-          );
+        unlockedAchievementIds =
+          await this.progression
+            .evaluateUserInTransaction(
+              manager,
+              event.userUuid,
+              event.uuid,
+            );
 
         return {
           status: 'recorded',
@@ -192,6 +200,14 @@ export class CommunityEventService {
         };
       },
     );
+
+    if (unlockedAchievementIds.length > 0) {
+      this.rewardSync.request(
+        input.userUuid,
+      );
+    }
+
+    return result;
   }
 
   getTotalXp(
