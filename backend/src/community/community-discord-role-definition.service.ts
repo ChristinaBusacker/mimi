@@ -120,6 +120,7 @@ export class CommunityDiscordRoleDefinitionService {
                 ),
               enabled: input.enabled,
               discordRoleId: null,
+              provisionedByCommunity: false,
               achievementUuid:
                 input.achievementId,
               minimumLevel:
@@ -135,9 +136,9 @@ export class CommunityDiscordRoleDefinitionService {
     return this.mapDefinition(saved);
   }
 
-  async setDiscordRoleId(
+  async setProvisionedDiscordRoleId(
     roleUuid: string,
-    discordRoleId: string | null,
+    discordRoleId: string,
   ): Promise<CommunityDiscordRoleDefinition> {
     const role =
       await this.roles.findOneBy({
@@ -151,10 +152,9 @@ export class CommunityDiscordRoleDefinitionService {
     }
 
     const normalizedRoleId =
-      discordRoleId?.trim() || null;
+      discordRoleId.trim();
 
     if (
-      normalizedRoleId &&
       !DISCORD_ROLE_ID_PATTERN.test(
         normalizedRoleId,
       )
@@ -164,25 +164,24 @@ export class CommunityDiscordRoleDefinitionService {
       );
     }
 
-    if (normalizedRoleId) {
-      const assigned =
-        await this.roles.findOneBy({
-          discordRoleId:
-            normalizedRoleId,
-        });
+    const assigned =
+      await this.roles.findOneBy({
+        discordRoleId:
+          normalizedRoleId,
+      });
 
-      if (
-        assigned &&
-        assigned.uuid !== role.uuid
-      ) {
-        throw new ConflictException(
-          `Discord role "${normalizedRoleId}" is already managed by another community role.`,
-        );
-      }
+    if (
+      assigned &&
+      assigned.uuid !== role.uuid
+    ) {
+      throw new ConflictException(
+        `Discord role "${normalizedRoleId}" is already managed by another community role.`,
+      );
     }
 
     role.discordRoleId =
       normalizedRoleId;
+    role.provisionedByCommunity = true;
 
     return this.mapDefinition(
       await this.roles.save(role),
@@ -449,6 +448,8 @@ export class CommunityDiscordRoleDefinitionService {
       enabled: role.enabled,
       discordRoleId:
         role.discordRoleId,
+      provisionedByCommunity:
+        role.provisionedByCommunity,
       achievementId:
         role.achievementUuid,
       minimumLevel:

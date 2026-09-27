@@ -300,5 +300,106 @@
       "discordRoleId": null,
       "sortOrder": 300
     }
+  ],
+  "discordRoles": [
+    {
+      "key": "level.community-1",
+      "kind": "level-range",
+      "name": "Community I",
+      "color": "#7c5cff",
+      "enabled": true,
+      "achievementKey": null,
+      "minimumLevel": 1,
+      "maximumLevel": 4,
+      "sortOrder": 10
+    },
+    {
+      "key": "level.community-2",
+      "kind": "level-range",
+      "name": "Community II",
+      "color": "#fcaac1",
+      "enabled": true,
+      "achievementKey": null,
+      "minimumLevel": 5,
+      "maximumLevel": 9,
+      "sortOrder": 20
+    },
+    {
+      "key": "level.community-3",
+      "kind": "level-range",
+      "name": "Community III",
+      "color": "#a78cff",
+      "enabled": true,
+      "achievementKey": null,
+      "minimumLevel": 10,
+      "maximumLevel": 19,
+      "sortOrder": 30
+    },
+    {
+      "key": "level.community-4",
+      "kind": "level-range",
+      "name": "Community IV",
+      "color": "#d69acb",
+      "enabled": true,
+      "achievementKey": null,
+      "minimumLevel": 20,
+      "maximumLevel": 29,
+      "sortOrder": 40
+    },
+    {
+      "key": "level.community-5",
+      "kind": "level-range",
+      "name": "Community V",
+      "color": "#ff8fb8",
+      "enabled": true,
+      "achievementKey": null,
+      "minimumLevel": 30,
+      "maximumLevel": null,
+      "sortOrder": 50
+    },
+    {
+      "key": "showcase.stammgast",
+      "kind": "showcase",
+      "name": "Stammgast",
+      "color": "#fcaac1",
+      "enabled": true,
+      "achievementKey": "level-5-reached",
+      "minimumLevel": null,
+      "maximumLevel": null,
+      "sortOrder": 100
+    },
+    {
+      "key": "showcase.insider",
+      "kind": "showcase",
+      "name": "Insider",
+      "color": "#a78cff",
+      "enabled": true,
+      "achievementKey": "level-10-reached",
+      "minimumLevel": null,
+      "maximumLevel": null,
+      "sortOrder": 110
+    },
+    {
+      "key": "showcase.veteran",
+      "kind": "showcase",
+      "name": "Veteran",
+      "color": "#d69acb",
+      "enabled": true,
+      "achievementKey": "level-20-reached",
+      "minimumLevel": null,
+      "maximumLevel": null,
+      "sortOrder": 120
+    },
+    {
+      "key": "showcase.urgestein",
+      "kind": "showcase",
+      "name": "Urgestein",
+      "color": "#ff8fb8",
+      "enabled": true,
+      "achievementKey": "level-30-reached",
+      "minimumLevel": null,
+      "maximumLevel": null,
+      "sortOrder": 130
+    }
   ]
 }

@@ -3,6 +3,9 @@ import type {
   CommunityEventRuleDefault,
 } from '@shared/community/community-balancing';
 import type {
+  SaveCommunityDiscordRoleDefinition,
+} from '@shared/community/community-discord';
+import type {
   SaveCommunityAchievementDefinition,
   SaveCommunityTitleDefinition,
 } from '@shared/community/community-progression';
@@ -19,6 +22,7 @@ import {
 } from 'node:fs';
 import { join } from 'node:path';
 
+import { CommunityDiscordRoleDefinitionService } from './community-discord-role-definition.service';
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
 
@@ -36,10 +40,20 @@ interface CommunityAchievementDefault
   unlockedTitleKey: string | null;
 }
 
+interface CommunityDiscordRoleDefault
+  extends Omit<
+    SaveCommunityDiscordRoleDefinition,
+    'achievementId'
+  > {
+  key: string;
+  achievementKey: string | null;
+}
+
 interface CommunityBalancingDefaultsFile
   extends CommunityBalancingDefaults {
   titles: CommunityTitleDefault[];
   achievements: CommunityAchievementDefault[];
+  discordRoles: CommunityDiscordRoleDefault[];
 }
 
 @Injectable()
@@ -57,6 +71,8 @@ export class CommunityBalancingDefaultsService
       CommunityEventRuleService,
     private readonly definitions:
       CommunityProgressionDefinitionService,
+    private readonly discordRoles:
+      CommunityDiscordRoleDefinitionService,
   ) {}
 
   async onApplicationBootstrap():
@@ -244,6 +260,108 @@ export class CommunityBalancingDefaultsService
       );
     }
 
+    const achievementsByKey = new Map(
+      (
+        await this.definitions
+          .getAchievements()
+      ).map((achievement) => [
+        achievement.key,
+        achievement.id,
+      ]),
+    );
+    const existingDiscordRoles =
+      await this.discordRoles
+        .getDefinitions();
+    const existingDiscordRoleKeys =
+      new Set(
+        existingDiscordRoles.map(
+          (role) => role.key,
+        ),
+      );
+    const hasExistingLevelRanges =
+      existingDiscordRoles.some(
+        (role) =>
+          role.kind === 'level-range',
+      );
+    const mappedShowcaseAchievements =
+      new Set(
+        existingDiscordRoles.flatMap(
+          (role) =>
+            role.kind === 'showcase' &&
+            role.achievementId
+              ? [role.achievementId]
+              : [],
+        ),
+      );
+
+    for (
+      const role of defaults.discordRoles
+    ) {
+      if (
+        existingDiscordRoleKeys.has(
+          role.key,
+        ) ||
+        (
+          role.kind === 'level-range' &&
+          hasExistingLevelRanges
+        )
+      ) {
+        continue;
+      }
+
+      const achievementId =
+        role.achievementKey
+          ? achievementsByKey.get(
+              role.achievementKey,
+            ) ?? null
+          : null;
+
+      if (
+        role.achievementKey &&
+        !achievementId
+      ) {
+        throw new Error(
+          `Default Discord role "${role.key}" references unknown achievement "${role.achievementKey}".`,
+        );
+      }
+
+      if (
+        role.kind === 'showcase' &&
+        achievementId &&
+        mappedShowcaseAchievements.has(
+          achievementId,
+        )
+      ) {
+        continue;
+      }
+
+      await this.discordRoles.saveDefinition(
+        role.key,
+        {
+          kind: role.kind,
+          name: role.name,
+          color: role.color,
+          enabled: role.enabled,
+          achievementId,
+          minimumLevel:
+            role.minimumLevel,
+          maximumLevel:
+            role.maximumLevel,
+          sortOrder: role.sortOrder,
+        },
+        null,
+      );
+
+      if (
+        role.kind === 'showcase' &&
+        achievementId
+      ) {
+        mappedShowcaseAchievements.add(
+          achievementId,
+        );
+      }
+    }
+
     this.logger.log(
       'Community balancing defaults are available.',
     );
@@ -284,7 +402,8 @@ export class CommunityBalancingDefaultsService
       !Array.isArray(parsed.eventRules) ||
       !Array.isArray(parsed.levels) ||
       !Array.isArray(parsed.titles) ||
-      !Array.isArray(parsed.achievements)
+      !Array.isArray(parsed.achievements) ||
+      !Array.isArray(parsed.discordRoles)
     ) {
       throw new Error(
         'community-balancing.defaults.json has an invalid structure.',

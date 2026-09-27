@@ -81,6 +81,12 @@ export class CommunityDiscordRoleEntry {
   discordRoleId!: string | null;
 
   @Column({
+    type: 'boolean',
+    default: false,
+  })
+  provisionedByCommunity!: boolean;
+
+  @Column({
     type: 'uuid',
     nullable: true,
   })

@@ -16,6 +16,7 @@ import { CommunityService } from './community.service';
 import { DiscordBotService } from './discord/discord-bot.service';
 import { DiscordCommunityService } from './discord/discord-community.service';
 import { DiscordPublicCommunityService } from './discord/discord-public-community.service';
+import { DiscordRoleProvisioningService } from './discord/discord-role-provisioning.service';
 import { DiscordRoleSyncService } from './discord/discord-role-sync.service';
 import { CommunityEventEntry } from './entities/community-event.entry';
 import { CommunityAchievementConditionEntry } from './entities/community-achievement-condition.entry';
@@ -74,6 +75,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     DiscordBotService,
     DiscordCommunityService,
     DiscordPublicCommunityService,
+    DiscordRoleProvisioningService,
     DiscordRoleSyncService,
   ],
   exports: [
@@ -89,6 +91,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityTwitchIdentityService,
     DiscordBotService,
     DiscordCommunityService,
+    DiscordRoleProvisioningService,
   ],
 })
 export class CommunityModule {}

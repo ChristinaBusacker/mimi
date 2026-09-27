@@ -29,6 +29,10 @@ import {
   type DiscordCommunityMember,
 } from './discord-community.service';
 import { DiscordPublicCommunityService } from './discord-public-community.service';
+import {
+  DiscordRoleProvisioningService,
+  type DiscordRoleProvisioningResult,
+} from './discord-role-provisioning.service';
 import { DiscordRoleSyncService } from './discord-role-sync.service';
 
 const MEMBERSHIP_RECONCILIATION_INTERVAL_MS =
@@ -70,6 +74,8 @@ export class DiscordBotService
       DiscordCommunityService,
     private readonly publicCommunity:
       DiscordPublicCommunityService,
+    private readonly roleProvisioning:
+      DiscordRoleProvisioningService,
     private readonly roleSync:
       DiscordRoleSyncService,
   ) {
@@ -201,6 +207,24 @@ export class DiscordBotService
     }
   }
 
+  async reconcileManagedRoles():
+    Promise<DiscordRoleProvisioningResult | null> {
+    if (
+      !this.guildId ||
+      !this.client.isReady()
+    ) {
+      return null;
+    }
+
+    const guild =
+      await this.client.guilds.fetch(
+        this.guildId,
+      );
+
+    return this.roleProvisioning
+      .reconcile(guild);
+  }
+
   async getPublicSummary():
     Promise<CommunityPublicSummary> {
     const configured =
@@ -306,6 +330,9 @@ export class DiscordBotService
         await this.client.guilds.fetch(
           this.guildId,
         );
+      const provisionedRoles =
+        await this.roleProvisioning
+          .reconcile(guild);
       const members =
         await guild.members.fetch({
           withPresences: true,
@@ -326,7 +353,7 @@ export class DiscordBotService
         );
 
       this.logger.log(
-        `Discord membership reconciled for ${members.size} server members; roles synchronized for ${roleResult.handled} community members (${roleResult.added} added, ${roleResult.removed} removed).`,
+        `Discord membership reconciled for ${members.size} server members; ${provisionedRoles.enabled} community roles checked (${provisionedRoles.created} created, ${provisionedRoles.updated} updated, ${provisionedRoles.failed} failed); roles synchronized for ${roleResult.handled} community members (${roleResult.added} added, ${roleResult.removed} removed).`,
       );
     } catch (error: unknown) {
       this.logger.warn(

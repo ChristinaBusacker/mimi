@@ -34,6 +34,7 @@ function repository<T extends ObjectLiteral>(): Repository<T> {
       async (value: object) => ({
         uuid: 'role-1',
         discordRoleId: null,
+        provisionedByCommunity: false,
         createdAt: new Date(
           '2026-09-27T12:00:00Z',
         ),
@@ -98,6 +99,7 @@ describe(
               color: null,
               enabled: true,
               discordRoleId: null,
+              provisionedByCommunity: false,
               achievementUuid: null,
               minimumLevel: 5,
               maximumLevel: 9,
@@ -172,6 +174,7 @@ describe(
             color: null,
             enabled: true,
             discordRoleId: null,
+            provisionedByCommunity: false,
             achievementUuid: null,
             minimumLevel: null,
             maximumLevel: null,
@@ -185,7 +188,7 @@ describe(
           } as CommunityDiscordRoleEntry);
 
         await expect(
-          service.setDiscordRoleId(
+          service.setProvisionedDiscordRoleId(
             'role-1',
             '123456789012345678',
           ),

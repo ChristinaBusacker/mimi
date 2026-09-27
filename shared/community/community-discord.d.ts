@@ -24,6 +24,7 @@ export interface CommunityDiscordRoleDefinition {
   color: string | null;
   enabled: boolean;
   discordRoleId: string | null;
+  provisionedByCommunity: boolean;
   achievementId: string | null;
   minimumLevel: number | null;
   maximumLevel: number | null;

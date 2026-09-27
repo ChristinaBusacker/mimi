@@ -6,6 +6,7 @@ import type {
 
 import { communityAchievementRewardsMigration } from '../community/community-achievement-rewards.schema-migration';
 import { communityDiscordRoleModelMigration } from '../community/community-discord-role-model.schema-migration';
+import { communityDiscordRoleOwnershipMigration } from '../community/community-discord-role-ownership.schema-migration';
 import { communityEventRewardsMigration } from '../community/community-event-rewards.schema-migration';
 import { communityProfileCustomizationMigration } from '../community/community-profile-customization.schema-migration';
 import { communityProgressionMigration } from '../community/community-progression.schema-migration';
@@ -508,6 +509,7 @@ const migrations: readonly SchemaMigration[] = [
   communityProfileCustomizationMigration,
   discordRoleSyncMigration,
   communityDiscordRoleModelMigration,
+  communityDiscordRoleOwnershipMigration,
   communityTwitchLinkMigration,
 ];
 
