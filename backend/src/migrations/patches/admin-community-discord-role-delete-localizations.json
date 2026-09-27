@@ -1,0 +1,39 @@
+{
+  "localizations": [
+    {
+      "key": "admin.community.discordRoles.delete",
+      "de": "Löschen",
+      "en": "Delete"
+    },
+    {
+      "key": "admin.community.discordRoles.deleteConfirm",
+      "de": "Die Rolle wird auch auf dem Discord-Server gelöscht.",
+      "en": "The role will also be deleted from the Discord server."
+    },
+    {
+      "key": "admin.community.discordRoles.cancelDelete",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.community.discordRoles.confirmDelete",
+      "de": "Wirklich löschen",
+      "en": "Delete role"
+    },
+    {
+      "key": "admin.community.discordRoles.deleted",
+      "de": "Rolle wurde aus der Community-Konfiguration und vom Discord-Server gelöscht.",
+      "en": "The role was deleted from the community configuration and Discord server."
+    },
+    {
+      "key": "admin.community.discordRoles.deleteFailed",
+      "de": "Die Rolle konnte nicht gelöscht werden. Wenn sie auf Discord existiert, muss der Bot sie verwalten können und mit Discord verbunden sein.",
+      "en": "The role could not be deleted. If it exists on Discord, the bot must be able to manage it and be connected to Discord."
+    },
+    {
+      "key": "community.dashboard.profileColor.hint",
+      "de": "Die ausgewählte Showcase-Rolle bestimmt deine Profilfarbe auf der Website und deine Namensfarbe auf Discord.",
+      "en": "The selected showcase role controls your profile color on the website and your name color on Discord."
+    }
+  ]
+}

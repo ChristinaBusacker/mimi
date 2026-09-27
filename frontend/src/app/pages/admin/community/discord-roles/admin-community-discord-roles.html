@@ -234,6 +234,35 @@
               >
                 {{ 'admin.community.discordRoles.discard' | i18n | async }}
               </button>
+            } @else if (pendingDeleteId() === role.id) {
+              <span>
+                {{ 'admin.community.discordRoles.deleteConfirm' | i18n | async }}
+              </span>
+              <button
+                type="button"
+                class="discord-role-card__text-action"
+                [disabled]="savingKey() !== null || syncing()"
+                (click)="cancelDeleteRole()"
+              >
+                {{ 'admin.community.discordRoles.cancelDelete' | i18n | async }}
+              </button>
+              <button
+                type="button"
+                class="discord-role-card__text-action"
+                [disabled]="savingKey() !== null || syncing()"
+                (click)="deleteRole(role)"
+              >
+                {{ 'admin.community.discordRoles.confirmDelete' | i18n | async }}
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="discord-role-card__text-action"
+                [disabled]="savingKey() !== null || syncing()"
+                (click)="requestDeleteRole(role)"
+              >
+                {{ 'admin.community.discordRoles.delete' | i18n | async }}
+              </button>
             }
 
             <app-button

@@ -6,10 +6,6 @@
         {{ 'community.live.hero.eyebrow' | i18n | async }}
       </div>
 
-      <div class="logo">
-        <img src="/images/logo.png" alt="" />
-      </div>
-
       <h1 class="sue-ellen">
         {{ 'community.live.hero.title' | i18n | async }}
       </h1>
@@ -49,7 +45,9 @@
         <div>
           <span>{{ 'community.live.card.server' | i18n | async }}</span>
           <strong>
-            {{ summary()?.discord.guildName ?? ('community.live.card.fallbackName' | i18n | async) }}
+            {{
+              summary()?.discord.guildName ?? ('community.live.card.fallbackName' | i18n | async)
+            }}
           </strong>
         </div>
       </div>
@@ -171,11 +169,7 @@
           {{ 'community.live.hero.dashboard' | i18n | async }} →
         </a>
       } @else if (inviteUrl(); as invite) {
-        <app-button
-          class="primary round font-black discord-button"
-          [href]="invite"
-          target="_blank"
-        >
+        <app-button class="primary round font-black discord-button" [href]="invite" target="_blank">
           {{ 'community.live.hero.join' | i18n | async }}
         </app-button>
       }

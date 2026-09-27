@@ -53,8 +53,7 @@
   }
 
   h1 {
-    max-width: 18ch;
-    margin: var(--spacing-xs) 0;
+    margin: var(--spacing-md) 0 var(--spacing-sm) 0;
     color: #aeb5ff;
     font-size: clamp(2rem, 4vw, 2.8rem);
     line-height: 1.02;
@@ -99,14 +98,12 @@
 
   display: grid;
   gap: var(--spacing-md);
-  width: min(100%, 410px);
   margin: var(--spacing-lg);
   padding: var(--spacing-md);
   border-color: rgb(111 124 255 / 72%);
   background:
     radial-gradient(circle at 90% 0, rgb(88 101 242 / 30%), transparent 45%),
-    linear-gradient(145deg, rgb(88 101 242 / 13%), transparent 55%),
-    rgb(25 20 34 / 90%);
+    linear-gradient(145deg, rgb(88 101 242 / 13%), transparent 55%), rgb(25 20 34 / 90%);
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 4%),
     0 14px 32px rgb(0 0 0 / 26%);
@@ -199,8 +196,16 @@
 
   border-color: color-mix(in srgb, var(--page-accent) 76%, transparent);
   background:
-    radial-gradient(circle at 86% 0, color-mix(in srgb, var(--page-accent) 14%, transparent), transparent 34%),
-    linear-gradient(145deg, color-mix(in srgb, var(--page-accent) 8%, transparent), transparent 48%),
+    radial-gradient(
+      circle at 86% 0,
+      color-mix(in srgb, var(--page-accent) 14%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--page-accent) 8%, transparent),
+      transparent 48%
+    ),
     var(--page-surface);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--page-accent) 8%, transparent),
@@ -253,14 +258,17 @@
 .community-tile {
   position: relative;
   display: grid;
-  align-content: end;
-  min-height: 245px;
+  align-content: start;
   overflow: hidden;
   padding: var(--spacing-md);
   border-radius: var(--radius-card);
   background:
     linear-gradient(180deg, rgb(19 14 27 / 16%) 8%, rgb(22 15 30 / 92%) 78%),
-    radial-gradient(circle at 75% 12%, color-mix(in srgb, var(--page-accent) 32%, transparent), transparent 36%),
+    radial-gradient(
+      circle at 75% 12%,
+      color-mix(in srgb, var(--page-accent) 32%, transparent),
+      transparent 36%
+    ),
     var(--page-surface-strong);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 7%);
 
@@ -297,7 +305,7 @@
   }
 
   h3 {
-    margin: 3px 0 var(--spacing-xs);
+    margin: var(--spacing-md) 0 var(--spacing-xs);
     color: #c5c9ff;
     font-size: 1.65rem;
     line-height: 1;
@@ -469,6 +477,6 @@
 
 @media (max-width: 560px) {
   .discord-live-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }

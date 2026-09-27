@@ -79,6 +79,9 @@ export class AdminCommunityDiscordRoles
   protected readonly statusKey = signal<
     string | null
   >(null);
+  protected readonly pendingDeleteId = signal<
+    string | null
+  >(null);
   protected readonly catalog = signal<
     CommunityDiscordRoleCatalog
   >({
@@ -281,6 +284,51 @@ export class AdminCommunityDiscordRoles
     } catch {
       this.statusKey.set(
         'admin.community.discordRoles.savedRefreshFailed',
+      );
+    } finally {
+      this.savingKey.set(null);
+    }
+  }
+
+  protected requestDeleteRole(
+    role: DiscordRoleDraft,
+  ): void {
+    if (!role.persisted || !role.id) {
+      return;
+    }
+
+    this.pendingDeleteId.set(role.id);
+    this.statusKey.set(null);
+  }
+
+  protected cancelDeleteRole(): void {
+    this.pendingDeleteId.set(null);
+  }
+
+  protected async deleteRole(
+    role: DiscordRoleDraft,
+  ): Promise<void> {
+    if (!role.persisted || !role.id) {
+      return;
+    }
+
+    this.savingKey.set(role.clientId);
+    this.statusKey.set(null);
+
+    try {
+      await firstValueFrom(
+        this.service.deleteDefinition(
+          role.id,
+        ),
+      );
+      this.pendingDeleteId.set(null);
+      await this.refreshRoleState();
+      this.statusKey.set(
+        'admin.community.discordRoles.deleted',
+      );
+    } catch {
+      this.statusKey.set(
+        'admin.community.discordRoles.deleteFailed',
       );
     } finally {
       this.savingKey.set(null);

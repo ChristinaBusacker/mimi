@@ -225,6 +225,24 @@ export class DiscordBotService
       .reconcile(guild);
   }
 
+  async deleteManagedRole(
+    roleUuid: string,
+  ): Promise<void> {
+    const guild =
+      this.guildId &&
+      this.client.isReady()
+        ? await this.client.guilds.fetch(
+            this.guildId,
+          )
+        : null;
+
+    await this.roleProvisioning
+      .deleteDefinition(
+        guild,
+        roleUuid,
+      );
+  }
+
   async getPublicSummary():
     Promise<CommunityPublicSummary> {
     const configured =

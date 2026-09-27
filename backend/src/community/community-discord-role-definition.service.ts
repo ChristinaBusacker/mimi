@@ -14,7 +14,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CommunityAchievementEntry } from './entities/community-achievement.entry';
+import { CommunityDiscordAssignedRoleEntry } from './entities/community-discord-assigned-role.entry';
 import { CommunityDiscordRoleEntry } from './entities/community-discord-role.entry';
+import { CommunityProfileEntry } from './entities/community-profile.entry';
 
 const ROLE_KEY_PATTERN =
   /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
@@ -186,6 +188,65 @@ export class CommunityDiscordRoleDefinitionService {
     return this.mapDefinition(
       await this.roles.save(role),
     );
+  }
+
+  async deleteDefinition(
+    roleUuid: string,
+  ): Promise<CommunityDiscordRoleDefinition> {
+    const role =
+      await this.roles.findOneBy({
+        uuid: roleUuid,
+      });
+
+    if (!role) {
+      throw new NotFoundException(
+        `Community Discord role "${roleUuid}" not found.`,
+      );
+    }
+
+    const definition =
+      this.mapDefinition(role);
+
+    await this.roles.manager.transaction(
+      async (manager) => {
+        await manager
+          .getRepository(
+            CommunityProfileEntry,
+          )
+          .update(
+            {
+              selectedDiscordShowcaseRoleUuid:
+                role.uuid,
+            },
+            {
+              selectedDiscordShowcaseRoleUuid:
+                null,
+              selectedProfileColorAchievementUuid:
+                null,
+            },
+          );
+
+        if (role.discordRoleId) {
+          await manager
+            .getRepository(
+              CommunityDiscordAssignedRoleEntry,
+            )
+            .delete({
+              roleId: role.discordRoleId,
+            });
+        }
+
+        await manager
+          .getRepository(
+            CommunityDiscordRoleEntry,
+          )
+          .delete({
+            uuid: role.uuid,
+          });
+      },
+    );
+
+    return definition;
   }
 
   private async validateDefinition(

@@ -1,11 +1,20 @@
-import type { CommunityDiscordRoleDefinition } from '@shared/community/community-discord';
+import type {
+  CommunityDiscordRoleDefinition,
+  CommunityDiscordRoleKind,
+} from '@shared/community/community-discord';
 
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import type { Guild, Role } from 'discord.js';
 
 import { CommunityDiscordRoleDefinitionService } from '../community-discord-role-definition.service';
 
 const PROVISION_REASON = 'Community role provisioning';
+const DELETE_REASON = 'Community role deleted';
+const DISCORD_UNKNOWN_ROLE_ERROR_CODE = 10011;
 
 export interface DiscordRoleProvisioningResult {
   total: number;
@@ -64,7 +73,61 @@ export class DiscordRoleProvisioningService {
       }
     }
 
+    try {
+      await this.synchronizeRolePositions(guild);
+    } catch (error: unknown) {
+      result.failed += 1;
+      this.logger.warn(
+        `Could not synchronize community Discord role hierarchy: ${this.errorMessage(error)}`,
+      );
+    }
+
     return result;
+  }
+
+  async deleteDefinition(
+    guild: Guild | null,
+    roleUuid: string,
+  ): Promise<void> {
+    const definition =
+      await this.definitions.getDefinition(
+        roleUuid,
+      );
+
+    if (
+      definition.provisionedByCommunity &&
+      definition.discordRoleId
+    ) {
+      if (!guild) {
+        throw new ServiceUnavailableException(
+          'Discord must be connected before a provisioned community role can be deleted.',
+        );
+      }
+
+      const role =
+        await this.resolveOwnedRole(
+          guild,
+          definition.discordRoleId,
+        );
+
+      if (role) {
+        this.assertEditable(
+          role,
+          definition,
+        );
+        await role.delete(DELETE_REASON);
+      }
+    }
+
+    await this.definitions.deleteDefinition(
+      roleUuid,
+    );
+
+    if (guild) {
+      await this.synchronizeRolePositions(
+        guild,
+      );
+    }
   }
 
   private async createOwnedRole(
@@ -124,6 +187,118 @@ export class DiscordRoleProvisioningService {
     return 'updated';
   }
 
+  private async synchronizeRolePositions(
+    guild: Guild,
+  ): Promise<void> {
+    const definitions =
+      (await this.definitions.getDefinitions())
+        .filter(
+          (definition) =>
+            definition.enabled &&
+            definition.provisionedByCommunity &&
+            definition.discordRoleId !== null,
+        );
+
+    if (definitions.length < 2) {
+      return;
+    }
+
+    const guildRoles =
+      await guild.roles.fetch();
+    const managed = definitions.flatMap(
+      (definition) => {
+        const role = definition.discordRoleId
+          ? guildRoles.get(
+              definition.discordRoleId,
+            )
+          : null;
+
+        return role &&
+          !role.managed &&
+          role.editable
+          ? [{ definition, role }]
+          : [];
+      },
+    );
+
+    if (managed.length < 2) {
+      return;
+    }
+
+    const positions = managed
+      .map(({ role }) => role.position)
+      .sort((left, right) => left - right);
+    const ordered = managed.sort(
+      (left, right) =>
+        this.roleKindPriority(
+          left.definition.kind,
+        ) -
+          this.roleKindPriority(
+            right.definition.kind,
+          ) ||
+        right.definition.sortOrder -
+          left.definition.sortOrder ||
+        left.definition.key.localeCompare(
+          right.definition.key,
+        ),
+    );
+    const moves = ordered
+      .map(({ role }, index) => ({
+        role,
+        position: positions[index],
+      }))
+      .filter(
+        ({ role, position }) =>
+          role.position !== position,
+      );
+
+    if (moves.length === 0) {
+      return;
+    }
+
+    await guild.roles.setPositions(
+      moves,
+    );
+  }
+
+  private async resolveOwnedRole(
+    guild: Guild,
+    roleId: string,
+  ): Promise<Role | null> {
+    const cached =
+      guild.roles.cache.get(roleId);
+
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      return await guild.roles.fetch(roleId);
+    } catch (error: unknown) {
+      if (
+        this.discordErrorCode(error) ===
+        DISCORD_UNKNOWN_ROLE_ERROR_CODE
+      ) {
+        return null;
+      }
+
+      throw error;
+    }
+  }
+
+  private roleKindPriority(
+    kind: CommunityDiscordRoleKind,
+  ): number {
+    switch (kind) {
+      case 'level-range':
+        return 0;
+      case 'special':
+        return 1;
+      case 'showcase':
+        return 2;
+    }
+  }
+
   private assertEditable(role: Role, definition: CommunityDiscordRoleDefinition): void {
     if (role.managed) {
       throw new Error(
@@ -144,6 +319,25 @@ export class DiscordRoleProvisioningService {
     }
 
     return Number.parseInt(color.slice(1), 16);
+  }
+
+  private discordErrorCode(
+    error: unknown,
+  ): number | string | null {
+    if (
+      typeof error !== 'object' ||
+      error === null ||
+      !('code' in error)
+    ) {
+      return null;
+    }
+
+    const code = error.code;
+
+    return typeof code === 'number' ||
+      typeof code === 'string'
+      ? code
+      : null;
   }
 
   private errorMessage(error: unknown): string {

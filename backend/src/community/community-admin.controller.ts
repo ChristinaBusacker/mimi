@@ -19,6 +19,7 @@ import type {
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -149,6 +150,19 @@ export class CommunityAdminController {
   > {
     return this.discordBot
       .reconcileManagedRoles();
+  }
+
+  @Delete('discord/community-roles/:id')
+  @ApiOperation({
+    summary:
+      'Delete a website-managed Discord role from Discord and the community configuration',
+  })
+  deleteCommunityDiscordRole(
+    @Param('id')
+    id: string,
+  ): Promise<void> {
+    return this.discordBot
+      .deleteManagedRole(id);
   }
 
   @Get('event-types')

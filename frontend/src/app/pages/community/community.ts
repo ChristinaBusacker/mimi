@@ -1,13 +1,7 @@
-import type {
-  CommunityDashboard,
-} from '@shared/community/community-dashboard';
-import type {
-  CommunityPublicSummary,
-} from '@shared/community/community-public';
+import type { CommunityDashboard } from '@shared/community/community-dashboard';
+import type { CommunityPublicSummary } from '@shared/community/community-public';
 
-import {
-  AsyncPipe,
-} from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,15 +11,9 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import {
-  RouterLink,
-} from '@angular/router';
-import {
-  Store,
-} from '@ngxs/store';
-import {
-  firstValueFrom,
-} from 'rxjs';
+import { RouterLink } from '@angular/router';
+import { Store } from '@ngxs/store';
+import { firstValueFrom } from 'rxjs';
 
 import { Button } from '../../components/button/button';
 import { Hero } from '../../components/hero/hero';
@@ -36,71 +24,38 @@ import { CommunityPublicService } from '../../core/community/community-public.se
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 
 @Component({
-  changeDetection:
-    ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    Button,
-    Hero,
-    I18nPipe,
-    RouterLink,
-  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AsyncPipe, Button, Hero, I18nPipe, RouterLink],
   selector: 'app-community-page',
   styleUrl: './community.scss',
   templateUrl: './community.html',
 })
 export class CommunityPage {
   private readonly store = inject(Store);
-  private readonly destroyRef =
-    inject(DestroyRef);
-  private readonly dashboardService =
-    inject(CommunityDashboardService);
-  private readonly publicService =
-    inject(CommunityPublicService);
-  private loadedUserUuid: string | null =
-    null;
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly dashboardService = inject(CommunityDashboardService);
+  private readonly publicService = inject(CommunityPublicService);
+  private loadedUserUuid: string | null = null;
 
-  protected readonly user =
-    this.store.selectSignal(
-      AuthState.user,
-    );
-  protected readonly authInitialized =
-    this.store.selectSignal(
-      AuthState.initialized,
-    );
-  protected readonly membershipState =
-    signal<CommunityDashboard | null>(
-      null,
-    );
-  protected readonly summary =
-    signal<CommunityPublicSummary | null>(
-      null,
-    );
-  protected readonly loadingState =
-    signal(false);
+  protected readonly user = this.store.selectSignal(AuthState.user);
+  protected readonly authInitialized = this.store.selectSignal(AuthState.initialized);
+  protected readonly membershipState = signal<CommunityDashboard | null>(null);
+  protected readonly summary = signal<CommunityPublicSummary | null>(null);
+  protected readonly loadingState = signal(false);
 
   constructor() {
     void this.loadSummary();
 
     afterNextRender(() => {
-      const intervalId =
-        window.setInterval(
-          () => void this.loadSummary(),
-          30_000,
-        );
+      const intervalId = window.setInterval(() => void this.loadSummary(), 30_000);
 
-      this.destroyRef.onDestroy(() =>
-        window.clearInterval(intervalId),
-      );
+      this.destroyRef.onDestroy(() => window.clearInterval(intervalId));
     });
 
-    this.store.dispatch(
-      new LoadAuthSession(),
-    ).subscribe();
+    this.store.dispatch(new LoadAuthSession()).subscribe();
 
     effect(() => {
-      const initialized =
-        this.authInitialized();
+      const initialized = this.authInitialized();
       const user = this.user();
 
       if (!initialized) {
@@ -114,10 +69,7 @@ export class CommunityPage {
         return;
       }
 
-      if (
-        this.loadedUserUuid ===
-        user.uuid
-      ) {
+      if (this.loadedUserUuid === user.uuid) {
         return;
       }
 
@@ -132,27 +84,17 @@ export class CommunityPage {
 
   private async loadSummary(): Promise<void> {
     try {
-      this.summary.set(
-        await firstValueFrom(
-          this.publicService.getSummary(),
-        ),
-      );
+      this.summary.set(await firstValueFrom(this.publicService.getSummary()));
     } catch {
       this.summary.set(null);
     }
   }
 
-  private async loadMembershipState():
-    Promise<void> {
+  private async loadMembershipState(): Promise<void> {
     this.loadingState.set(true);
 
     try {
-      this.membershipState.set(
-        await firstValueFrom(
-          this.dashboardService
-            .getDashboard(),
-        ),
-      );
+      this.membershipState.set(await firstValueFrom(this.dashboardService.getDashboard()));
     } finally {
       this.loadingState.set(false);
     }

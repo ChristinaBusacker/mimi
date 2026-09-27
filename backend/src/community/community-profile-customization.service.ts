@@ -124,6 +124,8 @@ export class CommunityProfileCustomizationService {
             manager,
             userUuid,
           );
+        let selectedAchievementUuid:
+          string | null = null;
 
         if (roleUuid) {
           const role =
@@ -139,7 +141,10 @@ export class CommunityProfileCustomizationService {
             !role ||
             !role.enabled ||
             role.kind !== 'showcase' ||
-            !role.achievementUuid
+            !role.achievementUuid ||
+            !role.color ||
+            !role.provisionedByCommunity ||
+            !role.discordRoleId
           ) {
             throw new BadRequestException(
               'The selected Discord showcase role is not available.',
@@ -162,11 +167,17 @@ export class CommunityProfileCustomizationService {
               'The selected Discord showcase role is not unlocked.',
             );
           }
+
+          selectedAchievementUuid =
+            role.achievementUuid;
         }
 
         profile
           .selectedDiscordShowcaseRoleUuid =
           roleUuid;
+        profile
+          .selectedProfileColorAchievementUuid =
+          selectedAchievementUuid;
 
         await manager
           .getRepository(
@@ -339,34 +350,27 @@ export class CommunityProfileCustomizationService {
                 key: 'ASC',
               },
             });
-    const achievementById =
-      new Map(
-        achievements.map(
-          (achievement) => [
-            achievement.uuid,
-            achievement,
-          ],
-        ),
-      );
-    const selectedAchievement =
-      profile
-        .selectedProfileColorAchievementUuid
-        ? achievementById.get(
-            profile
-              .selectedProfileColorAchievementUuid,
-          )
-        : undefined;
+    const selectedShowcaseRole =
+      profile.selectedDiscordShowcaseRoleUuid
+        ? await manager
+            .getRepository(
+              CommunityDiscordRoleEntry,
+            )
+            .findOneBy({
+              uuid: profile
+                .selectedDiscordShowcaseRoleUuid,
+              enabled: true,
+            })
+        : null;
 
     return {
       selectedTitleId:
         profile.selectedTitleUuid,
       selectedProfileColorAchievementId:
-        profile
-          .selectedProfileColorAchievementUuid,
+        selectedShowcaseRole
+          ?.achievementUuid ?? null,
       selectedProfileColor:
-        selectedAchievement
-          ?.unlockedProfileColor ??
-        null,
+        selectedShowcaseRole?.color ?? null,
       unlockedProfileColors:
         achievements
           .filter(

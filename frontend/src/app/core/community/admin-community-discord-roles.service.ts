@@ -86,6 +86,14 @@ export class AdminCommunityDiscordRolesService {
     );
   }
 
+  deleteDefinition(
+    roleId: string,
+  ): Observable<void> {
+    return this.request.delete<void>(
+      `/admin/community/discord/community-roles/${encodeURIComponent(roleId)}`,
+    );
+  }
+
   synchronize(): Observable<
     DiscordRoleProvisioningResult | null
   > {

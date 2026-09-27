@@ -3,37 +3,15 @@ import type {
   CommunityDashboardAchievement,
   CommunityDashboardTitle,
 } from '@shared/community/community-dashboard';
-import type {
-  CommunityLocalizedText,
-} from '@shared/community/community-progression';
-import type {
-  CommunityPublicSummary,
-} from '@shared/community/community-public';
+import type { CommunityLocalizedText } from '@shared/community/community-progression';
+import type { CommunityPublicSummary } from '@shared/community/community-public';
 
-import {
-  AsyncPipe,
-} from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
-import {
-  FormsModule,
-} from '@angular/forms';
-import {
-  ActivatedRoute,
-  RouterLink,
-} from '@angular/router';
-import {
-  Store,
-} from '@ngxs/store';
-import {
-  firstValueFrom,
-  forkJoin,
-} from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Store } from '@ngxs/store';
+import { firstValueFrom, forkJoin } from 'rxjs';
 
 import { Button } from '../../../components/button/button';
 import { Hero } from '../../../components/hero/hero';
@@ -45,86 +23,42 @@ import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { I18nState } from '../../../core/i18n/i18n.state';
 
 @Component({
-  changeDetection:
-    ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    Button,
-    FormsModule,
-    Hero,
-    I18nPipe,
-    RouterLink,
-  ],
-  selector:
-    'app-community-dashboard-page',
-  styleUrl:
-    './community-dashboard.scss',
-  templateUrl:
-    './community-dashboard.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AsyncPipe, Button, FormsModule, Hero, I18nPipe, RouterLink],
+  selector: 'app-community-dashboard-page',
+  styleUrl: './community-dashboard.scss',
+  templateUrl: './community-dashboard.html',
 })
 export class CommunityDashboardPage {
   private readonly store = inject(Store);
-  private readonly route =
-    inject(ActivatedRoute);
-  private readonly service =
-    inject(CommunityDashboardService);
-  private readonly publicService =
-    inject(CommunityPublicService);
-  private loadedUserUuid: string | null =
-    null;
+  private readonly route = inject(ActivatedRoute);
+  private readonly service = inject(CommunityDashboardService);
+  private readonly publicService = inject(CommunityPublicService);
+  private loadedUserUuid: string | null = null;
 
-  protected readonly user =
-    this.store.selectSignal(
-      AuthState.user,
-    );
-  protected readonly authInitialized =
-    this.store.selectSignal(
-      AuthState.initialized,
-    );
-  private readonly language =
-    this.store.selectSignal(
-      I18nState.language,
-    );
-  protected readonly dashboard =
-    signal<CommunityDashboard | null>(
-      null,
-    );
-  protected readonly summary =
-    signal<CommunityPublicSummary | null>(
-      null,
-    );
-  protected readonly loading =
-    signal(false);
-  protected readonly saving =
-    signal(false);
-  protected readonly errorKey =
-    signal<string | null>(null);
-  protected readonly twitchErrorKey =
-    signal<string | null>(null);
+  protected readonly user = this.store.selectSignal(AuthState.user);
+  protected readonly authInitialized = this.store.selectSignal(AuthState.initialized);
+  private readonly language = this.store.selectSignal(I18nState.language);
+  protected readonly dashboard = signal<CommunityDashboard | null>(null);
+  protected readonly summary = signal<CommunityPublicSummary | null>(null);
+  protected readonly loading = signal(false);
+  protected readonly saving = signal(false);
+  protected readonly errorKey = signal<string | null>(null);
+  protected readonly twitchErrorKey = signal<string | null>(null);
 
   constructor() {
-    const twitchResult =
-      this.route.snapshot.queryParamMap.get(
-        'twitch',
-      );
+    const twitchResult = this.route.snapshot.queryParamMap.get('twitch');
 
     if (twitchResult === 'conflict') {
-      this.twitchErrorKey.set(
-        'community.dashboard.twitch.conflict',
-      );
+      this.twitchErrorKey.set('community.dashboard.twitch.conflict');
     } else if (twitchResult === 'failed') {
-      this.twitchErrorKey.set(
-        'community.dashboard.twitch.failed',
-      );
+      this.twitchErrorKey.set('community.dashboard.twitch.failed');
     }
 
-    this.store.dispatch(
-      new LoadAuthSession(),
-    ).subscribe();
+    this.store.dispatch(new LoadAuthSession()).subscribe();
 
     effect(() => {
-      const initialized =
-        this.authInitialized();
+      const initialized = this.authInitialized();
       const user = this.user();
 
       if (!initialized) {
@@ -138,10 +72,7 @@ export class CommunityDashboardPage {
         return;
       }
 
-      if (
-        this.loadedUserUuid ===
-        user.uuid
-      ) {
+      if (this.loadedUserUuid === user.uuid) {
         return;
       }
 
@@ -150,228 +81,123 @@ export class CommunityDashboardPage {
     });
   }
 
-  protected displayText(
-    text: CommunityLocalizedText,
-  ): string {
-    return this.language() === 'en'
-      ? text.en ?? text.de
-      : text.de;
+  protected displayText(text: CommunityLocalizedText): string {
+    return this.language() === 'en' ? (text.en ?? text.de) : text.de;
   }
 
-  protected xpUntilNextLevel(
-    dashboard: CommunityDashboard,
-  ): number {
+  protected xpUntilNextLevel(dashboard: CommunityDashboard): number {
     if (!dashboard.nextLevel) {
       return 0;
     }
 
-    return Math.max(
-      0,
-      dashboard.nextLevel.requiredXp -
-        dashboard.totalXp,
-    );
+    return Math.max(0, dashboard.nextLevel.requiredXp - dashboard.totalXp);
   }
 
-  protected unlockedAchievements(
-    dashboard: CommunityDashboard,
-  ): CommunityDashboardAchievement[] {
-    return dashboard.achievements.filter(
-      (achievement) =>
-        achievement.unlocked,
-    );
+  protected unlockedAchievements(dashboard: CommunityDashboard): CommunityDashboardAchievement[] {
+    return dashboard.achievements.filter((achievement) => achievement.unlocked);
   }
 
-  protected nextAchievement(
-    dashboard: CommunityDashboard,
-  ): CommunityDashboardAchievement | null {
-    return (
-      dashboard.achievements.find(
-        (achievement) =>
-          !achievement.unlocked,
-      ) ?? null
-    );
+  protected nextAchievement(dashboard: CommunityDashboard): CommunityDashboardAchievement | null {
+    return dashboard.achievements.find((achievement) => !achievement.unlocked) ?? null;
   }
 
-  protected pinnedAchievements(
-    dashboard: CommunityDashboard,
-  ): CommunityDashboardAchievement[] {
-    const pinnedIds = new Set(
-      dashboard.customization
-        ?.pinnedAchievementIds ?? [],
-    );
+  protected pinnedAchievements(dashboard: CommunityDashboard): CommunityDashboardAchievement[] {
+    const pinnedIds = new Set(dashboard.customization?.pinnedAchievementIds ?? []);
 
-    return dashboard.achievements.filter(
-      (achievement) =>
-        pinnedIds.has(
-          achievement.id,
-        ),
-    );
+    return dashboard.achievements.filter((achievement) => pinnedIds.has(achievement.id));
   }
 
-  protected selectedTitle(
-    dashboard: CommunityDashboard,
-  ): CommunityDashboardTitle | null {
-    const selectedTitleId =
-      dashboard.customization
-        ?.selectedTitleId;
+  protected selectedTitle(dashboard: CommunityDashboard): CommunityDashboardTitle | null {
+    const selectedTitleId = dashboard.customization?.selectedTitleId;
 
     if (!selectedTitleId) {
       return null;
     }
 
-    return (
-      dashboard.titles.find(
-        (title) =>
-          title.id ===
-          selectedTitleId,
-      ) ?? null
-    );
+    return dashboard.titles.find((title) => title.id === selectedTitleId) ?? null;
   }
 
   protected inviteUrl(): string | null {
     return this.summary()?.discord.inviteUrl ?? null;
   }
 
-  protected profileColorLabel(
-    dashboard: CommunityDashboard,
-    achievementId: string,
-  ): string {
-    const achievement =
-      dashboard.achievements.find(
-        (candidate) =>
-          candidate.id === achievementId,
-      );
+  protected profileColorLabel(dashboard: CommunityDashboard, achievementId: string): string {
+    const achievement = dashboard.achievements.find((candidate) => candidate.id === achievementId);
 
-    return achievement
-      ? this.displayText(achievement.name)
-      : achievementId;
+    return achievement ? this.displayText(achievement.name) : achievementId;
   }
 
-  protected async disconnectTwitch():
-    Promise<void> {
-    await this.save(() =>
-      this.service.disconnectTwitch(),
-    );
+  protected async disconnectTwitch(): Promise<void> {
+    await this.save(() => this.service.disconnectTwitch());
   }
 
-  protected async selectTitle(
-    titleId: string | null,
-  ): Promise<void> {
-    await this.save(() =>
-      this.service.selectTitle(
-        titleId || null,
-      ),
-    );
+  protected async selectTitle(titleId: string | null): Promise<void> {
+    await this.save(() => this.service.selectTitle(titleId || null));
   }
 
-  protected async selectProfileColor(
-    achievementId: string | null,
-  ): Promise<void> {
-    await this.save(() =>
-      this.service.selectProfileColor(
-        achievementId || null,
-      ),
-    );
+  protected async selectProfileColor(achievementId: string | null): Promise<void> {
+    await this.save(() => this.service.selectProfileColor(achievementId || null));
   }
 
-  protected async selectDiscordShowcaseRole(
-    roleId: string | null,
-  ): Promise<void> {
-    await this.save(() =>
-      this.service.selectDiscordShowcaseRole(
-        roleId || null,
-      ),
-    );
+  protected async selectDiscordShowcaseRole(roleId: string | null): Promise<void> {
+    await this.save(() => this.service.selectDiscordShowcaseRole(roleId || null));
   }
 
-  protected async togglePinned(
-    achievement:
-      CommunityDashboardAchievement,
-  ): Promise<void> {
+  protected async togglePinned(achievement: CommunityDashboardAchievement): Promise<void> {
     const dashboard = this.dashboard();
 
-    if (
-      !dashboard ||
-      !achievement.unlocked
-    ) {
+    if (!dashboard || !achievement.unlocked) {
       return;
     }
 
-    const current = [
-      ...(
-        dashboard.customization
-          ?.pinnedAchievementIds ?? []
-      ),
-    ];
-    const index = current.indexOf(
-      achievement.id,
-    );
+    const current = [...(dashboard.customization?.pinnedAchievementIds ?? [])];
+    const index = current.indexOf(achievement.id);
 
     if (index >= 0) {
       current.splice(index, 1);
     } else {
       if (current.length >= 3) {
-        this.errorKey.set(
-          'community.dashboard.pinLimit',
-        );
+        this.errorKey.set('community.dashboard.pinLimit');
         return;
       }
 
       current.push(achievement.id);
     }
 
-    await this.save(() =>
-      this.service.setPinnedAchievements(
-        current,
-      ),
-    );
+    await this.save(() => this.service.setPinnedAchievements(current));
   }
 
-  private async loadDashboard():
-    Promise<void> {
+  private async loadDashboard(): Promise<void> {
     this.loading.set(true);
     this.errorKey.set(null);
 
     try {
-      const result =
-        await firstValueFrom(
-          forkJoin({
-            dashboard:
-              this.service.getDashboard(),
-            summary:
-              this.publicService.getSummary(),
-          }),
-        );
+      const result = await firstValueFrom(
+        forkJoin({
+          dashboard: this.service.getDashboard(),
+          summary: this.publicService.getSummary(),
+        }),
+      );
 
       this.dashboard.set(result.dashboard);
       this.summary.set(result.summary);
     } catch {
-      this.errorKey.set(
-        'community.dashboard.loadFailed',
-      );
+      this.errorKey.set('community.dashboard.loadFailed');
     } finally {
       this.loading.set(false);
     }
   }
 
   private async save(
-    action: () => ReturnType<
-      CommunityDashboardService['getDashboard']
-    >,
+    action: () => ReturnType<CommunityDashboardService['getDashboard']>,
   ): Promise<void> {
     this.saving.set(true);
     this.errorKey.set(null);
 
     try {
-      this.dashboard.set(
-        await firstValueFrom(
-          action(),
-        ),
-      );
+      this.dashboard.set(await firstValueFrom(action()));
     } catch {
-      this.errorKey.set(
-        'community.dashboard.saveFailed',
-      );
+      this.errorKey.set('community.dashboard.saveFailed');
     } finally {
       this.saving.set(false);
     }

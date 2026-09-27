@@ -182,6 +182,7 @@ export class CommunityDashboardService {
         discordRoles.flatMap((role) =>
           role.kind === 'showcase' &&
           role.enabled &&
+          role.color !== null &&
           role.achievementId
             ? [
                 {
