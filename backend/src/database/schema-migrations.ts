@@ -5,6 +5,7 @@ import type {
 } from 'typeorm';
 
 import { communityAchievementRewardsMigration } from '../community/community-achievement-rewards.schema-migration';
+import { communityDiscordRoleModelMigration } from '../community/community-discord-role-model.schema-migration';
 import { communityEventRewardsMigration } from '../community/community-event-rewards.schema-migration';
 import { communityProfileCustomizationMigration } from '../community/community-profile-customization.schema-migration';
 import { communityProgressionMigration } from '../community/community-progression.schema-migration';
@@ -506,6 +507,7 @@ const migrations: readonly SchemaMigration[] = [
   communityAchievementRewardsMigration,
   communityProfileCustomizationMigration,
   discordRoleSyncMigration,
+  communityDiscordRoleModelMigration,
   communityTwitchLinkMigration,
 ];
 

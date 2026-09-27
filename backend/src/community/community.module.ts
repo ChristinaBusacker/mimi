@@ -5,6 +5,7 @@ import { TwitchModule } from '../integrations/twitch/twitch.module';
 import { UsersModule } from '../users/users.module';
 
 import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
+import { CommunityDiscordRoleDefinitionService } from './community-discord-role-definition.service';
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { CommunityEventService } from './community-event.service';
 import { CommunityProfileCustomizationService } from './community-profile-customization.service';
@@ -21,6 +22,7 @@ import { CommunityAchievementConditionEntry } from './entities/community-achieve
 import { CommunityAchievementEntry } from './entities/community-achievement.entry';
 import { CommunityEventRuleEntry } from './entities/community-event-rule.entry';
 import { CommunityDiscordAssignedRoleEntry } from './entities/community-discord-assigned-role.entry';
+import { CommunityDiscordRoleEntry } from './entities/community-discord-role.entry';
 import { CommunityLevelEntry } from './entities/community-level.entry';
 import { CommunityPinnedAchievementEntry } from './entities/community-pinned-achievement.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
@@ -44,6 +46,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
       CommunityEventEntry,
       CommunityEventRuleEntry,
       CommunityDiscordAssignedRoleEntry,
+      CommunityDiscordRoleEntry,
       CommunityLevelEntry,
       CommunityPinnedAchievementEntry,
       CommunityProfileEntry,
@@ -58,6 +61,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
   ],
   providers: [
     CommunityBalancingDefaultsService,
+    CommunityDiscordRoleDefinitionService,
     CommunityEventRuleService,
     CommunityEventService,
     CommunityProfileCustomizationService,
@@ -74,6 +78,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
   ],
   exports: [
     CommunityBalancingDefaultsService,
+    CommunityDiscordRoleDefinitionService,
     CommunityEventRuleService,
     CommunityEventService,
     CommunityProfileCustomizationService,

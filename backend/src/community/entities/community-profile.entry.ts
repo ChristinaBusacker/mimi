@@ -69,6 +69,13 @@ export class CommunityProfileEntry {
   selectedProfileColorAchievementUuid!:
     string | null;
 
+  @Column({
+    type: 'uuid',
+    nullable: true,
+  })
+  selectedDiscordShowcaseRoleUuid!:
+    string | null;
+
   @CreateDateColumn({
     type: 'timestamptz',
   })
