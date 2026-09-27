@@ -13,6 +13,7 @@ import { BlogAuthorDirectoryController } from './blog-author-directory.controlle
 import { BlogAuthorDirectoryService } from './blog-author-directory.service';
 import { BlogCategoryController } from './blog-category.controller';
 import { BlogCategoryService } from './blog-category.service';
+import { BlogCommentAdminController } from './blog-comment-admin.controller';
 import { BlogCommentController } from './blog-comment.controller';
 import { BlogCommentService } from './blog-comment.service';
 import { BlogController } from './blog.controller';
@@ -46,6 +47,7 @@ import { UserManagementService } from './user-management.service';
   controllers: [
     BlogController,
     BlogCommentController,
+    BlogCommentAdminController,
     BlogAuthorDirectoryController,
     BlogAdminPostsController,
     BlogAdminAuthorsController,

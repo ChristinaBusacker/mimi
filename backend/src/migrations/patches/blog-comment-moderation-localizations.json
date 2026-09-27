@@ -1,0 +1,22 @@
+{
+  "localizations": [
+    {"key":"admin.blog.comments.link","de":"Kommentare moderieren","en":"Moderate comments"},
+    {"key":"admin.blog.comments.title","de":"Blog-Kommentare","en":"Blog comments"},
+    {"key":"admin.blog.comments.description","de":"Kommentare aus der Community ausblenden, hervorheben oder endgültig löschen.","en":"Hide, feature or permanently delete community comments."},
+    {"key":"admin.blog.comments.back","de":"Zurück zum Blog","en":"Back to blog"},
+    {"key":"admin.blog.comments.loading","de":"Kommentare werden geladen …","en":"Loading comments…"},
+    {"key":"admin.blog.comments.empty","de":"Es gibt noch keine Kommentare.","en":"There are no comments yet."},
+    {"key":"admin.blog.comments.actionFailed","de":"Die Kommentar-Aktion konnte nicht gespeichert werden.","en":"The comment action could not be saved."},
+    {"key":"admin.blog.comments.featured","de":"Hervorgehoben","en":"Featured"},
+    {"key":"admin.blog.comments.hidden","de":"Ausgeblendet","en":"Hidden"},
+    {"key":"admin.blog.comments.openPost","de":"Beitrag öffnen","en":"Open post"},
+    {"key":"admin.blog.comments.hide","de":"Ausblenden","en":"Hide"},
+    {"key":"admin.blog.comments.restore","de":"Wieder einblenden","en":"Restore"},
+    {"key":"admin.blog.comments.feature","de":"Hervorheben","en":"Feature"},
+    {"key":"admin.blog.comments.unfeature","de":"Hervorhebung entfernen","en":"Remove feature"},
+    {"key":"admin.blog.comments.delete","de":"Löschen","en":"Delete"},
+    {"key":"admin.blog.comments.deleteConfirm","de":"Wirklich löschen","en":"Delete permanently"},
+    {"key":"admin.blog.comments.cancel","de":"Abbrechen","en":"Cancel"},
+    {"key":"blog.comments.featured","de":"Von Mimi hervorgehoben","en":"Featured by Mimi"}
+  ]
+}

@@ -5,14 +5,22 @@
       <p>{{ 'admin.blog.description' | i18n | async }}</p>
     </div>
 
-    @if (canCreate()) {
-      <a
-        class="primary-action"
-        routerLink="/admin/blog/posts/new"
-      >
-        {{ 'admin.blog.create' | i18n | async }}
-      </a>
-    }
+    <div class="actions">
+      @if (user()?.role === 'admin') {
+        <a routerLink="/admin/blog/comments">
+          {{ 'admin.blog.comments.link' | i18n | async }}
+        </a>
+      }
+
+      @if (canCreate()) {
+        <a
+          class="primary-action"
+          routerLink="/admin/blog/posts/new"
+        >
+          {{ 'admin.blog.create' | i18n | async }}
+        </a>
+      }
+    </div>
   </header>
 
   @if (!canCreate() && user()?.role === 'author') {

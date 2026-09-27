@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 
+import { blogCommentModerationMigration } from '../blog/blog-comment-moderation.schema-migration';
 import { blogCommentsMigration } from '../blog/blog-comments.schema-migration';
 import type {
   DataSource,
@@ -514,6 +515,7 @@ const migrations: readonly SchemaMigration[] = [
   communityDiscordRoleOwnershipMigration,
   communityTwitchLinkMigration,
   blogCommentsMigration,
+  blogCommentModerationMigration,
 ];
 
 export async function runSchemaMigrations(

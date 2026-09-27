@@ -1,13 +1,16 @@
 import type {
+  BlogAdminComment,
   BlogComment,
   BlogCommentAuthor,
   CreateBlogComment,
+  SetBlogCommentFlag,
 } from '@shared/blog/blog-comment';
 
 import {
   ApiProperty,
 } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsString,
   MaxLength,
   MinLength,
@@ -59,6 +62,9 @@ export class BlogCommentDto
   })
   author!: BlogCommentAuthorDto;
 
+  @ApiProperty()
+  featured!: boolean;
+
   @ApiProperty({
     format: 'date-time',
   })
@@ -68,4 +74,23 @@ export class BlogCommentDto
     format: 'date-time',
   })
   updatedAt!: string;
+}
+
+export class BlogAdminCommentDto
+  extends BlogCommentDto
+  implements BlogAdminComment
+{
+  @ApiProperty()
+  postSlug!: string;
+
+  @ApiProperty()
+  hidden!: boolean;
+}
+
+export class SetBlogCommentFlagDto
+  implements SetBlogCommentFlag
+{
+  @ApiProperty()
+  @IsBoolean()
+  value!: boolean;
 }

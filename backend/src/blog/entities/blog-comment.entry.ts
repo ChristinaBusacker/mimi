@@ -62,6 +62,30 @@ export class BlogCommentEntry {
   })
   content!: string;
 
+  @Column({
+    type: 'timestamptz',
+    nullable: true,
+  })
+  hiddenAt!: Date | null;
+
+  @Column({
+    type: 'uuid',
+    nullable: true,
+  })
+  hiddenByUserUuid!: string | null;
+
+  @Column({
+    type: 'timestamptz',
+    nullable: true,
+  })
+  featuredAt!: Date | null;
+
+  @Column({
+    type: 'uuid',
+    nullable: true,
+  })
+  featuredByUserUuid!: string | null;
+
   @CreateDateColumn({
     type: 'timestamptz',
   })

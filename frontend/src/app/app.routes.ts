@@ -174,6 +174,15 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'blog/comments',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/blog/comments/admin-blog-comments').then(
+            (module) =>
+              module.AdminBlogComments,
+          ),
+      },
+      {
         path: 'blog/posts/new',
         loadComponent: () =>
           import('./pages/admin/blog/posts/admin-blog-post-editor').then(

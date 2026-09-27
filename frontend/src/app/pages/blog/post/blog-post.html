@@ -155,16 +155,23 @@
     } @else {
       <div class="comments__list">
         @for (comment of comments(); track comment.id) {
-          <article class="comment">
+          <article class="comment" [class.is-featured]="comment.featured">
             <header>
               <strong
                 [style.color]="comment.author.profileColor ?? null"
               >
                 {{ comment.author.displayName }}
               </strong>
-              <time [attr.datetime]="comment.createdAt">
-                {{ formatCommentDate(comment.createdAt, postData.locale) }}
-              </time>
+              <div class="comment__meta">
+                @if (comment.featured) {
+                  <span class="comment__featured">
+                    {{ 'blog.comments.featured' | i18n | async }}
+                  </span>
+                }
+                <time [attr.datetime]="comment.createdAt">
+                  {{ formatCommentDate(comment.createdAt, postData.locale) }}
+                </time>
+              </div>
             </header>
             <p>{{ comment.content }}</p>
           </article>

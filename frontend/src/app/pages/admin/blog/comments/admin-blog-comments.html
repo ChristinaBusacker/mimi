@@ -1,0 +1,113 @@
+<section class="admin-blog-comments">
+  <header class="header">
+    <div>
+      <h1>{{ 'admin.blog.comments.title' | i18n | async }}</h1>
+      <p>{{ 'admin.blog.comments.description' | i18n | async }}</p>
+    </div>
+
+    <a routerLink="/admin/blog">
+      {{ 'admin.blog.comments.back' | i18n | async }}
+    </a>
+  </header>
+
+  @if (error()) {
+    <p class="error" role="alert">
+      {{ 'admin.blog.comments.actionFailed' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.blog.comments.loading' | i18n | async }}</p>
+  } @else {
+    <div class="list">
+      @for (comment of comments(); track comment.id) {
+        <article
+          class="comment"
+          [class.is-hidden]="comment.hidden"
+          [class.is-featured]="comment.featured"
+        >
+          <header>
+            <div>
+              <strong [style.color]="comment.author.profileColor ?? null">
+                {{ comment.author.displayName }}
+              </strong>
+              <span>
+                {{ comment.postSlug }} · {{ formatDate(comment.createdAt) }}
+              </span>
+            </div>
+
+            <div class="badges">
+              @if (comment.featured) {
+                <span>{{ 'admin.blog.comments.featured' | i18n | async }}</span>
+              }
+              @if (comment.hidden) {
+                <span>{{ 'admin.blog.comments.hidden' | i18n | async }}</span>
+              }
+            </div>
+          </header>
+
+          <p>{{ comment.content }}</p>
+
+          <div class="actions">
+            <a [routerLink]="['/blog', comment.postSlug]">
+              {{ 'admin.blog.comments.openPost' | i18n | async }}
+            </a>
+
+            <button
+              type="button"
+              [disabled]="busyId() === comment.id"
+              (click)="setHidden(comment)"
+            >
+              {{
+                (comment.hidden
+                  ? 'admin.blog.comments.restore'
+                  : 'admin.blog.comments.hide')
+                  | i18n
+                  | async
+              }}
+            </button>
+
+            <button
+              type="button"
+              [disabled]="busyId() === comment.id || comment.hidden"
+              (click)="setFeatured(comment)"
+            >
+              {{
+                (comment.featured
+                  ? 'admin.blog.comments.unfeature'
+                  : 'admin.blog.comments.feature')
+                  | i18n
+                  | async
+              }}
+            </button>
+
+            @if (confirmingId() === comment.id) {
+              <button
+                type="button"
+                [disabled]="busyId() === comment.id"
+                (click)="deleteComment(comment)"
+              >
+                {{ 'admin.blog.comments.deleteConfirm' | i18n | async }}
+              </button>
+              <button
+                type="button"
+                (click)="confirmingId.set(null)"
+              >
+                {{ 'admin.blog.comments.cancel' | i18n | async }}
+              </button>
+            } @else {
+              <button
+                type="button"
+                (click)="confirmingId.set(comment.id)"
+              >
+                {{ 'admin.blog.comments.delete' | i18n | async }}
+              </button>
+            }
+          </div>
+        </article>
+      } @empty {
+        <p>{{ 'admin.blog.comments.empty' | i18n | async }}</p>
+      }
+    </div>
+  }
+</section>

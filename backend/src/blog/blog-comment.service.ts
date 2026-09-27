@@ -1,4 +1,5 @@
 import type {
+  BlogAdminComment,
   BlogComment,
 } from '@shared/blog/blog-comment';
 
@@ -13,6 +14,7 @@ import {
   InjectRepository,
 } from '@nestjs/typeorm';
 import {
+  IsNull,
   Repository,
 } from 'typeorm';
 
@@ -55,6 +57,7 @@ export class BlogCommentService {
       await this.comments.find({
         where: {
           postUuid: post.uuid,
+          hiddenAt: IsNull(),
         },
         relations: {
           user: true,
@@ -70,12 +73,150 @@ export class BlogCommentService {
         ),
       );
 
-    return comments.map((comment) =>
-      this.mapComment(
+    return comments
+      .map((comment) =>
+        this.mapComment(
+          comment,
+          colors.get(comment.userUuid) ?? null,
+        ),
+      )
+      .sort((left, right) => {
+        if (left.featured !== right.featured) {
+          return left.featured ? -1 : 1;
+        }
+
+        return left.createdAt.localeCompare(
+          right.createdAt,
+        );
+      });
+  }
+
+
+  async getAdminComments():
+    Promise<BlogAdminComment[]> {
+    const comments =
+      await this.comments.find({
+        relations: {
+          user: true,
+          post: true,
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+    const colors =
+      await this.loadProfileColors(
+        comments.map(
+          (comment) =>
+            comment.userUuid,
+        ),
+      );
+
+    return comments.map((comment) => ({
+      ...this.mapComment(
         comment,
         colors.get(comment.userUuid) ?? null,
       ),
-    );
+      postSlug: comment.post.slug,
+      hidden: comment.hiddenAt !== null,
+    }));
+  }
+
+  async setHidden(
+    commentUuid: string,
+    hidden: boolean,
+    moderatorUuid: string,
+  ): Promise<BlogAdminComment> {
+    const comment =
+      await this.getAdminComment(
+        commentUuid,
+      );
+
+    comment.hiddenAt = hidden
+      ? new Date()
+      : null;
+    comment.hiddenByUserUuid = hidden
+      ? moderatorUuid
+      : null;
+
+    if (hidden) {
+      comment.featuredAt = null;
+      comment.featuredByUserUuid = null;
+    }
+
+    await this.comments.save(comment);
+
+    return this.mapAdminComment(comment);
+  }
+
+  async setFeatured(
+    commentUuid: string,
+    featured: boolean,
+    moderatorUuid: string,
+  ): Promise<BlogAdminComment> {
+    const comment =
+      await this.getAdminComment(
+        commentUuid,
+      );
+
+    if (featured && comment.hiddenAt) {
+      throw new BadRequestException(
+        'Hidden comments cannot be featured.',
+      );
+    }
+
+    const becameFeatured =
+      featured && !comment.featuredAt;
+
+    comment.featuredAt = featured
+      ? new Date()
+      : null;
+    comment.featuredByUserUuid = featured
+      ? moderatorUuid
+      : null;
+
+    await this.comments.save(comment);
+
+    if (becameFeatured) {
+      try {
+        await this.communityEvents.recordEvent({
+          userUuid: comment.userUuid,
+          type: 'blog.comment.featured',
+          source: 'website',
+          sourceEventId:
+            `featured:${comment.uuid}`,
+          contextId: comment.postUuid,
+          occurredAt: comment.featuredAt!,
+          metadata: {
+            postSlug: comment.post.slug,
+            commentId: comment.uuid,
+          },
+        });
+      } catch (error: unknown) {
+        this.logger.warn(
+          `Could not record featured community event for blog comment ${comment.uuid}: ${this.errorMessage(error)}`,
+        );
+      }
+    }
+
+    return this.mapAdminComment(comment);
+  }
+
+  async deleteComment(
+    commentUuid: string,
+  ): Promise<void> {
+    const comment =
+      await this.comments.findOneBy({
+        uuid: commentUuid,
+      });
+
+    if (!comment) {
+      throw new NotFoundException(
+        `Blog comment "${commentUuid}" not found.`,
+      );
+    }
+
+    await this.comments.remove(comment);
   }
 
   async createComment(
@@ -220,10 +361,56 @@ export class BlogCommentService {
         displayName: comment.user.name,
         profileColor,
       },
+      featured: comment.featuredAt !== null,
       createdAt:
         comment.createdAt.toISOString(),
       updatedAt:
         comment.updatedAt.toISOString(),
+    };
+  }
+
+
+  private async getAdminComment(
+    commentUuid: string,
+  ): Promise<BlogCommentEntry> {
+    const comment =
+      await this.comments.findOne({
+        where: {
+          uuid: commentUuid,
+        },
+        relations: {
+          user: true,
+          post: true,
+        },
+      });
+
+    if (!comment) {
+      throw new NotFoundException(
+        `Blog comment "${commentUuid}" not found.`,
+      );
+    }
+
+    return comment;
+  }
+
+  private async mapAdminComment(
+    comment: BlogCommentEntry,
+  ): Promise<BlogAdminComment> {
+    const customization =
+      await this.customization
+        .getCustomization(
+          comment.userUuid,
+        )
+        .catch(() => null);
+
+    return {
+      ...this.mapComment(
+        comment,
+        customization
+          ?.selectedProfileColor ?? null,
+      ),
+      postSlug: comment.post.slug,
+      hidden: comment.hiddenAt !== null,
     };
   }
 

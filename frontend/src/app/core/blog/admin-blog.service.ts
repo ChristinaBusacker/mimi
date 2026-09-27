@@ -1,4 +1,7 @@
 import type {
+  BlogAdminComment,
+} from '@shared/blog/blog-comment';
+import type {
   BlogAdminAuthor,
   BlogAdminAuthorCandidate,
   BlogAdminCategory,
@@ -74,6 +77,51 @@ export class AdminBlogService {
   ): Observable<void> {
     return this.request.delete<void>(
       `/admin/blog/posts/${id}`,
+    );
+  }
+
+
+  getComments():
+    Observable<BlogAdminComment[]> {
+    return this.request.get<
+      BlogAdminComment[]
+    >(
+      '/admin/blog/comments',
+      this.privateGetOptions(),
+    );
+  }
+
+  setCommentHidden(
+    id: string,
+    value: boolean,
+  ): Observable<BlogAdminComment> {
+    return this.request.put<
+      BlogAdminComment,
+      { value: boolean }
+    >(
+      `/admin/blog/comments/${id}/hidden`,
+      { value },
+    );
+  }
+
+  setCommentFeatured(
+    id: string,
+    value: boolean,
+  ): Observable<BlogAdminComment> {
+    return this.request.put<
+      BlogAdminComment,
+      { value: boolean }
+    >(
+      `/admin/blog/comments/${id}/featured`,
+      { value },
+    );
+  }
+
+  deleteComment(
+    id: string,
+  ): Observable<void> {
+    return this.request.delete<void>(
+      `/admin/blog/comments/${id}`,
     );
   }
 

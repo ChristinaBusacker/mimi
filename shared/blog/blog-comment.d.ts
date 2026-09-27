@@ -8,10 +8,20 @@ export interface BlogComment {
   postId: string;
   content: string;
   author: BlogCommentAuthor;
+  featured: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateBlogComment {
   content: string;
+}
+
+export interface BlogAdminComment extends BlogComment {
+  postSlug: string;
+  hidden: boolean;
+}
+
+export interface SetBlogCommentFlag {
+  value: boolean;
 }
