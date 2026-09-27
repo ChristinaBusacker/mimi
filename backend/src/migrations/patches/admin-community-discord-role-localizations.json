@@ -1,0 +1,34 @@
+{
+  "localizations": [
+    {
+      "key": "admin.community.achievements.discordRole",
+      "de": "Discord-Rolle freischalten",
+      "en": "Unlock Discord role"
+    },
+    {
+      "key": "admin.community.achievements.discordRoleNone",
+      "de": "Keine Discord-Rolle",
+      "en": "No Discord role"
+    },
+    {
+      "key": "admin.community.achievements.discordRoleHint",
+      "de": "Die Rolle wird automatisch vergeben, sobald das Achievement freigeschaltet ist.",
+      "en": "The role is assigned automatically once the achievement is unlocked."
+    },
+    {
+      "key": "admin.community.achievements.discordRoleUnavailable",
+      "de": "Der Discord-Bot ist gerade nicht verbunden. Eine bereits gespeicherte Rollenzuordnung bleibt erhalten.",
+      "en": "The Discord bot is currently not connected. Any saved role assignment is preserved."
+    },
+    {
+      "key": "admin.community.achievements.discordRoleNotConfigured",
+      "de": "Der Discord-Bot ist noch nicht konfiguriert. Rollen können erst danach ausgewählt werden.",
+      "en": "The Discord bot is not configured yet. Roles can be selected afterwards."
+    },
+    {
+      "key": "admin.community.achievements.discordRoleMissing",
+      "de": "Gespeicherte Rolle ist auf Discord nicht mehr verfügbar",
+      "en": "Saved role is no longer available on Discord"
+    }
+  ]
+}

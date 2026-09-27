@@ -2,6 +2,9 @@ import type {
   CommunityBalancingDefaults,
 } from '@shared/community/community-balancing';
 import type {
+  CommunityDiscordRoleCatalog,
+} from '@shared/community/community-discord';
+import type {
   CommunityEventRule,
   CommunityEventType,
   SaveCommunityEventRule,
@@ -46,6 +49,19 @@ export class AdminCommunityService {
       CommunityBalancingDefaults
     >(
       '/admin/community/defaults',
+      {
+        deduplicateAcrossTabs: false,
+        transferCache: false,
+      },
+    );
+  }
+
+  getDiscordRoles():
+    Observable<CommunityDiscordRoleCatalog> {
+    return this.request.get<
+      CommunityDiscordRoleCatalog
+    >(
+      '/admin/community/discord/roles',
       {
         deduplicateAcrossTabs: false,
         transferCache: false,

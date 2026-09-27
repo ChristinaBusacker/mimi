@@ -366,6 +366,39 @@
                       <span>{{ achievement.unlockedProfileColor }}</span>
                     </label>
                   }
+
+                  <div class="admin-community__grid">
+                    <label>
+                      <span>{{ 'admin.community.achievements.discordRole' | i18n | async }}</span>
+
+                      @if (discordRoles().connected) {
+                        <select [(ngModel)]="achievement.discordRoleId">
+                          <option value="">
+                            {{ 'admin.community.achievements.discordRoleNone' | i18n | async }}
+                          </option>
+                          @if (achievement.discordRoleId && !discordRoleExists(achievement.discordRoleId)) {
+                            <option [value]="achievement.discordRoleId">
+                              {{ 'admin.community.achievements.discordRoleMissing' | i18n | async }}
+                            </option>
+                          }
+                          @for (role of discordRoles().roles; track role.id) {
+                            <option [value]="role.id">{{ role.name }}</option>
+                          }
+                        </select>
+                        <small>
+                          {{ 'admin.community.achievements.discordRoleHint' | i18n | async }}
+                        </small>
+                      } @else if (discordRoles().configured) {
+                        <small>
+                          {{ 'admin.community.achievements.discordRoleUnavailable' | i18n | async }}
+                        </small>
+                      } @else {
+                        <small>
+                          {{ 'admin.community.achievements.discordRoleNotConfigured' | i18n | async }}
+                        </small>
+                      }
+                    </label>
+                  </div>
                 </section>
 
                 <section class="admin-community__conditions admin-community__editor-section">

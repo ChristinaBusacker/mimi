@@ -2,6 +2,9 @@ import type {
   CommunityBalancingDefaults,
 } from '@shared/community/community-balancing';
 import type {
+  CommunityDiscordRoleCatalog,
+} from '@shared/community/community-discord';
+import type {
   CommunityEventRule,
   CommunityEventType,
 } from '@shared/community/community-event';
@@ -40,6 +43,7 @@ import { CommunityBalancingDefaultsService } from './community-balancing-default
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { supportsContentLength } from './community-event-type';
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
+import { DiscordBotService } from './discord/discord-bot.service';
 import {
   SaveCommunityAchievementDto,
   SaveCommunityEventRuleDto,
@@ -72,6 +76,8 @@ export class CommunityAdminController {
       CommunityProgressionDefinitionService,
     private readonly defaults:
       CommunityBalancingDefaultsService,
+    private readonly discordBot:
+      DiscordBotService,
   ) {}
 
   @Get('defaults')
@@ -81,6 +87,17 @@ export class CommunityAdminController {
   })
   getDefaults(): CommunityBalancingDefaults {
     return this.defaults.getAdminDefaults();
+  }
+
+  @Get('discord/roles')
+  @ApiOperation({
+    summary:
+      'List Discord roles the community bot can assign',
+  })
+  getDiscordRoles():
+    Promise<CommunityDiscordRoleCatalog> {
+    return this.discordBot
+      .getRoleCatalog();
   }
 
   @Get('event-types')

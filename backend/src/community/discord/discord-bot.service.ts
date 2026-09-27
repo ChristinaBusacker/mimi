@@ -6,6 +6,10 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Interval } from '@nestjs/schedule';
+import type {
+  CommunityDiscordRoleCatalog,
+} from '@shared/community/community-discord';
+
 import {
   Client,
   Events,
@@ -18,6 +22,7 @@ import {
   DiscordCommunityService,
   type DiscordCommunityMember,
 } from './discord-community.service';
+import { DiscordRoleSyncService } from './discord-role-sync.service';
 
 const MEMBERSHIP_RECONCILIATION_INTERVAL_MS =
   15 * 60 * 1000;
@@ -48,6 +53,8 @@ export class DiscordBotService
     config: ConfigService,
     private readonly community:
       DiscordCommunityService,
+    private readonly roleSync:
+      DiscordRoleSyncService,
   ) {
     this.token =
       this.normalizeConfigValue(
@@ -93,6 +100,72 @@ export class DiscordBotService
     this.client.destroy();
   }
 
+  async getRoleCatalog():
+    Promise<CommunityDiscordRoleCatalog> {
+    const configured =
+      this.token !== null &&
+      this.guildId !== null;
+
+    if (
+      !configured ||
+      !this.guildId ||
+      !this.client.isReady()
+    ) {
+      return {
+        configured,
+        connected: false,
+        roles: [],
+      };
+    }
+
+    try {
+      const guild =
+        await this.client.guilds.fetch(
+          this.guildId,
+        );
+      const roles =
+        await guild.roles.fetch();
+
+      return {
+        configured: true,
+        connected: true,
+        roles: Array.from(
+          roles.values(),
+        )
+          .filter(
+            (role) =>
+              role.id !== guild.id &&
+              !role.managed &&
+              role.editable,
+          )
+          .sort(
+            (left, right) =>
+              right.position -
+              left.position,
+          )
+          .map((role) => ({
+            id: role.id,
+            name: role.name,
+            color:
+              role.color === 0
+                ? null
+                : role.hexColor,
+            position: role.position,
+          })),
+      };
+    } catch (error: unknown) {
+      this.logger.warn(
+        `Could not load Discord roles: ${this.errorMessage(error)}`,
+      );
+
+      return {
+        configured: true,
+        connected: false,
+        roles: [],
+      };
+    }
+  }
+
   async refreshMember(
     discordId: string,
   ): Promise<void> {
@@ -117,6 +190,9 @@ export class DiscordBotService
 
       await this.community.syncMember(
         this.mapMember(member),
+      );
+      await this.roleSync.syncMember(
+        member,
       );
     } catch (error: unknown) {
       if (
@@ -163,9 +239,13 @@ export class DiscordBotService
             this.mapMember(member),
         ),
       );
+      const roleResult =
+        await this.roleSync.syncMembers(
+          members.values(),
+        );
 
       this.logger.log(
-        `Discord membership reconciled for ${members.size} server members.`,
+        `Discord membership reconciled for ${members.size} server members; roles synchronized for ${roleResult.handled} community members (${roleResult.added} added, ${roleResult.removed} removed).`,
       );
     } catch (error: unknown) {
       this.logger.warn(
@@ -204,6 +284,11 @@ export class DiscordBotService
         void this.community
           .syncMember(
             this.mapMember(member),
+          )
+          .then(() =>
+            this.roleSync.syncMember(
+              member,
+            ),
           )
           .catch((error: unknown) => {
             this.logger.warn(
@@ -268,29 +353,39 @@ export class DiscordBotService
   private async handleMessage(
     message: Message,
   ): Promise<void> {
-    await this.community.recordMessage({
-      messageId: message.id,
-      authorDiscordId:
-        message.author.id,
-      authorDisplayName:
-        message.member?.displayName ??
-        message.author.globalName ??
-        message.author.username,
-      authorAvatarHash:
-        message.author.avatar,
-      authorIsBot:
-        message.author.bot,
-      isSystemMessage:
-        message.system,
-      webhookId:
-        message.webhookId,
-      content:
-        message.content,
-      memberJoinedAt:
-        message.member?.joinedAt ?? null,
-      occurredAt:
-        message.createdAt,
-    });
+    const handled =
+      await this.community.recordMessage({
+        messageId: message.id,
+        authorDiscordId:
+          message.author.id,
+        authorDisplayName:
+          message.member?.displayName ??
+          message.author.globalName ??
+          message.author.username,
+        authorAvatarHash:
+          message.author.avatar,
+        authorIsBot:
+          message.author.bot,
+        isSystemMessage:
+          message.system,
+        webhookId:
+          message.webhookId,
+        content:
+          message.content,
+        memberJoinedAt:
+          message.member?.joinedAt ?? null,
+        occurredAt:
+          message.createdAt,
+      });
+
+    if (
+      handled &&
+      message.member
+    ) {
+      await this.roleSync.syncMember(
+        message.member,
+      );
+    }
   }
 
   private mapMember(

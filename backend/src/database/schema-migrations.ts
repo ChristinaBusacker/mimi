@@ -8,6 +8,7 @@ import { communityAchievementRewardsMigration } from '../community/community-ach
 import { communityEventRewardsMigration } from '../community/community-event-rewards.schema-migration';
 import { communityProfileCustomizationMigration } from '../community/community-profile-customization.schema-migration';
 import { communityProgressionMigration } from '../community/community-progression.schema-migration';
+import { discordRoleSyncMigration } from '../community/discord/discord-role-sync.schema-migration';
 
 interface SchemaMigration {
   name: string;
@@ -503,6 +504,7 @@ const migrations: readonly SchemaMigration[] = [
   communityProgressionMigration,
   communityAchievementRewardsMigration,
   communityProfileCustomizationMigration,
+  discordRoleSyncMigration,
 ];
 
 export async function runSchemaMigrations(

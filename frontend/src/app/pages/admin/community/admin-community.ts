@@ -1,5 +1,8 @@
 import type { CommunityBalancingDefaults } from '@shared/community/community-balancing';
 import type {
+  CommunityDiscordRoleCatalog,
+} from '@shared/community/community-discord';
+import type {
   CommunityEventRule,
   CommunityEventType,
   SaveCommunityEventRule,
@@ -76,6 +79,11 @@ export class AdminCommunity implements OnInit {
   protected readonly savingKey = signal<string | null>(null);
   protected readonly statusKey = signal<string | null>(null);
   protected readonly defaults = signal<CommunityBalancingDefaults | null>(null);
+  protected readonly discordRoles = signal<CommunityDiscordRoleCatalog>({
+    configured: false,
+    connected: false,
+    roles: [],
+  });
   protected readonly eventTypes = signal<CommunityEventTypeInfo[]>([]);
   protected readonly metricInfos = signal<CommunityAchievementMetricInfo[]>([]);
   protected readonly eventRules = signal<EventRuleDraft[]>([]);
@@ -99,6 +107,10 @@ export class AdminCommunity implements OnInit {
 
   protected metricLabelKey(metric: CommunityAchievementMetric): string {
     return `admin.community.metric.${metric}`;
+  }
+
+  protected discordRoleExists(roleId: string): boolean {
+    return this.discordRoles().roles.some((role) => role.id === roleId);
   }
 
   protected isRuleCustomized(rule: EventRuleDraft): boolean {
@@ -344,6 +356,7 @@ export class AdminCommunity implements OnInit {
       const result = await firstValueFrom(
         forkJoin({
           defaults: this.service.getDefaults(),
+          discordRoles: this.service.getDiscordRoles(),
           eventTypes: this.service.getEventTypes(),
           eventRules: this.service.getEventRules(),
           metrics: this.service.getAchievementMetrics(),
@@ -354,6 +367,7 @@ export class AdminCommunity implements OnInit {
       );
 
       this.defaults.set(result.defaults);
+      this.discordRoles.set(result.discordRoles);
       this.eventTypes.set(result.eventTypes);
       this.metricInfos.set(result.metrics);
       this.titles.set(result.titles);

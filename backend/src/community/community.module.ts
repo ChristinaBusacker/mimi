@@ -12,10 +12,12 @@ import { CommunityProgressionService } from './community-progression.service';
 import { CommunityService } from './community.service';
 import { DiscordBotService } from './discord/discord-bot.service';
 import { DiscordCommunityService } from './discord/discord-community.service';
+import { DiscordRoleSyncService } from './discord/discord-role-sync.service';
 import { CommunityEventEntry } from './entities/community-event.entry';
 import { CommunityAchievementConditionEntry } from './entities/community-achievement-condition.entry';
 import { CommunityAchievementEntry } from './entities/community-achievement.entry';
 import { CommunityEventRuleEntry } from './entities/community-event-rule.entry';
+import { CommunityDiscordAssignedRoleEntry } from './entities/community-discord-assigned-role.entry';
 import { CommunityLevelEntry } from './entities/community-level.entry';
 import { CommunityPinnedAchievementEntry } from './entities/community-pinned-achievement.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
@@ -33,6 +35,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
       CommunityAchievementEntry,
       CommunityEventEntry,
       CommunityEventRuleEntry,
+      CommunityDiscordAssignedRoleEntry,
       CommunityLevelEntry,
       CommunityPinnedAchievementEntry,
       CommunityProfileEntry,
@@ -53,6 +56,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
     CommunityService,
     DiscordBotService,
     DiscordCommunityService,
+    DiscordRoleSyncService,
   ],
   exports: [
     CommunityBalancingDefaultsService,
