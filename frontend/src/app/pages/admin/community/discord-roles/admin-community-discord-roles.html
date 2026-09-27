@@ -1,0 +1,251 @@
+<section class="discord-role-admin">
+  <header class="discord-role-admin__header">
+    <div>
+      <h1>{{ 'admin.community.discordRoles.title' | i18n | async }}</h1>
+      <p>{{ 'admin.community.discordRoles.intro' | i18n | async }}</p>
+    </div>
+
+    <div class="discord-role-admin__header-actions">
+      <span
+        class="discord-role-admin__connection"
+        [class.connected]="catalog().connected"
+      >
+        @if (catalog().connected) {
+          {{ 'admin.community.discordRoles.connected' | i18n | async }}
+        } @else if (catalog().configured) {
+          {{ 'admin.community.discordRoles.disconnected' | i18n | async }}
+        } @else {
+          {{ 'admin.community.discordRoles.notConfigured' | i18n | async }}
+        }
+      </span>
+
+      <app-button
+        class="secondary"
+        [disabled]="syncing() || loading() || savingKey() !== null"
+        (click)="synchronizeAll()"
+      >
+        {{ 'admin.community.discordRoles.syncAll' | i18n | async }}
+      </app-button>
+
+      <app-button
+        class="primary"
+        [disabled]="loading() || savingKey() !== null || syncing()"
+        (click)="createRole()"
+      >
+        {{ 'admin.community.discordRoles.create' | i18n | async }}
+      </app-button>
+    </div>
+  </header>
+
+  <p class="discord-role-admin__safety">
+    {{ 'admin.community.discordRoles.safety' | i18n | async }}
+  </p>
+
+  @if (statusKey(); as status) {
+    <p class="discord-role-admin__message">
+      {{ status | i18n | async }}
+    </p>
+  }
+
+  @if (lastSync(); as sync) {
+    <p class="discord-role-admin__sync-summary">
+      {{ 'admin.community.discordRoles.syncSummary' | i18n | async }}:
+      {{ sync.created }} {{ 'admin.community.discordRoles.created' | i18n | async }},
+      {{ sync.updated }} {{ 'admin.community.discordRoles.updated' | i18n | async }},
+      {{ sync.unchanged }} {{ 'admin.community.discordRoles.unchanged' | i18n | async }},
+      {{ sync.failed }} {{ 'admin.community.discordRoles.failed' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.community.discordRoles.loading' | i18n | async }}</p>
+  } @else if (roles().length === 0) {
+    <p class="discord-role-admin__empty">
+      {{ 'admin.community.discordRoles.empty' | i18n | async }}
+    </p>
+  } @else {
+    <div class="discord-role-admin__roles">
+      @for (role of roles(); track role.clientId) {
+        <article class="discord-role-card">
+          <header class="discord-role-card__header">
+            <div class="discord-role-card__identity">
+              <span
+                class="discord-role-card__swatch"
+                [style.background]="role.hasColor ? role.color : 'transparent'"
+              ></span>
+              <div>
+                <h2>
+                  {{ role.name || ('admin.community.discordRoles.newRole' | i18n | async) }}
+                </h2>
+                <small>
+                  {{ roleKindLabelKey(role.kind) | i18n | async }}
+                </small>
+              </div>
+            </div>
+
+            <div class="discord-role-card__state">
+              <span
+                class="discord-role-card__status"
+                [attr.data-status]="roleStatusClass(role)"
+              >
+                {{ roleStatusKey(role) | i18n | async }}
+              </span>
+
+              <label class="discord-role-card__toggle">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="role.enabled"
+                />
+                <span>{{ 'admin.community.discordRoles.enabled' | i18n | async }}</span>
+              </label>
+            </div>
+          </header>
+
+          <div class="discord-role-card__grid">
+            <label>
+              <span>{{ 'admin.community.discordRoles.name' | i18n | async }}</span>
+              <input
+                type="text"
+                maxlength="100"
+                [(ngModel)]="role.name"
+              />
+            </label>
+
+            <label>
+              <span>{{ 'admin.community.discordRoles.kind' | i18n | async }}</span>
+              <select
+                [(ngModel)]="role.kind"
+                (ngModelChange)="roleKindChanged(role)"
+              >
+                <option value="level-range">
+                  {{ 'admin.community.discordRoles.kind.level-range' | i18n | async }}
+                </option>
+                <option value="showcase">
+                  {{ 'admin.community.discordRoles.kind.showcase' | i18n | async }}
+                </option>
+                <option value="special">
+                  {{ 'admin.community.discordRoles.kind.special' | i18n | async }}
+                </option>
+              </select>
+              <small>{{ roleKindHintKey(role.kind) | i18n | async }}</small>
+            </label>
+
+            <div class="discord-role-card__color">
+              <label class="discord-role-card__toggle">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="role.hasColor"
+                />
+                <span>{{ 'admin.community.discordRoles.useColor' | i18n | async }}</span>
+              </label>
+
+              @if (role.hasColor) {
+                <div class="discord-role-card__color-inputs">
+                  <input
+                    type="color"
+                    [(ngModel)]="role.color"
+                    [attr.aria-label]="'admin.community.discordRoles.color' | i18n | async"
+                  />
+                  <input
+                    type="text"
+                    maxlength="7"
+                    pattern="#[0-9a-fA-F]{6}"
+                    [(ngModel)]="role.color"
+                    [attr.aria-label]="'admin.community.discordRoles.colorHex' | i18n | async"
+                  />
+                </div>
+              }
+            </div>
+
+            <label>
+              <span>{{ 'admin.community.discordRoles.sortOrder' | i18n | async }}</span>
+              <input
+                type="number"
+                step="1"
+                [(ngModel)]="role.sortOrder"
+              />
+            </label>
+          </div>
+
+          @switch (role.kind) {
+            @case ('level-range') {
+              <div class="discord-role-card__conditional">
+                <label>
+                  <span>{{ 'admin.community.discordRoles.minimumLevel' | i18n | async }}</span>
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    [(ngModel)]="role.minimumLevel"
+                  />
+                </label>
+
+                <label>
+                  <span>{{ 'admin.community.discordRoles.maximumLevel' | i18n | async }}</span>
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    [placeholder]="'admin.community.discordRoles.openEnded' | i18n | async"
+                    [(ngModel)]="role.maximumLevel"
+                  />
+                </label>
+              </div>
+            }
+
+            @case ('showcase') {
+              <label class="discord-role-card__achievement">
+                <span>{{ 'admin.community.discordRoles.achievement' | i18n | async }}</span>
+                <select [(ngModel)]="role.achievementId">
+                  <option [ngValue]="null">
+                    {{ 'admin.community.discordRoles.achievementNone' | i18n | async }}
+                  </option>
+                  @for (achievement of achievements(); track achievement.id) {
+                    <option [ngValue]="achievement.id">
+                      {{ achievement.name.de }}
+                    </option>
+                  }
+                </select>
+                <small>{{ 'admin.community.discordRoles.achievementHint' | i18n | async }}</small>
+              </label>
+            }
+
+            @case ('special') {
+              <p class="discord-role-card__special-hint">
+                {{ 'admin.community.discordRoles.specialHint' | i18n | async }}
+              </p>
+            }
+          }
+
+          @if (role.discordRoleId) {
+            <details class="discord-role-card__technical">
+              <summary>{{ 'admin.community.discordRoles.technical' | i18n | async }}</summary>
+              <code>{{ role.discordRoleId }}</code>
+            </details>
+          }
+
+          <footer class="discord-role-card__actions">
+            @if (!role.persisted) {
+              <button
+                type="button"
+                class="discord-role-card__text-action"
+                [disabled]="savingKey() === role.clientId"
+                (click)="discardRole(role)"
+              >
+                {{ 'admin.community.discordRoles.discard' | i18n | async }}
+              </button>
+            }
+
+            <app-button
+              class="primary"
+              [disabled]="savingKey() !== null || syncing() || !isRoleValid(role)"
+              (click)="saveRole(role)"
+            >
+              {{ 'admin.community.discordRoles.saveAndSync' | i18n | async }}
+            </app-button>
+          </footer>
+        </article>
+      }
+    </div>
+  }
+</section>

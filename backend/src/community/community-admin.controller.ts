@@ -3,6 +3,7 @@ import type {
 } from '@shared/community/community-balancing';
 import type {
   CommunityDiscordRoleCatalog,
+  CommunityDiscordRoleDefinition,
 } from '@shared/community/community-discord';
 import type {
   CommunityEventRule,
@@ -40,12 +41,15 @@ import {
   getCommunityAchievementMetrics,
 } from './community-achievement-metric';
 import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
+import { CommunityDiscordRoleDefinitionService } from './community-discord-role-definition.service';
 import { CommunityEventRuleService } from './community-event-rule.service';
 import { supportsContentLength } from './community-event-type';
 import { CommunityProgressionDefinitionService } from './community-progression-definition.service';
 import { DiscordBotService } from './discord/discord-bot.service';
+import type { DiscordRoleProvisioningResult } from './discord/discord-role-provisioning.service';
 import {
   SaveCommunityAchievementDto,
+  SaveCommunityDiscordRoleDto,
   SaveCommunityEventRuleDto,
   SaveCommunityLevelsDto,
   SaveCommunityTitleDto,
@@ -76,6 +80,8 @@ export class CommunityAdminController {
       CommunityProgressionDefinitionService,
     private readonly defaults:
       CommunityBalancingDefaultsService,
+    private readonly discordRoleDefinitions:
+      CommunityDiscordRoleDefinitionService,
     private readonly discordBot:
       DiscordBotService,
   ) {}
@@ -98,6 +104,51 @@ export class CommunityAdminController {
     Promise<CommunityDiscordRoleCatalog> {
     return this.discordBot
       .getRoleCatalog();
+  }
+
+  @Get('discord/community-roles')
+  @ApiOperation({
+    summary:
+      'List website-managed Discord role definitions',
+  })
+  getCommunityDiscordRoles(): Promise<
+    CommunityDiscordRoleDefinition[]
+  > {
+    return this.discordRoleDefinitions
+      .getDefinitions();
+  }
+
+  @Put('discord/community-roles/:key')
+  @ApiOperation({
+    summary:
+      'Create or update a website-managed Discord role definition',
+  })
+  saveCommunityDiscordRole(
+    @Param('key')
+    key: string,
+    @Body()
+    dto: SaveCommunityDiscordRoleDto,
+    @Req()
+    request: AuthenticatedRequest,
+  ): Promise<CommunityDiscordRoleDefinition> {
+    return this.discordRoleDefinitions
+      .saveDefinition(
+        key,
+        dto,
+        request.user.uuid,
+      );
+  }
+
+  @Post('discord/community-roles/sync')
+  @ApiOperation({
+    summary:
+      'Synchronize website-managed role definitions to Discord',
+  })
+  syncCommunityDiscordRoles(): Promise<
+    DiscordRoleProvisioningResult | null
+  > {
+    return this.discordBot
+      .reconcileManagedRoles();
   }
 
   @Get('event-types')

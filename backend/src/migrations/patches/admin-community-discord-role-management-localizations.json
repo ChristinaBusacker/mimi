@@ -1,0 +1,289 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.discordRoles",
+      "de": "Discord-Rollen",
+      "en": "Discord roles"
+    },
+    {
+      "key": "admin.community.discordRoles.title",
+      "de": "Discord-Rollen",
+      "en": "Discord roles"
+    },
+    {
+      "key": "admin.community.discordRoles.intro",
+      "de": "Definiere die Community-Rollen, die auf Discord existieren sollen. Level-Rollen werden automatisch gewählt, Showcase-Rollen später von den Nutzerinnen und Nutzern aus ihren freigeschalteten Achievements ausgewählt.",
+      "en": "Define the community roles that should exist on Discord. Level roles are selected automatically, while showcase roles will later be selected by users from their unlocked achievements."
+    },
+    {
+      "key": "admin.community.discordRoles.safety",
+      "de": "Die Website verändert ausschließlich Rollen, die sie selbst für das Community-System angelegt hat. Andere bestehende Discord-Rollen bleiben unangetastet.",
+      "en": "The website only changes roles it created itself for the community system. Other existing Discord roles remain untouched."
+    },
+    {
+      "key": "admin.community.discordRoles.connected",
+      "de": "Discord verbunden",
+      "en": "Discord connected"
+    },
+    {
+      "key": "admin.community.discordRoles.disconnected",
+      "de": "Discord nicht verbunden",
+      "en": "Discord disconnected"
+    },
+    {
+      "key": "admin.community.discordRoles.notConfigured",
+      "de": "Discord nicht konfiguriert",
+      "en": "Discord not configured"
+    },
+    {
+      "key": "admin.community.discordRoles.syncAll",
+      "de": "Alle synchronisieren",
+      "en": "Synchronize all"
+    },
+    {
+      "key": "admin.community.discordRoles.create",
+      "de": "Rolle anlegen",
+      "en": "Create role"
+    },
+    {
+      "key": "admin.community.discordRoles.loading",
+      "de": "Discord-Rollen werden geladen …",
+      "en": "Loading Discord roles …"
+    },
+    {
+      "key": "admin.community.discordRoles.empty",
+      "de": "Noch keine Community-Rollen vorhanden.",
+      "en": "No community roles yet."
+    },
+    {
+      "key": "admin.community.discordRoles.newRole",
+      "de": "Neue Discord-Rolle",
+      "en": "New Discord role"
+    },
+    {
+      "key": "admin.community.discordRoles.enabled",
+      "de": "Aktiv",
+      "en": "Enabled"
+    },
+    {
+      "key": "admin.community.discordRoles.name",
+      "de": "Rollenname",
+      "en": "Role name"
+    },
+    {
+      "key": "admin.community.discordRoles.kind",
+      "de": "Rollentyp",
+      "en": "Role type"
+    },
+    {
+      "key": "admin.community.discordRoles.kind.level-range",
+      "de": "Level-Rolle",
+      "en": "Level role"
+    },
+    {
+      "key": "admin.community.discordRoles.kind.showcase",
+      "de": "Showcase-Rolle",
+      "en": "Showcase role"
+    },
+    {
+      "key": "admin.community.discordRoles.kind.special",
+      "de": "Sonderrolle",
+      "en": "Special role"
+    },
+    {
+      "key": "admin.community.discordRoles.kindHint.level-range",
+      "de": "Wird später automatisch passend zum aktuellen Community-Level vergeben.",
+      "en": "Will later be assigned automatically based on the current community level."
+    },
+    {
+      "key": "admin.community.discordRoles.kindHint.showcase",
+      "de": "Wird durch ein Achievement freigeschaltet und kann später vom Nutzer selbst ausgewählt werden.",
+      "en": "Unlocked by an achievement and can later be selected by the user."
+    },
+    {
+      "key": "admin.community.discordRoles.kindHint.special",
+      "de": "Für besondere, nicht an Level oder Achievement gebundene Rollen.",
+      "en": "For special roles that are not tied to a level or achievement."
+    },
+    {
+      "key": "admin.community.discordRoles.useColor",
+      "de": "Eigene Discord-Farbe verwenden",
+      "en": "Use a Discord color"
+    },
+    {
+      "key": "admin.community.discordRoles.color",
+      "de": "Rollenfarbe",
+      "en": "Role color"
+    },
+    {
+      "key": "admin.community.discordRoles.colorHex",
+      "de": "Rollenfarbe als Hex-Wert",
+      "en": "Role color as hex value"
+    },
+    {
+      "key": "admin.community.discordRoles.sortOrder",
+      "de": "Sortierung",
+      "en": "Sort order"
+    },
+    {
+      "key": "admin.community.discordRoles.minimumLevel",
+      "de": "Ab Level",
+      "en": "From level"
+    },
+    {
+      "key": "admin.community.discordRoles.maximumLevel",
+      "de": "Bis Level",
+      "en": "Through level"
+    },
+    {
+      "key": "admin.community.discordRoles.openEnded",
+      "de": "Offen",
+      "en": "Open ended"
+    },
+    {
+      "key": "admin.community.discordRoles.achievement",
+      "de": "Freischaltendes Achievement",
+      "en": "Unlocking achievement"
+    },
+    {
+      "key": "admin.community.discordRoles.achievementNone",
+      "de": "Achievement auswählen",
+      "en": "Select achievement"
+    },
+    {
+      "key": "admin.community.discordRoles.achievementHint",
+      "de": "Nur Nutzer, die dieses Achievement besitzen, können die Rolle später als Showcase auswählen.",
+      "en": "Only users who own this achievement will later be able to select the role as their showcase."
+    },
+    {
+      "key": "admin.community.discordRoles.specialHint",
+      "de": "Sonderrollen werden bereits provisioniert, ihre automatische Benutzerzuweisung kommt mit der späteren Reward-Logik.",
+      "en": "Special roles are already provisioned; automatic user assignment will be added with the later reward logic."
+    },
+    {
+      "key": "admin.community.discordRoles.technical",
+      "de": "Technische Discord-Zuordnung",
+      "en": "Technical Discord mapping"
+    },
+    {
+      "key": "admin.community.discordRoles.discard",
+      "de": "Verwerfen",
+      "en": "Discard"
+    },
+    {
+      "key": "admin.community.discordRoles.saveAndSync",
+      "de": "Speichern & synchronisieren",
+      "en": "Save & synchronize"
+    },
+    {
+      "key": "admin.community.discordRoles.status.synced",
+      "de": "Synchronisiert",
+      "en": "Synchronized"
+    },
+    {
+      "key": "admin.community.discordRoles.status.pending",
+      "de": "Synchronisierung ausstehend",
+      "en": "Synchronization pending"
+    },
+    {
+      "key": "admin.community.discordRoles.status.missing",
+      "de": "Discord-Rolle fehlt oder ist nicht verwaltbar",
+      "en": "Discord role is missing or not manageable"
+    },
+    {
+      "key": "admin.community.discordRoles.status.disabled",
+      "de": "Deaktiviert",
+      "en": "Disabled"
+    },
+    {
+      "key": "admin.community.discordRoles.status.disconnected",
+      "de": "Discord nicht erreichbar",
+      "en": "Discord unavailable"
+    },
+    {
+      "key": "admin.community.discordRoles.status.not-configured",
+      "de": "Discord nicht konfiguriert",
+      "en": "Discord not configured"
+    },
+    {
+      "key": "admin.community.discordRoles.invalid",
+      "de": "Die Rollendefinition ist noch nicht vollständig oder überschneidet sich mit einer anderen aktiven Level-Rolle.",
+      "en": "The role definition is incomplete or overlaps another enabled level role."
+    },
+    {
+      "key": "admin.community.discordRoles.loadFailed",
+      "de": "Die Discord-Rollen konnten nicht geladen werden.",
+      "en": "The Discord roles could not be loaded."
+    },
+    {
+      "key": "admin.community.discordRoles.saveFailed",
+      "de": "Die Discord-Rolle konnte nicht gespeichert werden.",
+      "en": "The Discord role could not be saved."
+    },
+    {
+      "key": "admin.community.discordRoles.savedRefreshFailed",
+      "de": "Rolle wurde gespeichert, der aktuelle Discord-Status konnte danach aber nicht neu geladen werden.",
+      "en": "Role saved, but the current Discord status could not be reloaded afterwards."
+    },
+    {
+      "key": "admin.community.discordRoles.savedSynced",
+      "de": "Rolle gespeichert und mit Discord synchronisiert.",
+      "en": "Role saved and synchronized with Discord."
+    },
+    {
+      "key": "admin.community.discordRoles.savedSyncPartial",
+      "de": "Rolle gespeichert. Mindestens eine Discord-Rolle konnte beim anschließenden Sync nicht synchronisiert werden.",
+      "en": "Role saved. At least one Discord role could not be synchronized during the following sync."
+    },
+    {
+      "key": "admin.community.discordRoles.savedSyncUnavailable",
+      "de": "Rolle gespeichert. Discord war für die anschließende Synchronisierung nicht verfügbar.",
+      "en": "Role saved. Discord was unavailable for the following synchronization."
+    },
+    {
+      "key": "admin.community.discordRoles.syncDone",
+      "de": "Alle aktiven Community-Rollen sind mit Discord abgeglichen.",
+      "en": "All enabled community roles are synchronized with Discord."
+    },
+    {
+      "key": "admin.community.discordRoles.syncPartial",
+      "de": "Die Synchronisierung ist abgeschlossen, einzelne Rollen konnten aber nicht abgeglichen werden.",
+      "en": "Synchronization completed, but some roles could not be synchronized."
+    },
+    {
+      "key": "admin.community.discordRoles.syncUnavailable",
+      "de": "Discord ist gerade nicht verbunden. Die Definitionen bleiben gespeichert und werden beim späteren Reconcile erneut geprüft.",
+      "en": "Discord is currently disconnected. The definitions remain saved and will be checked again during a later reconciliation."
+    },
+    {
+      "key": "admin.community.discordRoles.syncFailed",
+      "de": "Die Discord-Synchronisierung ist fehlgeschlagen.",
+      "en": "Discord synchronization failed."
+    },
+    {
+      "key": "admin.community.discordRoles.syncSummary",
+      "de": "Letzter Abgleich",
+      "en": "Last synchronization"
+    },
+    {
+      "key": "admin.community.discordRoles.created",
+      "de": "neu angelegt",
+      "en": "created"
+    },
+    {
+      "key": "admin.community.discordRoles.updated",
+      "de": "aktualisiert",
+      "en": "updated"
+    },
+    {
+      "key": "admin.community.discordRoles.unchanged",
+      "de": "unverändert",
+      "en": "unchanged"
+    },
+    {
+      "key": "admin.community.discordRoles.failed",
+      "de": "Fehler",
+      "en": "failed"
+    }
+  ]
+}

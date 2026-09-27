@@ -1,4 +1,8 @@
 import type {
+  CommunityDiscordRoleKind,
+  SaveCommunityDiscordRoleDefinition,
+} from '@shared/community/community-discord';
+import type {
   CommunityEventType,
   SaveCommunityEventRule,
 } from '@shared/community/community-event';
@@ -89,6 +93,45 @@ export class SaveCommunityLevelsDto {
   @IsInt({ each: true })
   @Min(0, { each: true })
   requiredXp!: number[];
+}
+
+export class SaveCommunityDiscordRoleDto
+  implements SaveCommunityDiscordRoleDefinition
+{
+  @IsIn([
+    'level-range',
+    'showcase',
+    'special',
+  ])
+  kind!: CommunityDiscordRoleKind;
+
+  @IsString()
+  @MaxLength(100)
+  name!: string;
+
+  @IsOptional()
+  @Matches(/^#[0-9a-fA-F]{6}$/)
+  color!: string | null;
+
+  @IsBoolean()
+  enabled!: boolean;
+
+  @IsOptional()
+  @IsUUID()
+  achievementId!: string | null;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  minimumLevel!: number | null;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  maximumLevel!: number | null;
+
+  @IsInt()
+  sortOrder!: number;
 }
 
 export class SaveCommunityTitleDto

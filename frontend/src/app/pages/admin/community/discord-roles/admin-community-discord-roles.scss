@@ -1,0 +1,302 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.discord-role-admin {
+  display: grid;
+  gap: var(--spacing-md);
+
+  h1,
+  h2,
+  p {
+    margin: 0;
+  }
+}
+
+.discord-role-admin__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+
+  p {
+    max-width: 760px;
+    margin-top: var(--spacing-xs);
+    opacity: 0.8;
+  }
+}
+
+.discord-role-admin__header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.discord-role-admin__connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  &::before {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentcolor;
+    content: '';
+    opacity: 0.45;
+  }
+
+  &.connected::before {
+    opacity: 1;
+  }
+}
+
+.discord-role-admin__safety,
+.discord-role-admin__message,
+.discord-role-admin__sync-summary,
+.discord-role-admin__empty {
+  @include framed(var(--control-border-width));
+
+  padding: var(--spacing-sm);
+  background: var(--color-menu-surface);
+}
+
+.discord-role-admin__safety {
+  font-size: 0.9rem;
+  opacity: 0.86;
+}
+
+.discord-role-admin__sync-summary {
+  font-size: 0.84rem;
+}
+
+.discord-role-admin__roles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+  align-items: start;
+}
+
+.discord-role-card {
+  @include framed(var(--control-border-width));
+
+  display: grid;
+  gap: var(--spacing-md);
+  min-width: 0;
+  padding: var(--spacing-md);
+  background: var(--color-menu-surface);
+}
+
+.discord-role-card__header,
+.discord-role-card__actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.discord-role-card__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+
+  h2 {
+    overflow: hidden;
+    font-size: 1.05rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    opacity: 0.68;
+  }
+}
+
+.discord-role-card__swatch {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-secondary);
+  border-radius: 50%;
+}
+
+.discord-role-card__state {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.discord-role-card__status {
+  padding: 3px 8px;
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &[data-status='status-synced'] {
+    background: var(--color-surface-translucent);
+  }
+
+  &[data-status='status-missing'],
+  &[data-status='status-pending'] {
+    border-style: dashed;
+  }
+
+  &[data-status='status-disabled'],
+  &[data-status='status-disconnected'],
+  &[data-status='status-not-configured'] {
+    opacity: 0.62;
+  }
+}
+
+.discord-role-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.discord-role-card__grid,
+.discord-role-card__conditional {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.discord-role-card__grid label,
+.discord-role-card__conditional label,
+.discord-role-card__achievement {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+
+  small {
+    opacity: 0.68;
+    font-weight: 400;
+  }
+}
+
+.discord-role-card input[type='text'],
+.discord-role-card input[type='number'],
+.discord-role-card select {
+  width: 100%;
+  min-width: 0;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--color-secondary);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.discord-role-card__color {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-xs);
+  padding-top: 2px;
+}
+
+.discord-role-card__color-inputs {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: var(--spacing-xs);
+
+  input[type='color'] {
+    width: 52px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid var(--color-secondary);
+    background: var(--color-surface);
+  }
+}
+
+.discord-role-card__achievement {
+  padding-top: var(--spacing-xs);
+}
+
+.discord-role-card__special-hint {
+  padding: var(--spacing-sm);
+  border: 1px dashed var(--color-secondary);
+  border-radius: var(--radius-card);
+  font-size: 0.86rem;
+  opacity: 0.78;
+}
+
+.discord-role-card__technical {
+  border-top: 1px solid rgb(175 104 167 / 45%);
+  padding-top: var(--spacing-xs);
+  font-size: 0.8rem;
+
+  summary {
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  code {
+    display: block;
+    margin-top: 6px;
+    overflow-wrap: anywhere;
+  }
+}
+
+.discord-role-card__actions {
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: var(--spacing-xs);
+  border-top: 1px solid rgb(175 104 167 / 45%);
+}
+
+.discord-role-card__text-action {
+  margin-right: auto;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
+@include compact-layout {
+  .discord-role-admin__header,
+  .discord-role-card__header,
+  .discord-role-card__actions {
+    flex-direction: column;
+  }
+
+  .discord-role-admin__header-actions,
+  .discord-role-card__state {
+    width: 100%;
+    justify-content: flex-start;
+    justify-items: start;
+  }
+
+  .discord-role-admin__roles,
+  .discord-role-card__grid,
+  .discord-role-card__conditional {
+    grid-template-columns: 1fr;
+  }
+
+  .discord-role-card__text-action {
+    margin-right: 0;
+  }
+}

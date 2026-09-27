@@ -75,8 +75,16 @@
         <a
           routerLink="/admin/community"
           routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
         >
           {{ 'admin.nav.community' | i18n | async }}
+        </a>
+
+        <a
+          routerLink="/admin/community/discord-roles"
+          routerLinkActive="active"
+        >
+          {{ 'admin.nav.discordRoles' | i18n | async }}
         </a>
       }
 

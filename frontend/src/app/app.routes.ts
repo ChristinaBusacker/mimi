@@ -229,6 +229,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'community/discord-roles',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/community/discord-roles/admin-community-discord-roles').then(
+            (module) => module.AdminCommunityDiscordRoles,
+          ),
+      },
+      {
         path: 'community',
         canActivate: [adminGuard],
         loadComponent: () =>
