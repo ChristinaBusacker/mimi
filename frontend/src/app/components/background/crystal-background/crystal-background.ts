@@ -17,6 +17,7 @@ interface CrystalInstance {
   selector: 'app-crystal-background',
   styleUrl: './crystal-background.scss',
   templateUrl: './crystal-background.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CrystalBackground {
   protected readonly crystals: CrystalInstance[] = [

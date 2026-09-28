@@ -42,8 +42,6 @@
   transform: rotate(var(--rotation)) scale(var(--scale));
 
   transform-origin: bottom center;
-
-  will-change: transform, filter;
 }
 
 .crystal--back img {

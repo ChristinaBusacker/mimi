@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { HeartBackground } from './heart-background/heart-background';
 import { CrystalBackground } from './crystal-background/crystal-background';
 import { SkylineBackground } from './skyline-background/skyline-background';
@@ -9,5 +9,6 @@ import { CloudBackground } from './cloud-background/cloud-background';
   selector: 'app-background',
   styleUrl: './background.scss',
   templateUrl: './background.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Background {}
