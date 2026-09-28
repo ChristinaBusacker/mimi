@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AssetsModule } from '../assets/assets.module';
 import { AuthModule } from '../auth/auth.module';
 import { ContentModule } from '../content/content.module';
+import { NotificationEventsModule } from '../notifications/notification-events.module';
 import { MusicAlbumTranslationEntry } from './entities/music-album-translation.entry';
 import { MusicAlbumEntry } from './entities/music-album.entry';
 import { MusicTrackTranslationEntry } from './entities/music-track-translation.entry';
@@ -18,6 +19,7 @@ import { MusicService } from './music.service';
     AssetsModule,
     AuthModule,
     ContentModule,
+    NotificationEventsModule,
     TypeOrmModule.forFeature([
       MusicAlbumEntry,
       MusicAlbumTranslationEntry,

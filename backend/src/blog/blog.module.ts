@@ -5,6 +5,7 @@ import { AssetsModule } from '../assets/assets.module';
 import { AuthModule } from '../auth/auth.module';
 import { CommunityModule } from '../community/community.module';
 import { ContentModule } from '../content/content.module';
+import { NotificationEventsModule } from '../notifications/notification-events.module';
 import { UsersModule } from '../users/users.module';
 import { BlogAdminAuthorsController } from './blog-admin-authors.controller';
 import { BlogAdminPostsController } from './blog-admin-posts.controller';
@@ -34,6 +35,7 @@ import { UserManagementService } from './user-management.service';
     AuthModule,
     CommunityModule,
     ContentModule,
+    NotificationEventsModule,
     UsersModule,
     TypeOrmModule.forFeature([
       BlogAuthorProfileEntry,

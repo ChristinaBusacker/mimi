@@ -5,291 +5,285 @@
     </section>
   } @else if (dashboard(); as data) {
     <div class="dashboard-shell">
-      <div
-        class="dashboard-content"
-        [attr.inert]="data.membership !== 'member' ? '' : null"
-      >
-      <app-hero type="community" class="right-align-center">
-        <div hero-left class="dashboard-intro">
-          <div class="eyebrow">
-            <img src="/images/icons/logos/discord.png" alt="" />
-            {{ 'community.dashboard.header.kicker' | i18n | async }}
-          </div>
-
-          <h1>{{ data.discordDisplayName }}</h1>
-
-          @if (selectedTitle(data); as selectedTitle) {
-            <p class="selected-title sue-ellen">
-              {{ displayText(selectedTitle.name) }}
-            </p>
-          }
-
-          <p>{{ 'community.live.dashboard.heroText' | i18n | async }}</p>
-
-          <div class="dashboard-links">
-            <a routerLink="/community">
-              {{ 'community.dashboard.header.back' | i18n | async }} →
-            </a>
-          </div>
-        </div>
-
-        <aside hero-right class="progress-card">
-          <div class="progress-level">
-            <span>{{ 'community.dashboard.level' | i18n | async }}</span>
-            <strong>{{ data.level?.level ?? 1 }}</strong>
-          </div>
-
-          <div class="progress-copy">
-            <div class="progress-meta">
-              <strong>{{ data.totalXp }} XP</strong>
-              @if (data.nextLevel; as nextLevel) {
-                <span>
-                  {{ xpUntilNextLevel(data) }} XP
-                  {{ 'community.dashboard.untilLevel' | i18n | async }}
-                  {{ nextLevel.level }}
-                </span>
-              } @else {
-                <span>{{ 'community.dashboard.maxLevel' | i18n | async }}</span>
-              }
+      <div class="dashboard-content" [attr.inert]="data.membership !== 'member' ? '' : null">
+        <app-hero type="community" class="right-align-center">
+          <div hero-left class="dashboard-intro">
+            <div class="eyebrow">
+              <img src="/images/icons/logos/discord.png" alt="" />
+              {{ 'community.dashboard.header.kicker' | i18n | async }}
             </div>
 
-            <div
-              class="xp-progress"
-              role="progressbar"
-              [attr.aria-valuenow]="data.progressPercent"
-              aria-valuemin="0"
-              aria-valuemax="100"
-            >
-              <span [style.width.%]="data.progressPercent"></span>
-            </div>
-          </div>
-        </aside>
-      </app-hero>
+            <h1>{{ data.discordDisplayName }}</h1>
 
-      <section class="dashboard-workspace">
-      <section class="milestone-panel">
-        <div>
-          <span>{{ 'community.live.dashboard.nextEyebrow' | i18n | async }}</span>
-          <h2>{{ 'community.live.dashboard.nextTitle' | i18n | async }}</h2>
-        </div>
-
-        <div class="milestone-content">
-          @if (data.nextLevel; as nextLevel) {
-            <article>
-              <span>{{ 'community.dashboard.level' | i18n | async }}</span>
-              <strong>{{ nextLevel.level }}</strong>
-              <small>
-                {{ xpUntilNextLevel(data) }} XP
-                {{ 'community.live.dashboard.remaining' | i18n | async }}
-              </small>
-            </article>
-          }
-
-          @if (nextAchievement(data); as achievement) {
-            <article class="next-achievement">
-              <span>{{ 'community.live.dashboard.nextAchievement' | i18n | async }}</span>
-              <strong>{{ displayText(achievement.name) }}</strong>
-              <small>{{ displayText(achievement.description) }}</small>
-            </article>
-          } @else {
-            <article class="next-achievement">
-              <span>{{ 'community.dashboard.achievements' | i18n | async }}</span>
-              <strong>{{ 'community.live.dashboard.allUnlocked' | i18n | async }}</strong>
-            </article>
-          }
-        </div>
-
-        @if (data.achievements.length > 6) {
-          <button
-            type="button"
-            class="achievement-toggle"
-            (click)="achievementsExpanded.set(!achievementsExpanded())"
-          >
-            {{
-              (achievementsExpanded()
-                ? 'community.dashboard.achievements.showLess'
-                : 'community.dashboard.achievements.showAll')
-                | i18n
-                | async
-            }}
-          </button>
-        }
-      </section>
-
-      <section class="profile-settings integrations-panel">
-        <header>
-          <div>
-            <span>{{ 'community.dashboard.twitch.eyebrow' | i18n | async }}</span>
-            <h2>{{ 'community.dashboard.twitch.title' | i18n | async }}</h2>
-          </div>
-          <p>{{ 'community.dashboard.twitch.description' | i18n | async }}</p>
-        </header>
-
-        <div class="profile-settings__content">
-          <div class="profile-preview">
-            <img
-              src="/images/icons/logos/twitch.png"
-              width="24"
-              height="24"
-              alt=""
-            />
-            <div>
-              @if (data.twitch.connected) {
-                <strong>{{ data.twitch.displayName }}</strong>
-                <span>{{ '@' + data.twitch.login }}</span>
-              } @else {
-                <strong>{{ 'community.dashboard.twitch.notConnected' | i18n | async }}</strong>
-                <span>{{ 'community.dashboard.twitch.notConnectedText' | i18n | async }}</span>
-              }
-            </div>
-          </div>
-
-          <div class="profile-controls">
-            @if (data.twitch.connected) {
-              <app-button
-                class="secondary round"
-                [disabled]="saving()"
-                (click)="disconnectTwitch()"
-              >
-                {{ 'community.dashboard.twitch.disconnect' | i18n | async }}
-              </app-button>
-            } @else if (data.twitch.configured) {
-              <app-button
-                class="primary round font-black"
-                [href]="'/api/community/twitch/connect'"
-              >
-                {{ 'community.dashboard.twitch.connect' | i18n | async }}
-              </app-button>
-            } @else {
-              <span>{{ 'community.dashboard.twitch.unavailable' | i18n | async }}</span>
+            @if (selectedTitle(data); as selectedTitle) {
+              <p class="selected-title sue-ellen">
+                {{ displayText(selectedTitle.name) }}
+              </p>
             }
-          </div>
-        </div>
-      </section>
 
-      <section class="achievement-showcase">
-        <header>
-          <div>
-            <span>{{ 'community.live.dashboard.achievementsEyebrow' | i18n | async }}</span>
-            <h2>{{ 'community.dashboard.achievements' | i18n | async }}</h2>
-          </div>
-          <p>{{ 'community.dashboard.achievementsText' | i18n | async }}</p>
-          <strong class="achievement-count">
-            {{ unlockedAchievements(data).length }}/{{ data.achievements.length }}
-          </strong>
-        </header>
+            <p>{{ 'community.live.dashboard.heroText' | i18n | async }}</p>
 
-        <div class="achievement-grid">
-          @for (achievement of visibleAchievements(data); track achievement.id) {
-            <article
-              class="achievement-card"
-              [class.locked]="!achievement.unlocked"
-              [class.pinned]="achievement.pinned"
-            >
-              <div class="achievement-marker">
-                <span>{{ achievement.unlocked ? '◆' : '◇' }}</span>
-                @if (achievement.unlocked) {
-                  <button
-                    type="button"
-                    [disabled]="saving()"
-                    (click)="togglePinned(achievement)"
-                  >
-                    {{
-                      (achievement.pinned
-                        ? 'community.dashboard.unpin'
-                        : 'community.dashboard.pin')
-                        | i18n
-                        | async
-                    }}
-                  </button>
+            <div class="dashboard-links">
+              <a routerLink="/community">
+                {{ 'community.dashboard.header.back' | i18n | async }} →
+              </a>
+            </div>
+          </div>
+
+          <aside hero-right class="progress-card">
+            <div class="progress-level">
+              <span>{{ 'community.dashboard.level' | i18n | async }}</span>
+              <strong>{{ data.level?.level ?? 1 }}</strong>
+            </div>
+
+            <div class="progress-copy">
+              <div class="progress-meta">
+                <strong>{{ data.totalXp }} XP</strong>
+                @if (data.nextLevel; as nextLevel) {
+                  <span>
+                    {{ xpUntilNextLevel(data) }} XP
+                    {{ 'community.dashboard.untilLevel' | i18n | async }}
+                    {{ nextLevel.level }}
+                  </span>
+                } @else {
+                  <span>{{ 'community.dashboard.maxLevel' | i18n | async }}</span>
                 }
               </div>
-              <strong>{{ displayText(achievement.name) }}</strong>
-              <p>{{ displayText(achievement.description) }}</p>
-            </article>
-          }
-        </div>
-      </section>
 
-      <section class="profile-settings">
-        <header>
-          <div>
-            <span>{{ 'community.live.dashboard.profileEyebrow' | i18n | async }}</span>
-            <h2>{{ 'community.dashboard.profile' | i18n | async }}</h2>
-          </div>
-          <p>{{ 'community.dashboard.profileText' | i18n | async }}</p>
-        </header>
+              <div
+                class="xp-progress"
+                role="progressbar"
+                [attr.aria-valuenow]="data.progressPercent"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <span [style.width.%]="data.progressPercent"></span>
+              </div>
+            </div>
+          </aside>
+        </app-hero>
 
-        <div class="profile-settings__content">
-          <div class="profile-preview">
-            <span
-              class="profile-color"
-              [style.background]="data.customization?.selectedProfileColor ?? null"
-            ></span>
+        <section class="dashboard-workspace">
+          <section class="milestone-panel">
             <div>
-              <strong>{{ data.discordDisplayName }}</strong>
-              @if (selectedTitle(data); as selectedTitle) {
-                <span>{{ displayText(selectedTitle.name) }}</span>
+              <span>{{ 'community.live.dashboard.nextEyebrow' | i18n | async }}</span>
+              <h2>{{ 'community.live.dashboard.nextTitle' | i18n | async }}</h2>
+            </div>
+
+            <div class="milestone-content">
+              @if (data.nextLevel; as nextLevel) {
+                <article>
+                  <span>{{ 'community.dashboard.level' | i18n | async }}</span>
+                  <strong>{{ nextLevel.level }}</strong>
+                  <small>
+                    {{ xpUntilNextLevel(data) }} XP
+                    {{ 'community.live.dashboard.remaining' | i18n | async }}
+                  </small>
+                </article>
+              }
+
+              @if (nextAchievement(data); as achievement) {
+                <article class="next-achievement">
+                  <span>{{ 'community.live.dashboard.nextAchievement' | i18n | async }}</span>
+                  <strong>{{ displayText(achievement.name) }}</strong>
+                  <small>{{ displayText(achievement.description) }}</small>
+                </article>
               } @else {
-                <span>{{ 'community.dashboard.noTitle' | i18n | async }}</span>
+                <article class="next-achievement">
+                  <span>{{ 'community.dashboard.achievements' | i18n | async }}</span>
+                  <strong>{{ 'community.live.dashboard.allUnlocked' | i18n | async }}</strong>
+                </article>
               }
             </div>
 
-            <div class="featured-achievements">
-              @for (achievement of pinnedAchievements(data); track achievement.id) {
-                <small>{{ displayText(achievement.name) }}</small>
-              } @empty {
-                <small>{{ 'community.dashboard.noPinned' | i18n | async }}</small>
-              }
-            </div>
-          </div>
-
-          <div class="profile-controls">
-            <label>
-              <span>{{ 'community.dashboard.title' | i18n | async }}</span>
-              <select
-                [disabled]="saving()"
-                [ngModel]="data.customization?.selectedTitleId"
-                (ngModelChange)="selectTitle($event)"
+            @if (data.achievements.length > 6) {
+              <button
+                type="button"
+                class="achievement-toggle"
+                (click)="achievementsExpanded.set(!achievementsExpanded())"
               >
-                <option [ngValue]="null">
-                  {{ 'community.dashboard.noTitle' | i18n | async }}
-                </option>
-                @for (title of data.titles; track title.id) {
-                  <option [ngValue]="title.id">
-                    {{ displayText(title.name) }}
-                  </option>
-                }
-              </select>
-            </label>
+                {{
+                  (achievementsExpanded()
+                    ? 'community.dashboard.achievements.showLess'
+                    : 'community.dashboard.achievements.showAll'
+                  )
+                    | i18n
+                    | async
+                }}
+              </button>
+            }
+          </section>
 
-            <label>
-              <span>{{ 'community.dashboard.profileColor' | i18n | async }}</span>
-              <select
-                [disabled]="saving()"
-                [ngModel]="data.selectedDiscordShowcaseRoleId"
-                (ngModelChange)="selectDiscordShowcaseRole($event)"
-              >
-                <option [ngValue]="null">
-                  {{ 'community.dashboard.defaultColor' | i18n | async }}
-                </option>
-                @for (role of data.discordShowcaseRoles; track role.id) {
-                  <option
-                    [ngValue]="role.id"
-                    [disabled]="!role.unlocked || !role.availableOnDiscord"
+          <section class="profile-settings integrations-panel">
+            <header>
+              <div>
+                <span>{{ 'community.dashboard.twitch.eyebrow' | i18n | async }}</span>
+                <h2>{{ 'community.dashboard.twitch.title' | i18n | async }}</h2>
+              </div>
+              <p>{{ 'community.dashboard.twitch.description' | i18n | async }}</p>
+            </header>
+
+            <div class="profile-settings__content">
+              <div class="profile-preview">
+                <img src="/images/icons/logos/twitch.png" width="24" height="24" alt="" />
+                <div>
+                  @if (data.twitch.connected) {
+                    <strong>{{ data.twitch.displayName }}</strong>
+                    <span>{{ '@' + data.twitch.login }}</span>
+                  } @else {
+                    <strong>{{ 'community.dashboard.twitch.notConnected' | i18n | async }}</strong>
+                    <span>{{ 'community.dashboard.twitch.notConnectedText' | i18n | async }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="profile-controls">
+                @if (data.twitch.connected) {
+                  <app-button
+                    class="secondary round"
+                    [disabled]="saving()"
+                    (click)="disconnectTwitch()"
                   >
-                    {{ role.name }}{{ role.unlocked && role.availableOnDiscord ? '' : ' 🔒' }}
-                  </option>
+                    {{ 'community.dashboard.twitch.disconnect' | i18n | async }}
+                  </app-button>
+                } @else if (data.twitch.configured) {
+                  <app-button
+                    class="primary round font-black"
+                    [href]="'/api/community/twitch/connect'"
+                  >
+                    {{ 'community.dashboard.twitch.connect' | i18n | async }}
+                  </app-button>
+                } @else {
+                  <span>{{ 'community.dashboard.twitch.unavailable' | i18n | async }}</span>
                 }
-              </select>
-              <small>
-                {{ 'community.dashboard.profileColor.hint' | i18n | async }}
-              </small>
-            </label>
-          </div>
-        </div>
-      </section>
-      </section>
+              </div>
+            </div>
+          </section>
+
+          <section class="achievement-showcase">
+            <header>
+              <div>
+                <span>{{ 'community.live.dashboard.achievementsEyebrow' | i18n | async }}</span>
+                <h2>{{ 'community.dashboard.achievements' | i18n | async }}</h2>
+              </div>
+              <p>{{ 'community.dashboard.achievementsText' | i18n | async }}</p>
+              <strong class="achievement-count">
+                {{ unlockedAchievements(data).length }}/{{ data.achievements.length }}
+              </strong>
+            </header>
+
+            <div class="achievement-grid">
+              @for (achievement of visibleAchievements(data); track achievement.id) {
+                <article
+                  class="achievement-card"
+                  [class.locked]="!achievement.unlocked"
+                  [class.pinned]="achievement.pinned"
+                >
+                  <div class="achievement-marker">
+                    <span>{{ achievement.unlocked ? '◆' : '◇' }}</span>
+                    @if (achievement.unlocked) {
+                      <button
+                        type="button"
+                        [disabled]="saving()"
+                        (click)="togglePinned(achievement)"
+                      >
+                        {{
+                          (achievement.pinned
+                            ? 'community.dashboard.unpin'
+                            : 'community.dashboard.pin'
+                          )
+                            | i18n
+                            | async
+                        }}
+                      </button>
+                    }
+                  </div>
+                  <strong>{{ displayText(achievement.name) }}</strong>
+                  <p>{{ displayText(achievement.description) }}</p>
+                </article>
+              }
+            </div>
+          </section>
+
+          <section class="profile-settings">
+            <header>
+              <div>
+                <span>{{ 'community.live.dashboard.profileEyebrow' | i18n | async }}</span>
+                <h2>{{ 'community.dashboard.profile' | i18n | async }}</h2>
+              </div>
+              <p>{{ 'community.dashboard.profileText' | i18n | async }}</p>
+            </header>
+
+            <div class="profile-settings__content">
+              <div class="profile-preview">
+                <span
+                  class="profile-color"
+                  [style.background]="data.customization?.selectedProfileColor ?? null"
+                ></span>
+                <div>
+                  <strong>{{ data.discordDisplayName }}</strong>
+                  @if (selectedTitle(data); as selectedTitle) {
+                    <span>{{ displayText(selectedTitle.name) }}</span>
+                  } @else {
+                    <span>{{ 'community.dashboard.noTitle' | i18n | async }}</span>
+                  }
+                </div>
+
+                <div class="featured-achievements">
+                  @for (achievement of pinnedAchievements(data); track achievement.id) {
+                    <small>{{ displayText(achievement.name) }}</small>
+                  } @empty {
+                    <small>{{ 'community.dashboard.noPinned' | i18n | async }}</small>
+                  }
+                </div>
+              </div>
+
+              <div class="profile-controls">
+                <label>
+                  <span>{{ 'community.dashboard.title' | i18n | async }}</span>
+                  <select
+                    [disabled]="saving()"
+                    [ngModel]="data.customization?.selectedTitleId"
+                    (ngModelChange)="selectTitle($event)"
+                  >
+                    <option [ngValue]="null">
+                      {{ 'community.dashboard.noTitle' | i18n | async }}
+                    </option>
+                    @for (title of data.titles; track title.id) {
+                      <option [ngValue]="title.id">
+                        {{ displayText(title.name) }}
+                      </option>
+                    }
+                  </select>
+                </label>
+
+                <label>
+                  <span>{{ 'community.dashboard.profileColor' | i18n | async }}</span>
+                  <select
+                    [disabled]="saving()"
+                    [ngModel]="data.selectedDiscordShowcaseRoleId"
+                    (ngModelChange)="selectDiscordShowcaseRole($event)"
+                  >
+                    <option [ngValue]="null">
+                      {{ 'community.dashboard.defaultColor' | i18n | async }}
+                    </option>
+                    @for (role of data.discordShowcaseRoles; track role.id) {
+                      <option
+                        [ngValue]="role.id"
+                        [disabled]="!role.unlocked || !role.availableOnDiscord"
+                      >
+                        {{ role.name }}{{ role.unlocked && role.availableOnDiscord ? '' : ' 🔒' }}
+                      </option>
+                    }
+                  </select>
+                  <small>
+                    {{ 'community.dashboard.profileColor.hint' | i18n | async }}
+                  </small>
+                </label>
+              </div>
+            </div>
+          </section>
+        </section>
       </div>
 
       @if (data.membership !== 'member') {

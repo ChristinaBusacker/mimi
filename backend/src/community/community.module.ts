@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { TwitchModule } from '../integrations/twitch/twitch.module';
+import { NotificationEventsModule } from '../notifications/notification-events.module';
 import { UsersModule } from '../users/users.module';
 
 import { CommunityBalancingDefaultsService } from './community-balancing-defaults.service';
@@ -40,6 +41,7 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
 
 @Module({
   imports: [
+    NotificationEventsModule,
     TwitchModule,
     UsersModule,
     TypeOrmModule.forFeature([

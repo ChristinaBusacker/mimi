@@ -20,6 +20,7 @@ import {
   type AssetUsageInput,
 } from '../assets/asset-usage.service';
 import { AssetsService } from '../assets/assets.service';
+import { NotificationEventsService } from '../notifications/notification-events.service';
 import {
   MusicAdminTranslationInputDto,
   MusicAdminTranslationsInputDto,
@@ -37,6 +38,8 @@ export class MusicAdminService {
     private readonly assetsService: AssetsService,
     private readonly assetUsageService:
       AssetUsageService,
+    private readonly notificationEvents:
+      NotificationEventsService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     @InjectRepository(MusicAlbumEntry)
@@ -48,6 +51,59 @@ export class MusicAdminService {
     @InjectRepository(MusicTrackTranslationEntry)
     private readonly trackTranslationRepository: Repository<MusicTrackTranslationEntry>,
   ) {}
+
+  private publishAlbumNotification(
+    albumUuid: string,
+    dto: SaveMusicAdminAlbumDto,
+  ): void {
+    this.notificationEvents.publish(
+      'music.published',
+      {
+        kind: 'album',
+        uuid: albumUuid,
+        slug: dto.slug,
+        albumSlug: null,
+        titleDe:
+          dto.translations.de.title,
+        titleEn:
+          dto.translations.en?.title ??
+          dto.translations.de.title,
+      },
+    );
+  }
+
+  private async publishTrackNotification(
+    trackUuid: string,
+    dto: SaveMusicAdminTrackDto,
+  ): Promise<void> {
+    const album = dto.albumId
+      ? await this.albumRepository.findOneBy({
+          uuid: dto.albumId,
+        })
+      : null;
+
+    if (
+      album &&
+      album.status !== 'published'
+    ) {
+      return;
+    }
+
+    this.notificationEvents.publish(
+      'music.published',
+      {
+        kind: 'track',
+        uuid: trackUuid,
+        slug: dto.slug,
+        albumSlug: album?.slug ?? null,
+        titleDe:
+          dto.translations.de.title,
+        titleEn:
+          dto.translations.en?.title ??
+          dto.translations.de.title,
+      },
+    );
+  }
 
   async getAlbums(): Promise<MusicAdminAlbum[]> {
     const albums = await this.albumRepository.find({
@@ -89,6 +145,10 @@ export class MusicAdminService {
           coverAssetId: dto.coverAssetId,
           releasedAt: dto.releasedAt,
           status: dto.status,
+          publishedAt:
+            dto.status === 'published'
+              ? new Date()
+              : null,
         }),
       );
 
@@ -103,11 +163,21 @@ export class MusicAdminService {
       return album.uuid;
     });
 
+    if (dto.status === 'published') {
+      this.publishAlbumNotification(
+        uuid,
+        dto,
+      );
+    }
+
     return this.getAlbum(uuid);
   }
 
   async updateAlbum(uuid: string, dto: SaveMusicAdminAlbumDto): Promise<MusicAdminAlbum> {
     const album = await this.findAlbum(uuid);
+    const becamePublished =
+      dto.status === 'published' &&
+      album.publishedAt === null;
 
     await this.assertAssetType(dto.coverAssetId, 'image');
     await this.validateTranslationAssets(
@@ -122,6 +192,11 @@ export class MusicAdminService {
         coverAssetId: dto.coverAssetId,
         releasedAt: dto.releasedAt,
         status: dto.status,
+        publishedAt:
+          dto.status === 'published'
+            ? album.publishedAt ??
+              new Date()
+            : album.publishedAt,
       });
 
       await this.replaceAlbumTranslations(manager, uuid, dto.translations);
@@ -132,6 +207,13 @@ export class MusicAdminService {
         this.albumAssetUsages(dto),
       );
     });
+
+    if (becamePublished) {
+      this.publishAlbumNotification(
+        uuid,
+        dto,
+      );
+    }
 
     return this.getAlbum(uuid);
   }
@@ -161,13 +243,20 @@ export class MusicAdminService {
   ): Promise<MusicAdminTrack[]> {
     await this.findAlbum(albumUuid);
 
-    await this.trackRepository.update(
-      {
+    const tracks =
+      await this.trackRepository.findBy({
         albumUuid,
-      },
-      {
-        status: 'published',
-      },
+      });
+    const publishedAt = new Date();
+
+    await this.trackRepository.save(
+      tracks.map((track) => ({
+        ...track,
+        status: 'published' as const,
+        publishedAt:
+          track.publishedAt ??
+          publishedAt,
+      })),
     );
 
     return this.getAlbumTracks(albumUuid);
@@ -276,6 +365,10 @@ export class MusicAdminService {
           deezerUrl: dto.deezerUrl || null,
           supportUrl: dto.supportUrl || null,
           status: dto.status,
+          publishedAt:
+            dto.status === 'published'
+              ? new Date()
+              : null,
         }),
       );
 
@@ -290,11 +383,21 @@ export class MusicAdminService {
       return track.uuid;
     });
 
+    if (dto.status === 'published') {
+      await this.publishTrackNotification(
+        uuid,
+        dto,
+      );
+    }
+
     return this.getTrack(uuid);
   }
 
   async updateTrack(uuid: string, dto: SaveMusicAdminTrackDto): Promise<MusicAdminTrack> {
     const track = await this.findTrack(uuid);
+    const becamePublished =
+      dto.status === 'published' &&
+      track.publishedAt === null;
 
     await this.validateTrackReferences(dto);
     await this.validateTranslationAssets(
@@ -317,6 +420,11 @@ export class MusicAdminService {
         deezerUrl: dto.deezerUrl || null,
         supportUrl: dto.supportUrl || null,
         status: dto.status,
+        publishedAt:
+          dto.status === 'published'
+            ? track.publishedAt ??
+              new Date()
+            : track.publishedAt,
       });
 
       await this.replaceTrackTranslations(manager, uuid, dto.translations);
@@ -327,6 +435,13 @@ export class MusicAdminService {
         this.trackAssetUsages(dto),
       );
     });
+
+    if (becamePublished) {
+      await this.publishTrackNotification(
+        uuid,
+        dto,
+      );
+    }
 
     return this.getTrack(uuid);
   }

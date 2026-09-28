@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +10,7 @@ import {
   Between,
   DataSource,
   EntityManager,
+  In,
 } from 'typeorm';
 
 import type {
@@ -18,11 +20,13 @@ import type {
 } from './community-event';
 import { CommunityProgressionService } from './community-progression.service';
 import { CommunityRewardSyncService } from './community-reward-sync.service';
+import { NotificationEventsService } from '../notifications/notification-events.service';
 import {
   createCommunityDateFormatter,
   DEFAULT_COMMUNITY_TIME_ZONE,
   formatCommunityDate,
 } from './community-time';
+import { CommunityAchievementEntry } from './entities/community-achievement.entry';
 import { CommunityEventEntry } from './entities/community-event.entry';
 import { CommunityEventRuleEntry } from './entities/community-event-rule.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
@@ -30,6 +34,10 @@ import { XpTransactionEntry } from './entities/xp-transaction.entry';
 
 @Injectable()
 export class CommunityEventService {
+  private readonly logger =
+    new Logger(
+      CommunityEventService.name,
+    );
   private readonly rewardDateFormatter:
     Intl.DateTimeFormat;
 
@@ -41,6 +49,8 @@ export class CommunityEventService {
       CommunityProgressionService,
     private readonly rewardSync:
       CommunityRewardSyncService,
+    private readonly notificationEvents:
+      NotificationEventsService,
     config: ConfigService,
   ) {
     const timeZone =
@@ -205,9 +215,88 @@ export class CommunityEventService {
       this.rewardSync.request(
         input.userUuid,
       );
+
+      if (
+        result.event &&
+        input.type !==
+          'blog.comment.featured'
+      ) {
+        await this.publishProgressNotification(
+          input.userUuid,
+          result.event.uuid,
+          unlockedAchievementIds,
+        );
+      }
     }
 
     return result;
+  }
+
+  private async publishProgressNotification(
+    userUuid: string,
+    sourceEventUuid: string,
+    achievementIds: readonly string[],
+  ): Promise<void> {
+    try {
+      const achievements =
+        await this.dataSource
+          .getRepository(
+            CommunityAchievementEntry,
+          )
+          .findBy({
+            uuid: In([
+              ...achievementIds,
+            ]),
+          });
+      const items = achievementIds
+        .flatMap((achievementId) => {
+          const achievement =
+            achievements.find(
+              (candidate) =>
+                candidate.uuid ===
+                achievementId,
+            );
+
+          if (!achievement) {
+            return [];
+          }
+
+          return [
+            {
+              uuid: achievement.uuid,
+              nameDe: achievement.nameDe,
+              nameEn:
+                achievement.nameEn ??
+                achievement.nameDe,
+              hasAdditionalRewards:
+                achievement.xpReward > 0 ||
+                achievement.unlockedTitleUuid !==
+                  null ||
+                achievement.unlockedProfileColor !==
+                  null ||
+                achievement.discordRoleId !==
+                  null,
+            },
+          ];
+        });
+
+      if (items.length === 0) {
+        return;
+      }
+
+      this.notificationEvents.publish(
+        'community.progress.unlocked',
+        {
+          userUuid,
+          sourceEventUuid,
+          achievements: items,
+        },
+      );
+    } catch (error: unknown) {
+      this.logger.warn(
+        `Could not prepare community progress notification for user ${userUuid}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
   }
 
   getTotalXp(

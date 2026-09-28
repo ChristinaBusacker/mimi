@@ -66,6 +66,8 @@ const EXPECTED_TABLES = [
   'music_albums',
   'music_track_translations',
   'music_tracks',
+  'notification_deliveries',
+  'notification_events',
   'notification_preferences',
   'password_reset_tokens',
   'push_subscriptions',
@@ -280,6 +282,8 @@ describe.sequential(
             '20260927-blog-comment-moderation',
             '20260928-push-subscriptions',
             '20260928-notification-preferences',
+            '20260928-music-publication-tracking',
+            '20260928-notification-delivery-ledger',
           ]),
         );
 

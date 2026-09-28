@@ -13,6 +13,7 @@ import {
 import { CommunityEventService } from './community-event.service';
 import { CommunityProgressionService } from './community-progression.service';
 import { CommunityRewardSyncService } from './community-reward-sync.service';
+import { NotificationEventsService } from '../notifications/notification-events.service';
 import { CommunityEventEntry } from './entities/community-event.entry';
 import { CommunityEventRuleEntry } from './entities/community-event-rule.entry';
 import { CommunityProfileEntry } from './entities/community-profile.entry';
@@ -115,6 +116,10 @@ function createEventService(
     request: vi.fn(),
   } as unknown as
     CommunityRewardSyncService;
+  const notificationEvents = {
+    publish: vi.fn(),
+  } as unknown as
+    NotificationEventsService;
   const config = {
     get: vi.fn(
       () => undefined,
@@ -127,6 +132,7 @@ function createEventService(
         dataSource,
         progression,
         rewardSync,
+        notificationEvents,
         config,
       ),
     progression,

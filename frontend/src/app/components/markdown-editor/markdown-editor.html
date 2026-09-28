@@ -1,8 +1,4 @@
-<div
-  class="markdown-editor"
-  role="group"
-  [attr.aria-label]="label()"
->
+<div class="markdown-editor" role="group" [attr.aria-label]="label()">
   <div
     class="markdown-editor__toolbar"
     role="toolbar"
@@ -200,35 +196,21 @@
       @if (dialogType() === 'link') {
         <label>
           <span>{{ 'admin.markdown.linkUrl' | i18n | async }}</span>
-          <input
-            type="url"
-            [value]="linkUrl()"
-            (input)="setLinkUrl($event)"
-          />
+          <input type="url" [value]="linkUrl()" (input)="setLinkUrl($event)" />
         </label>
 
         <div class="dialog-actions">
-          <button
-            type="button"
-            class="primary"
-            (click)="applyLink()"
-          >
+          <button type="button" class="primary" (click)="applyLink()">
             {{ 'admin.markdown.applyLink' | i18n | async }}
           </button>
 
           @if (editingLink()) {
-            <button
-              type="button"
-              (click)="removeLink()"
-            >
+            <button type="button" (click)="removeLink()">
               {{ 'admin.markdown.removeLink' | i18n | async }}
             </button>
           }
 
-          <button
-            type="button"
-            (click)="closeDialog()"
-          >
+          <button type="button" (click)="closeDialog()">
             {{ 'admin.markdown.close' | i18n | async }}
           </button>
         </div>
@@ -239,46 +221,28 @@
           <span>{{ 'admin.markdown.imageAsset' | i18n | async }}</span>
 
           @if (selectedImage(); as asset) {
-            <button
-              type="button"
-              class="selected-asset"
-              (click)="openImageLibrary()"
-            >
-              <img
-                [src]="asset.thumbnailUrl ?? asset.url"
-                [alt]="asset.originalFilename"
-              />
+            <button type="button" class="selected-asset" (click)="openImageLibrary()">
+              <img [src]="asset.thumbnailUrl ?? asset.url" [alt]="asset.originalFilename" />
               <strong>{{ asset.originalFilename }}</strong>
             </button>
           } @else {
             <p>{{ 'admin.assetPicker.noneSelected' | i18n | async }}</p>
           }
 
-          <button
-            type="button"
-            class="choose-asset"
-            (click)="openImageLibrary()"
-          >
+          <button type="button" class="choose-asset" (click)="openImageLibrary()">
             {{ 'admin.markdown.selectImage' | i18n | async }}
           </button>
         </div>
 
         <label>
           <span>{{ 'admin.markdown.imageAlt' | i18n | async }}</span>
-          <input
-            type="text"
-            [value]="imageAlt()"
-            (input)="setImageAlt($event)"
-          />
+          <input type="text" [value]="imageAlt()" (input)="setImageAlt($event)" />
         </label>
 
         <div class="media-settings">
           <label>
             <span>{{ 'admin.markdown.position' | i18n | async }}</span>
-            <select
-              [value]="imageAlignment()"
-              (change)="setImageAlignment($event)"
-            >
+            <select [value]="imageAlignment()" (change)="setImageAlignment($event)">
               <option value="left">
                 {{ 'admin.markdown.position.left' | i18n | async }}
               </option>
@@ -293,10 +257,7 @@
 
           <label>
             <span>{{ 'admin.markdown.size' | i18n | async }}</span>
-            <select
-              [value]="imageSize()"
-              (change)="setImageSize($event)"
-            >
+            <select [value]="imageSize()" (change)="setImageSize($event)">
               <option value="small">
                 {{ 'admin.markdown.size.small' | i18n | async }}
               </option>
@@ -314,12 +275,7 @@
         </div>
 
         <div class="dialog-actions">
-          <button
-            type="button"
-            class="primary"
-            [disabled]="!imageAssetId()"
-            (click)="saveImage()"
-          >
+          <button type="button" class="primary" [disabled]="!imageAssetId()" (click)="saveImage()">
             {{
               (editingMedia() === 'image'
                 ? 'admin.markdown.updateImage'
@@ -331,18 +287,12 @@
           </button>
 
           @if (editingMedia() === 'image') {
-            <button
-              type="button"
-              (click)="removeSelectedMedia()"
-            >
+            <button type="button" (click)="removeSelectedMedia()">
               {{ 'admin.markdown.removeFromContent' | i18n | async }}
             </button>
           }
 
-          <button
-            type="button"
-            (click)="closeDialog()"
-          >
+          <button type="button" (click)="closeDialog()">
             {{ 'admin.markdown.close' | i18n | async }}
           </button>
         </div>
@@ -351,20 +301,13 @@
       @if (dialogType() === 'youtube') {
         <label>
           <span>{{ 'admin.markdown.youtubeUrl' | i18n | async }}</span>
-          <input
-            type="url"
-            [value]="youtubeValue()"
-            (input)="setYoutubeValue($event)"
-          />
+          <input type="url" [value]="youtubeValue()" (input)="setYoutubeValue($event)" />
         </label>
 
         <div class="media-settings">
           <label>
             <span>{{ 'admin.markdown.position' | i18n | async }}</span>
-            <select
-              [value]="youtubeAlignment()"
-              (change)="setYoutubeAlignment($event)"
-            >
+            <select [value]="youtubeAlignment()" (change)="setYoutubeAlignment($event)">
               <option value="left">
                 {{ 'admin.markdown.position.left' | i18n | async }}
               </option>
@@ -379,10 +322,7 @@
 
           <label>
             <span>{{ 'admin.markdown.size' | i18n | async }}</span>
-            <select
-              [value]="youtubeSize()"
-              (change)="setYoutubeSize($event)"
-            >
+            <select [value]="youtubeSize()" (change)="setYoutubeSize($event)">
               <option value="small">
                 {{ 'admin.markdown.size.small' | i18n | async }}
               </option>
@@ -400,11 +340,7 @@
         </div>
 
         <div class="dialog-actions">
-          <button
-            type="button"
-            class="primary"
-            (click)="saveYoutube()"
-          >
+          <button type="button" class="primary" (click)="saveYoutube()">
             {{
               (editingMedia() === 'youtube'
                 ? 'admin.markdown.updateYoutube'
@@ -416,18 +352,12 @@
           </button>
 
           @if (editingMedia() === 'youtube') {
-            <button
-              type="button"
-              (click)="removeSelectedMedia()"
-            >
+            <button type="button" (click)="removeSelectedMedia()">
               {{ 'admin.markdown.removeFromContent' | i18n | async }}
             </button>
           }
 
-          <button
-            type="button"
-            (click)="closeDialog()"
-          >
+          <button type="button" (click)="closeDialog()">
             {{ 'admin.markdown.close' | i18n | async }}
           </button>
         </div>

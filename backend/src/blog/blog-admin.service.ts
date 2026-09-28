@@ -35,6 +35,7 @@ import {
   type AssetUsageInput,
 } from '../assets/asset-usage.service';
 import { AssetsService } from '../assets/assets.service';
+import { NotificationEventsService } from '../notifications/notification-events.service';
 import { UserEntry } from '../users/entities/user.entry';
 import { UsersService } from '../users/users.service';
 import type { BlogLocale } from './blog-locale';
@@ -57,6 +58,8 @@ export class BlogAdminService {
       AssetUsageService,
     private readonly usersService:
       UsersService,
+    private readonly notificationEvents:
+      NotificationEventsService,
     @InjectDataSource()
     private readonly dataSource:
       DataSource,
@@ -73,6 +76,24 @@ export class BlogAdminService {
     private readonly translationRepository:
       Repository<BlogPostTranslationEntry>,
   ) {}
+
+  private publishPostNotification(
+    postUuid: string,
+    dto: SaveBlogAdminPostDto,
+  ): void {
+    this.notificationEvents.publish(
+      'blog.published',
+      {
+        postUuid,
+        slug: dto.slug,
+        titleDe:
+          dto.translations.de.title,
+        titleEn:
+          dto.translations.en?.title ??
+          dto.translations.de.title,
+      },
+    );
+  }
 
   async getPosts(
     actor: AuthenticatedUser,
@@ -203,6 +224,13 @@ export class BlogAdminService {
         },
       );
 
+    if (dto.status === 'published') {
+      this.publishPostNotification(
+        uuid,
+        dto,
+      );
+    }
+
     return this.getPost(
       uuid,
       actor,
@@ -216,6 +244,9 @@ export class BlogAdminService {
   ): Promise<BlogAdminPost> {
     const post =
       await this.findPost(uuid);
+    const becamePublished =
+      dto.status === 'published' &&
+      post.publishedAt === null;
 
     this.assertCanModifyPost(
       post,
@@ -261,7 +292,7 @@ export class BlogAdminService {
               'published'
                 ? post.publishedAt ??
                   new Date()
-                : null,
+                : post.publishedAt,
           });
 
         await this.replaceTranslations(
@@ -279,6 +310,13 @@ export class BlogAdminService {
         );
       },
     );
+
+    if (becamePublished) {
+      this.publishPostNotification(
+        uuid,
+        dto,
+      );
+    }
 
     return this.getPost(
       uuid,

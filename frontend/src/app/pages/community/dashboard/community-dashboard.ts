@@ -98,18 +98,14 @@ export class CommunityDashboardPage {
     return dashboard.achievements.filter((achievement) => achievement.unlocked);
   }
 
-  protected visibleAchievements(
-    dashboard: CommunityDashboard,
-  ): CommunityDashboardAchievement[] {
+  protected visibleAchievements(dashboard: CommunityDashboard): CommunityDashboardAchievement[] {
     const sorted = [...dashboard.achievements].sort(
       (left, right) =>
         Number(right.pinned) - Number(left.pinned) ||
         Number(right.unlocked) - Number(left.unlocked),
     );
 
-    return this.achievementsExpanded()
-      ? sorted
-      : sorted.slice(0, 6);
+    return this.achievementsExpanded() ? sorted : sorted.slice(0, 6);
   }
 
   protected nextAchievement(dashboard: CommunityDashboard): CommunityDashboardAchievement | null {

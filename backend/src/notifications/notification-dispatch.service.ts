@@ -10,6 +10,7 @@ import type {
   PushDeliverySummary,
   PushNotification,
 } from '../push/push.types';
+import { NotificationDeliveryService } from './notification-delivery.service';
 import {
   defaultNotificationTagFor,
   notificationPreferenceGroupFor,
@@ -32,6 +33,13 @@ export interface NotificationDispatchInput {
   >;
   url?: string;
   tag?: string;
+  eventKey?: string;
+  eventContext?: Record<string, unknown>;
+}
+
+export interface NotificationDispatchOptions {
+  excludeUserUuids?: ReadonlySet<string>;
+  retryIfNotSent?: boolean;
 }
 
 export interface NotificationDispatchSummary
@@ -40,6 +48,13 @@ export interface NotificationDispatchSummary
   skipped: number;
 }
 
+const EMPTY_DELIVERY_SUMMARY:
+  PushDeliverySummary = {
+    sent: 0,
+    failed: 0,
+    removed: 0,
+  };
+
 @Injectable()
 export class NotificationDispatchService {
   constructor(
@@ -47,11 +62,14 @@ export class NotificationDispatchService {
       NotificationPreferencesService,
     private readonly push:
       PushService,
+    private readonly deliveries:
+      NotificationDeliveryService,
   ) {}
 
   async notifyUser(
     userUuid: string,
     input: NotificationDispatchInput,
+    options: NotificationDispatchOptions = {},
   ): Promise<NotificationDispatchSummary> {
     const group =
       notificationPreferenceGroupFor(
@@ -63,31 +81,40 @@ export class NotificationDispatchService {
         group,
       );
 
-    if (!recipient) {
+    if (
+      !recipient ||
+      options.excludeUserUuids?.has(
+        userUuid,
+      )
+    ) {
       return {
         recipients: 0,
         skipped: 1,
-        sent: 0,
-        failed: 0,
-        removed: 0,
+        ...EMPTY_DELIVERY_SUMMARY,
       };
     }
 
+    await this.ensureEvent(input);
+
     const delivery =
-      await this.deliver(
+      await this.deliverRecipient(
         recipient,
         input,
+        options,
       );
 
     return {
       recipients: 1,
-      skipped: 0,
-      ...delivery,
+      skipped: delivery.skipped,
+      sent: delivery.sent,
+      failed: delivery.failed,
+      removed: delivery.removed,
     };
   }
 
   async notifySubscribers(
     input: NotificationDispatchInput,
+    options: NotificationDispatchOptions = {},
   ): Promise<NotificationDispatchSummary> {
     const group =
       notificationPreferenceGroupFor(
@@ -96,12 +123,23 @@ export class NotificationDispatchService {
     const recipients =
       await this.preferences
         .listRecipients(group);
+    const eligibleRecipients =
+      recipients.filter(
+        (recipient) =>
+          !options.excludeUserUuids?.has(
+            recipient.userUuid,
+          ),
+      );
+
+    await this.ensureEvent(input);
 
     const summary:
       NotificationDispatchSummary = {
         recipients:
-          recipients.length,
-        skipped: 0,
+          eligibleRecipients.length,
+        skipped:
+          recipients.length -
+          eligibleRecipients.length,
         sent: 0,
         failed: 0,
         removed: 0,
@@ -109,14 +147,17 @@ export class NotificationDispatchService {
 
     for (
       const recipient
-      of recipients
+      of eligibleRecipients
     ) {
       const delivery =
-        await this.deliver(
+        await this.deliverRecipient(
           recipient,
           input,
+          options,
         );
 
+      summary.skipped +=
+        delivery.skipped;
       summary.sent +=
         delivery.sent;
       summary.failed +=
@@ -126,6 +167,87 @@ export class NotificationDispatchService {
     }
 
     return summary;
+  }
+
+  private async ensureEvent(
+    input: NotificationDispatchInput,
+  ): Promise<void> {
+    if (!input.eventKey) {
+      return;
+    }
+
+    await this.deliveries.ensureEvent(
+      input.eventKey,
+      input.type,
+      input.eventContext ?? null,
+    );
+  }
+
+  private async deliverRecipient(
+    recipient: NotificationRecipient,
+    input: NotificationDispatchInput,
+    options: NotificationDispatchOptions,
+  ): Promise<
+    PushDeliverySummary & {
+      skipped: number;
+    }
+  > {
+    const eventKey = input.eventKey;
+
+    if (eventKey) {
+      const claimed =
+        await this.deliveries.claim(
+          eventKey,
+          recipient.userUuid,
+        );
+
+      if (!claimed) {
+        return {
+          skipped: 1,
+          ...EMPTY_DELIVERY_SUMMARY,
+        };
+      }
+    }
+
+    try {
+      const delivery =
+        await this.deliver(
+          recipient,
+          input,
+        );
+
+      if (eventKey) {
+        if (
+          delivery.sent > 0 ||
+          !options.retryIfNotSent
+        ) {
+          await this.deliveries.complete(
+            eventKey,
+            recipient.userUuid,
+            delivery.sent > 0,
+          );
+        } else {
+          await this.deliveries.release(
+            eventKey,
+            recipient.userUuid,
+          );
+        }
+      }
+
+      return {
+        skipped: 0,
+        ...delivery,
+      };
+    } catch (error: unknown) {
+      if (eventKey) {
+        await this.deliveries.release(
+          eventKey,
+          recipient.userUuid,
+        );
+      }
+
+      throw error;
+    }
   }
 
   private deliver(

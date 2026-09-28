@@ -21,6 +21,7 @@ import {
 import { CommunityEventService } from '../community/community-event.service';
 import { CommunityProfileCustomizationService } from '../community/community-profile-customization.service';
 import { CommunityService } from '../community/community.service';
+import { NotificationEventsService } from '../notifications/notification-events.service';
 import { BlogCommentEntry } from './entities/blog-comment.entry';
 import { BlogPostEntry } from './entities/blog-post.entry';
 
@@ -46,6 +47,8 @@ export class BlogCommentService {
       CommunityProfileCustomizationService,
     private readonly communityEvents:
       CommunityEventService,
+    private readonly notificationEvents:
+      NotificationEventsService,
   ) {}
 
   async getComments(
@@ -204,6 +207,15 @@ export class BlogCommentService {
           `Could not record featured community event for blog comment ${comment.uuid}: ${this.errorMessage(error)}`,
         );
       }
+
+      this.notificationEvents.publish(
+        'blog.comment.featured',
+        {
+          userUuid: comment.userUuid,
+          commentUuid: comment.uuid,
+          postSlug: comment.post.slug,
+        },
+      );
     }
 
     return this.mapAdminComment(comment);

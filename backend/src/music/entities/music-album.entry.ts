@@ -51,6 +51,12 @@ export class MusicAlbumEntry {
   })
   status!: MusicPublicationStatus;
 
+  @Column({
+    type: 'timestamptz',
+    nullable: true,
+  })
+  publishedAt!: Date | null;
+
   @CreateDateColumn({
     type: 'timestamptz',
   })

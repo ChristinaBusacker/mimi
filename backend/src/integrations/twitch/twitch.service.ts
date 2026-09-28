@@ -55,6 +55,15 @@ interface TwitchScheduleResponse {
   };
 }
 
+export interface TwitchScheduleNotificationSegment {
+  id: string;
+  title: string;
+  startsAt: string;
+  endsAt: string;
+  category: string | null;
+  cancelled: boolean;
+}
+
 @Injectable()
 export class TwitchService implements OnApplicationBootstrap {
   private static readonly LIVE_CACHE_KEY = 'twitch.live';
@@ -182,6 +191,22 @@ export class TwitchService implements OnApplicationBootstrap {
       ),
       channelUrl: this.getChannelUrl(),
     };
+  }
+
+  getScheduleForNotifications():
+    TwitchScheduleNotificationSegment[] {
+    return this.schedule.map(
+      (segment) => ({
+        id: segment.id,
+        title: segment.title,
+        startsAt: segment.start_time,
+        endsAt: segment.end_time,
+        category:
+          segment.category?.name ?? null,
+        cancelled:
+          segment.canceled_until !== null,
+      }),
+    );
   }
 
   @Interval(20_000)
