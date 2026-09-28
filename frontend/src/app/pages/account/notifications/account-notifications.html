@@ -1,8 +1,13 @@
-<section class="card">
-  <header>
-    <h2>
-      {{ 'account.notifications.title' | i18n | async }}
-    </h2>
+<section class="notifications">
+  <header class="notifications__heading">
+    <div>
+      <span class="section-kicker">
+        {{ 'account.notifications.title' | i18n | async }}
+      </span>
+      <h2>
+        {{ 'account.notifications.preferencesTitle' | i18n | async }}
+      </h2>
+    </div>
     <p>
       {{ 'account.notifications.description' | i18n | async }}
     </p>
@@ -27,144 +32,154 @@
   }
 
   @if (loading()) {
-    <p class="hint">
+    <p class="loading">
       {{ 'account.notifications.loading' | i18n | async }}
     </p>
   } @else {
-    <form
-      class="preferences-form"
-      [formGroup]="form"
-      (ngSubmit)="savePreferences()"
-    >
-      <fieldset
-        [disabled]="savingPreferences()"
+    <div class="notification-settings">
+      <form
+        class="preferences-form"
+        [formGroup]="form"
+        (ngSubmit)="savePreferences()"
       >
-        <legend>
-          {{ 'account.notifications.preferencesTitle' | i18n | async }}
-        </legend>
-
-        <label class="preference">
-          <input
-            type="checkbox"
-            formControlName="streams"
-          />
-          <span>
-            <strong>
-              {{ 'account.notifications.streams.title' | i18n | async }}
-            </strong>
-            <small>
-              {{ 'account.notifications.streams.description' | i18n | async }}
-            </small>
+        <div class="scope-heading">
+          <span class="scope-badge">
+            {{ 'account.security.accountTitle' | i18n | async }}
           </span>
-        </label>
-
-        <label class="preference">
-          <input
-            type="checkbox"
-            formControlName="music"
-          />
-          <span>
-            <strong>
-              {{ 'account.notifications.music.title' | i18n | async }}
-            </strong>
-            <small>
-              {{ 'account.notifications.music.description' | i18n | async }}
-            </small>
-          </span>
-        </label>
-
-        <label class="preference">
-          <input
-            type="checkbox"
-            formControlName="blog"
-          />
-          <span>
-            <strong>
-              {{ 'account.notifications.blog.title' | i18n | async }}
-            </strong>
-            <small>
-              {{ 'account.notifications.blog.description' | i18n | async }}
-            </small>
-          </span>
-        </label>
-
-        <label class="preference">
-          <input
-            type="checkbox"
-            formControlName="personal"
-          />
-          <span>
-            <strong>
-              {{ 'account.notifications.personal.title' | i18n | async }}
-            </strong>
-            <small>
-              {{ 'account.notifications.personal.description' | i18n | async }}
-            </small>
-          </span>
-        </label>
-      </fieldset>
-
-      <app-button
-        class="primary round"
-        type="submit"
-        [disabled]="savingPreferences()"
-      >
-        {{
-          (savingPreferences()
-            ? 'account.notifications.saving'
-            : 'account.notifications.save')
-            | i18n
-            | async
-        }}
-      </app-button>
-    </form>
-
-    <section class="device">
-      <div>
-        <h3>
-          {{ 'account.notifications.device.title' | i18n | async }}
-        </h3>
-        <p>
-          {{ 'account.notifications.device.description' | i18n | async }}
-        </p>
-        <p class="device-status" aria-live="polite">
-          {{ deviceStatusKey() | i18n | async }}
-        </p>
-
-        @if (deviceState() === 'blocked') {
-          <p class="hint">
-            {{ 'account.notifications.device.blockedHelp' | i18n | async }}
+          <p>
+            {{ 'account.notifications.preferencesTitle' | i18n | async }}
           </p>
-        } @else if (deviceState() === 'unavailable') {
-          <p class="hint">
-            {{ 'account.notifications.device.unavailableHelp' | i18n | async }}
-          </p>
-        } @else if (deviceState() === 'server-disabled') {
-          <p class="hint">
-            {{ 'account.notifications.device.serverDisabledHelp' | i18n | async }}
-          </p>
-        }
-      </div>
+        </div>
 
-      @if (deviceState() === 'inactive') {
-        <app-button
-          class="secondary round"
-          type="button"
-          [disabled]="deviceBusy()"
-          (click)="enablePush()"
+        <fieldset
+          [disabled]="savingPreferences()"
         >
-          {{ 'account.notifications.device.enable' | i18n | async }}
-        </app-button>
-      } @else if (deviceState() === 'active') {
+          <label class="preference">
+            <input
+              type="checkbox"
+              formControlName="streams"
+            />
+            <span>
+              <strong>
+                {{ 'account.notifications.streams.title' | i18n | async }}
+              </strong>
+              <small>
+                {{ 'account.notifications.streams.description' | i18n | async }}
+              </small>
+            </span>
+          </label>
+
+          <label class="preference">
+            <input
+              type="checkbox"
+              formControlName="music"
+            />
+            <span>
+              <strong>
+                {{ 'account.notifications.music.title' | i18n | async }}
+              </strong>
+              <small>
+                {{ 'account.notifications.music.description' | i18n | async }}
+              </small>
+            </span>
+          </label>
+
+          <label class="preference">
+            <input
+              type="checkbox"
+              formControlName="blog"
+            />
+            <span>
+              <strong>
+                {{ 'account.notifications.blog.title' | i18n | async }}
+              </strong>
+              <small>
+                {{ 'account.notifications.blog.description' | i18n | async }}
+              </small>
+            </span>
+          </label>
+
+          <label class="preference">
+            <input
+              type="checkbox"
+              formControlName="personal"
+            />
+            <span>
+              <strong>
+                {{ 'account.notifications.personal.title' | i18n | async }}
+              </strong>
+              <small>
+                {{ 'account.notifications.personal.description' | i18n | async }}
+              </small>
+            </span>
+          </label>
+        </fieldset>
+
         <app-button
-          class="secondary round"
-          type="button"
-          [disabled]="deviceBusy()"
-          (click)="disablePush()"
+          class="primary round"
+          type="submit"
+          [disabled]="savingPreferences()"
         >
-          {{ 'account.notifications.device.disable' | i18n | async }}
+          {{
+            (savingPreferences()
+              ? 'account.notifications.saving'
+              : 'account.notifications.save')
+              | i18n
+              | async
+          }}
         </app-button>
-      }
-    </section>
+      </form>
+
+      <section class="device">
+        <div class="scope-heading">
+          <span class="scope-badge scope-badge--device">
+            {{ 'account.notifications.device.title' | i18n | async }}
+          </span>
+          <p>
+            {{ 'account.notifications.device.description' | i18n | async }}
+          </p>
+        </div>
+
+        <div class="device__content">
+          <p class="device-status" aria-live="polite">
+            {{ deviceStatusKey() | i18n | async }}
+          </p>
+
+          @if (deviceState() === 'blocked') {
+            <p class="hint">
+              {{ 'account.notifications.device.blockedHelp' | i18n | async }}
+            </p>
+          } @else if (deviceState() === 'unavailable') {
+            <p class="hint">
+              {{ 'account.notifications.device.unavailableHelp' | i18n | async }}
+            </p>
+          } @else if (deviceState() === 'server-disabled') {
+            <p class="hint">
+              {{ 'account.notifications.device.serverDisabledHelp' | i18n | async }}
+            </p>
+          }
+
+          @if (deviceState() === 'inactive') {
+            <app-button
+              class="primary round"
+              type="button"
+              [disabled]="deviceBusy()"
+              (click)="enablePush()"
+            >
+              {{ 'account.notifications.device.enable' | i18n | async }}
+            </app-button>
+          } @else if (deviceState() === 'active') {
+            <app-button
+              class="secondary round"
+              type="button"
+              [disabled]="deviceBusy()"
+              (click)="disablePush()"
+            >
+              {{ 'account.notifications.device.disable' | i18n | async }}
+            </app-button>
+          }
+        </div>
+      </section>
+    </div>
   }
 </section>

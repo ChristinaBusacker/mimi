@@ -1,11 +1,28 @@
 <section class="account-page">
-  <header>
-    <h1>
-      {{ 'account.security.title' | i18n | async }}
-    </h1>
-    <p>
-      {{ 'account.security.description' | i18n | async }}
-    </p>
+  <header class="account-hero">
+    <div class="account-hero__copy">
+      <span class="account-eyebrow">
+        {{ 'account.security.accountTitle' | i18n | async }}
+      </span>
+      <h1>
+        {{ 'account.security.title' | i18n | async }}
+      </h1>
+      <p>
+        {{ 'account.security.description' | i18n | async }}
+      </p>
+    </div>
+
+    @if (user(); as currentUser) {
+      <div class="account-identity">
+        <span class="account-identity__marker" aria-hidden="true"></span>
+        <div>
+          <strong>{{ currentUser.name }}</strong>
+          @if (currentUser.email; as email) {
+            <span>{{ email }}</span>
+          }
+        </div>
+      </div>
+    }
   </header>
 
   @if (errorKey(); as error) {
@@ -27,29 +44,93 @@
   }
 
   @if (loading()) {
-    <p>
+    <p class="account-loading">
       {{ 'account.security.loading' | i18n | async }}
     </p>
   } @else if (security(); as account) {
-    @if (account.email || isAdmin()) {
-      <section class="card">
-        <header>
-          <h2>
-            {{ 'account.security.accountTitle' | i18n | async }}
-          </h2>
+    <div class="account-surface">
+      <section class="account-section account-section--discord">
+        <header class="section-heading">
+          <div>
+            <span class="section-kicker">
+              {{ 'account.security.accountTitle' | i18n | async }}
+            </span>
+            <h2>
+              {{ 'account.security.discordTitle' | i18n | async }}
+            </h2>
+          </div>
+          <span
+            class="connection-state"
+            [class.is-connected]="account.discordConnected"
+          >
+            {{
+              (account.discordConnected
+                ? 'account.security.discordConnected'
+                : 'account.security.discordNotConnected')
+                | i18n
+                | async
+            }}
+          </span>
         </header>
 
-        <dl>
-          @if (account.email; as email) {
+        @if (account.discordConnected) {
+          @if (isAdmin()) {
+            @if (!account.hasPassword) {
+              <p class="hint">
+                {{ 'account.security.discordRequiresPasswordHint' | i18n | async }}
+              </p>
+            }
+
+            <app-button
+              class="secondary round"
+              type="button"
+              [disabled]="disconnecting() || !account.hasPassword"
+              (click)="disconnectDiscord()"
+            >
+              {{ 'account.security.discordDisconnect' | i18n | async }}
+            </app-button>
+          }
+        } @else {
+          <a
+            class="discord-action"
+            href="/api/auth/discord/connect"
+          >
+            {{ 'account.security.discordConnect' | i18n | async }}
+          </a>
+        }
+      </section>
+
+      <app-account-notifications />
+
+      @if (isAdmin() && account.email) {
+        <section class="account-section account-section--admin">
+          <header class="section-heading section-heading--stacked">
+            <div>
+              <span class="section-kicker">
+                {{ 'account.security.accountTitle' | i18n | async }}
+              </span>
+              <h2>
+                {{ 'account.security.passwordTitle' | i18n | async }}
+              </h2>
+            </div>
+            <p>
+              {{
+                (account.hasPassword
+                  ? 'account.security.passwordDescription'
+                  : 'account.security.passwordCreateDescription')
+                  | i18n
+                  | async
+              }}
+            </p>
+          </header>
+
+          <dl class="account-meta">
             <div>
               <dt>
                 {{ 'account.security.email' | i18n | async }}
               </dt>
-              <dd>{{ email }}</dd>
+              <dd>{{ account.email }}</dd>
             </div>
-          }
-
-          @if (isAdmin()) {
             <div>
               <dt>
                 {{ 'account.security.passwordStatus' | i18n | async }}
@@ -64,139 +145,78 @@
                 }}
               </dd>
             </div>
-          }
-        </dl>
-      </section>
-    }
+          </dl>
 
-    @if (isAdmin() && account.email) {
-      <section class="card">
-        <header>
-          <h2>
-            {{ 'account.security.passwordTitle' | i18n | async }}
-          </h2>
-          <p>
-            {{
-              (account.hasPassword
-                ? 'account.security.passwordDescription'
-                : 'account.security.passwordCreateDescription')
-                | i18n
-                | async
-            }}
-          </p>
-        </header>
+          <form
+            class="password-form"
+            [formGroup]="form"
+            (ngSubmit)="savePassword()"
+          >
+            @if (account.hasPassword) {
+              <label>
+                <span>
+                  {{ 'account.security.currentPassword' | i18n | async }}
+                </span>
+                <input
+                  type="password"
+                  formControlName="currentPassword"
+                  autocomplete="current-password"
+                />
+              </label>
+            }
 
-        <form
-          [formGroup]="form"
-          (ngSubmit)="savePassword()"
-        >
-          @if (account.hasPassword) {
             <label>
               <span>
-                {{ 'account.security.currentPassword' | i18n | async }}
+                {{ 'account.security.newPassword' | i18n | async }}
               </span>
               <input
                 type="password"
-                formControlName="currentPassword"
-                autocomplete="current-password"
+                formControlName="password"
+                autocomplete="new-password"
               />
             </label>
-          }
 
-          <label>
-            <span>
-              {{ 'account.security.newPassword' | i18n | async }}
-            </span>
-            <input
-              type="password"
-              formControlName="password"
-              autocomplete="new-password"
-            />
-          </label>
+            <label>
+              <span>
+                {{ 'account.security.confirmPassword' | i18n | async }}
+              </span>
+              <input
+                type="password"
+                formControlName="passwordConfirmation"
+                autocomplete="new-password"
+              />
+            </label>
 
-          <label>
-            <span>
-              {{ 'account.security.confirmPassword' | i18n | async }}
-            </span>
-            <input
-              type="password"
-              formControlName="passwordConfirmation"
-              autocomplete="new-password"
-            />
-          </label>
+            <app-button
+              class="primary round password-submit"
+              type="submit"
+              [disabled]="savingPassword()"
+            >
+              {{
+                (account.hasPassword
+                  ? 'account.security.changePassword'
+                  : 'account.security.setPassword')
+                  | i18n
+                  | async
+              }}
+            </app-button>
+          </form>
+        </section>
+      }
+    </div>
 
-          <app-button
-            class="primary round"
-            type="submit"
-            [disabled]="savingPassword()"
-          >
-            {{
-              (account.hasPassword
-                ? 'account.security.changePassword'
-                : 'account.security.setPassword')
-                | i18n
-                | async
-            }}
-          </app-button>
-        </form>
-      </section>
-    }
+    <footer class="account-footer">
+      <nav class="links">
+        <a routerLink="/">
+          {{ 'account.security.backWebsite' | i18n | async }}
+        </a>
 
-    <section class="card">
-      <header>
-        <h2>
-          {{ 'account.security.discordTitle' | i18n | async }}
-        </h2>
-        <p>
-          {{
-            (account.discordConnected
-              ? 'account.security.discordConnected'
-              : 'account.security.discordNotConnected')
-              | i18n
-              | async
-          }}
-        </p>
-      </header>
-
-      @if (account.discordConnected) {
-        @if (isAdmin()) {
-          @if (!account.hasPassword) {
-            <p class="hint">
-              {{ 'account.security.discordRequiresPasswordHint' | i18n | async }}
-            </p>
-          }
-
-          <app-button
-            class="secondary round"
-            type="button"
-            [disabled]="disconnecting() || !account.hasPassword"
-            (click)="disconnectDiscord()"
-          >
-            {{ 'account.security.discordDisconnect' | i18n | async }}
-          </app-button>
+        @if (canOpenAdmin()) {
+          <a routerLink="/admin">
+            {{ 'account.security.backAdmin' | i18n | async }}
+          </a>
         }
-      } @else {
-        <a
-          class="discord-action"
-          href="/api/auth/discord/connect"
-        >
-          {{ 'account.security.discordConnect' | i18n | async }}
-        </a>
-      }
-    </section>
-
-    <app-account-notifications />
-
-    <nav class="links">
-      @if (canOpenAdmin()) {
-        <a routerLink="/admin">
-          {{ 'account.security.backAdmin' | i18n | async }}
-        </a>
-      }
-
-      <a routerLink="/">
-        {{ 'account.security.backWebsite' | i18n | async }}
-      </a>
+      </nav>
 
       <app-button
         class="secondary round"
@@ -205,6 +225,6 @@
       >
         {{ 'account.security.logout' | i18n | async }}
       </app-button>
-    </nav>
+    </footer>
   }
 </section>
