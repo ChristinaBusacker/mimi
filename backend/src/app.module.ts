@@ -5,6 +5,7 @@ import { BlogModule } from './blog/blog.module';
 import { CommunityAdminModule } from './community/community-admin.module';
 import { CommunityAccountModule } from './community/community-account.module';
 import { CommunityModule } from './community/community.module';
+import { ContactModule } from './contact/contact.module';
 import { DatabaseModule } from './database/database.module';
 import { DataTransferModule } from './data-transfer/data-transfer.module';
 import { UsersModule } from './users/users.module';
@@ -35,6 +36,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CommunityModule,
     CommunityAdminModule,
     CommunityAccountModule,
+    ContactModule,
     LocalizationsModule,
     MailModule,
     MigrationsModule,

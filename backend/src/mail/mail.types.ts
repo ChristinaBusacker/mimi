@@ -8,6 +8,7 @@ export type MailType =
   | 'password-changed'
   | 'peer-review-requested'
   | 'peer-review-completed'
+  | 'contact-message'
   | 'contact-confirmation'
   | 'stream-reminder';
 

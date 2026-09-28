@@ -16,6 +16,178 @@
   </app-hero>
 
   <section class="public-page__content">
+    <article class="public-card public-card--wide contact-form-card">
+      <span class="public-card__eyebrow">
+        {{ 'contact.form.eyebrow' | i18n | async }}
+      </span>
+      <h2>{{ 'contact.form.title' | i18n | async }}</h2>
+      <p>{{ 'contact.form.text' | i18n | async }}</p>
+
+      @if (sent()) {
+        <p class="contact-form__status contact-form__status--success" role="status">
+          {{ 'contact.form.success' | i18n | async }}
+        </p>
+      }
+
+      @if (errorKey(); as error) {
+        <p class="contact-form__status contact-form__status--error" role="alert">
+          {{ error | i18n | async }}
+        </p>
+      }
+
+      <form
+        class="contact-form"
+        [formGroup]="form"
+        novalidate
+        (ngSubmit)="submit()"
+      >
+        <div class="contact-form__fields">
+          <label class="contact-form__field">
+            <span>{{ 'contact.form.name' | i18n | async }}</span>
+            <input
+              type="text"
+              formControlName="name"
+              autocomplete="name"
+              maxlength="100"
+              [placeholder]="('contact.form.name.placeholder' | i18n | async) ?? ''"
+            />
+
+            @if (
+              form.controls.name.touched &&
+              form.controls.name.hasError('required')
+            ) {
+              <small class="contact-form__field-error">
+                {{ 'contact.form.validation.required' | i18n | async }}
+              </small>
+            } @else if (
+              form.controls.name.touched &&
+              (form.controls.name.hasError('minlength') ||
+                form.controls.name.hasError('maxlength'))
+            ) {
+              <small class="contact-form__field-error">
+                {{ 'contact.form.validation.nameLength' | i18n | async }}
+              </small>
+            }
+          </label>
+
+          <label class="contact-form__field">
+            <span>{{ 'contact.form.email' | i18n | async }}</span>
+            <input
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              maxlength="320"
+              [placeholder]="('contact.form.email.placeholder' | i18n | async) ?? ''"
+            />
+
+            @if (
+              form.controls.email.touched &&
+              form.controls.email.hasError('required')
+            ) {
+              <small class="contact-form__field-error">
+                {{ 'contact.form.validation.required' | i18n | async }}
+              </small>
+            } @else if (
+              form.controls.email.touched &&
+              form.controls.email.hasError('email')
+            ) {
+              <small class="contact-form__field-error">
+                {{ 'contact.form.validation.email' | i18n | async }}
+              </small>
+            }
+          </label>
+
+          <label class="contact-form__field contact-form__field--wide">
+            <span>{{ 'contact.form.subject' | i18n | async }}</span>
+            <input
+              type="text"
+              formControlName="subject"
+              autocomplete="off"
+              maxlength="160"
+              [placeholder]="('contact.form.subject.placeholder' | i18n | async) ?? ''"
+            />
+
+            @if (
+              form.controls.subject.touched &&
+              form.controls.subject.hasError('required')
+            ) {
+              <small class="contact-form__field-error">
+                {{ 'contact.form.validation.required' | i18n | async }}
+              </small>
+            } @else if (
+              form.controls.subject.touched &&
+              (form.controls.subject.hasError('minlength') ||
+                form.controls.subject.hasError('maxlength'))
+            ) {
+              <small class="contact-form__field-error">
+                {{ 'contact.form.validation.subjectLength' | i18n | async }}
+              </small>
+            }
+          </label>
+
+          <label class="contact-form__field contact-form__field--wide">
+            <span>{{ 'contact.form.message' | i18n | async }}</span>
+            <textarea
+              formControlName="message"
+              rows="8"
+              maxlength="5000"
+              [placeholder]="('contact.form.message.placeholder' | i18n | async) ?? ''"
+            ></textarea>
+
+            @if (
+              form.controls.message.touched &&
+              form.controls.message.hasError('required')
+            ) {
+              <small class="contact-form__field-error">
+                {{ 'contact.form.validation.required' | i18n | async }}
+              </small>
+            } @else if (
+              form.controls.message.touched &&
+              (form.controls.message.hasError('minlength') ||
+                form.controls.message.hasError('maxlength'))
+            ) {
+              <small class="contact-form__field-error">
+                {{ 'contact.form.validation.messageLength' | i18n | async }}
+              </small>
+            }
+          </label>
+        </div>
+
+        <div class="contact-form__honeypot" aria-hidden="true">
+          <input
+            type="text"
+            formControlName="website"
+            tabindex="-1"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="contact-form__actions">
+          <button
+            type="submit"
+            class="public-page__button"
+            [disabled]="submitting()"
+          >
+            {{
+              (submitting()
+                ? 'contact.form.submitting'
+                : 'contact.form.submit'
+              )
+                | i18n
+                | async
+            }}
+          </button>
+
+          <p class="contact-form__privacy">
+            {{ 'contact.form.privacy' | i18n | async }}
+            <a routerLink="/datenschutz">
+              {{ 'contact.form.privacyLink' | i18n | async }}
+            </a>
+          </p>
+        </div>
+      </form>
+    </article>
+
     <article class="public-card">
       <div class="public-card__heading">
         <img src="/images/icons/logos/discord.png" alt="" />

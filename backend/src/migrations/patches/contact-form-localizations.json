@@ -1,0 +1,119 @@
+{
+  "localizations": [
+    {
+      "key": "contact.form.eyebrow",
+      "de": "Direkt schreiben",
+      "en": "Send a message"
+    },
+    {
+      "key": "contact.form.title",
+      "de": "Schreib Mimi Show eine Nachricht",
+      "en": "Send Mimi Show a message"
+    },
+    {
+      "key": "contact.form.text",
+      "de": "Nutze das Formular für Anfragen, Feedback oder Themen, die nicht in einen öffentlichen Kanal gehören. Du bekommst nach dem Absenden automatisch eine Bestätigung per E-Mail.",
+      "en": "Use the form for enquiries, feedback or anything that does not belong in a public channel. You will automatically receive an email confirmation after sending."
+    },
+    {
+      "key": "contact.form.name",
+      "de": "Name",
+      "en": "Name"
+    },
+    {
+      "key": "contact.form.name.placeholder",
+      "de": "Wie dürfen wir dich nennen?",
+      "en": "What should we call you?"
+    },
+    {
+      "key": "contact.form.email",
+      "de": "E-Mail-Adresse",
+      "en": "Email address"
+    },
+    {
+      "key": "contact.form.email.placeholder",
+      "de": "du@beispiel.de",
+      "en": "you@example.com"
+    },
+    {
+      "key": "contact.form.subject",
+      "de": "Betreff",
+      "en": "Subject"
+    },
+    {
+      "key": "contact.form.subject.placeholder",
+      "de": "Worum geht es?",
+      "en": "What is this about?"
+    },
+    {
+      "key": "contact.form.message",
+      "de": "Nachricht",
+      "en": "Message"
+    },
+    {
+      "key": "contact.form.message.placeholder",
+      "de": "Schreib uns, was du auf dem Herzen hast.",
+      "en": "Tell us what is on your mind."
+    },
+    {
+      "key": "contact.form.submit",
+      "de": "Nachricht senden",
+      "en": "Send message"
+    },
+    {
+      "key": "contact.form.submitting",
+      "de": "Wird gesendet …",
+      "en": "Sending …"
+    },
+    {
+      "key": "contact.form.success",
+      "de": "Danke! Deine Nachricht wurde gesendet. Eine Bestätigung ist unterwegs zu deiner E-Mail-Adresse.",
+      "en": "Thank you! Your message has been sent. A confirmation is on its way to your email address."
+    },
+    {
+      "key": "contact.form.error",
+      "de": "Die Nachricht konnte gerade nicht gesendet werden. Bitte versuche es später noch einmal.",
+      "en": "The message could not be sent right now. Please try again later."
+    },
+    {
+      "key": "contact.form.rateLimited",
+      "de": "Du hast gerade bereits eine Nachricht mit dieser E-Mail-Adresse gesendet. Bitte warte einen Moment und versuche es dann erneut.",
+      "en": "You have just sent a message using this email address. Please wait a moment before trying again."
+    },
+    {
+      "key": "contact.form.validation.required",
+      "de": "Dieses Feld ist erforderlich.",
+      "en": "This field is required."
+    },
+    {
+      "key": "contact.form.validation.email",
+      "de": "Bitte gib eine gültige E-Mail-Adresse ein.",
+      "en": "Please enter a valid email address."
+    },
+    {
+      "key": "contact.form.validation.nameLength",
+      "de": "Der Name muss zwischen 2 und 100 Zeichen lang sein.",
+      "en": "The name must be between 2 and 100 characters long."
+    },
+    {
+      "key": "contact.form.validation.subjectLength",
+      "de": "Der Betreff muss zwischen 3 und 160 Zeichen lang sein.",
+      "en": "The subject must be between 3 and 160 characters long."
+    },
+    {
+      "key": "contact.form.validation.messageLength",
+      "de": "Die Nachricht muss zwischen 10 und 5000 Zeichen lang sein.",
+      "en": "The message must be between 10 and 5000 characters long."
+    },
+    {
+      "key": "contact.form.privacy",
+      "de": "Deine Angaben werden zur Bearbeitung und Beantwortung deiner Anfrage verarbeitet. Weitere Informationen findest du in der",
+      "en": "Your details are processed to handle and answer your enquiry. More information is available in the"
+    },
+    {
+      "key": "contact.form.privacyLink",
+      "de": "Datenschutzerklärung.",
+      "en": "privacy policy."
+    }
+  ]
+}

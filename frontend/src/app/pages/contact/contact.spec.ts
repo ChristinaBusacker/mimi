@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngxs/store';
+import { of } from 'rxjs';
 
+import { RequestService } from '../../core/http/request.service';
 import { I18nState } from '../../core/i18n/i18n.state';
 import { Contact } from './contact';
 
@@ -11,7 +14,16 @@ describe('Contact', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Contact],
-      providers: [provideStore([I18nState])],
+      providers: [
+        provideRouter([]),
+        provideStore([I18nState]),
+        {
+          provide: RequestService,
+          useValue: {
+            post: () => of(undefined),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Contact);

@@ -1,0 +1,44 @@
+{
+    "localizations": [
+        {
+            "key": "content.community.action",
+            "de": "Mehr zur Community",
+            "en": "More about Community"
+        },
+        {
+            "key": "content.community.description",
+            "de": "Teilhaben, XP-Farmen und zusammen wachsen.",
+            "en": "Participate, Level up and grow together"
+        },
+        {
+            "key": "content.community.subtitle",
+            "de": "Sei ein Teil von Mimis Welt",
+            "en": "be a part of Mimis world"
+        },
+        {
+            "key": "content.community.title",
+            "de": "Community",
+            "en": "Community"
+        },
+        {
+            "key": "content.news.action",
+            "de": "Mehr zur News",
+            "en": "More about News"
+        },
+        {
+            "key": "content.news.subtitle",
+            "de": "Spannende Themen entdecken",
+            "en": "Discover exciting topics"
+        },
+        {
+            "key": "content.news.description",
+            "de": "Themen die dich interessieren von deinen Lieblingsautoren",
+            "en": "Topics that interest you from your favorite auhors"
+        },
+        {
+            "key": "content.news.title",
+            "de": "News",
+            "en": "News"
+        }
+    ]
+}
