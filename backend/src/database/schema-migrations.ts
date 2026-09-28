@@ -17,6 +17,7 @@ import { communityProfileCustomizationMigration } from '../community/community-p
 import { communityProgressionMigration } from '../community/community-progression.schema-migration';
 import { discordRoleSyncMigration } from '../community/discord/discord-role-sync.schema-migration';
 import { communityTwitchLinkMigration } from '../community/twitch/community-twitch-link.schema-migration';
+import { notificationPreferencesMigration } from '../notifications/notification-preferences.schema-migration';
 import { pushSubscriptionsMigration } from '../push/push-subscriptions.schema-migration';
 
 interface SchemaMigration {
@@ -522,6 +523,7 @@ const migrations: readonly SchemaMigration[] = [
   blogCommentsMigration,
   blogCommentModerationMigration,
   pushSubscriptionsMigration,
+  notificationPreferencesMigration,
 ];
 
 export async function runSchemaMigrations(

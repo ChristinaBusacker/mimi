@@ -30,11 +30,13 @@ import { AccountSecurityService } from '../../core/auth/account-security.service
 import { Logout } from '../../core/auth/auth.actions';
 import { AuthState } from '../../core/auth/auth.state';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
+import { AccountNotifications } from './notifications/account-notifications';
 
 @Component({
   changeDetection:
     ChangeDetectionStrategy.OnPush,
   imports: [
+    AccountNotifications,
     AsyncPipe,
     Button,
     I18nPipe,

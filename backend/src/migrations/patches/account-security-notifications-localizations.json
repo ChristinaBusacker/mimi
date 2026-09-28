@@ -1,0 +1,179 @@
+{
+  "localizations": [
+    {
+      "key": "account.security.title",
+      "de": "Konto",
+      "en": "Account"
+    },
+    {
+      "key": "account.security.description",
+      "de": "Verwalte dein Konto, deine Anmeldewege und deine Benachrichtigungen.",
+      "en": "Manage your account, sign-in methods and notifications."
+    },
+    {
+      "key": "account.notifications.title",
+      "de": "Benachrichtigungen",
+      "en": "Notifications"
+    },
+    {
+      "key": "account.notifications.description",
+      "de": "Wähle nur die Hinweise aus, die für dich wirklich nützlich sind. Alle Kategorien sind standardmäßig ausgeschaltet.",
+      "en": "Choose only the updates that are genuinely useful to you. Every category is disabled by default."
+    },
+    {
+      "key": "account.notifications.loading",
+      "de": "Benachrichtigungseinstellungen werden geladen …",
+      "en": "Loading notification settings…"
+    },
+    {
+      "key": "account.notifications.loadFailed",
+      "de": "Die Benachrichtigungseinstellungen konnten nicht geladen werden.",
+      "en": "The notification settings could not be loaded."
+    },
+    {
+      "key": "account.notifications.preferencesTitle",
+      "de": "Welche Hinweise möchtest du erhalten?",
+      "en": "Which updates would you like to receive?"
+    },
+    {
+      "key": "account.notifications.streams.title",
+      "de": "Livestreams & Erinnerungen",
+      "en": "Livestreams & reminders"
+    },
+    {
+      "key": "account.notifications.streams.description",
+      "de": "Seltene, relevante Hinweise zu geplanten oder gestarteten Streams. Doppelte Reminder sollen vermieden werden.",
+      "en": "Occasional relevant updates about scheduled or started streams. Duplicate reminders are intentionally avoided."
+    },
+    {
+      "key": "account.notifications.music.title",
+      "de": "Neue Musik",
+      "en": "New music"
+    },
+    {
+      "key": "account.notifications.music.description",
+      "de": "Eine Benachrichtigung, wenn neue Musik veröffentlicht wird.",
+      "en": "A notification when new music is published."
+    },
+    {
+      "key": "account.notifications.blog.title",
+      "de": "Neue Blogartikel",
+      "en": "New blog posts"
+    },
+    {
+      "key": "account.notifications.blog.description",
+      "de": "Eine Benachrichtigung, wenn ein neuer Blogartikel veröffentlicht wird.",
+      "en": "A notification when a new blog post is published."
+    },
+    {
+      "key": "account.notifications.personal.title",
+      "de": "Persönliches & Community",
+      "en": "Personal & community"
+    },
+    {
+      "key": "account.notifications.personal.description",
+      "de": "Persönliche Ereignisse wie freigeschaltete Achievements, Level, Belohnungen oder hervorgehobene eigene Kommentare.",
+      "en": "Personal events such as unlocked achievements, levels, rewards or your own featured comments."
+    },
+    {
+      "key": "account.notifications.save",
+      "de": "Auswahl speichern",
+      "en": "Save choices"
+    },
+    {
+      "key": "account.notifications.saving",
+      "de": "Wird gespeichert …",
+      "en": "Saving…"
+    },
+    {
+      "key": "account.notifications.saved",
+      "de": "Deine Benachrichtigungsauswahl wurde gespeichert.",
+      "en": "Your notification choices were saved."
+    },
+    {
+      "key": "account.notifications.saveFailed",
+      "de": "Die Benachrichtigungsauswahl konnte nicht gespeichert werden.",
+      "en": "The notification choices could not be saved."
+    },
+    {
+      "key": "account.notifications.device.title",
+      "de": "Push auf diesem Gerät",
+      "en": "Push on this device"
+    },
+    {
+      "key": "account.notifications.device.description",
+      "de": "Die Browser-Freigabe wird erst angefragt, wenn du Push hier ausdrücklich aktivierst. Deine Themenauswahl bleibt davon unabhängig.",
+      "en": "The browser permission is requested only when you explicitly enable push here. Your topic choices remain independent from the device setting."
+    },
+    {
+      "key": "account.notifications.device.status.active",
+      "de": "Push ist auf diesem Gerät aktiv.",
+      "en": "Push is active on this device."
+    },
+    {
+      "key": "account.notifications.device.status.inactive",
+      "de": "Push ist auf diesem Gerät nicht aktiviert.",
+      "en": "Push is not enabled on this device."
+    },
+    {
+      "key": "account.notifications.device.status.blocked",
+      "de": "Der Browser blockiert Benachrichtigungen für diese Seite.",
+      "en": "The browser blocks notifications for this site."
+    },
+    {
+      "key": "account.notifications.device.status.unavailable",
+      "de": "Push ist in diesem Browser oder Build nicht verfügbar.",
+      "en": "Push is not available in this browser or build."
+    },
+    {
+      "key": "account.notifications.device.status.server-disabled",
+      "de": "Push ist in dieser Umgebung serverseitig nicht eingerichtet.",
+      "en": "Push is not configured on the server in this environment."
+    },
+    {
+      "key": "account.notifications.device.enable",
+      "de": "Push auf diesem Gerät aktivieren",
+      "en": "Enable push on this device"
+    },
+    {
+      "key": "account.notifications.device.disable",
+      "de": "Push auf diesem Gerät deaktivieren",
+      "en": "Disable push on this device"
+    },
+    {
+      "key": "account.notifications.device.enabled",
+      "de": "Push wurde auf diesem Gerät aktiviert.",
+      "en": "Push was enabled on this device."
+    },
+    {
+      "key": "account.notifications.device.disabled",
+      "de": "Push wurde auf diesem Gerät deaktiviert.",
+      "en": "Push was disabled on this device."
+    },
+    {
+      "key": "account.notifications.device.enableFailed",
+      "de": "Push konnte auf diesem Gerät nicht aktiviert werden.",
+      "en": "Push could not be enabled on this device."
+    },
+    {
+      "key": "account.notifications.device.disableFailed",
+      "de": "Push konnte auf diesem Gerät nicht vollständig deaktiviert werden.",
+      "en": "Push could not be fully disabled on this device."
+    },
+    {
+      "key": "account.notifications.device.blockedHelp",
+      "de": "Du hast Benachrichtigungen im Browser blockiert. Die Freigabe muss deshalb in den Website-Einstellungen des Browsers geändert werden.",
+      "en": "You blocked notifications in the browser. Permission therefore has to be changed in the browser's site settings."
+    },
+    {
+      "key": "account.notifications.device.unavailableHelp",
+      "de": "Push benötigt einen unterstützten Browser und den produktiven Service Worker. Im normalen Entwicklungs-Build ist er absichtlich nicht aktiv.",
+      "en": "Push requires a supported browser and the production service worker. It is intentionally inactive in the normal development build."
+    },
+    {
+      "key": "account.notifications.device.serverDisabledHelp",
+      "de": "Für diese Umgebung sind keine VAPID-Schlüssel eingerichtet. Deine Themenauswahl kann trotzdem gespeichert werden.",
+      "en": "No VAPID keys are configured for this environment. Your topic choices can still be saved."
+    }
+  ]
+}

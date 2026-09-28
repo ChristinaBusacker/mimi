@@ -1,0 +1,163 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.card {
+  @include framed(
+    var(--control-border-width)
+  );
+
+  display: grid;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background:
+    var(--color-surface-translucent);
+
+  > header {
+    h2 {
+      margin:
+        0
+        0
+        var(--spacing-xs);
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.75;
+      line-height: 1.5;
+    }
+  }
+}
+
+.preferences-form {
+  display: grid;
+  gap: var(--spacing-md);
+
+  fieldset {
+    display: grid;
+    gap: var(--spacing-sm);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  legend {
+    margin-bottom:
+      var(--spacing-sm);
+    font-weight: 800;
+  }
+
+  app-button {
+    justify-self: start;
+  }
+}
+
+.preference {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+  gap: var(--spacing-sm);
+  align-items: start;
+  padding: var(--spacing-sm);
+  border-radius:
+    var(--radius-md);
+  cursor: pointer;
+
+  &:hover {
+    background:
+      var(--color-surface);
+  }
+
+  input {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: 0.2rem;
+    accent-color:
+      var(--color-secondary);
+  }
+
+  span {
+    display: grid;
+    gap: 2px;
+  }
+
+  strong {
+    font-weight: 800;
+  }
+
+  small {
+    opacity: 0.72;
+    line-height: 1.45;
+  }
+}
+
+.device {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  gap: var(--spacing-md);
+  align-items: center;
+  padding-top:
+    var(--spacing-md);
+  border-top:
+    var(--control-border-width)
+    solid
+    var(--color-secondary);
+
+  h3 {
+    margin:
+      0
+      0
+      var(--spacing-xs);
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  app-button {
+    justify-self: end;
+  }
+}
+
+.device-status {
+  margin-top:
+    var(--spacing-xs) !important;
+  font-weight: 800;
+}
+
+.hint {
+  margin-top:
+    var(--spacing-xs) !important;
+  opacity: 0.72;
+}
+
+.message {
+  margin: 0;
+  font-weight: 700;
+
+  &.error {
+    color:
+      var(--color-primary);
+  }
+
+  &.success {
+    color:
+      var(--color-text);
+  }
+}
+
+@include compact-layout {
+  .device {
+    grid-template-columns: 1fr;
+
+    app-button {
+      justify-self: start;
+    }
+  }
+}

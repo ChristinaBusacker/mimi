@@ -11,6 +11,7 @@ export interface GetRequestOptions {
 }
 
 interface HttpRequestOptions {
+  body?: unknown;
   headers?: Record<string, string>;
   transferCache?: boolean;
 }
@@ -77,10 +78,23 @@ export class RequestService {
     );
   }
 
-  delete<TResponse = void>(path: string): Observable<TResponse> {
+  delete<
+    TResponse = void,
+    TBody = never,
+  >(
+    path: string,
+    body?: TBody,
+  ): Observable<TResponse> {
     return this.http.delete<TResponse>(
       this.buildUrl(path),
-      this.createRequestOptions(),
+      {
+        ...this.createRequestOptions(),
+        ...(body === undefined
+          ? {}
+          : {
+              body,
+            }),
+      },
     );
   }
 
