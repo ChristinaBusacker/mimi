@@ -85,12 +85,12 @@
           <a href="#">{{ 'navigation.about' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">{{ 'navigation.shop' | i18n | async }}</a>
+          <a routerLink="/kontakt">{{ 'footer.contact' | i18n | async }}</a>
         </li>
       </ul>
     </nav>
 
-    <app-support-button>
+    <app-support-button href="/unterstuetzen">
       {{ 'navigation.support' | i18n | async }}
     </app-support-button>
   </div>
@@ -123,6 +123,7 @@
 
     <app-support-button
       class="mobile-support"
+      href="/unterstuetzen"
       [compact]="true"
       [ariaLabel]="('navigation.support' | i18n | async) ?? ''"
     />
@@ -215,8 +216,12 @@
       </div>
 
       <div class="mobile-menu__legal">
-        <span>{{ 'footer.legalNotice' | i18n | async }}</span>
-        <span>{{ 'footer.privacy' | i18n | async }}</span>
+        <a routerLink="/impressum" (click)="closeMenu()">
+          {{ 'footer.legalNotice' | i18n | async }}
+        </a>
+        <a routerLink="/datenschutz" (click)="closeMenu()">
+          {{ 'footer.privacy' | i18n | async }}
+        </a>
         <a routerLink="/kontakt" (click)="closeMenu()">
           {{ 'footer.contact' | i18n | async }}
         </a>

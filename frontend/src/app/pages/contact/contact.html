@@ -1,3 +1,65 @@
-<app-content-page titleKey="footer.contact">
-  <!-- Content will be added after the final copy has been approved. -->
-</app-content-page>
+<section class="page public-page">
+  <app-hero type="community" class="public-page__hero">
+    <div hero-left class="public-page__intro">
+      <span class="public-page__eyebrow">
+        {{ 'contact.page.eyebrow' | i18n | async }}
+      </span>
+      <h1 class="sue-ellen">{{ 'footer.contact' | i18n | async }}</h1>
+      <p>{{ 'contact.page.intro' | i18n | async }}</p>
+    </div>
+
+    <aside hero-right class="public-page__hero-card">
+      <span>{{ 'contact.page.heroCard.kicker' | i18n | async }}</span>
+      <strong>{{ 'contact.page.heroCard.title' | i18n | async }}</strong>
+      <p>{{ 'contact.page.heroCard.text' | i18n | async }}</p>
+    </aside>
+  </app-hero>
+
+  <section class="public-page__content">
+    <article class="public-card">
+      <div class="public-card__heading">
+        <img src="/images/icons/logos/discord.png" alt="" />
+        <h2>{{ 'contact.page.discord.title' | i18n | async }}</h2>
+      </div>
+      <p>{{ 'contact.page.discord.text' | i18n | async }}</p>
+      <a
+        class="public-page__button"
+        href="https://discord.com/invite/HjcHqwXPeH"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ 'contact.page.discord.action' | i18n | async }}
+      </a>
+    </article>
+
+    <article class="public-card">
+      <div class="public-card__heading">
+        <img src="/images/icons/logos/instagram.png" alt="" />
+        <h2>{{ 'contact.page.instagram.title' | i18n | async }}</h2>
+      </div>
+      <p>{{ 'contact.page.instagram.text' | i18n | async }}</p>
+      <a
+        class="public-page__button"
+        href="https://www.instagram.com/mimimaus80/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ 'contact.page.instagram.action' | i18n | async }}
+      </a>
+    </article>
+
+    <article class="public-card public-card--wide">
+      <span class="public-card__eyebrow">
+        {{ 'contact.page.postal.eyebrow' | i18n | async }}
+      </span>
+      <h2>{{ 'contact.page.postal.title' | i18n | async }}</h2>
+      <p>{{ 'contact.page.postal.text' | i18n | async }}</p>
+      <address>
+        &ldquo;Mimi Show&rdquo;<br />
+        c/o Block Services<br />
+        Stuttgarter Str. 106<br />
+        70736 Fellbach
+      </address>
+    </article>
+  </section>
+</section>

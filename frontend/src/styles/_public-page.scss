@@ -1,0 +1,231 @@
+@use 'mixins' as *;
+
+@mixin public-page {
+  :host {
+    --page-accent: var(--color-accent-community);
+    --page-accent-soft: color-mix(in srgb, var(--page-accent) 18%, transparent);
+    --page-surface: rgb(48 35 61 / 92%);
+    --page-surface-strong: rgb(28 20 38 / 94%);
+    --page-muted: rgb(255 236 247 / 78%);
+    --color-primary: var(--page-accent);
+    --color-secondary: var(--page-accent);
+
+    display: block;
+  }
+
+  .public-page {
+    display: grid;
+    gap: var(--spacing-md);
+    color: var(--color-text);
+  }
+
+  .public-page__intro {
+    display: grid;
+    align-content: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+
+    h1 {
+      margin: var(--spacing-xs) 0 0;
+      color: #aeb5ff;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      line-height: 1;
+    }
+
+    > p {
+      max-width: 62ch;
+      margin: 0;
+      color: var(--page-muted);
+      line-height: 1.65;
+    }
+  }
+
+  .public-page__eyebrow,
+  .public-card__eyebrow {
+    color: #b8bdfd;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .public-page__hero-card {
+    @include framed(var(--control-border-width));
+
+    display: grid;
+    align-content: center;
+    gap: var(--spacing-sm);
+    min-height: 210px;
+    margin: var(--spacing-lg);
+    padding: var(--spacing-md);
+    border-color: color-mix(in srgb, var(--page-accent) 72%, transparent);
+    background:
+      radial-gradient(
+        circle at 88% 8%,
+        color-mix(in srgb, var(--page-accent) 24%, transparent),
+        transparent 42%
+      ),
+      var(--page-surface-strong);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 4%),
+      0 14px 32px rgb(0 0 0 / 24%);
+
+    > span {
+      color: #b8bdfd;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    > strong {
+      font-size: clamp(1.5rem, 3vw, 2.15rem);
+      line-height: 1.1;
+    }
+
+    > p {
+      margin: 0;
+      color: var(--page-muted);
+      line-height: 1.6;
+    }
+  }
+
+  .public-page__content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .public-card {
+    @include framed(var(--control-border-width));
+
+    display: grid;
+    align-content: start;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    padding: var(--spacing-md);
+    border-color: color-mix(in srgb, var(--page-accent) 58%, transparent);
+    background:
+      radial-gradient(
+        circle at 92% 0,
+        color-mix(in srgb, var(--page-accent) 12%, transparent),
+        transparent 38%
+      ),
+      var(--page-surface);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--page-accent) 7%, transparent),
+      0 12px 28px rgb(0 0 0 / 18%);
+
+    h2 {
+      margin: 0;
+      color: #cdd1ff;
+      font-size: clamp(1.2rem, 2vw, 1.55rem);
+    }
+
+    p,
+    address {
+      margin: 0;
+      color: var(--page-muted);
+      line-height: 1.65;
+    }
+
+    address {
+      color: var(--color-text);
+      font-style: normal;
+      font-weight: 700;
+    }
+  }
+
+  .public-card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .public-card--note {
+    text-align: center;
+  }
+
+  .public-card__heading {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    img {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      object-fit: contain;
+    }
+  }
+
+  .public-page__button {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    margin-top: var(--spacing-xs);
+    padding: 0 18px;
+    border-radius: var(--radius-pill);
+    background: var(--page-accent);
+    color: var(--color-text);
+    font-weight: 800;
+    text-decoration: none;
+    transition:
+      transform 140ms ease,
+      filter 140ms ease;
+
+    &:hover,
+    &:focus-visible {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-text);
+      outline-offset: 3px;
+    }
+  }
+
+  .public-page__text-link {
+    justify-self: start;
+    color: #cdd1ff;
+    font-weight: 800;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-text);
+    }
+  }
+
+  @include compact-layout {
+    .public-page {
+      margin: 0 var(--spacing-sm);
+    }
+
+    .public-page__content {
+      grid-template-columns: 1fr;
+    }
+
+    .public-card--wide {
+      grid-column: auto;
+    }
+
+    .public-page__hero-card {
+      min-height: auto;
+      margin: var(--spacing-sm);
+    }
+  }
+
+  @include reduced-motion {
+    .public-page__button {
+      transition: none;
+
+      &:hover,
+      &:focus-visible {
+        transform: none;
+      }
+    }
+  }
+}

@@ -1,3 +1,78 @@
-<app-content-page titleKey="footer.privacy">
-  <!-- Content will be added after the final copy has been approved. -->
-</app-content-page>
+<section class="page public-page">
+  <app-hero type="community" class="public-page__hero">
+    <div hero-left class="public-page__intro">
+      <span class="public-page__eyebrow">
+        {{ 'privacy.page.eyebrow' | i18n | async }}
+      </span>
+      <h1 class="sue-ellen">{{ 'footer.privacy' | i18n | async }}</h1>
+      <p>{{ 'privacy.page.intro' | i18n | async }}</p>
+    </div>
+
+    <aside hero-right class="public-page__hero-card">
+      <span>{{ 'privacy.page.heroCard.kicker' | i18n | async }}</span>
+      <strong>{{ 'privacy.page.heroCard.title' | i18n | async }}</strong>
+      <p>{{ 'privacy.page.heroCard.text' | i18n | async }}</p>
+    </aside>
+  </app-hero>
+
+  <section class="public-page__content">
+    <article class="public-card public-card--wide">
+      <h2>{{ 'privacy.page.controller.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.controller.text' | i18n | async }}</p>
+      <address>
+        &ldquo;Mimi Show&rdquo;<br />
+        c/o Block Services<br />
+        Stuttgarter Str. 106<br />
+        70736 Fellbach
+      </address>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.server.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.server.text' | i18n | async }}</p>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.accounts.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.accounts.text' | i18n | async }}</p>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.twitch.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.twitch.text' | i18n | async }}</p>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.cookies.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.cookies.text' | i18n | async }}</p>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.notifications.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.notifications.text' | i18n | async }}</p>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.contact.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.contact.text' | i18n | async }}</p>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.external.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.external.text' | i18n | async }}</p>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.retention.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.retention.text' | i18n | async }}</p>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'privacy.page.rights.title' | i18n | async }}</h2>
+      <p>{{ 'privacy.page.rights.text' | i18n | async }}</p>
+      <a class="public-page__text-link" href="/kontakt">
+        {{ 'privacy.page.contactLink' | i18n | async }}
+      </a>
+    </article>
+  </section>
+</section>

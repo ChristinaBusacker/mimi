@@ -1,1 +1,46 @@
-<app-content-page titleKey="footer.legalNotice"> sadasd </app-content-page>
+<section class="page public-page">
+  <app-hero type="community" class="public-page__hero">
+    <div hero-left class="public-page__intro">
+      <span class="public-page__eyebrow">
+        {{ 'legal.notice.eyebrow' | i18n | async }}
+      </span>
+      <h1 class="sue-ellen">{{ 'footer.legalNotice' | i18n | async }}</h1>
+      <p>{{ 'legal.notice.intro' | i18n | async }}</p>
+    </div>
+
+    <aside hero-right class="public-page__hero-card">
+      <span>{{ 'legal.notice.heroCard.kicker' | i18n | async }}</span>
+      <strong>Mimi Show</strong>
+      <p>{{ 'legal.notice.heroCard.text' | i18n | async }}</p>
+    </aside>
+  </app-hero>
+
+  <section class="public-page__content">
+    <article class="public-card public-card--wide">
+      <span class="public-card__eyebrow">
+        {{ 'legal.notice.provider.eyebrow' | i18n | async }}
+      </span>
+      <h2>{{ 'legal.notice.provider.title' | i18n | async }}</h2>
+
+      <address>
+        &ldquo;Mimi Show&rdquo;<br />
+        c/o Block Services<br />
+        Stuttgarter Str. 106<br />
+        70736 Fellbach
+      </address>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'legal.notice.contact.title' | i18n | async }}</h2>
+      <p>{{ 'legal.notice.contact.text' | i18n | async }}</p>
+      <a class="public-page__text-link" href="/kontakt">
+        {{ 'legal.notice.contact.link' | i18n | async }}
+      </a>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'legal.notice.responsibility.title' | i18n | async }}</h2>
+      <p>{{ 'legal.notice.responsibility.text' | i18n | async }}</p>
+    </article>
+  </section>
+</section>

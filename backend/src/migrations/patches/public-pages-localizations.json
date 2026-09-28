@@ -1,0 +1,344 @@
+{
+  "localizations": [
+    {
+      "key": "legal.notice.eyebrow",
+      "de": "Rechtliches",
+      "en": "Legal"
+    },
+    {
+      "key": "legal.notice.intro",
+      "de": "Hier findest du die Anbieterkennzeichnung und die grundlegenden Kontaktangaben zu Mimi Show.",
+      "en": "Here you can find the provider identification and basic contact details for Mimi Show."
+    },
+    {
+      "key": "legal.notice.heroCard.kicker",
+      "de": "Anbieter",
+      "en": "Provider"
+    },
+    {
+      "key": "legal.notice.heroCard.text",
+      "de": "Die folgenden Angaben dienen der Anbieterkennzeichnung dieser Website.",
+      "en": "The following details identify the provider of this website."
+    },
+    {
+      "key": "legal.notice.provider.eyebrow",
+      "de": "Anschrift",
+      "en": "Address"
+    },
+    {
+      "key": "legal.notice.provider.title",
+      "de": "Angaben gemäß § 5 TMG",
+      "en": "Information according to Section 5 TMG"
+    },
+    {
+      "key": "legal.notice.contact.title",
+      "de": "Kontakt",
+      "en": "Contact"
+    },
+    {
+      "key": "legal.notice.contact.text",
+      "de": "Für allgemeine Anfragen und weitere Kontaktmöglichkeiten nutze bitte die Kontaktseite.",
+      "en": "For general enquiries and additional contact options, please use the contact page."
+    },
+    {
+      "key": "legal.notice.contact.link",
+      "de": "Zur Kontaktseite",
+      "en": "Go to contact page"
+    },
+    {
+      "key": "legal.notice.responsibility.title",
+      "de": "Verantwortung für Inhalte",
+      "en": "Responsibility for content"
+    },
+    {
+      "key": "legal.notice.responsibility.text",
+      "de": "Verantwortlich für die Inhalte dieses Angebots ist die Betreiberin von Mimi Show. Die Angaben werden vor dem öffentlichen Start der Website noch abschließend geprüft und ergänzt.",
+      "en": "The operator of Mimi Show is responsible for the content of this website. These details will be reviewed and completed before the public launch of the website."
+    },
+    {
+      "key": "privacy.page.eyebrow",
+      "de": "Datenschutz",
+      "en": "Privacy"
+    },
+    {
+      "key": "privacy.page.intro",
+      "de": "Diese erste Fassung beschreibt in Grundzügen, welche Daten auf der Website verarbeitet werden und wofür sie benötigt werden.",
+      "en": "This initial version outlines which data is processed on the website and why it is needed."
+    },
+    {
+      "key": "privacy.page.heroCard.kicker",
+      "de": "Kurzfassung",
+      "en": "At a glance"
+    },
+    {
+      "key": "privacy.page.heroCard.title",
+      "de": "So wenig wie nötig",
+      "en": "As little as necessary"
+    },
+    {
+      "key": "privacy.page.heroCard.text",
+      "de": "Daten werden nur für den Betrieb der Website, Community-Funktionen und von dir ausdrücklich genutzte Verknüpfungen verarbeitet.",
+      "en": "Data is processed only for operating the website, community features and integrations you explicitly choose to use."
+    },
+    {
+      "key": "privacy.page.controller.title",
+      "de": "Verantwortliche Stelle",
+      "en": "Controller"
+    },
+    {
+      "key": "privacy.page.controller.text",
+      "de": "Verantwortlich für die Verarbeitung personenbezogener Daten im Zusammenhang mit dieser Website ist Mimi Show.",
+      "en": "Mimi Show is responsible for processing personal data in connection with this website."
+    },
+    {
+      "key": "privacy.page.server.title",
+      "de": "Server- und Zugriffsdaten",
+      "en": "Server and access data"
+    },
+    {
+      "key": "privacy.page.server.text",
+      "de": "Beim Aufruf der Website können technisch erforderliche Daten wie IP-Adresse, Zeitpunkt, aufgerufene Adresse, Browserinformationen und Statuscodes in Server-Logs verarbeitet werden. Diese Daten dienen dem sicheren und stabilen Betrieb sowie der Fehleranalyse.",
+      "en": "When you access the website, technically required data such as your IP address, time of access, requested address, browser information and status codes may be processed in server logs. This data is used for secure and stable operation and for troubleshooting."
+    },
+    {
+      "key": "privacy.page.accounts.title",
+      "de": "Community-Account und Discord",
+      "en": "Community account and Discord"
+    },
+    {
+      "key": "privacy.page.accounts.text",
+      "de": "Wenn du dich mit Discord anmeldest, werden die für den Account benötigte Discord-ID, der angezeigte Name und Community-bezogene Informationen verarbeitet. Aktivitätsfunktionen speichern dafür vorgesehene Ereignisse und nicht den Inhalt deiner Discord-Nachrichten.",
+      "en": "When you sign in with Discord, the Discord ID required for your account, your display name and community-related information are processed. Activity features store the intended activity events, not the content of your Discord messages."
+    },
+    {
+      "key": "privacy.page.twitch.title",
+      "de": "Twitch-Verknüpfung",
+      "en": "Twitch integration"
+    },
+    {
+      "key": "privacy.page.twitch.text",
+      "de": "Wenn du Twitch freiwillig mit deinem Account verknüpfst, können Twitch-Kennung, Anzeigename sowie für Community-Funktionen erforderliche Abonnement- oder Verknüpfungsinformationen verarbeitet werden. Die Verbindung kann wieder getrennt werden.",
+      "en": "If you voluntarily connect Twitch to your account, your Twitch identifier, display name and subscription or connection information required for community features may be processed. The connection can be removed again."
+    },
+    {
+      "key": "privacy.page.cookies.title",
+      "de": "Cookies und lokale Einstellungen",
+      "en": "Cookies and local settings"
+    },
+    {
+      "key": "privacy.page.cookies.text",
+      "de": "Für angemeldete Bereiche wird ein technisch notwendiges Session-Cookie verwendet. Sprache, Darstellung und vergleichbare Einstellungen können zusätzlich lokal im Browser gespeichert werden.",
+      "en": "A technically necessary session cookie is used for signed-in areas. Language, appearance and similar settings may also be stored locally in your browser."
+    },
+    {
+      "key": "privacy.page.notifications.title",
+      "de": "Push-Benachrichtigungen",
+      "en": "Push notifications"
+    },
+    {
+      "key": "privacy.page.notifications.text",
+      "de": "Wenn du Push-Benachrichtigungen aktivierst, werden eine browserspezifische Push-Subscription mit technischen Schlüssel- und Endpunktdaten sowie deine Benachrichtigungseinstellungen gespeichert. Du kannst die Berechtigung im Browser wieder entziehen.",
+      "en": "If you enable push notifications, a browser-specific push subscription containing technical key and endpoint data and your notification preferences are stored. You can revoke the permission in your browser at any time."
+    },
+    {
+      "key": "privacy.page.contact.title",
+      "de": "Kontaktanfragen",
+      "en": "Contact enquiries"
+    },
+    {
+      "key": "privacy.page.contact.text",
+      "de": "Wenn du Mimi Show kontaktierst, werden die von dir übermittelten Angaben nur soweit verarbeitet, wie dies zur Bearbeitung und Beantwortung deiner Anfrage erforderlich ist.",
+      "en": "If you contact Mimi Show, the information you provide is processed only as far as necessary to handle and answer your enquiry."
+    },
+    {
+      "key": "privacy.page.external.title",
+      "de": "Externe Dienste und Plattformen",
+      "en": "External services and platforms"
+    },
+    {
+      "key": "privacy.page.external.text",
+      "de": "Die Website verlinkt unter anderem auf Discord, Twitch, YouTube und Instagram. Beim Aufruf externer Angebote gelten die Datenschutzbestimmungen des jeweiligen Anbieters. API-Daten werden nur im Umfang der jeweils genutzten Website-Funktion verarbeitet.",
+      "en": "The website links to services including Discord, Twitch, YouTube and Instagram. When you visit external services, the privacy policies of the respective provider apply. API data is processed only to the extent required for the feature you use on this website."
+    },
+    {
+      "key": "privacy.page.retention.title",
+      "de": "Speicherdauer",
+      "en": "Retention"
+    },
+    {
+      "key": "privacy.page.retention.text",
+      "de": "Personenbezogene Daten werden nur so lange gespeichert, wie sie für den jeweiligen Zweck benötigt werden oder gesetzliche Aufbewahrungspflichten bestehen. Nicht mehr benötigte Daten werden gelöscht oder anonymisiert.",
+      "en": "Personal data is stored only for as long as it is needed for the respective purpose or statutory retention obligations apply. Data that is no longer required is deleted or anonymised."
+    },
+    {
+      "key": "privacy.page.rights.title",
+      "de": "Deine Rechte",
+      "en": "Your rights"
+    },
+    {
+      "key": "privacy.page.rights.text",
+      "de": "Du kannst insbesondere Auskunft, Berichtigung oder Löschung deiner personenbezogenen Daten verlangen und je nach Situation weitere Datenschutzrechte wie Einschränkung, Widerspruch oder Datenübertragbarkeit geltend machen.",
+      "en": "You may in particular request access to, correction or deletion of your personal data and, depending on the circumstances, exercise further privacy rights such as restriction, objection or data portability."
+    },
+    {
+      "key": "privacy.page.contactLink",
+      "de": "Kontakt aufnehmen",
+      "en": "Get in touch"
+    },
+    {
+      "key": "contact.page.eyebrow",
+      "de": "Sag Hallo",
+      "en": "Say hello"
+    },
+    {
+      "key": "contact.page.intro",
+      "de": "Ob Community-Frage, Feedback oder eine andere Anfrage: Hier findest du die aktuellen Wege, Mimi Show zu erreichen.",
+      "en": "Whether it is a community question, feedback or another enquiry, here are the current ways to reach Mimi Show."
+    },
+    {
+      "key": "contact.page.heroCard.kicker",
+      "de": "Kontakt",
+      "en": "Contact"
+    },
+    {
+      "key": "contact.page.heroCard.title",
+      "de": "Der passende Weg für deine Nachricht",
+      "en": "The right place for your message"
+    },
+    {
+      "key": "contact.page.heroCard.text",
+      "de": "Für Community-Themen ist Discord meist der direkteste Weg. Für öffentliche oder soziale Nachrichten findest du Mimi außerdem auf Instagram.",
+      "en": "Discord is usually the most direct route for community topics. You can also find Mimi on Instagram for public or social messages."
+    },
+    {
+      "key": "contact.page.discord.title",
+      "de": "Discord",
+      "en": "Discord"
+    },
+    {
+      "key": "contact.page.discord.text",
+      "de": "Für Community-Fragen, Austausch und alles rund um Streams und Musik ist der Discord-Server die zentrale Anlaufstelle.",
+      "en": "For community questions, conversation and everything around streams and music, the Discord server is the central place to go."
+    },
+    {
+      "key": "contact.page.discord.action",
+      "de": "Discord öffnen",
+      "en": "Open Discord"
+    },
+    {
+      "key": "contact.page.instagram.title",
+      "de": "Instagram",
+      "en": "Instagram"
+    },
+    {
+      "key": "contact.page.instagram.text",
+      "de": "Für Social Media, kurze Nachrichten und aktuelle Einblicke kannst du Mimi auch auf Instagram erreichen.",
+      "en": "For social media, short messages and current updates, you can also reach Mimi on Instagram."
+    },
+    {
+      "key": "contact.page.instagram.action",
+      "de": "Instagram öffnen",
+      "en": "Open Instagram"
+    },
+    {
+      "key": "contact.page.postal.eyebrow",
+      "de": "Postanschrift",
+      "en": "Postal address"
+    },
+    {
+      "key": "contact.page.postal.title",
+      "de": "Schriftliche Anfragen",
+      "en": "Written enquiries"
+    },
+    {
+      "key": "contact.page.postal.text",
+      "de": "Für postalische Anfragen kann die folgende Anschrift verwendet werden.",
+      "en": "The following address can be used for enquiries by post."
+    },
+    {
+      "key": "support.page.eyebrow",
+      "de": "Mimi unterstützen",
+      "en": "Support Mimi"
+    },
+    {
+      "key": "support.page.intro",
+      "de": "Streams, Musik und Community entstehen mit viel Zeit und Herz. Wenn du Mimi unterstützen möchtest, helfen schon Zuschauen, Teilen und aktive Community-Teilnahme.",
+      "en": "Streams, music and community take a lot of time and heart. If you want to support Mimi, simply watching, sharing and taking part in the community already helps."
+    },
+    {
+      "key": "support.page.heroCard.kicker",
+      "de": "Support",
+      "en": "Support"
+    },
+    {
+      "key": "support.page.heroCard.title",
+      "de": "Unterstützung muss nicht immer Geld kosten",
+      "en": "Support does not always have to cost money"
+    },
+    {
+      "key": "support.page.heroCard.text",
+      "de": "Ein Stream-Aufruf, ein geteiltes Lied oder ein guter Kommentar macht einen echten Unterschied und hilft dabei, neue Menschen zu erreichen.",
+      "en": "A stream view, a shared song or a thoughtful comment makes a real difference and helps reach new people."
+    },
+    {
+      "key": "support.page.twitch.text",
+      "de": "Auf Twitch helfen regelmäßiges Zuschauen, Folgen, Abos und Geschenk-Abos dabei, die Streams direkt zu unterstützen.",
+      "en": "On Twitch, regularly watching, following, subscribing and gifting subscriptions directly support the streams."
+    },
+    {
+      "key": "support.page.twitch.action",
+      "de": "Zu Twitch",
+      "en": "Go to Twitch"
+    },
+    {
+      "key": "support.page.youtube.text",
+      "de": "Videos ansehen, abonnieren, kommentieren und teilen hilft dem Kanal dabei, organisch zu wachsen.",
+      "en": "Watching videos, subscribing, commenting and sharing helps the channel grow organically."
+    },
+    {
+      "key": "support.page.youtube.action",
+      "de": "Zu YouTube",
+      "en": "Go to YouTube"
+    },
+    {
+      "key": "support.page.music.title",
+      "de": "Musik hören und teilen",
+      "en": "Listen to and share the music"
+    },
+    {
+      "key": "support.page.music.text",
+      "de": "Hör dir Mimis Musik auf der Website an, entdecke die Hintergründe zu den Songs und teile die Stücke, die dir gefallen.",
+      "en": "Listen to Mimi's music on the website, discover the stories behind the songs and share the tracks you enjoy."
+    },
+    {
+      "key": "support.page.music.action",
+      "de": "Musik entdecken",
+      "en": "Discover the music"
+    },
+    {
+      "key": "support.page.community.title",
+      "de": "Community",
+      "en": "Community"
+    },
+    {
+      "key": "support.page.community.text",
+      "de": "Eine lebendige Community hilft ebenso: im Discord austauschen, bei Streams dabei sein und gute Inhalte weiterempfehlen.",
+      "en": "A lively community helps just as much: join the conversation on Discord, be there for streams and recommend content you enjoy."
+    },
+    {
+      "key": "support.page.community.action",
+      "de": "Zur Community auf Discord",
+      "en": "Join the community on Discord"
+    },
+    {
+      "key": "support.page.note.title",
+      "de": "Weitere Möglichkeiten folgen",
+      "en": "More options are coming"
+    },
+    {
+      "key": "support.page.note.text",
+      "de": "Direkte Unterstützungsmöglichkeiten können später ergänzt werden. Bis dahin zeigt diese Seite nur Angebote, die bereits sinnvoll genutzt werden können.",
+      "en": "Direct support options can be added later. Until then, this page only shows options that can already be used meaningfully."
+    }
+  ]
+}

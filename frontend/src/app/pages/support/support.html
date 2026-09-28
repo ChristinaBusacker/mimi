@@ -1,0 +1,80 @@
+<section class="page public-page">
+  <app-hero type="community" class="public-page__hero">
+    <div hero-left class="public-page__intro">
+      <span class="public-page__eyebrow">
+        {{ 'support.page.eyebrow' | i18n | async }}
+      </span>
+      <h1 class="sue-ellen">{{ 'navigation.support' | i18n | async }}</h1>
+      <p>{{ 'support.page.intro' | i18n | async }}</p>
+    </div>
+
+    <aside hero-right class="public-page__hero-card">
+      <span>{{ 'support.page.heroCard.kicker' | i18n | async }}</span>
+      <strong>{{ 'support.page.heroCard.title' | i18n | async }}</strong>
+      <p>{{ 'support.page.heroCard.text' | i18n | async }}</p>
+    </aside>
+  </app-hero>
+
+  <section class="public-page__content">
+    <article class="public-card">
+      <div class="public-card__heading">
+        <img src="/images/icons/logos/twitch.png" alt="" />
+        <h2>Twitch</h2>
+      </div>
+      <p>{{ 'support.page.twitch.text' | i18n | async }}</p>
+      <a
+        class="public-page__button"
+        href="https://www.twitch.tv/mimimausde"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ 'support.page.twitch.action' | i18n | async }}
+      </a>
+    </article>
+
+    <article class="public-card">
+      <div class="public-card__heading">
+        <img src="/images/icons/logos/youtube.png" alt="" />
+        <h2>YouTube</h2>
+      </div>
+      <p>{{ 'support.page.youtube.text' | i18n | async }}</p>
+      <a
+        class="public-page__button"
+        href="https://www.youtube.com/@Mimis-Show"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ 'support.page.youtube.action' | i18n | async }}
+      </a>
+    </article>
+
+    <article class="public-card">
+      <h2>{{ 'support.page.music.title' | i18n | async }}</h2>
+      <p>{{ 'support.page.music.text' | i18n | async }}</p>
+      <a class="public-page__button" href="/music">
+        {{ 'support.page.music.action' | i18n | async }}
+      </a>
+    </article>
+
+    <article class="public-card">
+      <div class="public-card__heading">
+        <img src="/images/icons/logos/discord.png" alt="" />
+        <h2>{{ 'support.page.community.title' | i18n | async }}</h2>
+      </div>
+      <p>{{ 'support.page.community.text' | i18n | async }}</p>
+      <a
+        class="public-page__button"
+        href="https://discord.com/invite/HjcHqwXPeH"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ 'support.page.community.action' | i18n | async }}
+      </a>
+    </article>
+
+    <article class="public-card public-card--wide public-card--note">
+      <h2>{{ 'support.page.note.title' | i18n | async }}</h2>
+      <p>{{ 'support.page.note.text' | i18n | async }}</p>
+    </article>
+  </section>
+</section>

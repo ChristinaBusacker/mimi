@@ -100,6 +100,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'unterstuetzen',
+    loadComponent: () =>
+      import('./pages/support/support').then(
+        (module) => module.Support,
+      ),
+  },
+  {
     path: 'community/dashboard',
     canActivate: [
       authenticatedGuard,
