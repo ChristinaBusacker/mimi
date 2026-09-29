@@ -1,13 +1,11 @@
 @if (current(); as item) {
-  <div
-    class="backdrop"
-    role="presentation"
-    (click)="closeFromBackdrop($event)"
-  >
+  <div class="backdrop" role="presentation" (click)="closeFromBackdrop($event)">
     <section
+      #dialog
       class="dialog"
       role="dialog"
       aria-modal="true"
+      tabindex="-1"
       [attr.aria-label]="'lightbox.dialog' | i18n | async"
     >
       <button
@@ -31,10 +29,7 @@
           </button>
         }
 
-        <img
-          [src]="item.src"
-          [alt]="item.alt"
-        />
+        <img [src]="item.src" [alt]="item.alt" />
 
         @if (hasMultiple()) {
           <button
@@ -54,18 +49,13 @@
         }
 
         @if (hasMultiple()) {
-          <span>
-            {{ index() + 1 }} / {{ count() }}
-          </span>
+          <span> {{ index() + 1 }} / {{ count() }} </span>
         }
       </footer>
 
       @if (hasMultiple()) {
         <div class="thumbnails">
-          @for (
-            thumbnail of items();
-            track thumbnail.src
-          ) {
+          @for (thumbnail of items(); track thumbnail.src) {
             <button
               type="button"
               class="thumbnail"
@@ -74,10 +64,7 @@
               [attr.aria-label]="thumbnail.alt + ' ' + ($index + 1)"
               (click)="select($index)"
             >
-              <img
-                [src]="thumbnail.src"
-                [alt]="thumbnail.alt"
-              />
+              <img [src]="thumbnail.src" alt="" />
             </button>
           }
         </div>

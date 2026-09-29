@@ -5,6 +5,7 @@
     [class.chatting]="type() === 'chatting'"
     [class.gaming]="type() === 'gaming'"
     [class.community]="type() === 'community'"
+    [class.gradient-rtl]="gradientDirection() === 'rtl'"
   >
     <div class="left">
       <ng-content select="[hero-left]" />
