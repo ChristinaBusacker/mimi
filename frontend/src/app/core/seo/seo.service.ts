@@ -10,7 +10,13 @@ import type { BlogAuthorPageData, BlogPostPageData } from '../blog/blog-public.s
 import { I18nState } from '../i18n/i18n.state';
 import type { Language } from '../i18n/i18n.types';
 import type { MusicAlbumPageData } from '../music/music-public.service';
-import { SITE_DEFAULT_IMAGE_PATH, SITE_NAME, isIndexableHostname } from './seo.config';
+import {
+  PUBLIC_ORIGIN,
+  SITE_DEFAULT_IMAGE_PATH,
+  SITE_NAME,
+  assetSocialImagePath,
+  isIndexableHostname,
+} from './seo.config';
 
 interface StaticSeoCopy {
   title: string;
@@ -38,6 +44,7 @@ interface SeoDocument {
   openGraphType?: 'website' | 'article' | 'music.album' | 'profile';
   indexable?: boolean;
   articlePublishedAt?: string;
+  articleModifiedAt?: string;
   articleAuthor?: string;
   musicReleaseDate?: string | null;
   schema: readonly Record<string, unknown>[];
@@ -178,11 +185,15 @@ export class SeoService {
   private readonly request = inject(REQUEST, {
     optional: true,
   });
+  private readonly publicOrigin = inject(PUBLIC_ORIGIN, {
+    optional: true,
+  });
   private readonly router = inject(Router);
   private readonly store = inject(Store);
   private readonly title = inject(Title);
 
   private initialized = false;
+  private resolvedOrigin: string | null = null;
 
   initialize(): void {
     if (this.initialized) {
@@ -306,7 +317,7 @@ export class SeoService {
     const canonicalUrl = this.absoluteUrl(canonicalPath);
     const description = this.descriptionFrom(post.excerpt || post.contentHtml);
     const imagePath = post.coverAssetId
-      ? `/api/assets/${encodeURIComponent(post.coverAssetId)}`
+      ? assetSocialImagePath(post.coverAssetId)
       : SITE_DEFAULT_IMAGE_PATH;
     const imageUrl = this.absoluteUrl(imagePath);
     const authorUrl = this.absoluteUrl(`/blog/autoren/${encodeURIComponent(post.author.slug)}`);
@@ -320,6 +331,7 @@ export class SeoService {
       imagePath,
       openGraphType: 'article',
       articlePublishedAt: post.publishedAt,
+      articleModifiedAt: post.updatedAt,
       articleAuthor: authorUrl,
       schema: [
         ...this.baseSchema(locale),
@@ -331,6 +343,7 @@ export class SeoService {
           description,
           image: imageUrl,
           datePublished: post.publishedAt,
+          dateModified: post.updatedAt,
           inLanguage: locale,
           mainEntityOfPage: {
             '@id': canonicalUrl,
@@ -381,7 +394,7 @@ export class SeoService {
       language: locale,
       openGraphType: 'profile',
       imagePath: author.avatarAssetId
-        ? `/api/assets/${encodeURIComponent(author.avatarAssetId)}`
+        ? assetSocialImagePath(author.avatarAssetId)
         : SITE_DEFAULT_IMAGE_PATH,
       schema: [
         ...this.baseSchema(locale),
@@ -406,7 +419,7 @@ export class SeoService {
           url: canonicalUrl,
           description,
           image: author.avatarAssetId
-            ? this.absoluteUrl(`/api/assets/${encodeURIComponent(author.avatarAssetId)}`)
+            ? this.absoluteUrl(assetSocialImagePath(author.avatarAssetId))
             : undefined,
         },
         this.breadcrumbSchema([
@@ -435,7 +448,7 @@ export class SeoService {
         : `${album.title}: an album by Mimi with song previews and background information on Mimishow.`,
     );
     const imagePath = album.coverAssetId
-      ? `/api/assets/${encodeURIComponent(album.coverAssetId)}`
+      ? assetSocialImagePath(album.coverAssetId)
       : SITE_DEFAULT_IMAGE_PATH;
     const title = `${album.title} | ${SITE_NAME}`;
 
@@ -503,7 +516,10 @@ export class SeoService {
     const fallback = STATIC_SEO_COPY[language].home;
 
     this.applyDocument({
-      title: SITE_NAME,
+      title:
+        language === 'de'
+          ? `Seite nicht gefunden | ${SITE_NAME}`
+          : `Page not found | ${SITE_NAME}`,
       description: fallback.description,
       canonicalPath,
       language,
@@ -516,7 +532,8 @@ export class SeoService {
     const origin = this.origin();
     const canonicalUrl = this.absoluteUrl(document.canonicalPath);
     const imageUrl = this.absoluteUrl(document.imagePath ?? SITE_DEFAULT_IMAGE_PATH);
-    const indexable = document.indexable !== false && isIndexableHostname(new URL(origin).hostname);
+    const indexable =
+      document.indexable !== false && isIndexableHostname(this.requestHostname());
     const robots = indexable
       ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
       : 'noindex, nofollow';
@@ -562,11 +579,16 @@ export class SeoService {
     });
 
     this.removeProperty('article:published_time');
+    this.removeProperty('article:modified_time');
     this.removeProperty('article:author');
     this.removeProperty('music:release_date');
 
     if (document.articlePublishedAt) {
       this.setProperty('article:published_time', document.articlePublishedAt);
+    }
+
+    if (document.articleModifiedAt) {
+      this.setProperty('article:modified_time', document.articleModifiedAt);
     }
 
     if (document.articleAuthor) {
@@ -709,21 +731,57 @@ export class SeoService {
   }
 
   private origin(): string {
+    if (this.resolvedOrigin) {
+      return this.resolvedOrigin;
+    }
+
+    if (this.publicOrigin) {
+      this.resolvedOrigin = this.publicOrigin;
+      return this.resolvedOrigin;
+    }
+
+    const canonical =
+      this.document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+
+    if (canonical?.href) {
+      try {
+        this.resolvedOrigin = new URL(canonical.href).origin;
+        return this.resolvedOrigin;
+      } catch {
+        // Fall through to the request or document origin.
+      }
+    }
+
     if (this.request) {
       try {
-        return new URL(this.request.url).origin;
+        this.resolvedOrigin = new URL(this.request.url).origin;
+        return this.resolvedOrigin;
       } catch {
-        // Fall back to the document location below.
+        // Fall through to the document location.
       }
     }
 
     const origin = this.document.location?.origin;
 
     if (origin && origin !== 'null') {
-      return origin;
+      this.resolvedOrigin = origin;
+      return this.resolvedOrigin;
     }
 
-    return 'https://mimishow.de';
+    this.resolvedOrigin = 'https://mimishow.de';
+    return this.resolvedOrigin;
+  }
+
+  private requestHostname(): string {
+    if (this.request) {
+      try {
+        return new URL(this.request.url).hostname;
+      } catch {
+        // Fall through to the document location.
+      }
+    }
+
+    return this.document.location?.hostname ?? '';
   }
 
   private absoluteUrl(path: string): string {

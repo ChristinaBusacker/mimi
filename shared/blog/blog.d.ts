@@ -26,6 +26,7 @@ export interface BlogPostSummary {
   excerpt: string;
   coverAssetId: string | null;
   publishedAt: string;
+  updatedAt: string;
   author: BlogAuthor;
   categories: BlogCategory[];
 }

@@ -1,0 +1,19 @@
+{
+  "localizations": [
+    {
+      "key": "notFound.title",
+      "de": "Diese Seite gibt es hier nicht.",
+      "en": "This page isn’t here."
+    },
+    {
+      "key": "notFound.description",
+      "de": "Die gesuchte Seite wurde nicht gefunden. Vielleicht wurde sie verschoben oder der Link ist nicht mehr aktuell.",
+      "en": "The page you are looking for could not be found. It may have moved or the link may no longer be current."
+    },
+    {
+      "key": "notFound.home",
+      "de": "Zur Startseite",
+      "en": "Back to home"
+    }
+  ]
+}

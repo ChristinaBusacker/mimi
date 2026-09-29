@@ -343,6 +343,8 @@ export class BlogService {
         post.coverAssetId,
       publishedAt:
         post.publishedAt!.toISOString(),
+      updatedAt:
+        post.updatedAt.toISOString(),
       author:
         this.mapAuthor(author),
       categories:

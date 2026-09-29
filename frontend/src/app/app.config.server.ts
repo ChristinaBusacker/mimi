@@ -10,9 +10,12 @@ import { provideServerRendering, withRoutes } from '@angular/ssr';
 import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
 import { API_BASE_URL } from './core/http/api-base-url.token';
+import { PUBLIC_ORIGIN, normalizePublicOrigin } from './core/seo/seo.config';
 
-const internalApiBaseUrl =
-  process.env['MIMI_API_INTERNAL_URL'] ?? 'http://127.0.0.1:3000/api';
+const internalApiBaseUrl = (
+  process.env['MIMI_API_INTERNAL_URL'] ?? 'http://127.0.0.1:3000/api'
+).replace(/\/+$/, '');
+const publicOrigin = normalizePublicOrigin(process.env['PUBLIC_ORIGIN']);
 
 const serverConfig: ApplicationConfig = {
   providers: [
@@ -20,6 +23,10 @@ const serverConfig: ApplicationConfig = {
     {
       provide: API_BASE_URL,
       useValue: internalApiBaseUrl,
+    },
+    {
+      provide: PUBLIC_ORIGIN,
+      useValue: publicOrigin,
     },
     {
       provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,

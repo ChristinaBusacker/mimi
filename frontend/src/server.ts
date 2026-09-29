@@ -7,52 +7,31 @@ import {
 import express, { type Request } from 'express';
 import { basename, join } from 'node:path';
 
-import { isIndexableHostname } from './app/core/seo/seo.config';
-
-interface SeoBlogPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  publishedAt: string;
-  author: {
-    displayName: string;
-  };
-  categories: readonly {
-    name: string;
-  }[];
-}
-
-interface SeoBlogAuthor {
-  slug: string;
-}
-
-interface SeoMusicAlbum {
-  slug: string;
-  releasedAt: string | null;
-}
-
-interface SeoContent {
-  posts: readonly SeoBlogPost[];
-  authors: readonly SeoBlogAuthor[];
-  albums: readonly SeoMusicAlbum[];
-}
-
-interface SeoContentCache {
-  expiresAt: number;
-  value: SeoContent;
-}
+import {
+  isIndexableHostname,
+  normalizePublicOrigin,
+} from './app/core/seo/seo.config';
+import {
+  SeoContentCache,
+  type SeoBlogAuthor,
+  type SeoBlogPost,
+  type SeoContent,
+  type SeoMusicAlbum,
+  renderFeed,
+  renderRobots,
+  renderSitemap,
+  staticSitemapEntries,
+} from './server/seo-http';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
-const backendOrigin = (
-  process.env['BACKEND_ORIGIN']?.trim() ||
-  'http://127.0.0.1:3000'
+const internalApiBaseUrl = (
+  process.env['MIMI_API_INTERNAL_URL'] ?? 'http://127.0.0.1:3000/api'
 ).replace(/\/+$/, '');
-const seoCacheTtlMs = 5 * 60 * 1000;
+const publicOrigin = normalizePublicOrigin(process.env['PUBLIC_ORIGIN']);
+const seoContentCache = new SeoContentCache(5 * 60 * 1000);
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
-
-let seoContentCache: SeoContentCache | null = null;
 
 const noCacheStaticFiles = new Set([
   'index.csr.html',
@@ -65,38 +44,17 @@ const noCacheStaticFiles = new Set([
 ]);
 
 app.get('/robots.txt', (request, response) => {
-  const origin = requestOrigin(request);
-  const hostname = new URL(origin).hostname;
+  const requestUrlOrigin = requestOrigin(request);
+  const origin = publicOrigin ?? requestUrlOrigin;
+  const hostname = new URL(requestUrlOrigin).hostname;
 
   response.type('text/plain');
   response.setHeader('Cache-Control', 'public, max-age=3600');
-
-  if (!isIndexableHostname(hostname)) {
-    response.send([
-      'User-agent: *',
-      'Disallow: /',
-      '',
-    ].join('\n'));
-
-    return;
-  }
-
-  response.send([
-    'User-agent: *',
-    'Allow: /',
-    'Disallow: /admin',
-    'Disallow: /account',
-    'Disallow: /community/dashboard',
-    'Disallow: /api/admin',
-    'Disallow: /api/auth',
-    'Disallow: /api/account',
-    `Sitemap: ${origin}/sitemap.xml`,
-    '',
-  ].join('\n'));
+  response.send(renderRobots(origin, isIndexableHostname(hostname)));
 });
 
 app.get('/sitemap.xml', async (request, response) => {
-  const origin = requestOrigin(request);
+  const origin = publicOrigin ?? requestOrigin(request);
   const entries = staticSitemapEntries(origin);
 
   try {
@@ -105,7 +63,7 @@ app.get('/sitemap.xml', async (request, response) => {
     entries.push(
       ...content.posts.map((post) => ({
         location: `${origin}/blog/${encodeURIComponent(post.slug)}`,
-        lastModified: post.publishedAt,
+        lastModified: post.updatedAt,
       })),
       ...content.authors.map((author) => ({
         location: `${origin}/blog/autoren/${encodeURIComponent(author.slug)}`,
@@ -128,7 +86,7 @@ app.get('/sitemap.xml', async (request, response) => {
 });
 
 app.get('/feed.xml', async (request, response) => {
-  const origin = requestOrigin(request);
+  const origin = publicOrigin ?? requestOrigin(request);
 
   try {
     const content = await loadSeoContent();
@@ -193,42 +151,24 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
  */
 export const reqHandler = createNodeRequestHandler(app);
 
-async function loadSeoContent(): Promise<SeoContent> {
-  const now = Date.now();
-
-  if (seoContentCache && seoContentCache.expiresAt > now) {
-    return seoContentCache.value;
-  }
-
-  try {
+function loadSeoContent(): Promise<SeoContent> {
+  return seoContentCache.get(async () => {
     const [posts, authors, albums] = await Promise.all([
-      fetchJson<SeoBlogPost[]>('/api/blog/posts?locale=de'),
-      fetchJson<SeoBlogAuthor[]>('/api/blog/authors'),
-      fetchJson<SeoMusicAlbum[]>('/api/music/albums?locale=de'),
+      fetchJson<SeoBlogPost[]>('/blog/posts?locale=de'),
+      fetchJson<SeoBlogAuthor[]>('/blog/authors'),
+      fetchJson<SeoMusicAlbum[]>('/music/albums?locale=de'),
     ]);
-    const value: SeoContent = {
+
+    return {
       posts,
       authors,
       albums,
     };
-
-    seoContentCache = {
-      expiresAt: now + seoCacheTtlMs,
-      value,
-    };
-
-    return value;
-  } catch (error) {
-    if (seoContentCache) {
-      return seoContentCache.value;
-    }
-
-    throw error;
-  }
+  });
 }
 
 async function fetchJson<T>(path: string): Promise<T> {
-  const response = await fetch(`${backendOrigin}${path}`, {
+  const response = await fetch(`${internalApiBaseUrl}${path}`, {
     headers: {
       accept: 'application/json',
     },
@@ -259,137 +199,4 @@ function requestOrigin(request: Request): string {
 
 function firstForwardedValue(value: string | undefined): string {
   return value?.split(',')[0]?.trim() ?? '';
-}
-
-function staticSitemapEntries(
-  origin: string,
-): {
-  location: string;
-  lastModified?: string;
-}[] {
-  return [
-    '/',
-    '/gaming',
-    '/music',
-    '/blog',
-    '/videos',
-    '/community',
-    '/kontakt',
-    '/unterstuetzen',
-    '/impressum',
-    '/datenschutz',
-  ].map((path) => ({
-    location: `${origin}${path}`,
-  }));
-}
-
-function renderSitemap(
-  entries: readonly {
-    location: string;
-    lastModified?: string;
-  }[],
-): string {
-  const urls = entries
-    .map((entry) => {
-      const lastModified = entry.lastModified
-        ? `\n    <lastmod>${escapeXml(toIsoDate(entry.lastModified))}</lastmod>`
-        : '';
-
-      return [
-        '  <url>',
-        `    <loc>${escapeXml(entry.location)}</loc>${lastModified}`,
-        '  </url>',
-      ].join('\n');
-    })
-    .join('\n');
-
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    urls,
-    '</urlset>',
-    '',
-  ].join('\n');
-}
-
-function renderFeed(
-  origin: string,
-  posts: readonly SeoBlogPost[],
-): string {
-  const sortedPosts = [...posts]
-    .sort(
-      (left, right) =>
-        Date.parse(right.publishedAt) -
-        Date.parse(left.publishedAt),
-    )
-    .slice(0, 50);
-  const latestPublishedAt = sortedPosts[0]?.publishedAt;
-  const lastBuildDate = latestPublishedAt
-    ? `\n    <lastBuildDate>${escapeXml(toRssDate(latestPublishedAt))}</lastBuildDate>`
-    : '';
-  const items = sortedPosts
-    .map((post) => {
-      const url = `${origin}/blog/${encodeURIComponent(post.slug)}`;
-      const categories = post.categories
-        .map(
-          (category) =>
-            `      <category>${escapeXml(category.name)}</category>`,
-        )
-        .join('\n');
-
-      return [
-        '    <item>',
-        `      <title>${escapeXml(post.title)}</title>`,
-        `      <link>${escapeXml(url)}</link>`,
-        `      <guid isPermaLink="true">${escapeXml(url)}</guid>`,
-        `      <description>${escapeXml(post.excerpt)}</description>`,
-        `      <pubDate>${escapeXml(toRssDate(post.publishedAt))}</pubDate>`,
-        `      <dc:creator>${escapeXml(post.author.displayName)}</dc:creator>`,
-        categories,
-        '    </item>',
-      ]
-        .filter(Boolean)
-        .join('\n');
-    })
-    .join('\n');
-
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">',
-    '  <channel>',
-    '    <title>Mimishow News</title>',
-    `    <link>${escapeXml(`${origin}/blog`)}</link>`,
-    '    <description>News, Geschichten und Beiträge aus der Mimishow.</description>',
-    '    <language>de-DE</language>',
-    `    <atom:link href="${escapeXml(`${origin}/feed.xml`)}" rel="self" type="application/rss+xml" />${lastBuildDate}`,
-    items,
-    '  </channel>',
-    '</rss>',
-    '',
-  ].join('\n');
-}
-
-function toIsoDate(value: string): string {
-  const date = new Date(value);
-
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toISOString().slice(0, 10);
-}
-
-function toRssDate(value: string): string {
-  const date = new Date(value);
-
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toUTCString();
-}
-
-function escapeXml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&apos;');
 }

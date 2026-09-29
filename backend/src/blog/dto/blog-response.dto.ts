@@ -72,6 +72,11 @@ export class BlogPostSummaryDto
   publishedAt!: string;
 
   @ApiProperty({
+    format: 'date-time',
+  })
+  updatedAt!: string;
+
+  @ApiProperty({
     type: BlogAuthorDto,
   })
   author!: BlogAuthorDto;
