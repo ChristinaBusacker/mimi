@@ -17,17 +17,12 @@
       <div class="hero-actions">
         @if (authInitialized() && !loadingState()) {
           @if (!user()) {
-            <app-button
-              class="primary round font-black discord-button"
-              href="/api/auth/discord"
-            >
+            <app-button class="primary round font-black discord-button" href="/api/auth/discord">
               {{ 'community.live.hero.login' | i18n | async }}
             </app-button>
           } @else if (membershipState()?.membership === 'member') {
-            <app-button
-              class="primary round font-black"
-              href="/community/dashboard"
-            >
+            <app-button class="primary round white" href="/community/dashboard">
+              <app-icon name="medal" class="white"></app-icon>
               {{ 'community.live.hero.dashboard' | i18n | async }}
             </app-button>
           } @else if (inviteUrl(); as invite) {
@@ -171,10 +166,8 @@
           {{ 'community.live.hero.login' | i18n | async }}
         </app-button>
       } @else if (membershipState()?.membership === 'member') {
-        <app-button
-          class="primary round font-black"
-          href="/community/dashboard"
-        >
+        <app-button class="primary round white" href="/community/dashboard">
+          <app-icon name="medal" class="white"></app-icon>
           {{ 'community.live.hero.dashboard' | i18n | async }}
         </app-button>
       } @else if (inviteUrl(); as invite) {

@@ -92,6 +92,10 @@
       display: flex;
       flex-wrap: wrap;
       gap: var(--spacing-md);
+
+      app-button {
+        min-width: 250px;
+      }
     }
   }
 
@@ -117,7 +121,7 @@
     .wrapper {
       .title {
         display: flex;
-        gap: var(--spacing-sm);
+        gap: var(--spacing-xs);
         color: var(--color-text);
       }
 
@@ -212,6 +216,7 @@
   :host {
     .intro {
       .text {
+        width: 66%;
         .upcoming-details {
           grid-template-columns: minmax(0, 1fr);
           align-items: start;

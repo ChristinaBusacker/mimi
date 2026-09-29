@@ -99,7 +99,7 @@
       color: var(--color-text-inverse);
       cursor: pointer;
       font: inherit;
-      font-weight: 900;
+      font-weight: 800;
 
       &:disabled {
         cursor: not-allowed;
@@ -173,10 +173,15 @@
         font-size: 0.7rem;
         font-weight: 800;
         text-decoration: none;
+        height: 32px;
       }
 
       .mobile-volume {
         display: none;
+      }
+
+      & .external-links {
+        gap: var(--spacing-sm);
       }
     }
   }
@@ -409,6 +414,7 @@
       grid-template-columns: 48px minmax(0, 1fr) auto;
       gap: var(--spacing-xs);
       padding: var(--spacing-xs);
+      padding: 10px;
 
       .cover {
         width: 48px;
@@ -436,7 +442,7 @@
         width: 100%;
         min-height: 32px;
         padding: 10px 0;
-        padding-right: 10px;
+        padding-right: 6px;
 
         .mobile-volume {
           display: block;

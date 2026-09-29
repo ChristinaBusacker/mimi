@@ -26,8 +26,16 @@
 
   border-color: color-mix(in srgb, var(--page-accent) 76%, transparent);
   background:
-    radial-gradient(circle at 86% 0, color-mix(in srgb, var(--page-accent) 14%, transparent), transparent 34%),
-    linear-gradient(145deg, color-mix(in srgb, var(--page-accent) 8%, transparent), transparent 48%),
+    radial-gradient(
+      circle at 86% 0,
+      color-mix(in srgb, var(--page-accent) 14%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--page-accent) 8%, transparent),
+      transparent 48%
+    ),
     var(--page-surface);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--page-accent) 8%, transparent),
@@ -158,8 +166,16 @@
   padding: var(--spacing-md);
   border-color: color-mix(in srgb, var(--page-accent) 72%, transparent);
   background:
-    radial-gradient(circle at 90% 0, color-mix(in srgb, var(--page-accent) 30%, transparent), transparent 45%),
-    linear-gradient(145deg, color-mix(in srgb, var(--page-accent) 13%, transparent), transparent 55%),
+    radial-gradient(
+      circle at 90% 0,
+      color-mix(in srgb, var(--page-accent) 30%, transparent),
+      transparent 45%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--page-accent) 13%, transparent),
+      transparent 55%
+    ),
     rgb(25 20 34 / 90%);
   box-shadow: 0 14px 32px rgb(0 0 0 / 26%);
 }
@@ -318,7 +334,11 @@
   padding: var(--spacing-md);
   border-radius: var(--radius-card);
   background:
-    linear-gradient(145deg, color-mix(in srgb, var(--page-accent) 10%, transparent), transparent 60%),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--page-accent) 10%, transparent),
+      transparent 60%
+    ),
     rgb(24 18 32 / 68%);
   box-shadow: inset 0 0 0 1px rgb(174 181 255 / 18%);
 
@@ -368,7 +388,7 @@
 
 .profile-settings__content {
   display: grid;
-  grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.15fr);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.85fr) auto;
   gap: var(--spacing-lg);
 }
 
@@ -424,8 +444,9 @@
   align-content: start;
 
   label {
-    display: grid;
+    display: flex;
     gap: 5px;
+    flex-direction: column;
 
     > span {
       color: #b8bdfd;
@@ -503,7 +524,11 @@
   overflow: hidden;
   border-color: color-mix(in srgb, var(--page-accent) 76%, transparent);
   background:
-    radial-gradient(circle at 88% 0, color-mix(in srgb, var(--page-accent) 12%, transparent), transparent 34%),
+    radial-gradient(
+      circle at 88% 0,
+      color-mix(in srgb, var(--page-accent) 12%, transparent),
+      transparent 34%
+    ),
     var(--page-surface);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--page-accent) 8%, transparent),
@@ -576,8 +601,7 @@
   padding: clamp(var(--spacing-md), 4vw, var(--spacing-lg));
   border-color: color-mix(in srgb, #5865f2 78%, transparent);
   background:
-    radial-gradient(circle at 50% 0, rgb(88 101 242 / 24%), transparent 45%),
-    rgb(28 20 38 / 97%);
+    radial-gradient(circle at 50% 0, rgb(88 101 242 / 24%), transparent 45%), rgb(28 20 38 / 97%);
   box-shadow: 0 22px 60px rgb(0 0 0 / 38%);
   text-align: center;
 

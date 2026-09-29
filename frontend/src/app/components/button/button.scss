@@ -118,6 +118,20 @@ button:disabled {
   color: var(--color-text-inverse);
 }
 
+:host(.twitch) button,
+:host(.twitch) a {
+  background-color: var(--color-twitch);
+  fill: white;
+  color: white;
+}
+
+:host(.discord) button,
+:host(.discord) a {
+  background-color: var(--color-discord);
+  fill: white;
+  color: white;
+}
+
 @include reduced-motion {
   button,
   a {

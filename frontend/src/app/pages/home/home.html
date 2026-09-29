@@ -1,6 +1,6 @@
 @let heroView = hero();
 
-<app-hero [type]="heroView.heroType">
+<app-hero [type]="heroView.heroType" class="floating">
   <div hero-left class="intro">
     <div class="tags">
       @if (heroView.statusKey) {
@@ -60,10 +60,10 @@
           </app-button>
         }
 
-        <app-button class="secondary round white" [href]="channelUrl" target="_blank">
-          <app-icon name="play" class="secondary" />
+        <app-button class="twitch round white" [href]="channelUrl" target="_blank">
+          <app-icon name="twitch" class="white" />
           {{ 'hero.action.channel' | i18n | async }}
-          <app-icon name="arrow" class="secondary" />
+          <app-icon name="arrow" class="white" />
         </app-button>
       </div>
     }

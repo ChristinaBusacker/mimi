@@ -22,10 +22,11 @@ import { AuthState } from '../../core/auth/auth.state';
 import { CommunityDashboardService } from '../../core/community/community-dashboard.service';
 import { CommunityPublicService } from '../../core/community/community-public.service';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
+import { Icon } from '../../components/icon/icon';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Button, Hero, I18nPipe, RouterLink],
+  imports: [AsyncPipe, Button, Hero, I18nPipe, RouterLink, Icon],
   selector: 'app-community-page',
   styleUrl: './community.scss',
   templateUrl: './community.html',

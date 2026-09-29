@@ -215,9 +215,14 @@
     grid-template-columns: 96px minmax(0, 1fr);
   }
 
+  app-music-library-player {
+    margin: -20px;
+  }
+
   .library > header {
     grid-template-columns: 1fr;
     gap: var(--spacing-sm);
     align-items: start;
+    padding: 20px 0;
   }
 }

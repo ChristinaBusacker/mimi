@@ -87,6 +87,11 @@
     }
   }
 
+  & app-button {
+    width: 50%;
+    margin-top: var(--spacing-sd);
+  }
+
   .no-stream {
     opacity: 0.75;
   }
@@ -95,7 +100,7 @@
 .game-card {
   @include framed(var(--control-border-width));
 
-  margin: var(--spacing-xl);
+  margin: var(--spacing-md) var(--spacing-xl);
   border-color: var(--page-accent);
   position: relative;
   width: 100%;
@@ -146,7 +151,7 @@
 
   .details {
     display: grid;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
     min-width: 0;
 
     > span {

@@ -95,10 +95,9 @@
 
 .discord-live-card {
   @include framed(var(--control-border-width));
-
   display: grid;
   gap: var(--spacing-md);
-  margin: var(--spacing-lg);
+  margin: var(--spacing-sd) var(--spacing-lg);
   padding: var(--spacing-md);
   border-color: rgb(111 124 255 / 72%);
   background:

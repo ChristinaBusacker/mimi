@@ -16,6 +16,17 @@
       align-items: center;
     }
   }
+
+  &.floating {
+    @include compact-layout {
+      .right {
+        position: absolute;
+        bottom: -30px;
+        right: -40%;
+        z-index: 0;
+      }
+    }
+  }
 }
 
 .hero {
