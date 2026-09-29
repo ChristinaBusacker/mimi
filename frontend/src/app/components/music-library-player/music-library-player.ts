@@ -1,5 +1,4 @@
 import type {
-  MusicAlbumReference,
   MusicTrack,
   MusicTrackListItem,
 } from '@shared/music/music';
@@ -54,38 +53,23 @@ export class MusicLibraryPlayer {
     >();
   readonly locale =
     input.required<Language>();
-  readonly allowAlbumFilter =
-    input(true);
 
-  protected readonly albumFilterSlug =
-    signal<string | null>(null);
   protected readonly activeTrackId =
+    signal<string | null>(null);
+  protected readonly storyTrackId =
     signal<string | null>(null);
   protected readonly playing =
     signal(false);
   protected readonly currentTime =
     signal(0);
+  protected readonly volume =
+    signal(0.8);
   protected readonly trackDetail =
     signal<MusicTrack | null>(null);
   protected readonly trackDetailLoading =
     signal(false);
-  protected readonly storyClosed =
-    signal(false);
 
   private detailRequestVersion = 0;
-
-  protected readonly visibleTracks =
-    computed(() => {
-      const filter =
-        this.albumFilterSlug();
-
-      return filter
-        ? this.tracks().filter(
-            (track) =>
-              track.album?.slug === filter,
-          )
-        : [...this.tracks()];
-    });
 
   protected readonly activeTrack =
     computed(
@@ -97,46 +81,38 @@ export class MusicLibraryPlayer {
         ) ?? null,
     );
 
+  protected readonly storyTrack =
+    computed(
+      () =>
+        this.tracks().find(
+          (track) =>
+            track.id ===
+            this.storyTrackId(),
+        ) ?? null,
+    );
+
   protected readonly currentTrack =
     computed(
       () =>
         this.activeTrack() ??
-        this.visibleTracks().find(
+        this.tracks().find(
           (track) =>
             track.previewAssetId !== null,
         ) ??
-        this.visibleTracks()[0] ??
+        this.tracks()[0] ??
         null,
     );
-
-  protected readonly activeAlbum =
-    computed(() => {
-      const filter =
-        this.albumFilterSlug();
-
-      if (!filter) {
-        return null;
-      }
-
-      return (
-        this.tracks().find(
-          (track) =>
-            track.album?.slug === filter,
-        )?.album ?? null
-      );
-    });
 
   protected readonly storyVisible =
     computed(
       () =>
-        !this.storyClosed() &&
-        (this.activeTrack()?.hasContent ??
-          false),
+        this.storyTrack()?.hasContent ??
+        false,
     );
 
   private readonly detailEffect = effect(
     () => {
-      const track = this.activeTrack();
+      const track = this.storyTrack();
       const locale = this.locale();
       const requestVersion =
         ++this.detailRequestVersion;
@@ -172,6 +148,13 @@ export class MusicLibraryPlayer {
       return;
     }
 
+    this.storyTrackId.set(
+      track.hasContent
+        ? track.id
+        : null,
+    );
+    audio.volume = this.volume();
+
     if (
       this.activeTrackId() === track.id
     ) {
@@ -187,7 +170,6 @@ export class MusicLibraryPlayer {
     }
 
     this.activeTrackId.set(track.id);
-    this.storyClosed.set(false);
     this.currentTime.set(0);
     this.playing.set(false);
 
@@ -202,26 +184,67 @@ export class MusicLibraryPlayer {
     });
   }
 
-  protected filterByAlbum(
-    album: MusicAlbumReference,
-  ): void {
-    if (!this.allowAlbumFilter()) {
+  protected async onTrackRowClick(
+    track: MusicTrackListItem,
+    event: MouseEvent,
+  ): Promise<void> {
+    const target = event.target;
+
+    if (
+      target instanceof Element &&
+      target.closest('a, button, input')
+    ) {
       return;
     }
 
-    this.stopPlayback();
-    this.albumFilterSlug.set(
-      album.slug,
-    );
-  }
+    if (
+      window.matchMedia(
+        '(max-width: 900px)',
+      ).matches &&
+      track.previewAssetId
+    ) {
+      await this.toggleTrack(track);
 
-  protected clearAlbumFilter(): void {
-    this.stopPlayback();
-    this.albumFilterSlug.set(null);
+      return;
+    }
+
+    if (track.hasContent) {
+      this.storyTrackId.set(track.id);
+    }
   }
 
   protected closeStory(): void {
-    this.storyClosed.set(true);
+    this.storyTrackId.set(null);
+  }
+
+  protected setVolume(event: Event): void {
+    const target = event.target;
+
+    if (
+      !(target instanceof HTMLInputElement)
+    ) {
+      return;
+    }
+
+    const value = Number(target.value);
+
+    if (!Number.isFinite(value)) {
+      return;
+    }
+
+    const volume = Math.min(
+      1,
+      Math.max(0, value),
+    );
+
+    this.volume.set(volume);
+
+    const audio =
+      this.audio()?.nativeElement;
+
+    if (audio) {
+      audio.volume = volume;
+    }
   }
 
   protected seek(event: Event): void {
@@ -363,19 +386,4 @@ export class MusicLibraryPlayer {
     }
   }
 
-  private stopPlayback(): void {
-    const audio =
-      this.audio()?.nativeElement;
-
-    if (audio) {
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
-    }
-
-    this.activeTrackId.set(null);
-    this.currentTime.set(0);
-    this.playing.set(false);
-    this.storyClosed.set(false);
-  }
 }

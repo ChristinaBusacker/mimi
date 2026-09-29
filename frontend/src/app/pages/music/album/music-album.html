@@ -63,7 +63,6 @@
       <app-music-library-player
         [tracks]="tracks()"
         [locale]="albumData.locale"
-        [allowAlbumFilter]="false"
       />
     } @else {
       <p>{{ 'music.page.noTracks' | i18n | async }}</p>

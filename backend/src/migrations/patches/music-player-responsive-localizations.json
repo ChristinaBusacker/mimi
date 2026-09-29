@@ -1,0 +1,14 @@
+{
+  "localizations": [
+    {
+      "key": "music.library.description",
+      "de": "Hör dich durch Mimis Musik. Über den Albumnamen gelangst du direkt zum jeweiligen Release. Zu Songs mit Hintergrundtext kannst du die Geschichte dahinter direkt aus der Liste öffnen.",
+      "en": "Explore Mimi's music. Selecting an album name takes you directly to that release. For songs with additional background text, you can open the story behind them directly from the list."
+    },
+    {
+      "key": "music.player.volume",
+      "de": "Lautstärke",
+      "en": "Volume"
+    }
+  ]
+}

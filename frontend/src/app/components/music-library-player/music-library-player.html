@@ -8,32 +8,6 @@
     (ended)="onEnded()"
   ></audio>
 
-  @if (activeAlbum(); as album) {
-    <div class="filter">
-      <button
-        type="button"
-        (click)="clearAlbumFilter()"
-      >
-        ←
-        {{ 'music.library.allSongs' | i18n | async }}
-      </button>
-
-      <div>
-        <span>
-          {{ 'music.library.filteredByAlbum' | i18n | async }}
-        </span>
-        <strong>{{ album.title }}</strong>
-      </div>
-
-      <a
-        [routerLink]="['/music/albums', album.slug]"
-      >
-        {{ 'music.album.more' | i18n | async }}
-        →
-      </a>
-    </div>
-  }
-
   @if (currentTrack(); as currentTrack) {
     <header class="now-playing">
       <div class="cover">
@@ -63,19 +37,12 @@
         <strong>{{ currentTrack.title }}</strong>
 
         @if (currentTrack.album; as album) {
-          @if (allowAlbumFilter()) {
-            <button
-              type="button"
-              class="album-button"
-              (click)="filterByAlbum(album)"
-            >
-              {{ album.title }}
-            </button>
-          } @else {
-            <span class="album-name">
-              {{ album.title }}
-            </span>
-          }
+          <a
+            class="album-link"
+            [routerLink]="['/music/albums', album.slug]"
+          >
+            {{ album.title }}
+          </a>
         }
       </div>
 
@@ -103,23 +70,37 @@
         </span>
       </button>
 
-      <div class="progress">
-        <input
-          type="range"
-          min="0"
-          [max]="currentTrack.previewDurationSeconds"
-          step="0.1"
-          [value]="currentTime()"
-          [disabled]="!currentTrack.previewAssetId"
-          [attr.aria-label]="'music.player.progress' | i18n | async"
-          (input)="seek($event)"
-        />
+      <div class="playback-controls">
+        <div class="progress">
+          <input
+            type="range"
+            min="0"
+            [max]="currentTrack.previewDurationSeconds"
+            step="0.1"
+            [value]="currentTime()"
+            [disabled]="!currentTrack.previewAssetId"
+            [attr.aria-label]="'music.player.progress' | i18n | async"
+            (input)="seek($event)"
+          />
 
-        <span>
-          {{ formatDuration(currentTime()) }}
-          /
-          {{ formatDuration(currentTrack.previewDurationSeconds) }}
-        </span>
+          <span>
+            {{ formatDuration(currentTime()) }}
+            /
+            {{ formatDuration(currentTrack.previewDurationSeconds) }}
+          </span>
+        </div>
+
+        <label class="volume">
+          <span>{{ 'music.player.volume' | i18n | async }}</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            [value]="volume()"
+            (input)="setVolume($event)"
+          />
+        </label>
       </div>
 
       <div class="external">
@@ -170,12 +151,15 @@
 
       <ol>
         @for (
-          track of visibleTracks();
+          track of tracks();
           track track.id;
           let index = $index
         ) {
           <li
             [class.active]="activeTrackId() === track.id"
+            [class.has-story]="track.hasContent"
+            [class.has-preview]="!!track.previewAssetId"
+            (click)="onTrackRowClick(track, $event)"
           >
             <span class="number">
               {{ track.trackNumber ?? index + 1 }}
@@ -212,6 +196,15 @@
             <div class="track-title">
               <strong>{{ track.title }}</strong>
 
+              @if (track.album; as album) {
+                <a
+                  class="track-album-mobile"
+                  [routerLink]="['/music/albums', album.slug]"
+                >
+                  {{ album.title }}
+                </a>
+              }
+
               @if (track.hasContent) {
                 <span>
                   {{ 'music.library.hasStory' | i18n | async }}
@@ -221,16 +214,11 @@
 
             <div class="track-album">
               @if (track.album; as album) {
-                @if (allowAlbumFilter()) {
-                  <button
-                    type="button"
-                    (click)="filterByAlbum(album)"
-                  >
-                    {{ album.title }}
-                  </button>
-                } @else {
-                  <span>{{ album.title }}</span>
-                }
+                <a
+                  [routerLink]="['/music/albums', album.slug]"
+                >
+                  {{ album.title }}
+                </a>
               } @else {
                 <span>–</span>
               }
@@ -257,7 +245,7 @@
                 {{ 'music.library.storyLabel' | i18n | async }}
               </span>
 
-              @if (activeTrack(); as track) {
+              @if (storyTrack(); as track) {
                 <h3>{{ track.title }}</h3>
               }
             </div>
