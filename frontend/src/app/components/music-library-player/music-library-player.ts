@@ -7,7 +7,9 @@ import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
+  HostListener,
   computed,
   effect,
   inject,
@@ -46,6 +48,16 @@ export class MusicLibraryPlayer {
     viewChild<ElementRef<HTMLAudioElement>>(
       'audio',
     );
+  private readonly volumeControl =
+    viewChild<ElementRef<HTMLElement>>(
+      'volumeControl',
+    );
+  private readonly destroyRef =
+    inject(DestroyRef);
+
+  private volumeCloseTimeout:
+    ReturnType<typeof setTimeout> | null =
+      null;
 
   readonly tracks =
     input.required<
@@ -64,12 +76,20 @@ export class MusicLibraryPlayer {
     signal(0);
   protected readonly volume =
     signal(0.8);
+  protected readonly volumeExpanded =
+    signal(false);
   protected readonly trackDetail =
     signal<MusicTrack | null>(null);
   protected readonly trackDetailLoading =
     signal(false);
 
   private detailRequestVersion = 0;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.clearVolumeCloseTimeout();
+    });
+  }
 
   protected readonly activeTrack =
     computed(
@@ -148,11 +168,6 @@ export class MusicLibraryPlayer {
       return;
     }
 
-    this.storyTrackId.set(
-      track.hasContent
-        ? track.id
-        : null,
-    );
     audio.volume = this.volume();
 
     if (
@@ -184,10 +199,10 @@ export class MusicLibraryPlayer {
     });
   }
 
-  protected async onTrackRowClick(
+  protected onTrackRowClick(
     track: MusicTrackListItem,
     event: MouseEvent,
-  ): Promise<void> {
+  ): void {
     const target = event.target;
 
     if (
@@ -200,21 +215,86 @@ export class MusicLibraryPlayer {
     if (
       window.matchMedia(
         '(max-width: 900px)',
-      ).matches &&
-      track.previewAssetId
+      ).matches
     ) {
-      await this.toggleTrack(track);
-
       return;
     }
 
-    if (track.hasContent) {
-      this.storyTrackId.set(track.id);
+    this.openStory(track);
+  }
+
+  protected openStory(
+    track: MusicTrackListItem,
+    event?: Event,
+  ): void {
+    event?.stopPropagation();
+
+    if (!track.hasContent) {
+      return;
     }
+
+    this.storyTrackId.set(track.id);
+  }
+
+  protected toggleStory(
+    track: MusicTrackListItem,
+    event: Event,
+  ): void {
+    event.stopPropagation();
+
+    if (!track.hasContent) {
+      return;
+    }
+
+    this.storyTrackId.update((current) =>
+      current === track.id
+        ? null
+        : track.id,
+    );
   }
 
   protected closeStory(): void {
     this.storyTrackId.set(null);
+  }
+
+  protected toggleVolume(
+    event: Event,
+  ): void {
+    event.stopPropagation();
+
+    if (this.volumeExpanded()) {
+      this.closeVolume();
+
+      return;
+    }
+
+    this.volumeExpanded.set(true);
+    this.scheduleVolumeClose();
+  }
+
+  @HostListener(
+    'document:pointerdown',
+    ['$event'],
+  )
+  protected onDocumentPointerDown(
+    event: PointerEvent,
+  ): void {
+    if (!this.volumeExpanded()) {
+      return;
+    }
+
+    const target = event.target;
+    const control =
+      this.volumeControl()?.nativeElement;
+
+    if (
+      target instanceof Node &&
+      control?.contains(target)
+    ) {
+      return;
+    }
+
+    this.closeVolume();
   }
 
   protected setVolume(event: Event): void {
@@ -244,6 +324,10 @@ export class MusicLibraryPlayer {
 
     if (audio) {
       audio.volume = volume;
+    }
+
+    if (this.volumeExpanded()) {
+      this.scheduleVolumeClose();
     }
   }
 
@@ -343,6 +427,32 @@ export class MusicLibraryPlayer {
       track.album?.coverAssetId ??
       null
     );
+  }
+
+  private closeVolume(): void {
+    this.volumeExpanded.set(false);
+    this.clearVolumeCloseTimeout();
+  }
+
+  private scheduleVolumeClose(): void {
+    this.clearVolumeCloseTimeout();
+
+    this.volumeCloseTimeout = setTimeout(
+      () => {
+        this.volumeExpanded.set(false);
+        this.volumeCloseTimeout = null;
+      },
+      4_000,
+    );
+  }
+
+  private clearVolumeCloseTimeout(): void {
+    if (this.volumeCloseTimeout === null) {
+      return;
+    }
+
+    clearTimeout(this.volumeCloseTimeout);
+    this.volumeCloseTimeout = null;
   }
 
   private async loadTrackDetail(
