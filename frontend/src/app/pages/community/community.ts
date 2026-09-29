@@ -26,7 +26,7 @@ import { Icon } from '../../components/icon/icon';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Button, Hero, I18nPipe, RouterLink, Icon],
+  imports: [AsyncPipe, Button, Hero, I18nPipe, Icon],
   selector: 'app-community-page',
   styleUrl: './community.scss',
   templateUrl: './community.html',
