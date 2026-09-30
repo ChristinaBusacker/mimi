@@ -137,7 +137,6 @@
 
       h2 {
         margin: 0;
-        font-family: var(--font-display);
       }
     }
 
@@ -290,11 +289,6 @@
 
   > *:last-child {
     margin-bottom: 0;
-  }
-
-  h2,
-  h3 {
-    font-family: var(--font-display);
   }
 
   a {

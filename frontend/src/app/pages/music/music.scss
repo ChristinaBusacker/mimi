@@ -118,10 +118,10 @@
     h2 {
       margin: 0;
       overflow: hidden;
-      font-family: var(--font-display);
       font-size: 32px;
       line-height: 2.5rem;
       text-overflow: ellipsis;
+      font-family: var(--font-headline);
     }
 
     small {
@@ -176,7 +176,6 @@
 
     h2 {
       margin: 2px 0 0;
-      font-family: var(--font-display);
       font-size: clamp(2rem, 4vw, 3.2rem);
       line-height: 1;
     }
@@ -200,7 +199,6 @@
 
     h2 {
       margin: var(--spacing-sm) 0 0;
-      font-family: var(--font-display);
     }
 
     p {

@@ -4,7 +4,7 @@
       <span class="public-page__eyebrow">
         {{ 'contact.page.eyebrow' | i18n | async }}
       </span>
-      <h1 class="sue-ellen">{{ 'footer.contact' | i18n | async }}</h1>
+      <h1 class="more-suggar">{{ 'footer.contact' | i18n | async }}</h1>
       <p>{{ 'contact.page.intro' | i18n | async }}</p>
     </div>
 
@@ -35,12 +35,7 @@
         </p>
       }
 
-      <form
-        class="contact-form"
-        [formGroup]="form"
-        novalidate
-        (ngSubmit)="submit()"
-      >
+      <form class="contact-form" [formGroup]="form" novalidate (ngSubmit)="submit()">
         <div class="contact-form__fields">
           <label class="contact-form__field">
             <span>{{ 'contact.form.name' | i18n | async }}</span>
@@ -52,17 +47,13 @@
               [placeholder]="('contact.form.name.placeholder' | i18n | async) ?? ''"
             />
 
-            @if (
-              form.controls.name.touched &&
-              form.controls.name.hasError('required')
-            ) {
+            @if (form.controls.name.touched && form.controls.name.hasError('required')) {
               <small class="contact-form__field-error">
                 {{ 'contact.form.validation.required' | i18n | async }}
               </small>
             } @else if (
               form.controls.name.touched &&
-              (form.controls.name.hasError('minlength') ||
-                form.controls.name.hasError('maxlength'))
+              (form.controls.name.hasError('minlength') || form.controls.name.hasError('maxlength'))
             ) {
               <small class="contact-form__field-error">
                 {{ 'contact.form.validation.nameLength' | i18n | async }}
@@ -80,17 +71,11 @@
               [placeholder]="('contact.form.email.placeholder' | i18n | async) ?? ''"
             />
 
-            @if (
-              form.controls.email.touched &&
-              form.controls.email.hasError('required')
-            ) {
+            @if (form.controls.email.touched && form.controls.email.hasError('required')) {
               <small class="contact-form__field-error">
                 {{ 'contact.form.validation.required' | i18n | async }}
               </small>
-            } @else if (
-              form.controls.email.touched &&
-              form.controls.email.hasError('email')
-            ) {
+            } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
               <small class="contact-form__field-error">
                 {{ 'contact.form.validation.email' | i18n | async }}
               </small>
@@ -107,10 +92,7 @@
               [placeholder]="('contact.form.subject.placeholder' | i18n | async) ?? ''"
             />
 
-            @if (
-              form.controls.subject.touched &&
-              form.controls.subject.hasError('required')
-            ) {
+            @if (form.controls.subject.touched && form.controls.subject.hasError('required')) {
               <small class="contact-form__field-error">
                 {{ 'contact.form.validation.required' | i18n | async }}
               </small>
@@ -134,10 +116,7 @@
               [placeholder]="('contact.form.message.placeholder' | i18n | async) ?? ''"
             ></textarea>
 
-            @if (
-              form.controls.message.touched &&
-              form.controls.message.hasError('required')
-            ) {
+            @if (form.controls.message.touched && form.controls.message.hasError('required')) {
               <small class="contact-form__field-error">
                 {{ 'contact.form.validation.required' | i18n | async }}
               </small>
@@ -154,28 +133,12 @@
         </div>
 
         <div class="contact-form__honeypot" aria-hidden="true">
-          <input
-            type="text"
-            formControlName="website"
-            tabindex="-1"
-            autocomplete="off"
-          />
+          <input type="text" formControlName="website" tabindex="-1" autocomplete="off" />
         </div>
 
         <div class="contact-form__actions">
-          <button
-            type="submit"
-            class="public-page__button"
-            [disabled]="submitting()"
-          >
-            {{
-              (submitting()
-                ? 'contact.form.submitting'
-                : 'contact.form.submit'
-              )
-                | i18n
-                | async
-            }}
+          <button type="submit" class="public-page__button" [disabled]="submitting()">
+            {{ (submitting() ? 'contact.form.submitting' : 'contact.form.submit') | i18n | async }}
           </button>
 
           <p class="contact-form__privacy">

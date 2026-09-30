@@ -2,38 +2,13 @@
 @let post = postData.post;
 
 <section class="page">
-  <a
-    class="back"
-    routerLink="/blog"
-  >
+  <a class="back" routerLink="/blog">
     ←
     {{ 'blog.article.back' | i18n | async }}
   </a>
 
-  <app-hero type="chatting">
-    <div hero-left class="cover">
-      @if (post.coverAssetId; as coverId) {
-        <picture>
-          <source
-            [srcset]="imageVariantUrl(coverId, 'large')"
-            type="image/webp"
-          />
-          <img
-            [src]="assetUrl(coverId)"
-            [alt]="post.coverImageDescription || post.title"
-          />
-        </picture>
-      } @else {
-        <div class="placeholder">
-          <app-icon
-            name="heart"
-            class="secondary"
-          />
-        </div>
-      }
-    </div>
-
-    <div hero-right class="meta">
+  <app-hero gradientDirection="ltr" [background]="assetUrl(post.coverAssetId + '')">
+    <div hero-left class="meta">
       <span>
         {{ 'blog.article.label' | i18n | async }}
       </span>
@@ -41,25 +16,13 @@
       <h1>{{ post.title }}</h1>
 
       <div class="publication">
-        <time
-          [attr.datetime]="post.publishedAt"
-        >
-          {{
-            formatDate(
-              post.publishedAt,
-              postData.locale
-            )
-          }}
+        <time [attr.datetime]="post.publishedAt">
+          {{ formatDate(post.publishedAt, postData.locale) }}
         </time>
 
         <span>
           {{ 'blog.article.by' | i18n | async }}
-          <a
-            [routerLink]="[
-              '/blog/autoren',
-              post.author.slug
-            ]"
-          >
+          <a [routerLink]="['/blog/autoren', post.author.slug]">
             {{ post.author.displayName }}
           </a>
         </span>
@@ -67,10 +30,7 @@
 
       @if (post.categories.length) {
         <div class="categories">
-          @for (
-            category of post.categories;
-            track category.slug
-          ) {
+          @for (category of post.categories; track category.slug) {
             <span>
               {{ category.name }}
             </span>
@@ -82,36 +42,35 @@
         <p>{{ post.excerpt }}</p>
       }
     </div>
+
+    <div hero-right class="cover">
+      @if (post.coverAssetId; as coverId) {
+        <picture>
+          <source [srcset]="imageVariantUrl(coverId, 'large')" type="image/webp" />
+          <img [src]="assetUrl(coverId)" [alt]="post.coverImageDescription || post.title" />
+        </picture>
+      } @else {
+        <div class="placeholder">
+          <app-icon name="heart" class="secondary" />
+        </div>
+      }
+    </div>
   </app-hero>
 
   <div class="content-layout">
     <article class="article">
-      <app-rendered-content
-        [sanitizedHtml]="post.contentHtml"
-      />
+      <app-rendered-content [sanitizedHtml]="post.contentHtml" />
     </article>
 
     <aside class="author">
-      @if (
-        post.author.avatarAssetId;
-        as avatarId
-      ) {
+      @if (post.author.avatarAssetId; as avatarId) {
         <picture class="avatar">
-          <source
-            [srcset]="imageVariantUrl(avatarId, 'thumbnail')"
-            type="image/webp"
-          />
-          <img
-            [src]="assetUrl(avatarId)"
-            [alt]="post.author.displayName"
-          />
+          <source [srcset]="imageVariantUrl(avatarId, 'thumbnail')" type="image/webp" />
+          <img [src]="assetUrl(avatarId)" [alt]="post.author.displayName" />
         </picture>
       } @else {
         <div class="avatar placeholder">
-          <app-icon
-            name="heart"
-            class="secondary"
-          />
+          <app-icon name="heart" class="secondary" />
         </div>
       }
 
@@ -120,20 +79,13 @@
           {{ 'blog.article.authorLabel' | i18n | async }}
         </span>
         <h2>
-          <a
-            [routerLink]="[
-              '/blog/autoren',
-              post.author.slug
-            ]"
-          >
+          <a [routerLink]="['/blog/autoren', post.author.slug]">
             {{ post.author.displayName }}
           </a>
         </h2>
 
         @if (post.author.bioHtml) {
-          <app-rendered-content
-            [sanitizedHtml]="post.author.bioHtml"
-          />
+          <app-rendered-content [sanitizedHtml]="post.author.bioHtml" />
         }
       </div>
     </aside>
@@ -157,9 +109,7 @@
         @for (comment of comments(); track comment.id) {
           <article class="comment" [class.is-featured]="comment.featured">
             <header>
-              <strong
-                [style.color]="comment.author.profileColor ?? null"
-              >
+              <strong [style.color]="comment.author.profileColor ?? null">
                 {{ comment.author.displayName }}
               </strong>
               <div class="comment__meta">
@@ -203,13 +153,7 @@
             [disabled]="commentSaving() || !commentText().trim()"
             (click)="submitComment()"
           >
-            {{
-              (commentSaving()
-                ? 'blog.comments.saving'
-                : 'blog.comments.submit')
-                | i18n
-                | async
-            }}
+            {{ (commentSaving() ? 'blog.comments.saving' : 'blog.comments.submit') | i18n | async }}
           </app-button>
         </div>
       </div>

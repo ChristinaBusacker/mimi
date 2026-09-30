@@ -7,13 +7,10 @@
     {{ 'music.album.back' | i18n | async }}
   </a>
 
-  <app-hero type="music">
+  <app-hero type="music" [background]="assetUrl(album.coverAssetId || '')" gradientDirection="rtl">
     <div hero-left class="cover">
       @if (album.coverAssetId) {
-        <img
-          [src]="assetUrl(album.coverAssetId)"
-          [alt]="album.title"
-        />
+        <img [src]="assetUrl(album.coverAssetId)" [alt]="album.title" />
       } @else {
         <div class="placeholder">
           <app-icon name="music" class="secondary" />
@@ -25,13 +22,7 @@
       <span>{{ 'music.album.label' | i18n | async }}</span>
       <h1>{{ album.title }}</h1>
 
-      @if (
-        formatReleaseDate(
-          album.releasedAt,
-          albumData.locale
-        );
-        as releaseDate
-      ) {
+      @if (formatReleaseDate(album.releasedAt, albumData.locale); as releaseDate) {
         <p>
           {{ 'music.page.released' | i18n | async }}
           {{ releaseDate }}
@@ -47,9 +38,7 @@
 
   @if (album.contentHtml) {
     <article class="story">
-      <app-rendered-content
-        [sanitizedHtml]="album.contentHtml"
-      />
+      <app-rendered-content [sanitizedHtml]="album.contentHtml" />
     </article>
   }
 
@@ -60,10 +49,7 @@
     </header>
 
     @if (tracks().length) {
-      <app-music-library-player
-        [tracks]="tracks()"
-        [locale]="albumData.locale"
-      />
+      <app-music-library-player [tracks]="tracks()" [locale]="albumData.locale" />
     } @else {
       <p>{{ 'music.page.noTracks' | i18n | async }}</p>
     }

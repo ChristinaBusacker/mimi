@@ -1,39 +1,17 @@
 import type { BlogComment } from '@shared/blog/blog-comment';
 
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
-import {
-  toObservable,
-  toSignal,
-} from '@angular/core/rxjs-interop';
-import {
-  ActivatedRoute,
-  RouterLink,
-} from '@angular/router';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Store } from '@ngxs/store';
-import {
-  combineLatest,
-  distinctUntilChanged,
-  firstValueFrom,
-  map,
-  of,
-  switchMap,
-} from 'rxjs';
+import { combineLatest, distinctUntilChanged, firstValueFrom, map, of, switchMap } from 'rxjs';
 
 import { Button } from '../../../components/button/button';
 import { Hero } from '../../../components/hero/hero';
 import { Icon } from '../../../components/icon/icon';
 import { RenderedContent } from '../../../components/rendered-content/rendered-content';
-import {
-  type BlogPostPageData,
-  BlogPublicService,
-} from '../../../core/blog/blog-public.service';
+import { type BlogPostPageData, BlogPublicService } from '../../../core/blog/blog-public.service';
 import { LoadAuthSession } from '../../../core/auth/auth.actions';
 import { AuthState } from '../../../core/auth/auth.state';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
@@ -41,104 +19,55 @@ import { I18nState } from '../../../core/i18n/i18n.state';
 import type { Language } from '../../../core/i18n/i18n.types';
 
 @Component({
-  changeDetection:
-    ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    Button,
-    Hero,
-    Icon,
-    I18nPipe,
-    RenderedContent,
-    RouterLink,
-  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AsyncPipe, Button, Hero, Icon, I18nPipe, RenderedContent, RouterLink],
   selector: 'app-blog-post',
   styleUrl: './blog-post.scss',
   templateUrl: './blog-post.html',
 })
 export class BlogPostPage {
-  private readonly route =
-    inject(ActivatedRoute);
-  private readonly store =
-    inject(Store);
-  private readonly blog =
-    inject(BlogPublicService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly store = inject(Store);
+  private readonly blog = inject(BlogPublicService);
 
-  private readonly initialData =
-    this.route.snapshot.data[
-      'data'
-    ] as BlogPostPageData;
+  private readonly initialData = this.route.snapshot.data['data'] as BlogPostPageData;
 
-  private readonly language =
-    this.store.selectSignal(
-      I18nState.language,
-    );
+  private readonly language = this.store.selectSignal(I18nState.language);
 
-  protected readonly user =
-    this.store.selectSignal(
-      AuthState.user,
-    );
-  protected readonly comments =
-    signal<BlogComment[]>([]);
-  protected readonly commentsLoading =
-    signal(false);
-  protected readonly commentSaving =
-    signal(false);
-  protected readonly commentText =
-    signal('');
-  protected readonly commentErrorKey =
-    signal<string | null>(null);
+  protected readonly user = this.store.selectSignal(AuthState.user);
+  protected readonly comments = signal<BlogComment[]>([]);
+  protected readonly commentsLoading = signal(false);
+  protected readonly commentSaving = signal(false);
+  protected readonly commentText = signal('');
+  protected readonly commentErrorKey = signal<string | null>(null);
 
   protected readonly data = toSignal(
     combineLatest([
       this.route.paramMap.pipe(
-        map((params) =>
-          params.get('slug'),
-        ),
+        map((params) => params.get('slug')),
         distinctUntilChanged(),
       ),
-      toObservable(
-        this.language,
-      ).pipe(
-        distinctUntilChanged(),
-      ),
+      toObservable(this.language).pipe(distinctUntilChanged()),
     ]).pipe(
-      switchMap(
-        ([slug, locale]) => {
-          if (!slug) {
-            return of(
-              this.initialData,
-            );
-          }
+      switchMap(([slug, locale]) => {
+        if (!slug) {
+          return of(this.initialData);
+        }
 
-          if (
-            slug ===
-              this.initialData.post.slug &&
-            locale ===
-              this.initialData.locale
-          ) {
-            return of(
-              this.initialData,
-            );
-          }
+        if (slug === this.initialData.post.slug && locale === this.initialData.locale) {
+          return of(this.initialData);
+        }
 
-          return this.blog.getPostPage(
-            slug,
-            locale,
-          );
-        },
-      ),
+        return this.blog.getPostPage(slug, locale);
+      }),
     ),
     {
-      initialValue:
-        this.initialData,
+      initialValue: this.initialData,
     },
   );
 
   constructor() {
-    this.store.dispatch(
-      new LoadAuthSession(),
-    ).subscribe();
+    this.store.dispatch(new LoadAuthSession()).subscribe();
 
     effect(() => {
       const slug = this.data().post.slug;
@@ -146,10 +75,8 @@ export class BlogPostPage {
     });
   }
 
-  protected async submitComment():
-    Promise<void> {
-    const content =
-      this.commentText().trim();
+  protected async submitComment(): Promise<void> {
+    const content = this.commentText().trim();
 
     if (!content || this.commentSaving()) {
       return;
@@ -159,93 +86,48 @@ export class BlogPostPage {
     this.commentErrorKey.set(null);
 
     try {
-      const comment = await firstValueFrom(
-        this.blog.createComment(
-          this.data().post.slug,
-          content,
-        ),
-      );
+      const comment = await firstValueFrom(this.blog.createComment(this.data().post.slug, content));
 
-      this.comments.update((comments) => [
-        ...comments,
-        comment,
-      ]);
+      this.comments.update((comments) => [...comments, comment]);
       this.commentText.set('');
     } catch {
-      this.commentErrorKey.set(
-        'blog.comments.saveFailed',
-      );
+      this.commentErrorKey.set('blog.comments.saveFailed');
     } finally {
       this.commentSaving.set(false);
     }
   }
 
-
-  protected imageVariantUrl(
-    assetId: string,
-    variant:
-      | 'thumbnail'
-      | 'medium'
-      | 'large',
-  ): string {
+  protected imageVariantUrl(assetId: string, variant: 'thumbnail' | 'medium' | 'large'): string {
     return `/api/assets/${assetId}/image/${variant}/webp`;
   }
 
-  protected assetUrl(
-    assetId: string,
-  ): string {
+  protected assetUrl(assetId: string): string {
     return `/api/assets/${assetId}`;
   }
 
-  protected formatDate(
-    value: string,
-    locale: Language,
-  ): string {
-    return new Intl.DateTimeFormat(
-      locale === 'de'
-        ? 'de-DE'
-        : 'en-US',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: '2-digit',
-      },
-    ).format(
-      new Date(value),
-    );
+  protected formatDate(value: string, locale: Language): string {
+    return new Intl.DateTimeFormat(locale === 'de' ? 'de-DE' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: '2-digit',
+    }).format(new Date(value));
   }
 
-  protected formatCommentDate(
-    value: string,
-    locale: Language,
-  ): string {
-    return new Intl.DateTimeFormat(
-      locale === 'de'
-        ? 'de-DE'
-        : 'en-US',
-      {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      },
-    ).format(new Date(value));
+  protected formatCommentDate(value: string, locale: Language): string {
+    return new Intl.DateTimeFormat(locale === 'de' ? 'de-DE' : 'en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(value));
   }
 
-  private async loadComments(
-    slug: string,
-  ): Promise<void> {
+  private async loadComments(slug: string): Promise<void> {
     this.commentsLoading.set(true);
     this.commentErrorKey.set(null);
 
     try {
-      this.comments.set(
-        await firstValueFrom(
-          this.blog.getComments(slug),
-        ),
-      );
+      this.comments.set(await firstValueFrom(this.blog.getComments(slug)));
     } catch {
-      this.commentErrorKey.set(
-        'blog.comments.loadFailed',
-      );
+      this.commentErrorKey.set('blog.comments.loadFailed');
     } finally {
       this.commentsLoading.set(false);
     }

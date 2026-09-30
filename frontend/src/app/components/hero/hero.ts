@@ -11,4 +11,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 export class Hero {
   readonly type = input<HeroType | 'community'>('music');
   readonly gradientDirection = input<'ltr' | 'rtl'>('ltr');
+  readonly background = input<string>('images/hero-bg-music.png');
 }

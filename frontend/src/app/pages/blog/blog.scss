@@ -117,7 +117,6 @@
 
     h2 {
       margin: 0;
-      font-family: var(--font-display);
       font-size: clamp(1.5rem, 3vw, 2.25rem);
       line-height: 1.1;
     }
@@ -196,8 +195,7 @@
 
     h2 {
       margin: 2px 0 0;
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-size: clamp(2rem, 2.5rem, 3.2rem);
       line-height: 1;
     }
 
@@ -351,7 +349,6 @@
 
   h3 {
     margin: 0;
-    font-family: var(--font-display);
     font-size: 1.55rem;
     line-height: 1.15;
 
@@ -397,7 +394,6 @@
 
   h2 {
     margin: var(--spacing-sm) 0 0;
-    font-family: var(--font-display);
   }
 
   p {

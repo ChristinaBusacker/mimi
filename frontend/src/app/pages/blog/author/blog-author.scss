@@ -26,11 +26,8 @@
 .posts {
   @include framed;
 
-  background:
-    var(--color-surface-translucent);
-  box-shadow:
-    0 0 16px 1px
-    rgba(0, 0, 0, 0.32);
+  background: var(--color-surface-translucent);
+  box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.32);
 }
 
 .profile {
@@ -53,8 +50,7 @@
     &.placeholder {
       display: grid;
       place-items: center;
-      background:
-        var(--color-menu-surface);
+      background: var(--color-menu-surface);
 
       app-icon {
         width: 56px;
@@ -71,14 +67,8 @@
   }
 
   h1 {
-    margin:
-      var(--spacing-xs)
-      0
-      var(--spacing-sm);
-    font-family:
-      var(--font-display);
-    font-size:
-      clamp(2.4rem, 5vw, 4.5rem);
+    margin: var(--spacing-xs) 0 var(--spacing-sm);
+    font-size: clamp(2.4rem, 5vw, 4.5rem);
     line-height: 1;
   }
 }
@@ -90,33 +80,27 @@
 
   > h2 {
     margin: 0;
-    font-family:
-      var(--font-display);
-    font-size:
-      clamp(2rem, 4vw, 3.2rem);
+    font-size: clamp(2rem, 4vw, 3.2rem);
   }
 }
 
 .grid {
   display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--spacing-md);
 
   article {
     @include framed(var(--control-border-width));
 
     overflow: hidden;
-    background:
-      var(--color-surface);
+    background: var(--color-surface);
   }
 
   .cover {
     display: block;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    background:
-      var(--color-menu-surface);
+    background: var(--color-menu-surface);
 
     img,
     .placeholder {
@@ -140,8 +124,6 @@
 
     h3 {
       margin: 0;
-      font-family:
-        var(--font-display);
       font-size: 1.55rem;
 
       a {
@@ -151,10 +133,7 @@
     }
 
     p {
-      margin:
-        var(--spacing-xs)
-        0
-        0;
+      margin: var(--spacing-xs) 0 0;
       opacity: 0.8;
       line-height: 1.55;
     }
@@ -174,7 +153,6 @@
 
 @media (min-width: 701px) and (max-width: 1050px) {
   .grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
