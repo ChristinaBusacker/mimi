@@ -36,21 +36,6 @@ export class BlogAdminTranslationInputDto {
 
   @IsString()
   contentMarkdown!: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(255)
-  seoTitle!: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(1000)
-  seoDescription!: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(1000)
-  coverAltText!: string | null;
 }
 
 export class BlogAdminTranslationsInputDto

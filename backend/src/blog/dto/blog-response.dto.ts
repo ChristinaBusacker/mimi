@@ -66,14 +66,10 @@ export class BlogPostSummaryDto
   })
   coverAssetId!: string | null;
 
-  @ApiProperty({ nullable: true })
-  seoTitle!: string | null;
-
-  @ApiProperty({ nullable: true })
-  seoDescription!: string | null;
-
-  @ApiProperty({ nullable: true })
-  coverAltText!: string | null;
+  @ApiProperty({
+    nullable: true,
+  })
+  coverImageDescription!: string | null;
 
   @ApiProperty({
     format: 'date-time',

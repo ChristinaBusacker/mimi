@@ -5,6 +5,7 @@ import {
   renderFeed,
   renderRobots,
   renderSitemap,
+  staticSitemapEntries,
 } from './seo-http';
 
 const posts: SeoBlogPost[] = [
@@ -56,6 +57,14 @@ describe('SEO HTTP helpers', () => {
     expect(renderRobots('https://staging.mimishow.de', false)).toBe(
       'User-agent: *\nDisallow: /\n',
     );
+  });
+
+  it('includes the about page in static sitemap entries', () => {
+    expect(
+      staticSitemapEntries('https://mimishow.de'),
+    ).toContainEqual({
+      location: 'https://mimishow.de/about',
+    });
   });
 
   it('renders sitemap URLs, escaping XML and normalizing lastmod to a date', () => {

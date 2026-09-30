@@ -1,4 +1,5 @@
 import type {
+  SaveSeoPageOverride,
   SaveSeoPageOverrides,
   SeoPageOverride,
   SeoLocale,
@@ -19,6 +20,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 const SEO_PAGE_KEYS: readonly SeoStaticPageKey[] = [
   'home',
+  'about',
   'gaming',
   'music',
   'blog',
@@ -59,29 +61,19 @@ export class SeoPageOverrideDto
   description!: string | null;
 
   @ApiProperty({
-    nullable: true,
-  })
-  socialTitle!: string | null;
-
-  @ApiProperty({
-    nullable: true,
-  })
-  socialDescription!: string | null;
-
-  @ApiProperty({
     format: 'uuid',
     nullable: true,
   })
-  socialImageAssetId!: string | null;
+  imageAssetId!: string | null;
 
   @ApiProperty({
     nullable: true,
   })
-  socialImageAlt!: string | null;
+  imageDescription!: string | null;
 }
 
 export class SeoPageOverrideInputDto
-  implements SeoPageOverride
+  implements SaveSeoPageOverride
 {
   @IsIn(SEO_PAGE_KEYS)
   pageKey!: SeoStaticPageKey;
@@ -100,23 +92,8 @@ export class SeoPageOverrideInputDto
   description!: string | null;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(255)
-  socialTitle!: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(1000)
-  socialDescription!: string | null;
-
-  @IsOptional()
   @IsUUID()
-  socialImageAssetId!: string | null;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(1000)
-  socialImageAlt!: string | null;
+  imageAssetId!: string | null;
 }
 
 export class SaveSeoPageOverridesDto

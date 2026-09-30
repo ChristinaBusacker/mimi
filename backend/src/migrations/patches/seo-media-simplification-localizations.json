@@ -1,0 +1,74 @@
+{
+  "localizations": [
+    {
+      "key": "admin.seo.title",
+      "de": "SEO",
+      "en": "SEO"
+    },
+    {
+      "key": "admin.seo.intro",
+      "de": "Pflege Titel, Beschreibung und Vorschaubild für statische Seiten. Titel und Beschreibung werden gleichermaßen für Suchmaschinen und Social Previews verwendet.",
+      "en": "Edit the title, description and preview image for static pages. Title and description are used consistently for search engines and social previews."
+    },
+    {
+      "key": "admin.seo.seoTitle",
+      "de": "Titel",
+      "en": "Title"
+    },
+    {
+      "key": "admin.seo.description",
+      "de": "Beschreibung",
+      "en": "Description"
+    },
+    {
+      "key": "admin.seo.socialImage",
+      "de": "Vorschaubild",
+      "en": "Preview image"
+    },
+    {
+      "key": "admin.seo.selectImage",
+      "de": "Bild auswählen / hochladen",
+      "en": "Select / upload image"
+    },
+    {
+      "key": "admin.seo.pages.about",
+      "de": "Über Mimi",
+      "en": "About Mimi"
+    },
+    {
+      "key": "admin.assetPicker.descriptionDe",
+      "de": "Bildbeschreibung (Deutsch)",
+      "en": "Image description (German)"
+    },
+    {
+      "key": "admin.assetPicker.descriptionEn",
+      "de": "Bildbeschreibung (Englisch)",
+      "en": "Image description (English)"
+    },
+    {
+      "key": "admin.assetPicker.descriptionSave",
+      "de": "Bildbeschreibungen speichern",
+      "en": "Save image descriptions"
+    },
+    {
+      "key": "admin.assetPicker.descriptionSaving",
+      "de": "Wird gespeichert …",
+      "en": "Saving…"
+    },
+    {
+      "key": "admin.assetPicker.descriptionMissing",
+      "de": "Für dieses Bild fehlen noch die deutsche oder englische Bildbeschreibung.",
+      "en": "This image is still missing its German or English description."
+    },
+    {
+      "key": "admin.assetPicker.descriptionsRequired",
+      "de": "Bilder können erst ausgewählt werden, wenn eine deutsche und englische Bildbeschreibung hinterlegt ist.",
+      "en": "Images can only be selected after German and English descriptions have been provided."
+    },
+    {
+      "key": "admin.assetPicker.descriptionSaveFailed",
+      "de": "Die Bildbeschreibungen konnten nicht gespeichert werden.",
+      "en": "The image descriptions could not be saved."
+    }
+  ]
+}

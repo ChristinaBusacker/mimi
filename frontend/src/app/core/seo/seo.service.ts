@@ -35,8 +35,6 @@ interface SeoDocument {
   language: Language;
   imagePath?: string;
   imageAlt?: string;
-  socialTitle?: string;
-  socialDescription?: string;
   socialImageAsset?: boolean;
   openGraphType?: 'website' | 'article' | 'music.album' | 'profile';
   indexable?: boolean;
@@ -51,6 +49,7 @@ const JSON_LD_SCRIPT_ID = 'mimishow-seo-json-ld';
 
 const STATIC_PATHS = new Map<string, StaticPageKey>([
   ['/', 'home'],
+  ['/about', 'about'],
   ['/gaming', 'gaming'],
   ['/music', 'music'],
   ['/blog', 'blog'],
@@ -70,6 +69,11 @@ export const STATIC_SEO_COPY: Record<Language, Record<StaticPageKey, StaticSeoCo
       title: 'Mimishow | Musik, Gaming, Livestreams & Community',
       description:
         'Mimis Welt zwischen Musik, Gaming, Livestreams, News und Community. Entdecke aktuelle Streams, eigene Musik und neue Inhalte auf der Mimishow.',
+    },
+    about: {
+      title: 'Über Mimi | Mimishow',
+      description:
+        'Mehr über Mimi und die Person hinter der Mimishow.',
     },
     gaming: {
       title: 'Gaming & Streams | Mimishow',
@@ -119,6 +123,11 @@ export const STATIC_SEO_COPY: Record<Language, Record<StaticPageKey, StaticSeoCo
       title: 'Mimishow | Music, gaming, livestreams & community',
       description:
         "Mimi's world of music, gaming, livestreams, news and community. Discover current streams, original music and new content on Mimishow.",
+    },
+    about: {
+      title: 'About Mimi | Mimishow',
+      description:
+        'Learn more about Mimi and the person behind Mimishow.',
     },
     gaming: {
       title: 'Gaming & streams | Mimishow',
@@ -315,23 +324,17 @@ export class SeoService {
     this.applyDocument({
       title: copy.title,
       description: copy.description,
-      socialTitle:
-        override?.socialTitle?.trim() ||
-        undefined,
-      socialDescription:
-        override?.socialDescription?.trim() ||
-        undefined,
       imagePath:
-        override?.socialImageAssetId
+        override?.imageAssetId
           ? assetSocialImagePath(
-              override.socialImageAssetId,
+              override.imageAssetId,
             )
           : undefined,
       imageAlt:
-        override?.socialImageAlt?.trim() ||
+        override?.imageDescription?.trim() ||
         undefined,
       socialImageAsset:
-        Boolean(override?.socialImageAssetId),
+        Boolean(override?.imageAssetId),
       canonicalPath,
       language,
       schema,
@@ -343,7 +346,6 @@ export class SeoService {
     const canonicalPath = `/blog/${encodeURIComponent(post.slug)}`;
     const canonicalUrl = this.absoluteUrl(canonicalPath);
     const description =
-      post.seoDescription?.trim() ||
       this.descriptionFrom(
         post.excerpt || post.contentHtml,
       );
@@ -352,9 +354,7 @@ export class SeoService {
       : SITE_DEFAULT_IMAGE_PATH;
     const imageUrl = this.absoluteUrl(imagePath);
     const authorUrl = this.absoluteUrl(`/blog/autoren/${encodeURIComponent(post.author.slug)}`);
-    const title =
-      post.seoTitle?.trim() ||
-      `${post.title} | ${SITE_NAME}`;
+    const title = `${post.title} | ${SITE_NAME}`;
 
     this.applyDocument({
       title,
@@ -363,7 +363,7 @@ export class SeoService {
       language: locale,
       imagePath,
       imageAlt:
-        post.coverAltText?.trim() ||
+        post.coverImageDescription?.trim() ||
         post.title,
       socialImageAsset:
         Boolean(post.coverAssetId),
@@ -576,13 +576,8 @@ export class SeoService {
     const origin = this.origin();
     const canonicalUrl = this.absoluteUrl(document.canonicalPath);
     const imageUrl = this.absoluteUrl(document.imagePath ?? SITE_DEFAULT_IMAGE_PATH);
-    const socialTitle =
-      document.socialTitle ?? document.title;
-    const socialDescription =
-      document.socialDescription ??
-      document.description;
     const imageAlt =
-      document.imageAlt ?? socialTitle;
+      document.imageAlt ?? document.title;
     const indexable =
       document.indexable !== false && isIndexableHostname(this.requestHostname());
     const robots = indexable
@@ -600,8 +595,8 @@ export class SeoService {
     });
 
     this.setProperty('og:site_name', SITE_NAME);
-    this.setProperty('og:title', socialTitle);
-    this.setProperty('og:description', socialDescription);
+    this.setProperty('og:title', document.title);
+    this.setProperty('og:description', document.description);
     this.setProperty('og:type', document.openGraphType ?? 'website');
     this.setProperty('og:url', canonicalUrl);
     this.setProperty('og:image', imageUrl);
@@ -623,11 +618,11 @@ export class SeoService {
     });
     this.meta.updateTag({
       name: 'twitter:title',
-      content: socialTitle,
+      content: document.title,
     });
     this.meta.updateTag({
       name: 'twitter:description',
-      content: socialDescription,
+      content: document.description,
     });
     this.meta.updateTag({
       name: 'twitter:image',
@@ -747,6 +742,7 @@ export class SeoService {
     const names: Record<Language, Record<StaticPageKey, string>> = {
       de: {
         home: 'Startseite',
+        about: 'Über Mimi',
         gaming: 'Gaming',
         music: 'Musik',
         blog: 'News',
@@ -759,6 +755,7 @@ export class SeoService {
       },
       en: {
         home: 'Home',
+        about: 'About Mimi',
         gaming: 'Gaming',
         music: 'Music',
         blog: 'News',

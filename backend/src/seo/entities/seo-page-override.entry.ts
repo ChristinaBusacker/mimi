@@ -41,23 +41,11 @@ export class SeoPageOverrideEntry {
   description!: string | null;
 
   @Column({
-    type: 'varchar',
-    length: 255,
-    nullable: true,
-  })
-  socialTitle!: string | null;
-
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  socialDescription!: string | null;
-
-  @Column({
+    name: 'socialImageAssetId',
     type: 'uuid',
     nullable: true,
   })
-  socialImageAssetId!: string | null;
+  imageAssetId!: string | null;
 
   @ManyToOne(() => AssetEntry, {
     nullable: true,
@@ -66,11 +54,5 @@ export class SeoPageOverrideEntry {
   @JoinColumn({
     name: 'socialImageAssetId',
   })
-  socialImageAsset!: AssetEntry | null;
-
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  socialImageAlt!: string | null;
+  imageAsset!: AssetEntry | null;
 }

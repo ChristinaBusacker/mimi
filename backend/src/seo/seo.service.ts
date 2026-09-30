@@ -1,6 +1,5 @@
 import type {
   SeoPageOverride,
-  SeoStaticPageKey,
 } from '@shared/seo/seo';
 
 import {
@@ -35,6 +34,9 @@ export class SeoService {
 
   async getPages(): Promise<SeoPageOverride[]> {
     const entries = await this.repository.find({
+      relations: {
+        imageAsset: true,
+      },
       order: {
         pageKey: 'ASC',
         locale: 'ASC',
@@ -50,7 +52,7 @@ export class SeoService {
     pages: readonly SeoPageOverrideInputDto[],
   ): Promise<SeoPageOverride[]> {
     this.assertUniqueEntries(pages);
-    await this.validateSocialImages(pages);
+    await this.validateImages(pages);
 
     await this.dataSource.transaction(
       async (manager) => {
@@ -67,16 +69,8 @@ export class SeoService {
               title: this.normalize(page.title),
               description:
                 this.normalize(page.description),
-              socialTitle:
-                this.normalize(page.socialTitle),
-              socialDescription:
-                this.normalize(
-                  page.socialDescription,
-                ),
-              socialImageAssetId:
-                page.socialImageAssetId ?? null,
-              socialImageAlt:
-                this.normalize(page.socialImageAlt),
+              imageAssetId:
+                page.imageAssetId ?? null,
             }),
           );
         }
@@ -86,13 +80,13 @@ export class SeoService {
     return this.getPages();
   }
 
-  private async validateSocialImages(
+  private async validateImages(
     pages: readonly SeoPageOverrideInputDto[],
   ): Promise<void> {
     const assetIds = [
       ...new Set(
         pages
-          .map((page) => page.socialImageAssetId)
+          .map((page) => page.imageAssetId)
           .filter(
             (assetId): assetId is string =>
               assetId !== null,
@@ -110,6 +104,15 @@ export class SeoService {
         if (asset.type !== 'image') {
           throw new BadRequestException(
             `Asset "${assetId}" must be an image.`,
+          );
+        }
+
+        if (
+          !asset.descriptionDe?.trim() ||
+          !asset.descriptionEn?.trim()
+        ) {
+          throw new BadRequestException(
+            `Image asset "${assetId}" requires German and English descriptions.`,
           );
         }
       }),
@@ -151,13 +154,12 @@ export class SeoService {
       locale: entry.locale,
       title: entry.title,
       description: entry.description,
-      socialTitle: entry.socialTitle,
-      socialDescription:
-        entry.socialDescription,
-      socialImageAssetId:
-        entry.socialImageAssetId,
-      socialImageAlt:
-        entry.socialImageAlt,
+      imageAssetId:
+        entry.imageAssetId,
+      imageDescription:
+        entry.locale === 'de'
+          ? entry.imageAsset?.descriptionDe ?? null
+          : entry.imageAsset?.descriptionEn ?? null,
     };
   }
 }

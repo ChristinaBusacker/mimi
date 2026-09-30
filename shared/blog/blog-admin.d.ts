@@ -7,9 +7,6 @@ export interface BlogAdminTranslation {
   title: string;
   excerpt: string;
   contentMarkdown: string;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  coverAltText: string | null;
 }
 
 export interface BlogAdminTranslations {

@@ -21,6 +21,7 @@ import { musicPublicationTrackingMigration } from '../music/music-publication-tr
 import { notificationDeliveryMigration } from '../notifications/notification-delivery.schema-migration';
 import { notificationPreferencesMigration } from '../notifications/notification-preferences.schema-migration';
 import { pushSubscriptionsMigration } from '../push/push-subscriptions.schema-migration';
+import { assetDescriptionsMigration } from '../assets/asset-descriptions.schema-migration';
 import { seoEditorialMetadataMigration } from '../seo/seo-editorial-metadata.schema-migration';
 
 interface SchemaMigration {
@@ -530,6 +531,7 @@ const migrations: readonly SchemaMigration[] = [
   musicPublicationTrackingMigration,
   notificationDeliveryMigration,
   seoEditorialMetadataMigration,
+  assetDescriptionsMigration,
 ];
 
 export async function runSchemaMigrations(

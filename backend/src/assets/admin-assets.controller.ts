@@ -2,11 +2,13 @@ import type { AssetType } from '@shared/assets/asset';
 
 import {
   BadRequestException,
+  Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Param,
   Query,
@@ -32,6 +34,7 @@ import { ContributorGuard } from '../auth/guards/contributor.guard';
 import { SessionAuthGuard } from '../auth/guards/session-auth.guard';
 import { AUTH_SESSION_COOKIE } from '../auth/session-cookie';
 import { AssetDto } from './dto/asset.dto';
+import { UpdateAssetDescriptionsDto } from './dto/update-asset-descriptions.dto';
 import type { UploadedAssetFile } from './asset-file';
 import { AssetsService } from './assets.service';
 
@@ -84,6 +87,24 @@ export class AdminAssetsController {
   ): Promise<AssetDto[]> {
     return this.assetsService.getAll(
       this.resolveAssetType(type),
+    );
+  }
+
+
+  @Patch(':uuid/descriptions')
+  @ApiOperation({
+    summary: 'Update localized image descriptions',
+  })
+  @ApiOkResponse({
+    type: AssetDto,
+  })
+  updateDescriptions(
+    @Param('uuid') uuid: string,
+    @Body() dto: UpdateAssetDescriptionsDto,
+  ): Promise<AssetDto> {
+    return this.assetsService.updateDescriptions(
+      uuid,
+      dto,
     );
   }
 

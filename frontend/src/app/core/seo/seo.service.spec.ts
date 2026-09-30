@@ -28,9 +28,7 @@ class RouterStub {
                 title: 'Testbeitrag',
                 excerpt: 'Ein Testbeitrag für die SEO-Metadaten.',
                 coverAssetId: 'cover-id',
-                seoTitle: null,
-                seoDescription: null,
-                coverAltText: 'Eine Quietscheente vor einem Rednerpult',
+                coverImageDescription: 'Eine Quietscheente vor einem Rednerpult',
                 publishedAt: '2026-09-20T10:00:00.000Z',
                 updatedAt: '2026-09-28T12:00:00.000Z',
                 author: {

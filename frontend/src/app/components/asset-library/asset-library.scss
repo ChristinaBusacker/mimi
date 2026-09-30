@@ -150,6 +150,11 @@
     background: transparent;
     cursor: pointer;
 
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.75;
+    }
+
     img {
       display: block;
       width: 100%;
@@ -173,6 +178,30 @@
     span {
       opacity: 0.7;
       font-size: 0.8rem;
+    }
+  }
+
+  .descriptions {
+    display: grid;
+    gap: var(--spacing-xs);
+
+    label {
+      display: grid;
+      gap: 2px;
+    }
+
+    textarea {
+      width: 100%;
+      resize: vertical;
+    }
+
+    .save-descriptions {
+      justify-self: start;
+    }
+
+    .description-warning {
+      color: var(--color-primary);
+      font-weight: 700;
     }
   }
 

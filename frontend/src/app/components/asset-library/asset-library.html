@@ -13,9 +13,7 @@
       <div>
         <h2>
           {{
-            (type() === 'image'
-              ? 'admin.assetPicker.imageTitle'
-              : 'admin.assetPicker.audioTitle')
+            (type() === 'image' ? 'admin.assetPicker.imageTitle' : 'admin.assetPicker.audioTitle')
               | i18n
               | async
           }}
@@ -24,7 +22,8 @@
           {{
             (type() === 'image'
               ? 'admin.assetPicker.imageDescription'
-              : 'admin.assetPicker.audioDescription')
+              : 'admin.assetPicker.audioDescription'
+            )
               | i18n
               | async
           }}
@@ -71,9 +70,7 @@
         />
         <span>
           {{
-            (uploading()
-              ? 'admin.assetPicker.uploading'
-              : 'admin.assetPicker.upload')
+            (uploading() ? 'admin.assetPicker.uploading' : 'admin.assetPicker.upload')
               | i18n
               | async
           }}
@@ -97,10 +94,15 @@
         @for (asset of filteredAssets(); track asset.id) {
           <article class="asset" [class.selected]="selectedId() === asset.id">
             @if (asset.type === 'image') {
-              <button type="button" class="preview" (click)="select(asset)">
+              <button
+                type="button"
+                class="preview"
+                [disabled]="!hasCompleteDescriptions(asset)"
+                (click)="select(asset)"
+              >
                 <img
                   [src]="asset.thumbnailUrl ?? asset.url"
-                  [alt]="asset.originalFilename"
+                  [alt]="asset.descriptionDe || asset.descriptionEn || asset.originalFilename"
                   loading="lazy"
                 />
               </button>
@@ -111,9 +113,54 @@
             <div class="meta">
               <strong [title]="asset.originalFilename">{{ asset.originalFilename }}</strong>
               <span>
-                {{ asset.createdAt | date:'mediumDate' }} · {{ formatSize(asset.sizeBytes) }}
+                {{ asset.createdAt | date: 'mediumDate' }} · {{ formatSize(asset.sizeBytes) }}
               </span>
             </div>
+
+            @if (asset.type === 'image') {
+              <div class="descriptions">
+                <label>
+                  <span>{{ 'admin.assetPicker.descriptionDe' | i18n | async }}</span>
+                  <textarea
+                    rows="2"
+                    maxlength="1000"
+                    [value]="descriptionValue(asset, 'de')"
+                    (input)="setDescription(asset, 'de', $event)"
+                  ></textarea>
+                </label>
+
+                <label>
+                  <span>{{ 'admin.assetPicker.descriptionEn' | i18n | async }}</span>
+                  <textarea
+                    rows="2"
+                    maxlength="1000"
+                    [value]="descriptionValue(asset, 'en')"
+                    (input)="setDescription(asset, 'en', $event)"
+                  ></textarea>
+                </label>
+
+                <app-button
+                  class="secondary save-descriptions"
+                  [disabled]="savingDescriptionsId() === asset.id"
+                  (click)="saveDescriptions(asset)"
+                >
+                  {{
+                    (savingDescriptionsId() === asset.id
+                      ? 'admin.assetPicker.descriptionSaving'
+                      : 'admin.assetPicker.descriptionSave'
+                    )
+                      | i18n
+                      | async
+                  }}
+                </app-button>
+
+                @if (!hasCompleteDescriptions(asset)) {
+                  <small class="description-warning">
+                    {{ 'admin.assetPicker.descriptionMissing' | i18n | async }}
+                  </small>
+                }
+              </div>
+            }
 
             <div class="actions">
               @if (asset.type === 'audio') {
@@ -155,9 +202,7 @@
     <div class="drop-overlay">
       <strong>
         {{
-          (type() === 'image'
-            ? 'admin.assetPicker.dropImage'
-            : 'admin.assetPicker.dropAudio')
+          (type() === 'image' ? 'admin.assetPicker.dropImage' : 'admin.assetPicker.dropAudio')
             | i18n
             | async
         }}

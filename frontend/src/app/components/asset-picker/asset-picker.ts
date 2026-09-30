@@ -55,6 +55,7 @@ export class AssetPicker implements ControlValueAccessor {
   readonly assets = input<readonly Asset[]>([]);
 
   readonly assetUploaded = output<Asset>();
+  readonly assetUpdated = output<Asset>();
   readonly assetDeleted = output<string>();
   readonly assetSelected = output<Asset | null>();
 
@@ -122,6 +123,10 @@ export class AssetPicker implements ControlValueAccessor {
 
   protected addAsset(asset: Asset): void {
     this.assetUploaded.emit(asset);
+  }
+
+  protected updateAsset(asset: Asset): void {
+    this.assetUpdated.emit(asset);
   }
 
   protected removeAsset(assetId: string): void {

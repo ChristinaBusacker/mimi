@@ -57,22 +57,4 @@ export class BlogPostTranslationEntry {
   })
   contentMarkdown!: string;
 
-  @Column({
-    type: 'varchar',
-    length: 255,
-    nullable: true,
-  })
-  seoTitle!: string | null;
-
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  seoDescription!: string | null;
-
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  coverAltText!: string | null;
 }

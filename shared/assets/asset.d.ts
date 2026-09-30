@@ -8,7 +8,14 @@ export interface Asset {
   sizeBytes: number;
   width: number | null;
   height: number | null;
+  descriptionDe: string | null;
+  descriptionEn: string | null;
   url: string;
   thumbnailUrl: string | null;
   createdAt: string;
+}
+
+export interface UpdateAssetDescriptions {
+  descriptionDe: string;
+  descriptionEn: string;
 }

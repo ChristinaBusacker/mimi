@@ -82,7 +82,7 @@
           >{{ 'navigation.community' | i18n | async }}</a>
         </li>
         <li>
-          <a href="#">{{ 'navigation.about' | i18n | async }}</a>
+          <a routerLink="/about">{{ 'navigation.about' | i18n | async }}</a>
         </li>
         <li>
           <a routerLink="/kontakt">{{ 'footer.contact' | i18n | async }}</a>
@@ -175,7 +175,9 @@
         >
           {{ 'navigation.community' | i18n | async }}
         </a>
-        <a href="#">{{ 'navigation.about' | i18n | async }}</a>
+        <a routerLink="/about" (click)="closeMenu()">
+          {{ 'navigation.about' | i18n | async }}
+        </a>
 
         <a href="#mobile-social">
           {{ 'mobile.navigation.social' | i18n | async }}

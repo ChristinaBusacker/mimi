@@ -20,6 +20,10 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'about',
+    loadComponent: () => import('./pages/about/about').then((module) => module.About),
+  },
+  {
     path: 'gaming',
     loadComponent: () => import('./pages/gaming/gaming').then((module) => module.Gaming),
     resolve: {

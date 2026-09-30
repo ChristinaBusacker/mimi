@@ -58,6 +58,18 @@ export class AssetEntry {
   height!: number | null;
 
   @Column({
+    type: 'text',
+    nullable: true,
+  })
+  descriptionDe!: string | null;
+
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  descriptionEn!: string | null;
+
+  @Column({
     unique: true,
     length: 100,
   })

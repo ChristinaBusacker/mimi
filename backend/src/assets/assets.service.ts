@@ -1,6 +1,7 @@
 import type {
   Asset,
   AssetType,
+  UpdateAssetDescriptions,
 } from '@shared/assets/asset';
 
 import {
@@ -225,6 +226,30 @@ export class AssetsService {
     const asset = await this.findAsset(uuid);
 
     return this.mapAsset(asset);
+  }
+
+  async updateDescriptions(
+    uuid: string,
+    input: UpdateAssetDescriptions,
+  ): Promise<Asset> {
+    const asset = await this.findAsset(uuid);
+
+    if (asset.type !== 'image') {
+      throw new BadRequestException(
+        'Only image assets can have image descriptions.',
+      );
+    }
+
+    asset.descriptionDe = this.normalizeDescription(
+      input.descriptionDe,
+    );
+    asset.descriptionEn = this.normalizeDescription(
+      input.descriptionEn,
+    );
+
+    return this.mapAsset(
+      await this.repository.save(asset),
+    );
   }
 
   async resolveFile(uuid: string): Promise<ResolvedAssetFile> {
@@ -864,6 +889,8 @@ export class AssetsService {
       sizeBytes: asset.sizeBytes,
       width: asset.width,
       height: asset.height,
+      descriptionDe: asset.descriptionDe,
+      descriptionEn: asset.descriptionEn,
       url: `/api/assets/${asset.uuid}`,
       thumbnailUrl:
         asset.type === 'image'
@@ -871,6 +898,14 @@ export class AssetsService {
           : null,
       createdAt: asset.createdAt.toISOString(),
     };
+  }
+
+  private normalizeDescription(
+    value: string | null,
+  ): string | null {
+    const normalized = value?.trim() ?? '';
+
+    return normalized || null;
   }
 
   private getErrorMessage(error: unknown): string {

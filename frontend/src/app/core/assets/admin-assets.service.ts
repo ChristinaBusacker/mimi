@@ -1,6 +1,7 @@
 import type {
   Asset,
   AssetType,
+  UpdateAssetDescriptions,
 } from '@shared/assets/asset';
 
 import {
@@ -35,6 +36,19 @@ export class AdminAssetsService {
     return this.request.post<Asset, FormData>(
       '/admin/assets',
       body,
+    );
+  }
+
+  updateDescriptions(
+    id: string,
+    input: UpdateAssetDescriptions,
+  ): Observable<Asset> {
+    return this.request.patch<
+      Asset,
+      UpdateAssetDescriptions
+    >(
+      `/admin/assets/${id}/descriptions`,
+      input,
     );
   }
 

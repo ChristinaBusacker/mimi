@@ -12,8 +12,10 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { firstValueFrom, forkJoin } from 'rxjs';
 
+import { AssetPicker } from '../../../components/asset-picker/asset-picker';
 import { Button } from '../../../components/button/button';
 import { AdminAssetsService } from '../../../core/assets/admin-assets.service';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
@@ -22,6 +24,7 @@ import { STATIC_SEO_COPY } from '../../../core/seo/seo.service';
 
 const SEO_STATIC_PAGE_KEYS: readonly SeoStaticPageKey[] = [
   'home',
+  'about',
   'gaming',
   'music',
   'blog',
@@ -40,17 +43,16 @@ const SEO_LOCALES: readonly SeoLocale[] = [
 
 type EditableTextField =
   | 'title'
-  | 'description'
-  | 'socialTitle'
-  | 'socialDescription'
-  | 'socialImageAlt';
+  | 'description';
 
 @Component({
   changeDetection:
     ChangeDetectionStrategy.OnPush,
   imports: [
+    AssetPicker,
     AsyncPipe,
     Button,
+    FormsModule,
     I18nPipe,
   ],
   selector: 'app-admin-seo',
@@ -107,7 +109,6 @@ export class AdminSeo {
     page: SeoPageOverride,
   ): string {
     return (
-      page.socialTitle?.trim() ||
       page.title?.trim() ||
       STATIC_SEO_COPY[page.locale][page.pageKey].title
     );
@@ -117,7 +118,6 @@ export class AdminSeo {
     page: SeoPageOverride,
   ): string {
     return (
-      page.socialDescription?.trim() ||
       page.description?.trim() ||
       STATIC_SEO_COPY[page.locale][page.pageKey].description
     );
@@ -144,15 +144,11 @@ export class AdminSeo {
       return;
     }
 
-    const value = target.value.trim()
-      ? target.value
-      : null;
-
     this.updatePage(
       pageKey,
       locale,
       {
-        [field]: value,
+        [field]: target.value,
       },
     );
   }
@@ -160,21 +156,63 @@ export class AdminSeo {
   protected setImage(
     pageKey: SeoStaticPageKey,
     locale: SeoLocale,
-    event: Event,
+    assetId: string,
   ): void {
-    const target = event.target;
-
-    if (!(target instanceof HTMLSelectElement)) {
-      return;
-    }
+    const asset =
+      this.images().find(
+        (candidate) => candidate.id === assetId,
+      ) ?? null;
 
     this.updatePage(
       pageKey,
       locale,
       {
-        socialImageAssetId:
-          target.value || null,
+        imageAssetId: assetId || null,
+        imageDescription:
+          locale === 'de'
+            ? asset?.descriptionDe ?? null
+            : asset?.descriptionEn ?? null,
       },
+    );
+  }
+
+  protected addImage(asset: Asset): void {
+    this.upsertImage(asset);
+  }
+
+  protected updateImage(asset: Asset): void {
+    this.upsertImage(asset);
+    this.pages.update((pages) =>
+      pages.map((page) =>
+        page.imageAssetId === asset.id
+          ? {
+              ...page,
+              imageDescription:
+                page.locale === 'de'
+                  ? asset.descriptionDe ?? null
+                  : asset.descriptionEn ?? null,
+            }
+          : page,
+      ),
+    );
+  }
+
+  protected removeImage(assetId: string): void {
+    this.images.update((images) =>
+      images.filter(
+        (image) => image.id !== assetId,
+      ),
+    );
+    this.pages.update((pages) =>
+      pages.map((page) =>
+        page.imageAssetId === assetId
+          ? {
+              ...page,
+              imageAssetId: null,
+              imageDescription: null,
+            }
+          : page,
+      ),
     );
   }
 
@@ -191,18 +229,13 @@ export class AdminSeo {
       const pages = await firstValueFrom(
         this.seo.savePages({
           pages: this.pages().map((page) => ({
-            ...page,
+            pageKey: page.pageKey,
+            locale: page.locale,
             title: this.normalize(page.title),
             description:
               this.normalize(page.description),
-            socialTitle:
-              this.normalize(page.socialTitle),
-            socialDescription:
-              this.normalize(
-                page.socialDescription,
-              ),
-            socialImageAlt:
-              this.normalize(page.socialImageAlt),
+            imageAssetId:
+              page.imageAssetId,
           })),
         }),
       );
@@ -256,10 +289,8 @@ export class AdminSeo {
           locale,
           title: null,
           description: null,
-          socialTitle: null,
-          socialDescription: null,
-          socialImageAssetId: null,
-          socialImageAlt: null,
+          imageAssetId: null,
+          imageDescription: null,
         })),
     );
   }
@@ -299,6 +330,15 @@ export class AdminSeo {
           : page,
       ),
     );
+  }
+
+  private upsertImage(asset: Asset): void {
+    this.images.update((images) => [
+      asset,
+      ...images.filter(
+        (candidate) => candidate.id !== asset.id,
+      ),
+    ]);
   }
 
   private normalize(

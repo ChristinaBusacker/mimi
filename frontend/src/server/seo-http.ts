@@ -95,6 +95,7 @@ export function renderRobots(origin: string, indexable: boolean): string {
 export function staticSitemapEntries(origin: string): SitemapEntry[] {
   return [
     '/',
+    '/about',
     '/gaming',
     '/music',
     '/blog',

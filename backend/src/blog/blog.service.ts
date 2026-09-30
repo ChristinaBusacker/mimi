@@ -71,6 +71,7 @@ export class BlogService {
           categories: {
             translations: true,
           },
+          coverAsset: true,
         },
         order: {
           publishedAt: 'DESC',
@@ -174,6 +175,7 @@ export class BlogService {
           categories: {
             translations: true,
           },
+          coverAsset: true,
         },
       });
 
@@ -341,12 +343,10 @@ export class BlogService {
       excerpt: translation.excerpt,
       coverAssetId:
         post.coverAssetId,
-      seoTitle:
-        translation.seoTitle,
-      seoDescription:
-        translation.seoDescription,
-      coverAltText:
-        translation.coverAltText,
+      coverImageDescription:
+        locale === 'de'
+          ? post.coverAsset?.descriptionDe ?? null
+          : post.coverAsset?.descriptionEn ?? null,
       publishedAt:
         post.publishedAt!.toISOString(),
       updatedAt:

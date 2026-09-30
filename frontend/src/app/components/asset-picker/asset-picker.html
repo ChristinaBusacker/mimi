@@ -6,7 +6,7 @@
       @if (asset.type === 'image') {
         <img
           [src]="asset.thumbnailUrl ?? asset.url"
-          [alt]="asset.originalFilename"
+          [alt]="asset.descriptionDe || asset.descriptionEn || asset.originalFilename"
         />
       } @else {
         <div class="audio-selection">
@@ -55,6 +55,7 @@
   [selectedId]="selectedId()"
   (assetSelected)="select($event)"
   (assetUploaded)="addAsset($event)"
+  (assetUpdated)="updateAsset($event)"
   (assetDeleted)="removeAsset($event)"
   (closed)="onTouched()"
 />

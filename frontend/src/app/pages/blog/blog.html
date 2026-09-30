@@ -25,7 +25,10 @@
         @if (featuredPost.coverAssetId; as coverId) {
           <picture class="cover">
             <source [srcset]="imageVariantUrl(coverId, 'medium')" type="image/webp" />
-            <img [src]="assetUrl(coverId)" [alt]="featuredPost.title" />
+            <img
+              [src]="assetUrl(coverId)"
+              [alt]="featuredPost.coverImageDescription || featuredPost.title"
+            />
           </picture>
         } @else {
           <div class="cover placeholder">
@@ -121,7 +124,7 @@
               @if (post.coverAssetId; as coverId) {
                 <picture>
                   <source [srcset]="imageVariantUrl(coverId, 'medium')" type="image/webp" />
-                  <img [src]="assetUrl(coverId)" [alt]="post.title" loading="lazy" />
+                  <img [src]="assetUrl(coverId)" alt="" loading="lazy" />
                 </picture>
               } @else {
                 <div class="placeholder">

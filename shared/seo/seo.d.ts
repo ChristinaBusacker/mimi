@@ -2,6 +2,7 @@ export type SeoLocale = 'de' | 'en';
 
 export type SeoStaticPageKey =
   | 'home'
+  | 'about'
   | 'gaming'
   | 'music'
   | 'blog'
@@ -17,12 +18,18 @@ export interface SeoPageOverride {
   locale: SeoLocale;
   title: string | null;
   description: string | null;
-  socialTitle: string | null;
-  socialDescription: string | null;
-  socialImageAssetId: string | null;
-  socialImageAlt: string | null;
+  imageAssetId: string | null;
+  imageDescription: string | null;
+}
+
+export interface SaveSeoPageOverride {
+  pageKey: SeoStaticPageKey;
+  locale: SeoLocale;
+  title: string | null;
+  description: string | null;
+  imageAssetId: string | null;
 }
 
 export interface SaveSeoPageOverrides {
-  pages: SeoPageOverride[];
+  pages: SaveSeoPageOverride[];
 }

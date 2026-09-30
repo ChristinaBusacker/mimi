@@ -611,6 +611,12 @@ export class BlogAdminService {
       'image',
     );
 
+    if (dto.coverAssetId) {
+      await this.assertImageDescriptions(
+        dto.coverAssetId,
+      );
+    }
+
     const assetIds =
       new Set([
         ...this.assetUsageService.extractMarkdownAssetIds(
@@ -713,6 +719,24 @@ export class BlogAdminService {
     ) {
       throw new BadRequestException(
         `Asset "${uuid}" must be of type "${expectedType}".`,
+      );
+    }
+  }
+
+  private async assertImageDescriptions(
+    uuid: string,
+  ): Promise<void> {
+    const asset =
+      await this.assetsService.getById(
+        uuid,
+      );
+
+    if (
+      !asset.descriptionDe?.trim() ||
+      !asset.descriptionEn?.trim()
+    ) {
+      throw new BadRequestException(
+        `Image asset \"${uuid}\" requires German and English descriptions.`,
       );
     }
   }
@@ -820,12 +844,6 @@ export class BlogAdminService {
               translation.excerpt,
             contentMarkdown:
               translation.contentMarkdown,
-            seoTitle:
-              translation.seoTitle,
-            seoDescription:
-              translation.seoDescription,
-            coverAltText:
-              translation.coverAltText,
           }
         : repository.create({
             postUuid,
@@ -836,12 +854,6 @@ export class BlogAdminService {
               translation.excerpt,
             contentMarkdown:
               translation.contentMarkdown,
-            seoTitle:
-              translation.seoTitle,
-            seoDescription:
-              translation.seoDescription,
-            coverAltText:
-              translation.coverAltText,
           }),
     );
   }
@@ -919,9 +931,6 @@ export class BlogAdminService {
             title: '',
             excerpt: '',
             contentMarkdown: '',
-            seoTitle: null,
-            seoDescription: null,
-            coverAltText: null,
           },
       en: english
         ? this.mapTranslation(
@@ -942,12 +951,6 @@ export class BlogAdminService {
         translation.excerpt,
       contentMarkdown:
         translation.contentMarkdown,
-      seoTitle:
-        translation.seoTitle,
-      seoDescription:
-        translation.seoDescription,
-      coverAltText:
-        translation.coverAltText,
     };
   }
 

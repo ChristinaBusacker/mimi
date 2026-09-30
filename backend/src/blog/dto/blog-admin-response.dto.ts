@@ -22,21 +22,6 @@ export class BlogAdminTranslationDto implements BlogAdminTranslation {
 
   @ApiProperty()
   contentMarkdown!: string;
-
-  @ApiProperty({
-    nullable: true,
-  })
-  seoTitle!: string | null;
-
-  @ApiProperty({
-    nullable: true,
-  })
-  seoDescription!: string | null;
-
-  @ApiProperty({
-    nullable: true,
-  })
-  coverAltText!: string | null;
 }
 
 export class BlogAdminTranslationsDto implements BlogAdminTranslations {
