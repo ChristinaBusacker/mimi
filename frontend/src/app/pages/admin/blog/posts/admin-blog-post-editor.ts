@@ -149,6 +149,18 @@ export class AdminBlogPostEditor
         new FormControl('', {
           nonNullable: true,
         }),
+      seoTitleDe:
+        new FormControl('', {
+          nonNullable: true,
+        }),
+      seoDescriptionDe:
+        new FormControl('', {
+          nonNullable: true,
+        }),
+      coverAltTextDe:
+        new FormControl('', {
+          nonNullable: true,
+        }),
       titleEn:
         new FormControl('', {
           nonNullable: true,
@@ -158,6 +170,18 @@ export class AdminBlogPostEditor
           nonNullable: true,
         }),
       contentEn:
+        new FormControl('', {
+          nonNullable: true,
+        }),
+      seoTitleEn:
+        new FormControl('', {
+          nonNullable: true,
+        }),
+      seoDescriptionEn:
+        new FormControl('', {
+          nonNullable: true,
+        }),
+      coverAltTextEn:
         new FormControl('', {
           nonNullable: true,
         }),
@@ -389,11 +413,20 @@ export class AdminBlogPostEditor
       value.excerptEn.trim();
     const englishContent =
       value.contentEn.trim();
+    const englishSeoTitle =
+      value.seoTitleEn.trim();
+    const englishSeoDescription =
+      value.seoDescriptionEn.trim();
+    const englishCoverAltText =
+      value.coverAltTextEn.trim();
 
     if (
       (
         englishExcerpt ||
-        englishContent
+        englishContent ||
+        englishSeoTitle ||
+        englishSeoDescription ||
+        englishCoverAltText
       ) &&
       !englishTitle
     ) {
@@ -422,11 +455,20 @@ export class AdminBlogPostEditor
             value.excerptDe.trim(),
           contentMarkdown:
             value.contentDe,
+          seoTitle:
+            value.seoTitleDe.trim() || null,
+          seoDescription:
+            value.seoDescriptionDe.trim() || null,
+          coverAltText:
+            value.coverAltTextDe.trim() || null,
         },
         en:
           englishTitle ||
           englishExcerpt ||
-          englishContent
+          englishContent ||
+          englishSeoTitle ||
+          englishSeoDescription ||
+          englishCoverAltText
             ? {
                 title:
                   englishTitle,
@@ -434,6 +476,12 @@ export class AdminBlogPostEditor
                   englishExcerpt,
                 contentMarkdown:
                   value.contentEn,
+                seoTitle:
+                  englishSeoTitle || null,
+                seoDescription:
+                  englishSeoDescription || null,
+                coverAltText:
+                  englishCoverAltText || null,
               }
             : null,
       },
@@ -459,6 +507,15 @@ export class AdminBlogPostEditor
       contentDe:
         post.translations.de
           .contentMarkdown,
+      seoTitleDe:
+        post.translations.de
+          .seoTitle ?? '',
+      seoDescriptionDe:
+        post.translations.de
+          .seoDescription ?? '',
+      coverAltTextDe:
+        post.translations.de
+          .coverAltText ?? '',
       titleEn:
         post.translations.en
           ?.title ?? '',
@@ -468,6 +525,15 @@ export class AdminBlogPostEditor
       contentEn:
         post.translations.en
           ?.contentMarkdown ?? '',
+      seoTitleEn:
+        post.translations.en
+          ?.seoTitle ?? '',
+      seoDescriptionEn:
+        post.translations.en
+          ?.seoDescription ?? '',
+      coverAltTextEn:
+        post.translations.en
+          ?.coverAltText ?? '',
     });
   }
 }

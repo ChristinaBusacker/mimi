@@ -1,0 +1,152 @@
+<section class="seo-editor">
+  <header>
+    <div>
+      <h1>{{ 'admin.seo.title' | i18n | async }}</h1>
+      <p>{{ 'admin.seo.intro' | i18n | async }}</p>
+    </div>
+
+    <app-button
+      class="primary round"
+      [disabled]="loading() || saving()"
+      (click)="save()"
+    >
+      {{
+        (saving()
+          ? 'admin.seo.saving'
+          : 'admin.seo.save')
+          | i18n
+          | async
+      }}
+    </app-button>
+  </header>
+
+  @if (errorKey(); as error) {
+    <p class="message error" role="alert">
+      {{ error | i18n | async }}
+    </p>
+  }
+
+  @if (saved()) {
+    <p class="message success" role="status">
+      {{ 'admin.seo.saved' | i18n | async }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.seo.loading' | i18n | async }}</p>
+  } @else {
+    <div class="pages">
+      @for (pageKey of pageKeys; track pageKey) {
+        <section class="page-card">
+          <h2>{{ pageLabelKey(pageKey) | i18n | async }}</h2>
+
+          <div class="languages">
+            @for (locale of locales; track locale) {
+              @let item = page(pageKey, locale);
+
+              <fieldset>
+                <legend>
+                  {{
+                    (locale === 'de'
+                      ? 'admin.seo.language.de'
+                      : 'admin.seo.language.en')
+                      | i18n
+                      | async
+                  }}
+                </legend>
+
+                <p class="hint">
+                  {{ 'admin.seo.fallbackHint' | i18n | async }}
+                </p>
+
+                <label>
+                  <span>{{ 'admin.seo.seoTitle' | i18n | async }}</span>
+                  <input
+                    type="text"
+                    maxlength="255"
+                    [value]="item.title ?? ''"
+                    (input)="setText(pageKey, locale, 'title', $event)"
+                  />
+                </label>
+
+                <label>
+                  <span>{{ 'admin.seo.description' | i18n | async }}</span>
+                  <textarea
+                    rows="3"
+                    maxlength="1000"
+                    [value]="item.description ?? ''"
+                    (input)="setText(pageKey, locale, 'description', $event)"
+                  ></textarea>
+                </label>
+
+                <div class="optional-grid">
+                  <label>
+                    <span>{{ 'admin.seo.socialTitle' | i18n | async }}</span>
+                    <input
+                      type="text"
+                      maxlength="255"
+                      [value]="item.socialTitle ?? ''"
+                      (input)="setText(pageKey, locale, 'socialTitle', $event)"
+                    />
+                  </label>
+
+                  <label>
+                    <span>{{ 'admin.seo.socialDescription' | i18n | async }}</span>
+                    <textarea
+                      rows="3"
+                      maxlength="1000"
+                      [value]="item.socialDescription ?? ''"
+                      (input)="setText(pageKey, locale, 'socialDescription', $event)"
+                    ></textarea>
+                  </label>
+                </div>
+
+                <label>
+                  <span>{{ 'admin.seo.socialImage' | i18n | async }}</span>
+                  <select
+                    [value]="item.socialImageAssetId ?? ''"
+                    (change)="setImage(pageKey, locale, $event)"
+                  >
+                    <option value="">
+                      {{ 'admin.seo.defaultImage' | i18n | async }}
+                    </option>
+                    @for (image of images(); track image.id) {
+                      <option [value]="image.id">
+                        {{ image.originalFilename }}
+                      </option>
+                    }
+                  </select>
+                </label>
+
+                <label>
+                  <span>{{ 'admin.seo.socialImageAlt' | i18n | async }}</span>
+                  <textarea
+                    rows="2"
+                    maxlength="1000"
+                    [value]="item.socialImageAlt ?? ''"
+                    (input)="setText(pageKey, locale, 'socialImageAlt', $event)"
+                  ></textarea>
+                </label>
+
+                <div class="preview" aria-live="polite">
+                  @if (item.socialImageAssetId; as imageId) {
+                    <img
+                      [src]="socialImageUrl(imageId)"
+                      [alt]="item.socialImageAlt ?? ''"
+                    />
+                  }
+
+                  <div>
+                    <small>MIMISHOW</small>
+                    <strong>{{ effectiveTitle(item) }}</strong>
+                    <p>{{ effectiveDescription(item) }}</p>
+                  </div>
+                </div>
+              </fieldset>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+</section>

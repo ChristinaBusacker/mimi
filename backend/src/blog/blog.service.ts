@@ -341,6 +341,12 @@ export class BlogService {
       excerpt: translation.excerpt,
       coverAssetId:
         post.coverAssetId,
+      seoTitle:
+        translation.seoTitle,
+      seoDescription:
+        translation.seoDescription,
+      coverAltText:
+        translation.coverAltText,
       publishedAt:
         post.publishedAt!.toISOString(),
       updatedAt:

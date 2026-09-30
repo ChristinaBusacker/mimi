@@ -16,9 +16,9 @@ describe('SEO config', () => {
     );
   });
 
-  it('builds the 1440px fallback image route for social previews', () => {
+  it('builds the 1200 by 630 social image route', () => {
     expect(assetSocialImagePath('asset/id')).toBe(
-      '/api/assets/asset%2Fid/image/large/fallback',
+      '/api/assets/asset%2Fid/image/social/fallback',
     );
   });
 });

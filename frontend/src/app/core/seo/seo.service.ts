@@ -1,3 +1,5 @@
+import type { SeoStaticPageKey } from '@shared/seo/seo';
+
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Injectable, REQUEST, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -10,6 +12,7 @@ import type { BlogAuthorPageData, BlogPostPageData } from '../blog/blog-public.s
 import { I18nState } from '../i18n/i18n.state';
 import type { Language } from '../i18n/i18n.types';
 import type { MusicAlbumPageData } from '../music/music-public.service';
+import { SeoSettingsService } from './seo-settings.service';
 import {
   PUBLIC_ORIGIN,
   SITE_DEFAULT_IMAGE_PATH,
@@ -23,17 +26,7 @@ interface StaticSeoCopy {
   description: string;
 }
 
-type StaticPageKey =
-  | 'home'
-  | 'gaming'
-  | 'music'
-  | 'blog'
-  | 'videos'
-  | 'community'
-  | 'contact'
-  | 'support'
-  | 'legalNotice'
-  | 'privacy';
+type StaticPageKey = SeoStaticPageKey;
 
 interface SeoDocument {
   title: string;
@@ -41,6 +34,10 @@ interface SeoDocument {
   canonicalPath: string;
   language: Language;
   imagePath?: string;
+  imageAlt?: string;
+  socialTitle?: string;
+  socialDescription?: string;
+  socialImageAsset?: boolean;
   openGraphType?: 'website' | 'article' | 'music.album' | 'profile';
   indexable?: boolean;
   articlePublishedAt?: string;
@@ -67,7 +64,7 @@ const STATIC_PATHS = new Map<string, StaticPageKey>([
 
 const PRIVATE_PATH_PREFIXES = ['/admin', '/account', '/community/dashboard'] as const;
 
-const STATIC_SEO_COPY: Record<Language, Record<StaticPageKey, StaticSeoCopy>> = {
+export const STATIC_SEO_COPY: Record<Language, Record<StaticPageKey, StaticSeoCopy>> = {
   de: {
     home: {
       title: 'Mimishow | Musik, Gaming, Livestreams & Community',
@@ -189,18 +186,21 @@ export class SeoService {
     optional: true,
   });
   private readonly router = inject(Router);
+  private readonly seoSettings =
+    inject(SeoSettingsService);
   private readonly store = inject(Store);
   private readonly title = inject(Title);
 
   private initialized = false;
   private resolvedOrigin: string | null = null;
 
-  initialize(): void {
+  async initialize(): Promise<void> {
     if (this.initialized) {
       return;
     }
 
     this.initialized = true;
+    await this.seoSettings.load();
 
     const navigation$ = this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -266,7 +266,17 @@ export class SeoService {
   }
 
   private applyStaticPage(page: StaticPageKey, language: Language, canonicalPath: string): void {
-    const copy = STATIC_SEO_COPY[language][page];
+    const fallback = STATIC_SEO_COPY[language][page];
+    const override =
+      this.seoSettings.get(page, language);
+    const copy = {
+      title:
+        override?.title?.trim() ||
+        fallback.title,
+      description:
+        override?.description?.trim() ||
+        fallback.description,
+    };
     const canonicalUrl = this.absoluteUrl(canonicalPath);
     const schema = [
       ...this.baseSchema(language),
@@ -305,6 +315,23 @@ export class SeoService {
     this.applyDocument({
       title: copy.title,
       description: copy.description,
+      socialTitle:
+        override?.socialTitle?.trim() ||
+        undefined,
+      socialDescription:
+        override?.socialDescription?.trim() ||
+        undefined,
+      imagePath:
+        override?.socialImageAssetId
+          ? assetSocialImagePath(
+              override.socialImageAssetId,
+            )
+          : undefined,
+      imageAlt:
+        override?.socialImageAlt?.trim() ||
+        undefined,
+      socialImageAsset:
+        Boolean(override?.socialImageAssetId),
       canonicalPath,
       language,
       schema,
@@ -315,13 +342,19 @@ export class SeoService {
     const { post, locale } = data;
     const canonicalPath = `/blog/${encodeURIComponent(post.slug)}`;
     const canonicalUrl = this.absoluteUrl(canonicalPath);
-    const description = this.descriptionFrom(post.excerpt || post.contentHtml);
+    const description =
+      post.seoDescription?.trim() ||
+      this.descriptionFrom(
+        post.excerpt || post.contentHtml,
+      );
     const imagePath = post.coverAssetId
       ? assetSocialImagePath(post.coverAssetId)
       : SITE_DEFAULT_IMAGE_PATH;
     const imageUrl = this.absoluteUrl(imagePath);
     const authorUrl = this.absoluteUrl(`/blog/autoren/${encodeURIComponent(post.author.slug)}`);
-    const title = `${post.title} | ${SITE_NAME}`;
+    const title =
+      post.seoTitle?.trim() ||
+      `${post.title} | ${SITE_NAME}`;
 
     this.applyDocument({
       title,
@@ -329,6 +362,11 @@ export class SeoService {
       canonicalPath,
       language: locale,
       imagePath,
+      imageAlt:
+        post.coverAltText?.trim() ||
+        post.title,
+      socialImageAsset:
+        Boolean(post.coverAssetId),
       openGraphType: 'article',
       articlePublishedAt: post.publishedAt,
       articleModifiedAt: post.updatedAt,
@@ -396,6 +434,9 @@ export class SeoService {
       imagePath: author.avatarAssetId
         ? assetSocialImagePath(author.avatarAssetId)
         : SITE_DEFAULT_IMAGE_PATH,
+      imageAlt: author.displayName,
+      socialImageAsset:
+        Boolean(author.avatarAssetId),
       schema: [
         ...this.baseSchema(locale),
         {
@@ -458,6 +499,9 @@ export class SeoService {
       canonicalPath,
       language: locale,
       imagePath,
+      imageAlt: album.title,
+      socialImageAsset:
+        Boolean(album.coverAssetId),
       openGraphType: 'music.album',
       musicReleaseDate: album.releasedAt,
       schema: [
@@ -532,6 +576,13 @@ export class SeoService {
     const origin = this.origin();
     const canonicalUrl = this.absoluteUrl(document.canonicalPath);
     const imageUrl = this.absoluteUrl(document.imagePath ?? SITE_DEFAULT_IMAGE_PATH);
+    const socialTitle =
+      document.socialTitle ?? document.title;
+    const socialDescription =
+      document.socialDescription ??
+      document.description;
+    const imageAlt =
+      document.imageAlt ?? socialTitle;
     const indexable =
       document.indexable !== false && isIndexableHostname(this.requestHostname());
     const robots = indexable
@@ -549,13 +600,22 @@ export class SeoService {
     });
 
     this.setProperty('og:site_name', SITE_NAME);
-    this.setProperty('og:title', document.title);
-    this.setProperty('og:description', document.description);
+    this.setProperty('og:title', socialTitle);
+    this.setProperty('og:description', socialDescription);
     this.setProperty('og:type', document.openGraphType ?? 'website');
     this.setProperty('og:url', canonicalUrl);
     this.setProperty('og:image', imageUrl);
-    this.setProperty('og:image:alt', document.title);
+    this.setProperty('og:image:alt', imageAlt);
     this.setProperty('og:locale', document.language === 'de' ? 'de_DE' : 'en_US');
+    this.removeProperty('og:image:type');
+    this.removeProperty('og:image:width');
+    this.removeProperty('og:image:height');
+
+    if (document.socialImageAsset) {
+      this.setProperty('og:image:type', 'image/jpeg');
+      this.setProperty('og:image:width', '1200');
+      this.setProperty('og:image:height', '630');
+    }
 
     this.meta.updateTag({
       name: 'twitter:card',
@@ -563,11 +623,11 @@ export class SeoService {
     });
     this.meta.updateTag({
       name: 'twitter:title',
-      content: document.title,
+      content: socialTitle,
     });
     this.meta.updateTag({
       name: 'twitter:description',
-      content: document.description,
+      content: socialDescription,
     });
     this.meta.updateTag({
       name: 'twitter:image',
@@ -575,7 +635,7 @@ export class SeoService {
     });
     this.meta.updateTag({
       name: 'twitter:image:alt',
-      content: document.title,
+      content: imageAlt,
     });
 
     this.removeProperty('article:published_time');

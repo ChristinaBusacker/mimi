@@ -20,7 +20,7 @@
           />
           <img
             [src]="assetUrl(coverId)"
-            [alt]="post.title"
+            [alt]="post.coverAltText || post.title"
           />
         </picture>
       } @else {

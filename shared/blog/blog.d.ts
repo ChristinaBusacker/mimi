@@ -25,6 +25,9 @@ export interface BlogPostSummary {
   title: string;
   excerpt: string;
   coverAssetId: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  coverAltText: string | null;
   publishedAt: string;
   updatedAt: string;
   author: BlogAuthor;

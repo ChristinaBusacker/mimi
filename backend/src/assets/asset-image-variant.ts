@@ -1,16 +1,47 @@
 export type AssetImageVariantName =
   | 'thumbnail'
   | 'medium'
-  | 'large';
+  | 'large'
+  | 'social';
 
 export type AssetImageVariantFormat =
   | 'webp'
   | 'fallback';
 
-export const ASSET_IMAGE_VARIANT_WIDTHS: Readonly<
-  Record<AssetImageVariantName, number>
+export interface AssetImageVariantDefinition {
+  width: number;
+  height?: number;
+  fit: 'inside' | 'cover';
+  withoutEnlargement: boolean;
+  position?: 'attention';
+}
+
+export const ASSET_IMAGE_VARIANTS: Readonly<
+  Record<
+    AssetImageVariantName,
+    AssetImageVariantDefinition
+  >
 > = {
-  thumbnail: 320,
-  medium: 768,
-  large: 1440,
+  thumbnail: {
+    width: 320,
+    fit: 'inside',
+    withoutEnlargement: true,
+  },
+  medium: {
+    width: 768,
+    fit: 'inside',
+    withoutEnlargement: true,
+  },
+  large: {
+    width: 1440,
+    fit: 'inside',
+    withoutEnlargement: true,
+  },
+  social: {
+    width: 1200,
+    height: 630,
+    fit: 'cover',
+    withoutEnlargement: false,
+    position: 'attention',
+  },
 };

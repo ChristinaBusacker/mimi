@@ -36,19 +36,14 @@ export const routes: Routes = [
   {
     path: 'music/albums/:slug',
     loadComponent: () =>
-      import('./pages/music/album/music-album').then(
-        (module) => module.MusicAlbumPage,
-      ),
+      import('./pages/music/album/music-album').then((module) => module.MusicAlbumPage),
     resolve: {
       data: musicAlbumResolver,
     },
   },
   {
     path: 'blog',
-    loadComponent: () =>
-      import('./pages/blog/blog').then(
-        (module) => module.Blog,
-      ),
+    loadComponent: () => import('./pages/blog/blog').then((module) => module.Blog),
     resolve: {
       data: blogDataResolver,
     },
@@ -56,10 +51,7 @@ export const routes: Routes = [
   {
     path: 'blog/autoren/:slug',
     loadComponent: () =>
-      import('./pages/blog/author/blog-author').then(
-        (module) =>
-          module.BlogAuthorPageComponent,
-      ),
+      import('./pages/blog/author/blog-author').then((module) => module.BlogAuthorPageComponent),
     resolve: {
       data: blogAuthorResolver,
     },
@@ -67,126 +59,88 @@ export const routes: Routes = [
   {
     path: 'blog/:slug',
     loadComponent: () =>
-      import('./pages/blog/post/blog-post').then(
-        (module) => module.BlogPostPage,
-      ),
+      import('./pages/blog/post/blog-post').then((module) => module.BlogPostPage),
     resolve: {
       data: blogPostResolver,
     },
   },
   {
-    path: 'videos',
-    loadComponent: () => import('./pages/videos/videos').then((module) => module.Videos),
-  },
-  {
     path: 'impressum',
     loadComponent: () =>
-      import('./pages/legal-notice/legal-notice').then(
-        (module) => module.LegalNotice,
-      ),
+      import('./pages/legal-notice/legal-notice').then((module) => module.LegalNotice),
   },
   {
     path: 'datenschutz',
-    loadComponent: () =>
-      import('./pages/privacy/privacy').then(
-        (module) => module.Privacy,
-      ),
+    loadComponent: () => import('./pages/privacy/privacy').then((module) => module.Privacy),
   },
   {
     path: 'kontakt',
-    loadComponent: () =>
-      import('./pages/contact/contact').then(
-        (module) => module.Contact,
-      ),
+    loadComponent: () => import('./pages/contact/contact').then((module) => module.Contact),
   },
   {
     path: 'unterstuetzen',
-    loadComponent: () =>
-      import('./pages/support/support').then(
-        (module) => module.Support,
-      ),
+    loadComponent: () => import('./pages/support/support').then((module) => module.Support),
   },
   {
     path: 'community/dashboard',
-    canActivate: [
-      authenticatedGuard,
-    ],
+    canActivate: [authenticatedGuard],
     loadComponent: () =>
       import('./pages/community/dashboard/community-dashboard').then(
-        (module) =>
-          module.CommunityDashboardPage,
+        (module) => module.CommunityDashboardPage,
       ),
   },
   {
     path: 'community',
     loadComponent: () =>
-      import('./pages/community/community').then(
-        (module) => module.CommunityPage,
-      ),
+      import('./pages/community/community').then((module) => module.CommunityPage),
   },
   {
     path: 'account',
-    canActivate: [
-      authenticatedGuard,
-    ],
+    canActivate: [authenticatedGuard],
     loadComponent: () =>
-      import('./pages/account/account-security').then(
-        (module) =>
-          module.AccountSecurityPage,
-      ),
+      import('./pages/account/account-security').then((module) => module.AccountSecurityPage),
   },
   {
     path: 'admin/login',
     loadComponent: () =>
-      import('./pages/admin/login/admin-login').then(
-        (module) => module.AdminLogin,
-      ),
+      import('./pages/admin/login/admin-login').then((module) => module.AdminLogin),
   },
   {
     path: 'admin/password-forgot',
     loadComponent: () =>
       import('./pages/admin/password-forgot/admin-password-forgot').then(
-        (module) =>
-          module.AdminPasswordForgot,
+        (module) => module.AdminPasswordForgot,
       ),
   },
   {
     path: 'admin/password-reset',
     loadComponent: () =>
       import('./pages/admin/password-reset/admin-password-reset').then(
-        (module) =>
-          module.AdminPasswordReset,
+        (module) => module.AdminPasswordReset,
       ),
   },
   {
     path: 'admin',
     canActivate: [contributorGuard],
     loadComponent: () =>
-      import('./pages/admin/shell/admin-shell').then(
-        (module) => module.AdminShell,
-      ),
+      import('./pages/admin/shell/admin-shell').then((module) => module.AdminShell),
     children: [
       {
         path: '',
         loadComponent: () =>
-          import('./pages/admin/dashboard/admin-dashboard').then(
-            (module) => module.AdminDashboard,
-          ),
+          import('./pages/admin/dashboard/admin-dashboard').then((module) => module.AdminDashboard),
       },
       {
         path: 'blog',
         loadComponent: () =>
-          import('./pages/admin/blog/admin-blog').then(
-            (module) => module.AdminBlog,
-          ),
+          import('./pages/admin/blog/admin-blog').then((module) => module.AdminBlog),
       },
       {
         path: 'blog/comments',
         canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/blog/comments/admin-blog-comments').then(
-            (module) =>
-              module.AdminBlogComments,
+            (module) => module.AdminBlogComments,
           ),
       },
       {
@@ -206,35 +160,26 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () =>
-          import('./pages/admin/profile/admin-profile').then(
-            (module) =>
-              module.AdminProfile,
-          ),
+          import('./pages/admin/profile/admin-profile').then((module) => module.AdminProfile),
       },
       {
         path: 'users',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./pages/admin/users/admin-users').then(
-            (module) =>
-              module.AdminUsers,
-          ),
+          import('./pages/admin/users/admin-users').then((module) => module.AdminUsers),
       },
       {
         path: 'blog/categories',
         loadComponent: () =>
           import('./pages/admin/blog/categories/admin-blog-categories').then(
-            (module) =>
-              module.AdminBlogCategories,
+            (module) => module.AdminBlogCategories,
           ),
       },
       {
         path: 'music',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./pages/admin/music/admin-music').then(
-            (module) => module.AdminMusic,
-          ),
+          import('./pages/admin/music/admin-music').then((module) => module.AdminMusic),
       },
       {
         path: 'localizations',
@@ -243,6 +188,12 @@ export const routes: Routes = [
           import('./pages/admin/localizations/admin-localizations').then(
             (module) => module.AdminLocalizations,
           ),
+      },
+      {
+        path: 'seo',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/seo/admin-seo').then((module) => module.AdminSeo),
       },
       {
         path: 'data-transfer',
@@ -264,9 +215,7 @@ export const routes: Routes = [
         path: 'community',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./pages/admin/community/admin-community').then(
-            (module) => module.AdminCommunity,
-          ),
+          import('./pages/admin/community/admin-community').then((module) => module.AdminCommunity),
       },
       {
         path: 'music/albums/new',
@@ -305,8 +254,6 @@ export const routes: Routes = [
   {
     path: '**',
     loadComponent: () =>
-      import('./pages/not-found/not-found').then(
-        (module) => module.NotFoundPage,
-      ),
+      import('./pages/not-found/not-found').then((module) => module.NotFoundPage),
   },
 ];

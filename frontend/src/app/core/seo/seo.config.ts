@@ -43,5 +43,5 @@ export function normalizePublicOrigin(value: string | null | undefined): string 
 }
 
 export function assetSocialImagePath(assetId: string): string {
-  return `/api/assets/${encodeURIComponent(assetId)}/image/large/fallback`;
+  return `/api/assets/${encodeURIComponent(assetId)}/image/social/fallback`;
 }

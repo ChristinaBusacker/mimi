@@ -142,6 +142,37 @@
           ></textarea>
         </label>
 
+        <p class="readonly-note">
+          {{ 'admin.blog.editor.seoHint' | i18n | async }}
+        </p>
+
+        <label>
+          <span>{{ 'admin.blog.editor.seoTitle' | i18n | async }}</span>
+          <input
+            type="text"
+            maxlength="255"
+            formControlName="seoTitleDe"
+          />
+        </label>
+
+        <label>
+          <span>{{ 'admin.blog.editor.seoDescription' | i18n | async }}</span>
+          <textarea
+            rows="3"
+            maxlength="1000"
+            formControlName="seoDescriptionDe"
+          ></textarea>
+        </label>
+
+        <label>
+          <span>{{ 'admin.blog.editor.coverAltText' | i18n | async }}</span>
+          <textarea
+            rows="2"
+            maxlength="1000"
+            formControlName="coverAltTextDe"
+          ></textarea>
+        </label>
+
         <app-markdown-editor
           formControlName="contentDe"
           [label]="'admin.blog.editor.content' | i18n | async"
@@ -169,6 +200,37 @@
           <textarea
             rows="4"
             formControlName="excerptEn"
+          ></textarea>
+        </label>
+
+        <p class="readonly-note">
+          {{ 'admin.blog.editor.seoHint' | i18n | async }}
+        </p>
+
+        <label>
+          <span>{{ 'admin.blog.editor.seoTitle' | i18n | async }}</span>
+          <input
+            type="text"
+            maxlength="255"
+            formControlName="seoTitleEn"
+          />
+        </label>
+
+        <label>
+          <span>{{ 'admin.blog.editor.seoDescription' | i18n | async }}</span>
+          <textarea
+            rows="3"
+            maxlength="1000"
+            formControlName="seoDescriptionEn"
+          ></textarea>
+        </label>
+
+        <label>
+          <span>{{ 'admin.blog.editor.coverAltText' | i18n | async }}</span>
+          <textarea
+            rows="2"
+            maxlength="1000"
+            formControlName="coverAltTextEn"
           ></textarea>
         </label>
 

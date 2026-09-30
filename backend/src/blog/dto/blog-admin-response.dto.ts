@@ -13,9 +13,7 @@ import type { BlogPublicationStatus } from '@shared/blog/blog';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BlogAdminTranslationDto
-  implements BlogAdminTranslation
-{
+export class BlogAdminTranslationDto implements BlogAdminTranslation {
   @ApiProperty()
   title!: string;
 
@@ -24,11 +22,24 @@ export class BlogAdminTranslationDto
 
   @ApiProperty()
   contentMarkdown!: string;
+
+  @ApiProperty({
+    nullable: true,
+  })
+  seoTitle!: string | null;
+
+  @ApiProperty({
+    nullable: true,
+  })
+  seoDescription!: string | null;
+
+  @ApiProperty({
+    nullable: true,
+  })
+  coverAltText!: string | null;
 }
 
-export class BlogAdminTranslationsDto
-  implements BlogAdminTranslations
-{
+export class BlogAdminTranslationsDto implements BlogAdminTranslations {
   @ApiProperty({
     type: BlogAdminTranslationDto,
   })
@@ -41,9 +52,7 @@ export class BlogAdminTranslationsDto
   en!: BlogAdminTranslationDto | null;
 }
 
-export class BlogAdminPostDto
-  implements BlogAdminPost
-{
+export class BlogAdminPostDto implements BlogAdminPost {
   @ApiProperty({
     format: 'uuid',
   })
@@ -70,10 +79,7 @@ export class BlogAdminPostDto
   coverAssetId!: string | null;
 
   @ApiProperty({
-    enum: [
-      'draft',
-      'published',
-    ],
+    enum: ['draft', 'published'],
   })
   status!: BlogPublicationStatus;
 
@@ -99,9 +105,7 @@ export class BlogAdminPostDto
   updatedAt!: string;
 }
 
-export class BlogAdminAuthorDto
-  implements BlogAdminAuthor
-{
+export class BlogAdminAuthorDto implements BlogAdminAuthor {
   @ApiProperty({
     format: 'uuid',
   })
@@ -123,12 +127,7 @@ export class BlogAdminAuthorDto
   avatarAssetId!: string | null;
 
   @ApiProperty({
-    enum: [
-      'user',
-      'author',
-      'editor',
-      'admin',
-    ],
+    enum: ['user', 'author', 'editor', 'admin'],
   })
   role!: UserRole;
 
@@ -143,9 +142,7 @@ export class BlogAdminAuthorDto
   updatedAt!: string;
 }
 
-export class BlogAdminAuthorCandidateDto
-  implements BlogAdminAuthorCandidate
-{
+export class BlogAdminAuthorCandidateDto implements BlogAdminAuthorCandidate {
   @ApiProperty({
     format: 'uuid',
   })
@@ -161,12 +158,7 @@ export class BlogAdminAuthorCandidateDto
   email!: string | null;
 
   @ApiProperty({
-    enum: [
-      'user',
-      'author',
-      'editor',
-      'admin',
-    ],
+    enum: ['user', 'author', 'editor', 'admin'],
   })
   role!: UserRole;
 
@@ -177,34 +169,25 @@ export class BlogAdminAuthorCandidateDto
   profile!: BlogAdminAuthorDto | null;
 }
 
-export class BlogAdminCategoryTranslationDto
-  implements BlogAdminCategoryTranslation
-{
+export class BlogAdminCategoryTranslationDto implements BlogAdminCategoryTranslation {
   @ApiProperty()
   name!: string;
 }
 
-export class BlogAdminCategoryTranslationsDto
-  implements BlogAdminCategoryTranslations
-{
+export class BlogAdminCategoryTranslationsDto implements BlogAdminCategoryTranslations {
   @ApiProperty({
-    type:
-      BlogAdminCategoryTranslationDto,
+    type: BlogAdminCategoryTranslationDto,
   })
   de!: BlogAdminCategoryTranslationDto;
 
   @ApiProperty({
-    type:
-      BlogAdminCategoryTranslationDto,
+    type: BlogAdminCategoryTranslationDto,
     nullable: true,
   })
-  en!:
-    BlogAdminCategoryTranslationDto | null;
+  en!: BlogAdminCategoryTranslationDto | null;
 }
 
-export class BlogAdminCategoryDto
-  implements BlogAdminCategory
-{
+export class BlogAdminCategoryDto implements BlogAdminCategory {
   @ApiProperty({
     format: 'uuid',
   })
@@ -214,9 +197,7 @@ export class BlogAdminCategoryDto
   slug!: string;
 
   @ApiProperty({
-    type:
-      BlogAdminCategoryTranslationsDto,
+    type: BlogAdminCategoryTranslationsDto,
   })
-  translations!:
-    BlogAdminCategoryTranslationsDto;
+  translations!: BlogAdminCategoryTranslationsDto;
 }

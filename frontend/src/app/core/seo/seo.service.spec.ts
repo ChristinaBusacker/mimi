@@ -6,6 +6,7 @@ import { Subject, of } from 'rxjs';
 
 import { PUBLIC_ORIGIN } from './seo.config';
 import { SeoService } from './seo.service';
+import { SeoSettingsService } from './seo-settings.service';
 
 class RouterStub {
   readonly events = new Subject<never>();
@@ -27,6 +28,9 @@ class RouterStub {
                 title: 'Testbeitrag',
                 excerpt: 'Ein Testbeitrag für die SEO-Metadaten.',
                 coverAssetId: 'cover-id',
+                seoTitle: null,
+                seoDescription: null,
+                coverAltText: 'Eine Quietscheente vor einem Rednerpult',
                 publishedAt: '2026-09-20T10:00:00.000Z',
                 updatedAt: '2026-09-28T12:00:00.000Z',
                 author: {
@@ -57,6 +61,14 @@ class StoreStub {
   }
 }
 
+class SeoSettingsServiceStub {
+  async load(): Promise<void> {}
+
+  get() {
+    return null;
+  }
+}
+
 describe('SeoService', () => {
   afterEach(() => {
     document.head
@@ -76,7 +88,7 @@ describe('SeoService', () => {
     TestBed.resetTestingModule();
   });
 
-  it('uses the configured public origin, large social image and modification date', () => {
+  it('uses the configured public origin, social image metadata and modification date', async () => {
     TestBed.configureTestingModule({
       providers: [
         SeoService,
@@ -96,10 +108,14 @@ describe('SeoService', () => {
           provide: PUBLIC_ORIGIN,
           useValue: 'https://mimishow.de',
         },
+        {
+          provide: SeoSettingsService,
+          useClass: SeoSettingsServiceStub,
+        },
       ],
     });
 
-    TestBed.inject(SeoService).initialize();
+    await TestBed.inject(SeoService).initialize();
 
     expect(
       document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href,
@@ -107,8 +123,17 @@ describe('SeoService', () => {
     expect(
       document.head.querySelector<HTMLMetaElement>('meta[property="og:image"]')?.content,
     ).toBe(
-      'https://mimishow.de/api/assets/cover-id/image/large/fallback',
+      'https://mimishow.de/api/assets/cover-id/image/social/fallback',
     );
+    expect(
+      document.head.querySelector<HTMLMetaElement>('meta[property="og:image:width"]')?.content,
+    ).toBe('1200');
+    expect(
+      document.head.querySelector<HTMLMetaElement>('meta[property="og:image:height"]')?.content,
+    ).toBe('630');
+    expect(
+      document.head.querySelector<HTMLMetaElement>('meta[property="og:image:alt"]')?.content,
+    ).toBe('Eine Quietscheente vor einem Rednerpult');
     expect(
       document.head.querySelector<HTMLMetaElement>(
         'meta[property="article:modified_time"]',
@@ -129,7 +154,7 @@ describe('SeoService', () => {
     expect(article?.['dateModified']).toBe('2026-09-28T12:00:00.000Z');
   });
 
-  it('keeps staging noindex even when a public canonical origin is configured', () => {
+  it('keeps staging noindex even when a public canonical origin is configured', async () => {
     TestBed.configureTestingModule({
       providers: [
         SeoService,
@@ -149,10 +174,14 @@ describe('SeoService', () => {
           provide: PUBLIC_ORIGIN,
           useValue: 'https://mimishow.de',
         },
+        {
+          provide: SeoSettingsService,
+          useClass: SeoSettingsServiceStub,
+        },
       ],
     });
 
-    TestBed.inject(SeoService).initialize();
+    await TestBed.inject(SeoService).initialize();
 
     expect(
       document.head.querySelector<HTMLMetaElement>('meta[name="robots"]')?.content,

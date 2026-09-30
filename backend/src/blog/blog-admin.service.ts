@@ -820,6 +820,12 @@ export class BlogAdminService {
               translation.excerpt,
             contentMarkdown:
               translation.contentMarkdown,
+            seoTitle:
+              translation.seoTitle,
+            seoDescription:
+              translation.seoDescription,
+            coverAltText:
+              translation.coverAltText,
           }
         : repository.create({
             postUuid,
@@ -830,6 +836,12 @@ export class BlogAdminService {
               translation.excerpt,
             contentMarkdown:
               translation.contentMarkdown,
+            seoTitle:
+              translation.seoTitle,
+            seoDescription:
+              translation.seoDescription,
+            coverAltText:
+              translation.coverAltText,
           }),
     );
   }
@@ -907,6 +919,9 @@ export class BlogAdminService {
             title: '',
             excerpt: '',
             contentMarkdown: '',
+            seoTitle: null,
+            seoDescription: null,
+            coverAltText: null,
           },
       en: english
         ? this.mapTranslation(
@@ -927,6 +942,12 @@ export class BlogAdminService {
         translation.excerpt,
       contentMarkdown:
         translation.contentMarkdown,
+      seoTitle:
+        translation.seoTitle,
+      seoDescription:
+        translation.seoDescription,
+      coverAltText:
+        translation.coverAltText,
     };
   }
 

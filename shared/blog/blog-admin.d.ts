@@ -1,14 +1,15 @@
 import type { UserRole } from '../auth/authenticated-user';
 import type { BlogPublicationStatus } from './blog';
 
-export type BlogContributorRole =
-  | 'author'
-  | 'editor';
+export type BlogContributorRole = 'author' | 'editor';
 
 export interface BlogAdminTranslation {
   title: string;
   excerpt: string;
   contentMarkdown: string;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  coverAltText: string | null;
 }
 
 export interface BlogAdminTranslations {

@@ -34,7 +34,8 @@ import {
 } from 'typeorm';
 
 import {
-  ASSET_IMAGE_VARIANT_WIDTHS,
+  ASSET_IMAGE_VARIANTS,
+  type AssetImageVariantDefinition,
   type AssetImageVariantFormat,
   type AssetImageVariantName,
 } from './asset-image-variant';
@@ -428,20 +429,43 @@ export class AssetsService {
     const displayHeight = rotated ? width : height;
     const variants: PreparedVariant[] = [];
 
-    for (const [name, maxWidth] of Object.entries(
-      ASSET_IMAGE_VARIANT_WIDTHS,
-    ) as Array<[AssetImageVariantName, number]>) {
-      const base = sharp(buffer, {
+    for (const [name, definition] of Object.entries(
+      ASSET_IMAGE_VARIANTS,
+    ) as Array<[
+      AssetImageVariantName,
+      AssetImageVariantDefinition,
+    ]>) {
+      let base = sharp(buffer, {
         failOn: 'error',
-      })
-        .rotate()
-        .resize({
-          width: maxWidth,
-          fit: 'inside',
-          withoutEnlargement: true,
-        });
+      }).rotate();
 
-      const webp = await base
+      if (
+        name === 'social' &&
+        metadata.hasAlpha
+      ) {
+        base = base.flatten({
+          background: '#ffffff',
+        });
+      }
+
+      const resized = base.resize({
+        width: definition.width,
+        ...(definition.height === undefined
+          ? {}
+          : {
+              height: definition.height,
+            }),
+        fit: definition.fit,
+        withoutEnlargement:
+          definition.withoutEnlargement,
+        ...(definition.position
+          ? {
+              position: definition.position,
+            }
+          : {}),
+      });
+
+      const webp = await resized
         .clone()
         .webp({
           quality: 82,
@@ -460,8 +484,11 @@ export class AssetsService {
         buffer: webp.data,
       });
 
-      const fallback = metadata.hasAlpha
-        ? await base
+      const fallbackIsPng =
+        name !== 'social' &&
+        metadata.hasAlpha;
+      const fallback = fallbackIsPng
+        ? await resized
             .clone()
             .png({
               compressionLevel: 9,
@@ -469,10 +496,13 @@ export class AssetsService {
             .toBuffer({
               resolveWithObject: true,
             })
-        : await base
+        : await resized
             .clone()
             .jpeg({
-              quality: 85,
+              quality:
+                name === 'social'
+                  ? 88
+                  : 85,
               mozjpeg: true,
             })
             .toBuffer({
@@ -482,10 +512,14 @@ export class AssetsService {
       variants.push({
         name,
         format: 'fallback',
-        extension: metadata.hasAlpha ? 'png' : 'jpg',
-        mimeType: metadata.hasAlpha
-          ? 'image/png'
-          : 'image/jpeg',
+        extension:
+          fallbackIsPng
+            ? 'png'
+            : 'jpg',
+        mimeType:
+          fallbackIsPng
+            ? 'image/png'
+            : 'image/jpeg',
         width: fallback.info.width,
         height: fallback.info.height,
         buffer: fallback.data,
@@ -587,6 +621,27 @@ export class AssetsService {
 
     const prepared = await this.prepareImage(buffer);
     const storedFiles: StoredFile[] = [];
+    const existingVariants =
+      await this.variantRepository.findBy({
+        assetUuid: asset.uuid,
+      });
+    const existingVariantKeys = new Set(
+      existingVariants.map(
+        (variant) =>
+          `${variant.name}:${variant.format}`,
+      ),
+    );
+    const missingVariants =
+      prepared.variants.filter(
+        (variant) =>
+          !existingVariantKeys.has(
+            `${variant.name}:${variant.format}`,
+          ),
+      );
+
+    if (missingVariants.length === 0) {
+      return;
+    }
 
     if (asset.contentHash === null) {
       await this.tryClaimLegacyHash(
@@ -598,7 +653,7 @@ export class AssetsService {
     try {
       const entries = await this.storePreparedVariants(
         asset.uuid,
-        prepared.variants,
+        missingVariants,
         storedFiles,
       );
 
@@ -628,12 +683,25 @@ export class AssetsService {
     } catch (error: unknown) {
       await this.removeStoredFiles(storedFiles);
 
-      const existingVariantCount =
-        await this.variantRepository.countBy({
+      const currentVariants =
+        await this.variantRepository.findBy({
           assetUuid: asset.uuid,
         });
+      const currentVariantKeys = new Set(
+        currentVariants.map(
+          (variant) =>
+            `${variant.name}:${variant.format}`,
+        ),
+      );
 
-      if (existingVariantCount > 0) {
+      if (
+        missingVariants.every(
+          (variant) =>
+            currentVariantKeys.has(
+              `${variant.name}:${variant.format}`,
+            ),
+        )
+      ) {
         return;
       }
 
@@ -693,7 +761,8 @@ export class AssetsService {
     if (
       value === 'thumbnail' ||
       value === 'medium' ||
-      value === 'large'
+      value === 'large' ||
+      value === 'social'
     ) {
       return value;
     }

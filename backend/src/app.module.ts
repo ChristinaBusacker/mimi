@@ -20,6 +20,7 @@ import { MusicModule } from './music/music.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PushModule } from './push/push.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SeoModule } from './seo/seo.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MusicModule,
     NotificationsModule,
     PushModule,
+    SeoModule,
   ],
   controllers: [AppController],
   providers: [],

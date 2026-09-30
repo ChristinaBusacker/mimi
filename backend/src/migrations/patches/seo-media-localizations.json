@@ -1,0 +1,169 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.seo",
+      "de": "SEO",
+      "en": "SEO"
+    },
+    {
+      "key": "admin.seo.title",
+      "de": "SEO & Social Previews",
+      "en": "SEO & social previews"
+    },
+    {
+      "key": "admin.seo.intro",
+      "de": "Pflege Suchmaschinen- und Social-Media-Metadaten für statische Seiten. Leere Felder verwenden weiterhin die Standardwerte aus der Anwendung.",
+      "en": "Edit search and social metadata for static pages. Empty fields continue to use the application's defaults."
+    },
+    {
+      "key": "admin.seo.loading",
+      "de": "SEO-Einstellungen werden geladen …",
+      "en": "Loading SEO settings…"
+    },
+    {
+      "key": "admin.seo.save",
+      "de": "SEO speichern",
+      "en": "Save SEO"
+    },
+    {
+      "key": "admin.seo.saving",
+      "de": "Wird gespeichert …",
+      "en": "Saving…"
+    },
+    {
+      "key": "admin.seo.saved",
+      "de": "SEO-Einstellungen wurden gespeichert.",
+      "en": "SEO settings were saved."
+    },
+    {
+      "key": "admin.seo.loadFailed",
+      "de": "Die SEO-Einstellungen konnten nicht geladen werden.",
+      "en": "The SEO settings could not be loaded."
+    },
+    {
+      "key": "admin.seo.saveFailed",
+      "de": "Die SEO-Einstellungen konnten nicht gespeichert werden.",
+      "en": "The SEO settings could not be saved."
+    },
+    {
+      "key": "admin.seo.fallbackHint",
+      "de": "Leer lassen, um den Standardwert der Seite zu verwenden.",
+      "en": "Leave empty to use the page default."
+    },
+    {
+      "key": "admin.seo.seoTitle",
+      "de": "SEO-Titel",
+      "en": "SEO title"
+    },
+    {
+      "key": "admin.seo.description",
+      "de": "Meta-Beschreibung",
+      "en": "Meta description"
+    },
+    {
+      "key": "admin.seo.socialTitle",
+      "de": "Social-Titel (optional)",
+      "en": "Social title (optional)"
+    },
+    {
+      "key": "admin.seo.socialDescription",
+      "de": "Social-Beschreibung (optional)",
+      "en": "Social description (optional)"
+    },
+    {
+      "key": "admin.seo.socialImage",
+      "de": "Social-Vorschaubild",
+      "en": "Social preview image"
+    },
+    {
+      "key": "admin.seo.defaultImage",
+      "de": "Standardbild verwenden",
+      "en": "Use default image"
+    },
+    {
+      "key": "admin.seo.socialImageAlt",
+      "de": "Bildbeschreibung für Social Preview",
+      "en": "Social preview image description"
+    },
+    {
+      "key": "admin.seo.language.de",
+      "de": "Deutsch",
+      "en": "German"
+    },
+    {
+      "key": "admin.seo.language.en",
+      "de": "Englisch",
+      "en": "English"
+    },
+    {
+      "key": "admin.seo.pages.home",
+      "de": "Startseite",
+      "en": "Home"
+    },
+    {
+      "key": "admin.seo.pages.gaming",
+      "de": "Gaming",
+      "en": "Gaming"
+    },
+    {
+      "key": "admin.seo.pages.music",
+      "de": "Musik",
+      "en": "Music"
+    },
+    {
+      "key": "admin.seo.pages.blog",
+      "de": "News & Blog",
+      "en": "News & blog"
+    },
+    {
+      "key": "admin.seo.pages.videos",
+      "de": "Videos",
+      "en": "Videos"
+    },
+    {
+      "key": "admin.seo.pages.community",
+      "de": "Community",
+      "en": "Community"
+    },
+    {
+      "key": "admin.seo.pages.contact",
+      "de": "Kontakt",
+      "en": "Contact"
+    },
+    {
+      "key": "admin.seo.pages.support",
+      "de": "Unterstützen",
+      "en": "Support"
+    },
+    {
+      "key": "admin.seo.pages.legalNotice",
+      "de": "Impressum",
+      "en": "Legal notice"
+    },
+    {
+      "key": "admin.seo.pages.privacy",
+      "de": "Datenschutz",
+      "en": "Privacy"
+    },
+    {
+      "key": "admin.blog.editor.seoTitle",
+      "de": "SEO-Titel (optional)",
+      "en": "SEO title (optional)"
+    },
+    {
+      "key": "admin.blog.editor.seoDescription",
+      "de": "SEO-Beschreibung (optional)",
+      "en": "SEO description (optional)"
+    },
+    {
+      "key": "admin.blog.editor.coverAltText",
+      "de": "Bildbeschreibung des Titelbilds",
+      "en": "Cover image description"
+    },
+    {
+      "key": "admin.blog.editor.seoHint",
+      "de": "Leer lassen, um Titel beziehungsweise Teaser automatisch zu verwenden.",
+      "en": "Leave empty to use the title or excerpt automatically."
+    }
+  ]
+}
