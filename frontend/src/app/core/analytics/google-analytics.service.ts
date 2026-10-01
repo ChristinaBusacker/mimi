@@ -1,20 +1,13 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import {
-  DestroyRef,
-  Injectable,
-  Injector,
-  PLATFORM_ID,
-  effect,
-  inject,
-} from '@angular/core';
+import { DestroyRef, Injectable, Injector, PLATFORM_ID, effect, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 
 import { ConsentService } from '../privacy/consent.service';
-import { isIndexableHostname } from '../seo/seo.config';
 import {
   GOOGLE_ANALYTICS_CONFIG,
+  googleAnalyticsConfig,
   normalizeGoogleAnalyticsMeasurementId,
 } from './google-analytics.config';
 
@@ -79,9 +72,7 @@ export class GoogleAnalyticsService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly router = inject(Router);
 
-  private readonly measurementId = normalizeGoogleAnalyticsMeasurementId(
-    this.config.measurementId,
-  );
+  private readonly measurementId = normalizeGoogleAnalyticsMeasurementId(this.config.measurementId);
 
   private enabled = false;
   private initialized = false;
@@ -126,7 +117,10 @@ export class GoogleAnalyticsService {
 
     const window = this.getWindow();
 
-    return window !== null && isIndexableHostname(window.location.hostname);
+    return (
+      window !== null &&
+      googleAnalyticsConfig.allowedHosts.includes(window.location.hostname.toLowerCase())
+    );
   }
 
   private enable(): void {
