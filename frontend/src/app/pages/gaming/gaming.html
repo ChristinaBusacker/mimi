@@ -3,7 +3,12 @@
 @let game = gamingData.game;
 
 <section class="page">
-  <app-hero type="gaming" class="right-align-center">
+  <app-hero
+    type="gaming"
+    class="right-align-center half"
+    [background]="game?.screenshots[0].fullSizeUrl || ''"
+    gradientDirection="rtl"
+  >
     <div hero-left class="intro">
       <div class="eyebrow">
         <app-icon name="gaming" class="white small" />

@@ -8,7 +8,7 @@
   </a>
 
   <app-hero gradientDirection="ltr" [background]="assetUrl(post.coverAssetId + '')">
-    <div hero-left class="meta">
+    <div hero-right class="meta">
       <span>
         {{ 'blog.article.label' | i18n | async }}
       </span>
@@ -43,7 +43,7 @@
       }
     </div>
 
-    <div hero-right class="cover">
+    <div hero-left class="cover">
       @if (post.coverAssetId; as coverId) {
         <picture>
           <source [srcset]="imageVariantUrl(coverId, 'large')" type="image/webp" />

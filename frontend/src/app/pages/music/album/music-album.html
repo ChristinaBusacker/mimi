@@ -8,7 +8,7 @@
   </a>
 
   <app-hero type="music" [background]="assetUrl(album.coverAssetId || '')" gradientDirection="rtl">
-    <div hero-left class="cover">
+    <div hero-right class="cover">
       @if (album.coverAssetId) {
         <img [src]="assetUrl(album.coverAssetId)" [alt]="album.title" />
       } @else {
@@ -18,7 +18,7 @@
       }
     </div>
 
-    <div hero-right class="meta">
+    <div hero-left class="meta">
       <span>{{ 'music.album.label' | i18n | async }}</span>
       <h1>{{ album.title }}</h1>
 

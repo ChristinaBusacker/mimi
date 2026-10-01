@@ -4,12 +4,15 @@
   display: block;
 }
 
+:host * {
+  text-shadow: none;
+}
+
 button,
 a {
   --button-accent: var(--page-accent, var(--color-primary));
   --button-accent-hover: color-mix(in srgb, var(--button-accent) 84%, white);
   --button-accent-active: color-mix(in srgb, var(--button-accent) 88%, black);
-
   display: flex;
   align-items: center;
   justify-content: center;

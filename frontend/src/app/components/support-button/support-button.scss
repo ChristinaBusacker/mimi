@@ -8,6 +8,10 @@
   display: inline-flex;
 }
 
+:host * {
+  text-shadow: none;
+}
+
 .support-button {
   position: relative;
 
