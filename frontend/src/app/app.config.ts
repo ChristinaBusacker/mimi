@@ -11,6 +11,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { provideStore } from '@ngxs/store';
 
 import { routes } from './app.routes';
+import { GoogleAnalyticsService } from './core/analytics/google-analytics.service';
 import { AuthState } from './core/auth/auth.state';
 import { EventStreamService } from './core/events/event-stream.service';
 import { I18nState } from './core/i18n/i18n.state';
@@ -42,6 +43,7 @@ export const appConfig: ApplicationConfig = {
     ]),
     provideAppInitializer(() => inject(LanguageService).initialize()),
     provideAppInitializer(() => inject(SeoService).initialize()),
+    provideAppInitializer(() => inject(GoogleAnalyticsService).initialize()),
     provideAppInitializer(() => inject(EventStreamService).start()),
   ],
 };
