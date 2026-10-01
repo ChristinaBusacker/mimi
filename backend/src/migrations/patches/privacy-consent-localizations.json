@@ -1,0 +1,79 @@
+{
+  "localizations": [
+    {
+      "key": "footer.privacySettings",
+      "de": "Datenschutz-Einstellungen",
+      "en": "Privacy settings"
+    },
+    {
+      "key": "privacy.consent.title",
+      "de": "Deine Datenschutz-Einstellungen",
+      "en": "Your privacy settings"
+    },
+    {
+      "key": "privacy.consent.description",
+      "de": "Wir verwenden notwendige Technologien für den Betrieb der Mimishow. Mit deiner Zustimmung dürfen wir zusätzlich Google Analytics einsetzen, um zu verstehen, wie die Website genutzt wird.",
+      "en": "We use necessary technologies to operate Mimishow. With your consent, we may also use Google Analytics to understand how the website is used."
+    },
+    {
+      "key": "privacy.consent.privacyLink",
+      "de": "Mehr zum Datenschutz",
+      "en": "Learn more about privacy"
+    },
+    {
+      "key": "privacy.consent.acceptAll",
+      "de": "Alle akzeptieren",
+      "en": "Accept all"
+    },
+    {
+      "key": "privacy.consent.rejectOptional",
+      "de": "Nur notwendige",
+      "en": "Necessary only"
+    },
+    {
+      "key": "privacy.consent.settings",
+      "de": "Einstellungen",
+      "en": "Settings"
+    },
+    {
+      "key": "privacy.consent.settingsTitle",
+      "de": "Dienste auswählen",
+      "en": "Choose services"
+    },
+    {
+      "key": "privacy.consent.necessary.title",
+      "de": "Notwendig",
+      "en": "Necessary"
+    },
+    {
+      "key": "privacy.consent.necessary.description",
+      "de": "Erforderlich für grundlegende Funktionen wie Spracheinstellungen, Anmeldung und das Speichern deiner Datenschutzauswahl.",
+      "en": "Required for core features such as language settings, sign-in and storing your privacy choice."
+    },
+    {
+      "key": "privacy.consent.necessary.status",
+      "de": "Immer aktiv",
+      "en": "Always active"
+    },
+    {
+      "key": "privacy.consent.analytics.title",
+      "de": "Statistik",
+      "en": "Analytics"
+    },
+    {
+      "key": "privacy.consent.analytics.description",
+      "de": "Erlaubt uns, Google Analytics zu aktivieren und Nutzungsdaten auszuwerten, damit wir die Mimishow verbessern können. Google Analytics wird nur nach deiner Zustimmung aktiviert.",
+      "en": "Allows us to enable Google Analytics and evaluate usage data so we can improve Mimishow. Google Analytics is only enabled after you consent."
+    },
+    {
+      "key": "privacy.consent.save",
+      "de": "Auswahl speichern",
+      "en": "Save selection"
+    },
+    {
+      "key": "privacy.consent.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    }
+  ]
+}

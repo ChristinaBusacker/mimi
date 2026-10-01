@@ -15,6 +15,14 @@
     </a>
   </nav>
 
+  <button
+    type="button"
+    class="privacy-settings"
+    (click)="openPrivacySettings()"
+  >
+    {{ 'footer.privacySettings' | i18n | async }}
+  </button>
+
   <div
     class="language-switch"
     role="group"

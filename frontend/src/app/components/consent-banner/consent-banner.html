@@ -1,0 +1,106 @@
+@if (clientReady() && consent.visible()) {
+  <aside
+    class="consent-banner"
+    aria-labelledby="privacy-consent-title"
+    aria-describedby="privacy-consent-description"
+  >
+    <div class="consent-banner__panel">
+      <div class="consent-banner__copy">
+        <h2 id="privacy-consent-title">
+          {{ 'privacy.consent.title' | i18n | async }}
+        </h2>
+        <p id="privacy-consent-description">
+          {{ 'privacy.consent.description' | i18n | async }}
+          <a routerLink="/datenschutz">
+            {{ 'privacy.consent.privacyLink' | i18n | async }}
+          </a>
+        </p>
+      </div>
+
+      @if (consent.settingsOpen()) {
+        <section
+          class="consent-banner__settings"
+          aria-labelledby="privacy-consent-settings-title"
+        >
+          <h3 id="privacy-consent-settings-title">
+            {{ 'privacy.consent.settingsTitle' | i18n | async }}
+          </h3>
+
+          <div class="consent-banner__category">
+            <div>
+              <strong>
+                {{ 'privacy.consent.necessary.title' | i18n | async }}
+              </strong>
+              <p>
+                {{ 'privacy.consent.necessary.description' | i18n | async }}
+              </p>
+            </div>
+            <span class="consent-banner__status">
+              {{ 'privacy.consent.necessary.status' | i18n | async }}
+            </span>
+          </div>
+
+          <label class="consent-banner__category consent-banner__category--interactive">
+            <div>
+              <strong>
+                {{ 'privacy.consent.analytics.title' | i18n | async }}
+              </strong>
+              <p>
+                {{ 'privacy.consent.analytics.description' | i18n | async }}
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              [checked]="analyticsSelected()"
+              (change)="setAnalytics($event)"
+            />
+          </label>
+        </section>
+      }
+
+      <div class="consent-banner__actions">
+        @if (consent.settingsOpen()) {
+          <button
+            type="button"
+            class="consent-banner__action consent-banner__action--decision"
+            (click)="saveSettings()"
+          >
+            {{ 'privacy.consent.save' | i18n | async }}
+          </button>
+
+          @if (consent.state().status === 'configured') {
+            <button
+              type="button"
+              class="consent-banner__action consent-banner__action--secondary"
+              (click)="cancelSettings()"
+            >
+              {{ 'privacy.consent.cancel' | i18n | async }}
+            </button>
+          }
+        } @else {
+          <button
+            type="button"
+            class="consent-banner__action consent-banner__action--decision"
+            (click)="acceptAll()"
+          >
+            {{ 'privacy.consent.acceptAll' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            class="consent-banner__action consent-banner__action--decision"
+            (click)="rejectOptional()"
+          >
+            {{ 'privacy.consent.rejectOptional' | i18n | async }}
+          </button>
+          <button
+            type="button"
+            class="consent-banner__action consent-banner__action--secondary"
+            (click)="openSettings()"
+          >
+            {{ 'privacy.consent.settings' | i18n | async }}
+          </button>
+        }
+      </div>
+    </div>
+  </aside>
+}

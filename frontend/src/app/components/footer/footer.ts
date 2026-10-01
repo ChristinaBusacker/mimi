@@ -12,6 +12,7 @@ import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { I18nState } from '../../core/i18n/i18n.state';
 import type { Language } from '../../core/i18n/i18n.types';
 import { LanguageService } from '../../core/i18n/language.service';
+import { ConsentService } from '../../core/privacy/consent.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,8 +24,13 @@ import { LanguageService } from '../../core/i18n/language.service';
 export class Footer {
   private readonly store = inject(Store);
   private readonly languageService = inject(LanguageService);
+  private readonly consent = inject(ConsentService);
 
   protected readonly language = this.store.selectSignal(I18nState.language);
+
+  protected openPrivacySettings(): void {
+    this.consent.openSettings();
+  }
 
   protected setLanguage(language: Language): void {
     if (this.language() === language) {

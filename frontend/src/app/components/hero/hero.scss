@@ -44,6 +44,7 @@
     box-shadow:
       inset 0 0 0 1px rgb(255 255 255 / 4%),
       inset 0 -40px 80px rgb(0 0 0 / 8%);
+    z-index: 2;
 
     .background-image {
       width: 100%;
@@ -54,13 +55,14 @@
       background-position: center;
       background-size: 150%;
       filter: blur(2px) saturate(80%);
+      z-index: -1;
     }
 
     &::after {
       content: '';
       position: absolute;
       inset: 0;
-      z-index: 0;
+      z-index: -1;
       border-radius: var(--radius-card);
       background: linear-gradient(
         var(--hero-gradient-angle),
@@ -81,23 +83,35 @@
       }
 
       .left {
-        width: 66%;
+        width: 100%;
+        @mixin wide-layout {
+          width: 66%;
+        }
       }
 
       .right {
-        width: 33%;
+        width: 100%;
+        @mixin wide-layout {
+          width: 33%;
+        }
       }
     }
     &:not(.gradient-rtl) {
       .left {
-        width: 33%;
+        width: 100%;
+        @mixin wide-layout {
+          width: 33%;
+        }
         display: flex;
         justify-content: center;
         align-items: center;
       }
 
       .right {
-        width: 66%;
+        width: 100%;
+        @mixin wide-layout {
+          width: 66%;
+        }
       }
     }
 
@@ -158,19 +172,14 @@
     }
   }
 
-  .left,
-  .right {
-    position: relative;
-    z-index: 1;
-
-    min-width: 0;
-  }
-
   &.half {
     & .content {
       .left,
       .right {
-        width: 50%;
+        width: 100%;
+        @mixin wide-layout {
+          width: 50%;
+        }
       }
     }
   }
