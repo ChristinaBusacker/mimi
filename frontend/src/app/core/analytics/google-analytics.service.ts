@@ -210,11 +210,14 @@ export class GoogleAnalyticsService {
     const dataLayer = window.dataLayer ?? [];
 
     window.dataLayer = dataLayer;
-    window.gtag = (...args: GoogleAnalyticsArguments): void => {
-      dataLayer.push(args);
+
+    const gtag: GoogleAnalyticsFunction = function (..._args: GoogleAnalyticsArguments): void {
+      dataLayer.push(arguments);
     };
 
-    return window.gtag;
+    window.gtag = gtag;
+
+    return gtag;
   }
 
   private ensureScript(measurementId: string): void {
