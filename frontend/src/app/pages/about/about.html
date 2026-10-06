@@ -1,0 +1,59 @@
+<section class="page">
+  <app-hero type="chatting" class="right-align-center half" gradientDirection="rtl">
+    <div hero-left class="intro">
+      <span class="eyebrow">{{ 'about.page.eyebrow' | i18n | async }}</span>
+      <h1 class="more-suggar">{{ 'about.page.title' | i18n | async }}</h1>
+      <p>{{ 'about.page.intro' | i18n | async }}</p>
+      <a routerLink="/kontakt">
+        {{ 'about.page.contact' | i18n | async }}
+        →
+      </a>
+    </div>
+
+    <aside hero-right class="quote-card">
+      <span>{{ 'about.quote.eyebrow' | i18n | async }}</span>
+      <blockquote>“{{ 'about.quote.text' | i18n | async }}”</blockquote>
+      <small>— Mimi</small>
+    </aside>
+  </app-hero>
+
+  <section class="about-chapter about-chapter--music">
+    <header>
+      <span>{{ 'about.music.eyebrow' | i18n | async }}</span>
+      <h2 class="more-suggar">{{ 'about.music.title' | i18n | async }}</h2>
+    </header>
+
+    <div class="about-chapter__copy">
+      <p>{{ 'about.music.text1' | i18n | async }}</p>
+      <p>{{ 'about.music.text2' | i18n | async }}</p>
+      <p>{{ 'about.music.text3' | i18n | async }}</p>
+      <p>{{ 'about.music.text4' | i18n | async }}</p>
+    </div>
+  </section>
+
+  <section class="about-chapter about-chapter--people">
+    <header>
+      <span>{{ 'about.people.eyebrow' | i18n | async }}</span>
+      <h2 class="more-suggar">{{ 'about.people.title' | i18n | async }}</h2>
+    </header>
+
+    <div class="about-chapter__copy">
+      <p>{{ 'about.people.text1' | i18n | async }}</p>
+      <p>{{ 'about.people.text2' | i18n | async }}</p>
+      <p>{{ 'about.people.text3' | i18n | async }}</p>
+    </div>
+  </section>
+
+  <section class="about-chapter about-chapter--personal">
+    <header>
+      <span>{{ 'about.personal.eyebrow' | i18n | async }}</span>
+      <h2 class="more-suggar">{{ 'about.personal.title' | i18n | async }}</h2>
+    </header>
+
+    <div class="about-chapter__copy">
+      <p>{{ 'about.personal.text1' | i18n | async }}</p>
+      <p>{{ 'about.personal.text2' | i18n | async }}</p>
+      <p class="closing">{{ 'about.personal.closing' | i18n | async }}</p>
+    </div>
+  </section>
+</section>

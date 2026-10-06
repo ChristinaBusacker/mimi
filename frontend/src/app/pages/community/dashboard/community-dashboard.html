@@ -6,7 +6,7 @@
   } @else if (dashboard(); as data) {
     <div class="dashboard-shell">
       <div class="dashboard-content" [attr.inert]="data.membership !== 'member' ? '' : null">
-        <app-hero type="community" class="right-align-center">
+        <app-hero type="community" class="right-align-center half" gradientDirection="rtl">
           <div hero-left class="dashboard-intro">
             <div class="eyebrow">
               <img src="/images/icons/logos/discord.png" alt="" />
@@ -27,9 +27,7 @@
               <a routerLink="/community">
                 {{ 'community.dashboard.header.back' | i18n | async }} →
               </a>
-              <a routerLink="/account">
-                {{ 'account.security.title' | i18n | async }} →
-              </a>
+              <a routerLink="/account"> {{ 'account.security.title' | i18n | async }} → </a>
             </div>
           </div>
 

@@ -1,0 +1,279 @@
+{
+  "localizations": [
+    {
+      "key": "home.intro.eyebrow",
+      "de": "Schön, dass du da bist",
+      "en": "Glad you're here"
+    },
+    {
+      "key": "home.intro.title",
+      "de": "Hi, ich bin Mimi.",
+      "en": "Hi, I'm Mimi."
+    },
+    {
+      "key": "home.intro.text",
+      "de": "Ich bin eine kreative Chaotin, Musikerin, Gamerin und vor allem ein Herzensmensch. Auf der Mimishow teile ich Musik, Spiele, Gedanken und Geschichten aus meinem Leben. Mal wird es albern, mal ernst und manchmal entsteht aus einem ganz gewöhnlichen Abend etwas, das noch lange bleibt.",
+      "en": "I'm a creative chaos gremlin, musician, gamer and, above all, someone who cares deeply about people. On Mimishow I share music, games, thoughts and stories from my life. Sometimes it's silly, sometimes serious, and sometimes an ordinary evening turns into something that stays with you for a long time."
+    },
+    {
+      "key": "home.intro.action",
+      "de": "Mehr über mich",
+      "en": "More about me"
+    },
+    {
+      "key": "home.intro.quote",
+      "de": "Jedes Leben, jede Geschichte, die ein Leben erlebt, ist wertvoll.",
+      "en": "Every life, and every story lived within it, is valuable."
+    },
+    {
+      "key": "home.sections.title",
+      "de": "Was hier zusammenkommt",
+      "en": "What comes together here"
+    },
+    {
+      "key": "home.sections.community.title",
+      "de": "Community",
+      "en": "Community"
+    },
+    {
+      "key": "home.sections.community.subtitle",
+      "de": "Menschen machen den Unterschied",
+      "en": "People make the difference"
+    },
+    {
+      "key": "home.sections.community.description",
+      "de": "Streams haben Anfang und Ende. Community nicht. Auf Discord wird weitergeredet, gelacht, gemeinsam geplant und aus kleinen Momenten werden Running Gags und Erinnerungen.",
+      "en": "Streams have a beginning and an end. Community doesn't. On Discord the conversations, laughter and shared plans continue, and small moments turn into running jokes and memories."
+    },
+    {
+      "key": "home.sections.community.action",
+      "de": "Dazugehören",
+      "en": "Join the community"
+    },
+    {
+      "key": "home.sections.gaming.title",
+      "de": "Gaming",
+      "en": "Gaming"
+    },
+    {
+      "key": "home.sections.gaming.subtitle",
+      "de": "Gemeinsam ist die bessere Geschichte",
+      "en": "The better story is the one we share"
+    },
+    {
+      "key": "home.sections.gaming.description",
+      "de": "Ich mag Welten, Geschichten, Technik und diese Abende, an denen aus einem klaren Plan sehr schnell etwas völlig anderes wird. Genau dafür ist Gaming bei mir da.",
+      "en": "I love worlds, stories, technology and those evenings when a perfectly clear plan very quickly becomes something completely different. That's what gaming is about for me."
+    },
+    {
+      "key": "home.sections.gaming.action",
+      "de": "Mit ins nächste Spiel",
+      "en": "See what's next"
+    },
+    {
+      "key": "home.sections.music.title",
+      "de": "Musik",
+      "en": "Music"
+    },
+    {
+      "key": "home.sections.music.subtitle",
+      "de": "Mein ältester roter Faden",
+      "en": "The thread that's been with me longest"
+    },
+    {
+      "key": "home.sections.music.description",
+      "de": "Musik begleitet mich seit meiner Kindheit. Hier landen eigene Songs, Erinnerungen und die Klangwelten, in denen sich manchmal Dinge ausdrücken lassen, für die ein normales Gespräch nicht reicht.",
+      "en": "Music has been with me since childhood. This is where my own songs, memories and sound worlds live, including the things that sometimes can't quite be said in an ordinary conversation."
+    },
+    {
+      "key": "home.sections.music.action",
+      "de": "Musik entdecken",
+      "en": "Discover the music"
+    },
+    {
+      "key": "home.sections.news.title",
+      "de": "News & Gedanken",
+      "en": "News & thoughts"
+    },
+    {
+      "key": "home.sections.news.subtitle",
+      "de": "Was mir durch den Kopf geht",
+      "en": "What's on my mind"
+    },
+    {
+      "key": "home.sections.news.description",
+      "de": "Gesellschaft, Kultur, Technik, LGBTQ+ und die Geschichten hinter den Dingen: Ich habe Überzeugungen, aber ich möchte neugierig bleiben, zuhören und weiter dazulernen.",
+      "en": "Society, culture, technology, LGBTQ+ topics and the stories behind things: I have convictions, but I want to stay curious, keep listening and keep learning."
+    },
+    {
+      "key": "home.sections.news.action",
+      "de": "Gedanken lesen",
+      "en": "Read the stories"
+    },
+    {
+      "key": "home.youtube.title",
+      "de": "Zuletzt auf YouTube",
+      "en": "Latest on YouTube"
+    },
+    {
+      "key": "home.youtube.description",
+      "de": "Musik, Remixe und Dinge, die irgendwo zwischen all den anderen Ideen entstanden sind.",
+      "en": "Music, remixes and things that happened somewhere between all the other ideas."
+    },
+    {
+      "key": "gaming.perspective.eyebrow",
+      "de": "Gaming mit Mimi",
+      "en": "Gaming with Mimi"
+    },
+    {
+      "key": "gaming.perspective.title",
+      "de": "Nicht der perfekte Run. Lieber ein guter Abend.",
+      "en": "Not the perfect run. A good evening instead."
+    },
+    {
+      "key": "gaming.perspective.text1",
+      "de": "Beim Gaming interessiert mich nicht nur, was ein Spiel von mir will. Ich mag Welten, Geschichten, Technik und die kleinen Details, über die man plötzlich viel länger redet als geplant.",
+      "en": "When I play, I'm interested in more than what the game wants me to do next. I love worlds, stories, technology and the little details that somehow turn into much longer conversations than expected."
+    },
+    {
+      "key": "gaming.perspective.text2",
+      "de": "Und am Ende sind es sowieso die gemeinsamen Momente, die hängen bleiben: ein absurder Umweg, eine Entscheidung, über die der Chat streitet, oder ein Running Gag, der Wochen später noch lebt.",
+      "en": "And in the end, it's the shared moments that stick: a ridiculous detour, a decision the chat argues about, or a running joke that is still alive weeks later."
+    },
+    {
+      "key": "gaming.showcase.streamEyebrow",
+      "de": "Für den nächsten Stream",
+      "en": "For the next stream"
+    },
+    {
+      "key": "gaming.showcase.aboutGame",
+      "de": "Kurz zum Spiel",
+      "en": "A little about the game"
+    },
+    {
+      "key": "gaming.empty.eyebrow",
+      "de": "Zwischen zwei Abenteuern",
+      "en": "Between adventures"
+    },
+    {
+      "key": "gaming.empty.title",
+      "de": "Der nächste Spieleabend kommt bestimmt",
+      "en": "The next gaming night will come"
+    },
+    {
+      "key": "gaming.empty.description",
+      "de": "Sobald ein Gaming-Stream im Plan steht, landet er hier. Dann geht es weniger um den perfekten Run als um das, was wir unterwegs gemeinsam erleben.",
+      "en": "As soon as a gaming stream is on the schedule, it will show up here. It's less about the perfect run and more about what we experience together along the way."
+    },
+    {
+      "key": "about.page.eyebrow",
+      "de": "Über mich",
+      "en": "About me"
+    },
+    {
+      "key": "about.page.title",
+      "de": "Hi, ich bin Mimi.",
+      "en": "Hi, I'm Mimi."
+    },
+    {
+      "key": "about.page.intro",
+      "de": "Hallo fremder oder vertrauter Mensch. Ich bin Mimi, eine kreative Chaotin und ein Herzensmensch, dem andere Menschen am Herzen liegen. Hier möchte ich ein bisschen von dem teilen, was mein Leben, meine Musik und meine Sicht auf die Welt geprägt hat.",
+      "en": "Hello, stranger or familiar face. I'm Mimi, a creative chaos gremlin and someone who cares deeply about other people. This is where I want to share a little of what has shaped my life, my music and the way I see the world."
+    },
+    {
+      "key": "about.page.contact",
+      "de": "Schreib mir",
+      "en": "Get in touch"
+    },
+    {
+      "key": "about.quote.eyebrow",
+      "de": "Ein Gedanke, der bleibt",
+      "en": "A thought that stays"
+    },
+    {
+      "key": "about.quote.text",
+      "de": "Jedes Leben, jede Geschichte, die ein Leben erlebt, ist wertvoll.",
+      "en": "Every life, and every story lived within it, is valuable."
+    },
+    {
+      "key": "about.music.eyebrow",
+      "de": "Die Musik",
+      "en": "The music"
+    },
+    {
+      "key": "about.music.title",
+      "de": "Die Magie, die mich nie wieder losließ",
+      "en": "The magic that never let go"
+    },
+    {
+      "key": "about.music.text1",
+      "de": "Musik ist für mich weit mehr als ein Text und ein paar Instrumente. Sie öffnet Räume für Freude, Trauer, Zweifel, Scham und all die Gefühle, für die normale Gespräche manchmal zu klein sind.",
+      "en": "Music is much more to me than lyrics and a few instruments. It opens spaces for joy, grief, doubt, shame and all the feelings that ordinary conversations can sometimes be too small to hold."
+    },
+    {
+      "key": "about.music.text2",
+      "de": "Als ich zehn Jahre alt war, nahm mich mein Onkel bei einem Phil-Collins-Konzert auf seine Schultern. Der Raum wurde dunkel, die Menschen wurden stiller und dann kam diese Musik: laut, unmittelbar und unter die Haut gehend. Ich schloss die Augen und wusste in diesem Moment, dass Musik ein Teil meines Lebens bleiben würde.",
+      "en": "When I was ten, my uncle lifted me onto his shoulders at a Phil Collins concert. The room went dark, the crowd grew quieter and then the music arrived: loud, immediate and right under my skin. I closed my eyes and knew in that moment that music would remain part of my life."
+    },
+    {
+      "key": "about.music.text3",
+      "de": "Viele Jahre später traf ich Leland Sklar, den damaligen Bassisten von Phil Collins, in einem Tonstudio in den USA. Aus unserem Gespräch blieb nicht nur gegenseitige Dankbarkeit: Ein fünfsaitiger E-Bass, den er mir schenkte, hängt heute an meiner Wand und ist auch in meiner Musik zu hören. Dazwischen lagen Jahre als Songwriterin und Schlagzeugerin, Touren durch Europa und die USA, kleine Clubs und große Bühnen.",
+      "en": "Many years later I met Leland Sklar, Phil Collins' bassist at that time, in a studio in the United States. Our conversation left more than mutual gratitude behind: a five-string bass he gave me now hangs on my wall and can also be heard in my music. In between came years as a songwriter and drummer, tours across Europe and the United States, small clubs and large stages."
+    },
+    {
+      "key": "about.music.text4",
+      "de": "Heute singe ich, spiele Klavier, Synthesizer und Hammond-Orgel, trommle auf Schlagzeugen und Percussion und greife genauso gern zu Gitarre oder Bass. Ich verliere mich in Harmonien, Melodien und Texten und suche dieses Wow-Gefühl, bei dem sich für einen Moment eine ganze Klangwelt öffnet. Kreativ zu sein bedeutet für mich, etwas von mir selbst in die Welt zu geben und vielleicht jemanden damit zu berühren.",
+      "en": "Today I sing, play piano, synthesizers and Hammond organ, make noise on drums and percussion, and am just as happy picking up a guitar or bass. I lose myself in harmonies, melodies and lyrics, searching for that wow moment when an entire world of sound opens up. To me, being creative means putting something of myself into the world and perhaps touching someone with it."
+    },
+    {
+      "key": "about.people.eyebrow",
+      "de": "Die Menschen",
+      "en": "The people"
+    },
+    {
+      "key": "about.people.title",
+      "de": "Zuhören, dableiben und gemeinsam lachen",
+      "en": "Listening, staying and laughing together"
+    },
+    {
+      "key": "about.people.text1",
+      "de": "Ich liebe gute Gespräche, besonders wenn sie Tiefe bekommen. Das Leben, unsere Gesellschaft, vergangene und aktuelle Kultur, moderne und alte Technik oder einfach die Geschichten anderer Menschen beschäftigen mich. Ich habe Überzeugungen, aber ich möchte nie aufhören zuzuhören und dazuzulernen.",
+      "en": "I love a good conversation, especially when it becomes meaningful. Life, our society, past and present culture, modern and old technology, or simply other people's stories fascinate me. I have convictions, but I never want to stop listening and learning."
+    },
+    {
+      "key": "about.people.text2",
+      "de": "Wärme, Güte, Loyalität und Vertrauen sind für mich keine großen Worte. Sie zeigen sich im Kleinen: im Zuhören, im Dableiben, im gemeinsamen Lachen, darin einen Menschen aufzufangen oder einfach ein Stück seines Weges mitzugehen. Ich bin dankbar für die Menschen, die mich begleiten, und für jeden Menschen, dessen Leben ich selbst ein Stück begleiten darf.",
+      "en": "Warmth, kindness, loyalty and trust aren't grand words to me. They show themselves in small things: listening, staying, laughing together, catching someone when they fall or simply walking part of their path with them. I'm grateful for the people who accompany me and for every person whose life I get to share for a while."
+    },
+    {
+      "key": "about.people.text3",
+      "de": "Besonders viel Platz habe ich im Herzen für Menschen, die nicht in die üblichen Schubladen passen: für queere Menschen, Individualisten, kreative Köpfe, leise Seelen und Menschen mit ihren ganz eigenen Geschichten. Bei mir soll niemand das Gefühl haben, sich erst passend machen zu müssen, um willkommen zu sein.",
+      "en": "I have an especially large place in my heart for people who don't fit the usual boxes: queer people, individualists, creative minds, quiet souls and people with stories entirely their own. Nobody should feel they have to reshape themselves before they are welcome here."
+    },
+    {
+      "key": "about.personal.eyebrow",
+      "de": "Und sonst so?",
+      "en": "And the rest?"
+    },
+    {
+      "key": "about.personal.title",
+      "de": "Verspielt, emotional und selten ohne neue Idee",
+      "en": "Playful, emotional and rarely without a new idea"
+    },
+    {
+      "key": "about.personal.text1",
+      "de": "Zu mir gehört auch eine intensivere Seite. Ich mag Vertrauen, klare Führung, Hingabe, Verantwortung und diese besondere Form von Nähe, bei der manchmal ein Blick mehr sagt als viele Worte. Führung bedeutet für mich immer auch Fürsorge, und echte Stärke lebt nie davon, einen anderen Menschen kleiner zu machen. Wer zwischen diesen Zeilen etwas Vertrautes erkennt, darf ruhig ein bisschen schmunzeln.",
+      "en": "There is also a more intense side to me. I value trust, clear leadership, devotion, responsibility and that particular kind of closeness where a glance can say more than many words. To me, leadership always includes care, and real strength never depends on making another person smaller. If something between those lines feels familiar, you're allowed a small smile."
+    },
+    {
+      "key": "about.personal.text2",
+      "de": "Ich bin humorvoll, verspielt, emotional, manchmal dunkel, manchmal sanft und wahrscheinlich fast immer mit zu vielen Gedanken und Ideen gleichzeitig beschäftigt. Ich liebe Musik, gemeinsames Lachen, ehrliche Gespräche und diese kleinen Augenblicke, von denen man oft erst später merkt, wie wertvoll sie eigentlich waren.",
+      "en": "I'm humorous, playful, emotional, sometimes dark, sometimes gentle and probably almost always busy with too many thoughts and ideas at once. I love music, laughing together, honest conversations and those small moments whose value you often only notice later."
+    },
+    {
+      "key": "about.personal.closing",
+      "de": "Ich möchte gar nicht möglichst laut durchs Leben gehen. Ich möchte es bewusst erleben, Menschen lieben und begleiten, etwas erschaffen und irgendwann zurückblicken können mit dem Gefühl, dass ich nicht nur da gewesen bin, sondern hier und da ein wenig Wärme hinterlassen habe.",
+      "en": "I don't want to move through life as loudly as possible. I want to experience it consciously, love and accompany people, create things and someday look back feeling that I wasn't merely here, but left a little warmth behind in a few places."
+    }
+  ]
+}

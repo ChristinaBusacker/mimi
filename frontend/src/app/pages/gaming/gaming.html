@@ -96,12 +96,24 @@
     }
   </app-hero>
 
+  <section class="gaming-perspective">
+    <div>
+      <span>{{ 'gaming.perspective.eyebrow' | i18n | async }}</span>
+      <h2 class="more-suggar">{{ 'gaming.perspective.title' | i18n | async }}</h2>
+    </div>
+
+    <div class="gaming-perspective__copy">
+      <p>{{ 'gaming.perspective.text1' | i18n | async }}</p>
+      <p>{{ 'gaming.perspective.text2' | i18n | async }}</p>
+    </div>
+  </section>
+
   @if (game) {
     <section class="showcase">
       <header>
         <div>
           <span>
-            {{ 'gaming.showcase.eyebrow' | i18n | async }}
+            {{ 'gaming.showcase.streamEyebrow' | i18n | async }}
           </span>
           <h2>{{ game.name }}</h2>
         </div>
@@ -123,20 +135,14 @@
 
       <div class="game-info">
         <div class="description">
+          <span>{{ 'gaming.showcase.aboutGame' | i18n | async }}</span>
+
           @if (game.shortDescription) {
             <p>{{ game.shortDescription }}</p>
           } @else {
             <p>
               {{ 'gaming.showcase.noDescription' | i18n | async }}
             </p>
-          }
-
-          @if (game.genres.length) {
-            <div class="genres">
-              @for (genre of game.genres; track genre) {
-                <span>{{ genre }}</span>
-              }
-            </div>
           }
         </div>
 
@@ -214,15 +220,15 @@
     <section class="info">
       <div>
         <span>
-          {{ 'gaming.info.eyebrow' | i18n | async }}
+          {{ 'gaming.empty.eyebrow' | i18n | async }}
         </span>
         <h2>
-          {{ 'gaming.info.title' | i18n | async }}
+          {{ 'gaming.empty.title' | i18n | async }}
         </h2>
       </div>
 
       <p>
-        {{ 'gaming.info.description' | i18n | async }}
+        {{ 'gaming.empty.description' | i18n | async }}
       </p>
     </section>
   }

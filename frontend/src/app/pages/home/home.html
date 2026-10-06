@@ -76,23 +76,40 @@
   </div>
 </app-hero>
 
+<section class="home-introduction">
+  <div class="home-introduction__copy">
+    <span class="home-eyebrow">{{ 'home.intro.eyebrow' | i18n | async }}</span>
+    <h2 class="more-suggar">{{ 'home.intro.title' | i18n | async }}</h2>
+    <p>{{ 'home.intro.text' | i18n | async }}</p>
+    <a routerLink="/about">
+      {{ 'home.intro.action' | i18n | async }}
+      →
+    </a>
+  </div>
+
+  <blockquote>
+    <p>“{{ 'home.intro.quote' | i18n | async }}”</p>
+    <footer>— Mimi</footer>
+  </blockquote>
+</section>
+
 <section class="content">
   <div class="wrapper">
     <div class="title">
       <app-icon name="heart" class="secondary" />
-      <h2>{{ 'content.title' | i18n | async }}</h2>
+      <h2>{{ 'home.sections.title' | i18n | async }}</h2>
     </div>
 
     <div class="row">
       <div class="tile community">
         <div class="title">
           <app-icon name="community" class="secondary" />
-          <h3>{{ 'content.community.title' | i18n | async }}</h3>
+          <h3>{{ 'home.sections.community.title' | i18n | async }}</h3>
         </div>
-        <p>{{ 'content.community.subtitle' | i18n | async }}</p>
-        <p>{{ 'content.community.description' | i18n | async }}</p>
+        <p>{{ 'home.sections.community.subtitle' | i18n | async }}</p>
+        <p>{{ 'home.sections.community.description' | i18n | async }}</p>
         <app-button class="primary font-black" routerLink="/community">
-          {{ 'content.community.action' | i18n | async }}
+          {{ 'home.sections.community.action' | i18n | async }}
           <app-icon name="arrow" class="" />
         </app-button>
       </div>
@@ -100,12 +117,12 @@
       <div class="tile gaming">
         <div class="title">
           <app-icon name="gaming" class="secondary" />
-          <h3>{{ 'content.gaming.title' | i18n | async }}</h3>
+          <h3>{{ 'home.sections.gaming.title' | i18n | async }}</h3>
         </div>
-        <p>{{ 'content.gaming.subtitle' | i18n | async }}</p>
-        <p>{{ 'content.gaming.description' | i18n | async }}</p>
+        <p>{{ 'home.sections.gaming.subtitle' | i18n | async }}</p>
+        <p>{{ 'home.sections.gaming.description' | i18n | async }}</p>
         <app-button class="primary font-black" routerLink="/gaming">
-          {{ 'content.gaming.action' | i18n | async }}
+          {{ 'home.sections.gaming.action' | i18n | async }}
           <app-icon name="arrow" class="" />
         </app-button>
       </div>
@@ -113,12 +130,12 @@
       <div class="tile music">
         <div class="title">
           <app-icon name="music" class="secondary" />
-          <h3>{{ 'content.music.title' | i18n | async }}</h3>
+          <h3>{{ 'home.sections.music.title' | i18n | async }}</h3>
         </div>
-        <p>{{ 'content.music.subtitle' | i18n | async }}</p>
-        <p>{{ 'content.music.description' | i18n | async }}</p>
+        <p>{{ 'home.sections.music.subtitle' | i18n | async }}</p>
+        <p>{{ 'home.sections.music.description' | i18n | async }}</p>
         <app-button class="primary font-black" routerLink="/music">
-          {{ 'content.music.action' | i18n | async }}
+          {{ 'home.sections.music.action' | i18n | async }}
           <app-icon name="arrow" class="" />
         </app-button>
       </div>
@@ -126,12 +143,12 @@
       <div class="tile news">
         <div class="title">
           <app-icon name="news" class="secondary" />
-          <h3>{{ 'content.news.title' | i18n | async }}</h3>
+          <h3>{{ 'home.sections.news.title' | i18n | async }}</h3>
         </div>
-        <p>{{ 'content.news.subtitle' | i18n | async }}</p>
-        <p>{{ 'content.news.description' | i18n | async }}</p>
+        <p>{{ 'home.sections.news.subtitle' | i18n | async }}</p>
+        <p>{{ 'home.sections.news.description' | i18n | async }}</p>
         <app-button class="primary font-black" routerLink="/blog">
-          {{ 'content.news.action' | i18n | async }}
+          {{ 'home.sections.news.action' | i18n | async }}
           <app-icon name="arrow" class="" />
         </app-button>
       </div>
@@ -142,8 +159,9 @@
     <div class="wrapper">
       <div class="title">
         <app-icon name="heart" class="secondary" />
-        <h2>{{ 'youtube.title' | i18n | async }}</h2>
+        <h2>{{ 'home.youtube.title' | i18n | async }}</h2>
       </div>
+      <p class="section-intro">{{ 'home.youtube.description' | i18n | async }}</p>
 
       <div class="video-grid">
         @for (video of videos(); track video.id) {
