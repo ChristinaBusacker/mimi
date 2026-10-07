@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngxs/store';
+import { of } from 'rxjs';
 
+import { BlogPublicService } from '../../core/blog/blog-public.service';
 import { I18nState } from '../../core/i18n/i18n.state';
 import { TwitchState } from '../../core/twitch/twitch.state';
 import { YouTubeState } from '../../core/youtube/youtube.state';
@@ -21,6 +23,12 @@ describe('Home', () => {
           TwitchState,
           YouTubeState,
         ]),
+        {
+          provide: BlogPublicService,
+          useValue: {
+            getPosts: () => of([]),
+          },
+        },
       ],
     }).compileComponents();
 

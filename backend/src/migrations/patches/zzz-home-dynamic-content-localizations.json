@@ -1,0 +1,79 @@
+{
+  "localizations": [
+    {
+      "key": "home.youtube.channel",
+      "de": "YouTube-Kanal besuchen",
+      "en": "Visit the YouTube channel"
+    },
+    {
+      "key": "home.blog.eyebrow",
+      "de": "Neu im Blog",
+      "en": "New on the blog"
+    },
+    {
+      "key": "home.blog.title",
+      "de": "Was uns gerade beschäftigt",
+      "en": "What's on our minds"
+    },
+    {
+      "key": "home.blog.description",
+      "de": "Persönliche Geschichten, Gesellschaft, Kultur, Technik und LGBTQ+: Hier landen Gedanken, Themen und Perspektiven aus der Mimishow.",
+      "en": "Personal stories, society, culture, technology and LGBTQ+ topics: this is where thoughts, stories and perspectives from Mimishow come together."
+    },
+    {
+      "key": "home.blog.action",
+      "de": "Alle Beiträge",
+      "en": "All posts"
+    },
+    {
+      "key": "home.music.eyebrow",
+      "de": "Musik",
+      "en": "Music"
+    },
+    {
+      "key": "home.music.title",
+      "de": "Ein Teil von mir, der bleibt",
+      "en": "A part of me that stays"
+    },
+    {
+      "key": "home.music.description",
+      "de": "Musik begleitet mich seit meiner Kindheit. Hier findest du eigene Songs, Alben und die Geschichten hinter den Klangwelten, die daraus entstanden sind.",
+      "en": "Music has been with me since childhood. Here you'll find my songs, albums and the stories behind the sound worlds that grew from them."
+    },
+    {
+      "key": "home.music.action",
+      "de": "Meine Musik entdecken",
+      "en": "Discover my music"
+    },
+    {
+      "key": "home.community.eyebrow",
+      "de": "Community",
+      "en": "Community"
+    },
+    {
+      "key": "home.community.title",
+      "de": "Wenn du ein bisschen bleiben möchtest",
+      "en": "If you'd like to stay a while"
+    },
+    {
+      "key": "home.community.description",
+      "de": "Streams enden irgendwann. Die Gespräche nicht. Auf Discord wird weitergeredet, gelacht, geplant und aus kleinen Momenten werden Running Gags und Erinnerungen.",
+      "en": "Streams end eventually. The conversations don't. On Discord we keep talking, laughing and making plans, and small moments turn into running jokes and memories."
+    },
+    {
+      "key": "home.community.action",
+      "de": "Zur Community",
+      "en": "Visit the community"
+    },
+    {
+      "key": "home.community.members",
+      "de": "Mitglieder",
+      "en": "members"
+    },
+    {
+      "key": "home.community.online",
+      "de": "gerade online",
+      "en": "online now"
+    }
+  ]
+}

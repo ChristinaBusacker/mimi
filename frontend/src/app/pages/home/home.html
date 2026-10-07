@@ -93,81 +93,160 @@
   </blockquote>
 </section>
 
-<section class="content">
-  <div class="wrapper">
-    <div class="title">
-      <app-icon name="heart" class="secondary" />
-      <h2>{{ 'home.sections.title' | i18n | async }}</h2>
-    </div>
-
-    <div class="row">
-      <div class="tile community">
-        <div class="title">
-          <app-icon name="community" class="secondary" />
-          <h3>{{ 'home.sections.community.title' | i18n | async }}</h3>
-        </div>
-        <p>{{ 'home.sections.community.subtitle' | i18n | async }}</p>
-        <p>{{ 'home.sections.community.description' | i18n | async }}</p>
-        <app-button class="primary font-black" routerLink="/community">
-          {{ 'home.sections.community.action' | i18n | async }}
-          <app-icon name="arrow" class="" />
-        </app-button>
+<section class="home-content">
+  <section class="home-section home-section--youtube">
+    <header class="home-section__header">
+      <div>
+        <span class="home-eyebrow home-eyebrow--youtube">
+          <app-icon name="youtube" />
+          YouTube
+        </span>
+        <h2 class="more-suggar">{{ 'home.youtube.title' | i18n | async }}</h2>
+        <p>{{ 'home.youtube.description' | i18n | async }}</p>
       </div>
 
-      <div class="tile gaming">
-        <div class="title">
-          <app-icon name="gaming" class="secondary" />
-          <h3>{{ 'home.sections.gaming.title' | i18n | async }}</h3>
-        </div>
-        <p>{{ 'home.sections.gaming.subtitle' | i18n | async }}</p>
-        <p>{{ 'home.sections.gaming.description' | i18n | async }}</p>
-        <app-button class="primary font-black" routerLink="/gaming">
-          {{ 'home.sections.gaming.action' | i18n | async }}
-          <app-icon name="arrow" class="" />
-        </app-button>
-      </div>
+      <app-button
+        class="primary round white youtube-button"
+        [href]="youtubeChannelUrl"
+        target="_blank"
+      >
+        <app-icon name="youtube" class="white" />
+        {{ 'home.youtube.channel' | i18n | async }}
+        <app-icon name="arrow" class="white" />
+      </app-button>
+    </header>
 
-      <div class="tile music">
-        <div class="title">
-          <app-icon name="music" class="secondary" />
-          <h3>{{ 'home.sections.music.title' | i18n | async }}</h3>
-        </div>
-        <p>{{ 'home.sections.music.subtitle' | i18n | async }}</p>
-        <p>{{ 'home.sections.music.description' | i18n | async }}</p>
-        <app-button class="primary font-black" routerLink="/music">
-          {{ 'home.sections.music.action' | i18n | async }}
-          <app-icon name="arrow" class="" />
-        </app-button>
-      </div>
-
-      <div class="tile news">
-        <div class="title">
-          <app-icon name="news" class="secondary" />
-          <h3>{{ 'home.sections.news.title' | i18n | async }}</h3>
-        </div>
-        <p>{{ 'home.sections.news.subtitle' | i18n | async }}</p>
-        <p>{{ 'home.sections.news.description' | i18n | async }}</p>
-        <app-button class="primary font-black" routerLink="/blog">
-          {{ 'home.sections.news.action' | i18n | async }}
-          <app-icon name="arrow" class="" />
-        </app-button>
-      </div>
-    </div>
-  </div>
-
-  @if (videos().length > 0) {
-    <div class="wrapper">
-      <div class="title">
-        <app-icon name="heart" class="secondary" />
-        <h2>{{ 'home.youtube.title' | i18n | async }}</h2>
-      </div>
-      <p class="section-intro">{{ 'home.youtube.description' | i18n | async }}</p>
-
+    @if (latestVideos().length > 0) {
       <div class="video-grid">
-        @for (video of videos(); track video.id) {
+        @for (video of latestVideos(); track video.id) {
           <app-video-card [video]="video" />
         }
       </div>
-    </div>
+    }
+  </section>
+
+  @if (posts().length > 0) {
+    <section class="home-section home-section--blog">
+      <header class="home-section__header">
+        <div>
+          <span class="home-eyebrow">
+            <app-icon name="news" />
+            {{ 'home.blog.eyebrow' | i18n | async }}
+          </span>
+          <h2 class="more-suggar">{{ 'home.blog.title' | i18n | async }}</h2>
+          <p>{{ 'home.blog.description' | i18n | async }}</p>
+        </div>
+
+        <app-button class="primary round" routerLink="/blog">
+          {{ 'home.blog.action' | i18n | async }}
+          <app-icon name="arrow" />
+        </app-button>
+      </header>
+
+      <div class="blog-grid">
+        @for (post of posts(); track post.id) {
+          <article class="blog-card">
+            <a class="blog-card__media" [routerLink]="['/blog', post.slug]">
+              @if (post.coverAssetId; as coverId) {
+                <img
+                  [src]="imageVariantUrl(coverId, 'medium')"
+                  [alt]="post.coverImageDescription || post.title"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="blog-card__placeholder">
+                  <app-icon name="heart" class="secondary" />
+                </div>
+              }
+            </a>
+
+            <div class="blog-card__content">
+              @if (post.categories.length) {
+                <div class="blog-card__categories">
+                  @for (category of post.categories; track category.slug) {
+                    <span>{{ category.name }}</span>
+                  }
+                </div>
+              }
+
+              <h3>
+                <a [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+              </h3>
+
+              <div class="blog-card__meta">
+                <time [attr.datetime]="post.publishedAt">
+                  {{ formatBlogDate(post.publishedAt) }}
+                </time>
+                <span>·</span>
+                <a [routerLink]="['/blog/autoren', post.author.slug]">
+                  {{ post.author.displayName }}
+                </a>
+              </div>
+
+              @if (post.excerpt) {
+                <p>{{ post.excerpt }}</p>
+              }
+
+              <a class="blog-card__read" [routerLink]="['/blog', post.slug]">
+                {{ 'blog.page.read' | i18n | async }}
+                →
+              </a>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
   }
+
+  <div class="home-evergreen">
+    <section class="identity-card identity-card--music">
+      <div class="identity-card__icon">
+        <app-icon name="music" />
+      </div>
+      <div>
+        <span class="home-eyebrow">{{ 'home.music.eyebrow' | i18n | async }}</span>
+        <h2 class="more-suggar">{{ 'home.music.title' | i18n | async }}</h2>
+        <p>{{ 'home.music.description' | i18n | async }}</p>
+        <a routerLink="/music">
+          {{ 'home.music.action' | i18n | async }}
+          →
+        </a>
+      </div>
+    </section>
+
+    <section class="identity-card identity-card--community">
+      <div class="identity-card__icon">
+        <app-icon name="community" />
+      </div>
+      <div>
+        <span class="home-eyebrow">{{ 'home.community.eyebrow' | i18n | async }}</span>
+        <h2 class="more-suggar">{{ 'home.community.title' | i18n | async }}</h2>
+        <p>{{ 'home.community.description' | i18n | async }}</p>
+
+        @if (community; as discord) {
+          @if (discord.connected && discord.memberCount !== null) {
+            <div class="community-stats">
+              <span>
+                <strong>{{ discord.memberCount }}</strong>
+                {{ 'home.community.members' | i18n | async }}
+              </span>
+
+              @if (discord.onlineCount !== null) {
+                <span>
+                  <i aria-hidden="true"></i>
+                  <strong>{{ discord.onlineCount }}</strong>
+                  {{ 'home.community.online' | i18n | async }}
+                </span>
+              }
+            </div>
+          }
+        }
+
+        <a routerLink="/community">
+          {{ 'home.community.action' | i18n | async }}
+          →
+        </a>
+      </div>
+    </section>
+  </div>
 </section>

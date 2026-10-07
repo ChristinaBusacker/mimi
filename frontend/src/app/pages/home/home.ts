@@ -1,21 +1,31 @@
+import type { BlogPostSummary } from '@shared/blog/blog';
+import type { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
+
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Store } from '@ngxs/store';
-
-import type { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
+import {
+  catchError,
+  distinctUntilChanged,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 
 import { Button } from '../../components/button/button';
 import { Countdown } from '../../components/countdown/countdown';
 import { Hero } from '../../components/hero/hero';
 import { Icon } from '../../components/icon/icon';
 import { VideoCard } from '../../components/video-card/video-card';
+import { BlogPublicService } from '../../core/blog/blog-public.service';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { I18nState } from '../../core/i18n/i18n.state';
 import type { Language } from '../../core/i18n/i18n.types';
 import { TwitchState } from '../../core/twitch/twitch.state';
 import { YouTubeState } from '../../core/youtube/youtube.state';
+import type { HomeData } from './home.resolver';
 import { createTwitchPreview, createVideoPreview } from './home-preview';
 
 type HeroIcon = 'gaming' | 'heart' | 'music';
@@ -46,10 +56,13 @@ interface HeroViewModel {
 export class Home {
   private readonly store = inject(Store);
   private readonly route = inject(ActivatedRoute);
+  private readonly blog = inject(BlogPublicService);
 
   private readonly twitchStatus = this.store.selectSignal(TwitchState.status);
   private readonly youtubeVideos = this.store.selectSignal(YouTubeState.videos);
   private readonly language = this.store.selectSignal(I18nState.language);
+  private readonly initialData = this.route.snapshot.data['data'] as HomeData | undefined;
+  private readonly initialPosts = this.initialData?.posts ?? [];
 
   private readonly queryParams = toSignal(this.route.queryParamMap, {
     initialValue: this.route.snapshot.queryParamMap,
@@ -59,13 +72,50 @@ export class Home {
     () => createTwitchPreview(this.queryParams(), this.twitchStatus()) ?? this.twitchStatus(),
   );
 
+  protected readonly youtubeChannelUrl = 'https://www.youtube.com/@Mimis-Show';
+  protected readonly community = this.initialData?.community?.discord ?? null;
+
   protected readonly videos = computed(
     () => createVideoPreview(this.queryParams()) ?? this.youtubeVideos(),
+  );
+
+  protected readonly latestVideos = computed(() => this.videos().slice(0, 3));
+
+  protected readonly posts = toSignal(
+    toObservable(this.language).pipe(
+      distinctUntilChanged(),
+      switchMap((locale) =>
+        locale === this.initialData?.locale
+          ? of(this.initialPosts)
+          : this.blog.getPosts(locale).pipe(
+              map((posts) => posts.slice(0, 3)),
+              catchError(() => of<BlogPostSummary[]>([])),
+            ),
+      ),
+    ),
+    {
+      initialValue: this.initialPosts,
+    },
   );
 
   protected readonly hero = computed(() =>
     this.createHeroViewModel(this.effectiveTwitchStatus(), this.language()),
   );
+
+  protected imageVariantUrl(
+    assetId: string,
+    variant: 'thumbnail' | 'medium' | 'large',
+  ): string {
+    return `/api/assets/${assetId}/image/${variant}/webp`;
+  }
+
+  protected formatBlogDate(value: string): string {
+    return new Intl.DateTimeFormat(this.language() === 'de' ? 'de-DE' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: '2-digit',
+    }).format(new Date(value));
+  }
 
   private createHeroViewModel(status: TwitchStatus | null, language: Language): HeroViewModel {
     const heroType =
