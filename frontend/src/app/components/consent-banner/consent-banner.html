@@ -5,23 +5,25 @@
     aria-describedby="privacy-consent-description"
   >
     <div class="consent-banner__panel">
-      <div class="consent-banner__copy">
-        <h2 id="privacy-consent-title">
-          {{ 'privacy.consent.title' | i18n | async }}
-        </h2>
-        <p id="privacy-consent-description">
-          {{ 'privacy.consent.description' | i18n | async }}
-          <a routerLink="/datenschutz">
-            {{ 'privacy.consent.privacyLink' | i18n | async }}
-          </a>
-        </p>
+      <div class="consent-banner__panel--grid">
+        <div class="consent-banner__copy">
+          <h2 id="privacy-consent-title">
+            {{ 'privacy.consent.title' | i18n | async }}
+          </h2>
+          <p id="privacy-consent-description">
+            {{ 'privacy.consent.description' | i18n | async }}
+            <a routerLink="/datenschutz">
+              {{ 'privacy.consent.privacyLink' | i18n | async }}
+            </a>
+          </p>
+        </div>
+        <div class="image-container">
+          <img src="images/avatars/Drache-Cookies.png" />
+        </div>
       </div>
 
       @if (consent.settingsOpen()) {
-        <section
-          class="consent-banner__settings"
-          aria-labelledby="privacy-consent-settings-title"
-        >
+        <section class="consent-banner__settings" aria-labelledby="privacy-consent-settings-title">
           <h3 id="privacy-consent-settings-title">
             {{ 'privacy.consent.settingsTitle' | i18n | async }}
           </h3>
@@ -31,13 +33,13 @@
               <strong>
                 {{ 'privacy.consent.necessary.title' | i18n | async }}
               </strong>
-              <p>
-                {{ 'privacy.consent.necessary.description' | i18n | async }}
-              </p>
+              <span class="consent-banner__status">
+                {{ 'privacy.consent.necessary.status' | i18n | async }}
+              </span>
             </div>
-            <span class="consent-banner__status">
-              {{ 'privacy.consent.necessary.status' | i18n | async }}
-            </span>
+            <p>
+              {{ 'privacy.consent.necessary.description' | i18n | async }}
+            </p>
           </div>
 
           <label class="consent-banner__category consent-banner__category--interactive">
@@ -45,15 +47,14 @@
               <strong>
                 {{ 'privacy.consent.analytics.title' | i18n | async }}
               </strong>
-              <p>
-                {{ 'privacy.consent.analytics.description' | i18n | async }}
-              </p>
+
+              <input
+                type="checkbox"
+                [checked]="analyticsSelected()"
+                (change)="setAnalytics($event)"
+              />
             </div>
-            <input
-              type="checkbox"
-              [checked]="analyticsSelected()"
-              (change)="setAnalytics($event)"
-            />
+            <p>{{ 'privacy.consent.analytics.description' | i18n | async }}</p>
           </label>
         </section>
       }
