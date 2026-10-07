@@ -20,8 +20,15 @@
       <span class="public-card__eyebrow">
         {{ 'contact.form.eyebrow' | i18n | async }}
       </span>
-      <h2>{{ 'contact.form.title' | i18n | async }}</h2>
-      <p>{{ 'contact.form.text' | i18n | async }}</p>
+      <div class="headline">
+        <div>
+          <h2>{{ 'contact.form.title' | i18n | async }}</h2>
+          <p>{{ 'contact.form.text' | i18n | async }}</p>
+        </div>
+        <div>
+          <img src="images/avatars/Kontakt-Drache.png" />
+        </div>
+      </div>
 
       @if (sent()) {
         <p class="contact-form__status contact-form__status--success" role="status">

@@ -37,41 +37,9 @@
         }
       </div>
     </div>
-
-    <aside hero-right class="discord-live-card">
-      <div class="discord-live-card__header">
-        <div class="discord-server-mark">
-          <img src="/images/icons/logos/discord.png" alt="" />
-        </div>
-        <div>
-          <span>{{ 'community.live.card.server' | i18n | async }}</span>
-          <strong>
-            {{
-              summary()?.discord.guildName ?? ('community.live.card.fallbackName' | i18n | async)
-            }}
-          </strong>
-        </div>
-      </div>
-
-      @if (summary()?.discord.connected) {
-        <div class="discord-live-stats">
-          <div>
-            <strong>{{ summary()?.discord.memberCount }}</strong>
-            <span>{{ 'community.live.card.members' | i18n | async }}</span>
-          </div>
-          <div>
-            <strong class="online-count">
-              <span class="presence-dot"></span>
-              {{ summary()?.discord.onlineCount }}
-            </strong>
-            <span>{{ 'community.live.card.online' | i18n | async }}</span>
-          </div>
-        </div>
-        <p>{{ 'community.live.card.liveHint' | i18n | async }}</p>
-      } @else {
-        <p>{{ 'community.live.card.unavailable' | i18n | async }}</p>
-      }
-    </aside>
+    <div hero-right class="image-container">
+      <img src="images/avatars/Dosentelefon-1.png" />
+    </div>
   </app-hero>
 
   <section class="community-showcase">
@@ -82,6 +50,46 @@
       </div>
       <p>{{ 'community.live.showcase.description' | i18n | async }}</p>
     </header>
+
+    <div class="live-container">
+      <aside class="discord-live-card">
+        <div class="discord-live-card__header">
+          <div class="discord-server-mark">
+            <img src="/images/icons/logos/discord.png" alt="" />
+          </div>
+          <div>
+            <span>{{ 'community.live.card.server' | i18n | async }}</span>
+            <strong>
+              {{
+                summary()?.discord.guildName ?? ('community.live.card.fallbackName' | i18n | async)
+              }}
+            </strong>
+          </div>
+        </div>
+
+        @if (summary()?.discord.connected) {
+          <div class="discord-live-stats">
+            <div>
+              <strong>{{ summary()?.discord.memberCount }}</strong>
+              <span>{{ 'community.live.card.members' | i18n | async }}</span>
+            </div>
+            <div>
+              <strong class="online-count">
+                <span class="presence-dot"></span>
+                {{ summary()?.discord.onlineCount }}
+              </strong>
+              <span>{{ 'community.live.card.online' | i18n | async }}</span>
+            </div>
+          </div>
+          <p>{{ 'community.live.card.liveHint' | i18n | async }}</p>
+        } @else {
+          <p>{{ 'community.live.card.unavailable' | i18n | async }}</p>
+        }
+      </aside>
+      <div class="dragon">
+        <img src="images/avatars/Discord-Drache.png" />
+      </div>
+    </div>
 
     <div class="community-tiles">
       <article class="community-tile conversations">

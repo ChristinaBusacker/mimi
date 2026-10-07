@@ -5,6 +5,19 @@
 
 .contact-form-card {
   gap: var(--spacing-md);
+
+  & .headline {
+    display: grid;
+    grid-template-columns: 3fr minmax(300px, 10vw);
+
+    & img {
+      margin-top: -50px;
+    }
+
+    @include compact-layout {
+      grid-template-columns: 1fr;
+    }
+  }
 }
 
 .contact-form {

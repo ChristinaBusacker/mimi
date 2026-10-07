@@ -112,7 +112,7 @@
   @include framed(var(--control-border-width));
 
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.85fr);
   gap: var(--spacing-lg);
   align-items: center;
   margin-top: var(--spacing-md);
@@ -491,8 +491,7 @@
   &--community {
     border-color: color-mix(in srgb, var(--color-accent-community) 72%, transparent);
     background:
-      radial-gradient(circle at 92% 8%, rgb(88 101 242 / 18%), transparent 36%),
-      rgb(48 35 61 / 90%);
+      radial-gradient(circle at 92% 8%, rgb(88 101 242 / 18%), transparent 36%), rgb(48 35 61 / 90%);
 
     .identity-card__icon {
       color: #aeb5ff;
