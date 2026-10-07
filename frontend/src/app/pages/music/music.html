@@ -48,6 +48,10 @@
     }
   </app-hero>
 
+  @if (musicData.albums.length > 1) {
+    <app-album-fan [albums]="musicData.albums" />
+  }
+
   <section class="library">
     <header>
       <div>

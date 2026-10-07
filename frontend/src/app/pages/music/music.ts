@@ -12,10 +12,11 @@ import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { I18nState } from '../../core/i18n/i18n.state';
 import type { Language } from '../../core/i18n/i18n.types';
 import { type MusicLandingData, MusicPublicService } from '../../core/music/music-public.service';
+import { AlbumFan } from './album-fan/album-fan';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Hero, Icon, I18nPipe, MusicLibraryPlayer, RouterLink],
+  imports: [AlbumFan, AsyncPipe, Hero, Icon, I18nPipe, MusicLibraryPlayer, RouterLink],
   selector: 'app-music',
   styleUrl: './music.scss',
   templateUrl: './music.html',

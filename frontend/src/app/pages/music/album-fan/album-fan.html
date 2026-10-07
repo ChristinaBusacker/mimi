@@ -1,0 +1,126 @@
+<section class="album-gallery" aria-labelledby="album-gallery-title">
+  <header class="album-gallery__intro">
+    <div>
+      <div class="eyebrow">
+        <app-icon name="music" class="secondary" />
+        <span>{{ 'music.albums.eyebrow' | i18n | async }}</span>
+      </div>
+
+      <h2 id="album-gallery-title" class="more-suggar">
+        {{ 'music.albums.title' | i18n | async }}
+      </h2>
+    </div>
+
+    <p>{{ 'music.albums.description' | i18n | async }}</p>
+  </header>
+
+  @if (activeAlbum(); as activeAlbum) {
+    <div class="album-fan">
+      <div
+        class="album-fan__ambient"
+        aria-hidden="true"
+        [style.background-image]="activeCoverBackground()"
+      ></div>
+
+      <div
+        class="album-fan__stage"
+        [class.is-dragging]="isDragging()"
+        role="group"
+        aria-roledescription="carousel"
+        [attr.aria-label]="('music.albums.carouselLabel' | i18n | async) ?? ''"
+        tabindex="0"
+        (keydown)="onKeyDown($event)"
+        (pointerdown)="onPointerDown($event)"
+        (pointermove)="onPointerMove($event)"
+        (pointerup)="onPointerUp($event)"
+        (pointercancel)="onPointerCancel($event)"
+        (wheel)="onWheel($event)"
+      >
+        <div class="album-fan__track" aria-hidden="true"></div>
+
+        @for (card of cards(); track card.album.id) {
+          <article
+            class="album-fan__card"
+            [class.is-active]="card.active"
+            [class.is-visible]="card.visible"
+            [style.--fan-x]="card.x"
+            [style.--fan-y]="card.y"
+            [style.--fan-z]="card.depth"
+            [style.--fan-rotate-y]="card.rotateY"
+            [style.--fan-rotate-z]="card.rotateZ"
+            [style.--fan-scale]="card.scale"
+            [style.opacity]="card.opacity"
+            [style.z-index]="card.zIndex"
+            [attr.aria-hidden]="card.active ? null : 'true'"
+          >
+            <button
+              type="button"
+              class="album-fan__cover"
+              [attr.tabindex]="card.active ? 0 : -1"
+              [attr.aria-current]="card.active ? 'true' : null"
+              [attr.aria-label]="card.album.title"
+              (click)="selectAlbum(card.index)"
+            >
+              @if (card.album.coverAssetId) {
+                <img
+                  [src]="assetUrl(card.album.coverAssetId)"
+                  [alt]="card.active ? card.album.title : ''"
+                  draggable="false"
+                />
+              } @else {
+                <span class="album-fan__placeholder">
+                  <app-icon name="music" class="secondary" />
+                </span>
+              }
+            </button>
+          </article>
+        }
+
+        <button
+          type="button"
+          class="album-fan__control album-fan__control--previous"
+          data-fan-control
+          [attr.aria-label]="('music.albums.previous' | i18n | async) ?? ''"
+          (click)="previous()"
+        >
+          ‹
+        </button>
+
+        <button
+          type="button"
+          class="album-fan__control album-fan__control--next"
+          data-fan-control
+          [attr.aria-label]="('music.albums.next' | i18n | async) ?? ''"
+          (click)="next()"
+        >
+          ›
+        </button>
+      </div>
+
+      <div class="album-fan__details" aria-live="polite">
+        <strong>{{ activeAlbum.title }}</strong>
+
+        @if (activeYear(); as year) {
+          <span>{{ year }}</span>
+        }
+
+        <a [routerLink]="['/music/albums', activeAlbum.slug]">
+          {{ 'music.albums.open' | i18n | async }}
+          →
+        </a>
+      </div>
+
+      <div class="album-fan__pagination" aria-hidden="true">
+        @if (showDots()) {
+          @for (album of albums(); track album.id; let index = $index) {
+            <span [class.is-active]="index === normalizedActiveIndex()"></span>
+          }
+        } @else {
+          <span class="album-fan__position">
+            {{ normalizedActiveIndex() + 1 }} / {{ albums().length }}
+          </span>
+        }
+      </div>
+    </div>
+  }
+</section>

@@ -1,0 +1,39 @@
+{
+  "localizations": [
+    {
+      "key": "music.albums.eyebrow",
+      "de": "Mimis Alben",
+      "en": "Mimi's albums"
+    },
+    {
+      "key": "music.albums.title",
+      "de": "Meine Alben",
+      "en": "My albums"
+    },
+    {
+      "key": "music.albums.description",
+      "de": "Jedes Album erzählt ein eigenes Kapitel. Blättere durch Mimis Veröffentlichungen und entdecke die Geschichten, Sounds und Erinnerungen dahinter.",
+      "en": "Every album tells a chapter of its own. Browse Mimi's releases and discover the stories, sounds and memories behind them."
+    },
+    {
+      "key": "music.albums.carouselLabel",
+      "de": "Mimis Albumgalerie",
+      "en": "Mimi's album gallery"
+    },
+    {
+      "key": "music.albums.previous",
+      "de": "Vorheriges Album",
+      "en": "Previous album"
+    },
+    {
+      "key": "music.albums.next",
+      "de": "Nächstes Album",
+      "en": "Next album"
+    },
+    {
+      "key": "music.albums.open",
+      "de": "Album entdecken",
+      "en": "Discover album"
+    }
+  ]
+}
