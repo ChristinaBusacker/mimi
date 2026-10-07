@@ -24,48 +24,6 @@
     0 14px 34px rgb(0 0 0 / 24%);
 }
 
-.album-gallery__intro {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  align-content: center;
-  gap: var(--spacing-sm);
-  min-width: 0;
-  padding: var(--spacing-sm);
-
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--page-accent, var(--color-accent-music));
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding-bottom: 5px;
-
-    app-icon {
-      width: 18px;
-    }
-  }
-
-  h2 {
-    margin: 0;
-    color: var(--color-text);
-    font-size: clamp(2rem, 4vw, 3rem);
-    line-height: 1;
-  }
-
-  p {
-    max-width: 50vw;
-    margin: 0;
-    opacity: 0.82;
-    line-height: 1.65;
-  }
-}
-
 .album-fan {
   position: relative;
   min-width: 0;
@@ -89,7 +47,7 @@
 
 .album-fan__stage {
   position: relative;
-  min-height: clamp(300px, 31vw, 390px);
+  min-height: clamp(300px, 31vw, 300px);
   overflow: hidden;
   outline: none;
   perspective: 1100px;
@@ -303,14 +261,14 @@
   justify-items: center;
   gap: 2px;
   min-height: 86px;
-  margin-top: calc(-1 * var(--spacing-sm));
+  margin-top: calc(-1 * var(--spacing-sm) * 6);
   text-align: center;
 
   strong {
     max-width: min(100%, 34ch);
     overflow: hidden;
     font-family: var(--font-headline);
-    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    font-size: clamp(4rem, 2.4vw, 4rem);
     line-height: 1.1;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -318,7 +276,7 @@
 
   > span {
     opacity: 0.72;
-    font-size: 0.82rem;
+    font-size: 1rem;
   }
 
   a {

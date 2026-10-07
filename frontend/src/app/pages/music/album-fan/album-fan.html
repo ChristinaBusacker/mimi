@@ -1,19 +1,4 @@
 <section class="album-gallery" aria-labelledby="album-gallery-title">
-  <header class="album-gallery__intro">
-    <div>
-      <div class="eyebrow">
-        <app-icon name="music" class="secondary" />
-        <span>{{ 'music.albums.eyebrow' | i18n | async }}</span>
-      </div>
-
-      <h2 id="album-gallery-title" class="more-suggar">
-        {{ 'music.albums.title' | i18n | async }}
-      </h2>
-    </div>
-
-    <p>{{ 'music.albums.description' | i18n | async }}</p>
-  </header>
-
   @if (activeAlbum(); as activeAlbum) {
     <div class="album-fan">
       <div
@@ -98,11 +83,10 @@
       </div>
 
       <div class="album-fan__details" aria-live="polite">
-        <strong>{{ activeAlbum.title }}</strong>
-
         @if (activeYear(); as year) {
           <span>{{ year }}</span>
         }
+        <strong>{{ activeAlbum.title }}</strong>
 
         <a [routerLink]="['/music/albums', activeAlbum.slug]">
           {{ 'music.albums.open' | i18n | async }}
