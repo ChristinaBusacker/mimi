@@ -11,88 +11,38 @@
   background: linear-gradient(180deg, rgb(45 24 42 / 96%), rgb(28 18 27 / 98%));
   color: var(--color-text);
 
+  @include compact-layout {
+    border-radius: 0 0 var(--radius-card);
+    border-top: 0px;
+  }
+
   audio {
     display: none;
   }
 
   .now-playing {
-    display: grid;
-    grid-template-columns:
-      72px
-      minmax(150px, 0.7fr)
-      auto
-      minmax(180px, 1fr)
-      auto;
+    display: flex;
     gap: var(--spacing-sm);
     align-items: center;
+    justify-content: center;
     padding: var(--spacing-sm);
-    border-bottom: 1px solid rgb(175 104 167 / 38%);
-    background: linear-gradient(90deg, rgb(252 170 193 / 10%), transparent 46%);
+    background-size: cover;
+    background-position: 50%;
+    position: relative;
 
-    .cover {
-      width: 72px;
-      aspect-ratio: 1;
-
-      img,
-      .placeholder {
-        display: block;
-        width: 100%;
-        height: 100%;
-        border-radius: var(--radius-card);
-      }
-
-      img {
-        object-fit: cover;
-      }
-
-      .placeholder {
-        display: grid;
-        place-items: center;
-        background: var(--color-menu-surface);
-
-        app-icon {
-          width: 30px;
-        }
-      }
-    }
-
-    .current {
-      display: grid;
-      gap: 2px;
-      min-width: 0;
-
-      > span:first-child {
-        color: var(--color-primary);
-        font-size: 0.68rem;
-        font-weight: 800;
-        letter-spacing: 0.07em;
-        text-transform: uppercase;
-      }
-
-      > strong {
-        overflow: hidden;
-        font-size: 1rem;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .album-link {
-        justify-self: start;
-        max-width: 100%;
-        overflow: hidden;
-        color: var(--color-secondary);
-        font-size: 0.78rem;
-        text-decoration: underline;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+    &::after {
+      position: absolute;
+      inset: 0;
+      content: '';
+      background: linear-gradient(90deg, rgb(58 27 47 / 98%), rgb(58 27 47 / 54%));
+      z-index: 0;
     }
 
     .main-toggle {
       display: grid;
       place-items: center;
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       border: 0;
       border-radius: var(--radius-pill);
       background: var(--color-primary);
@@ -107,81 +57,182 @@
       }
     }
 
-    .playback-controls {
-      display: grid;
-      gap: 3px;
-      min-width: 0;
+    .details {
+      display: flex;
+      gap: 10px;
+      min-width: 300px;
+      flex: 1;
+      width: 100%;
+      z-index: 2;
+      .cover {
+        width: 72px;
+        aspect-ratio: 1;
 
-      .progress {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: var(--spacing-xs);
-        align-items: center;
-
-        input {
+        img,
+        .placeholder {
+          display: block;
           width: 100%;
-          min-width: 0;
-          accent-color: var(--color-primary);
+          height: 100%;
+          border-radius: var(--radius-card);
         }
 
-        span {
-          font-size: 0.72rem;
-          opacity: 0.7;
-          white-space: nowrap;
+        img {
+          object-fit: cover;
+        }
+
+        .placeholder {
+          display: grid;
+          place-items: center;
+          background: var(--color-menu-surface);
+
+          app-icon {
+            width: 30px;
+          }
         }
       }
 
-      .volume {
+      .current {
         display: grid;
-        grid-template-columns: auto minmax(70px, 120px);
-        gap: var(--spacing-xs);
-        align-items: center;
-        justify-content: end;
-        color: var(--color-text);
-        font-size: 0.68rem;
-        opacity: 0.78;
+        gap: 2px;
+        min-width: 0;
 
-        input {
-          width: 100%;
-          min-width: 0;
-          accent-color: var(--color-primary);
+        > span:first-child {
+          color: var(--color-primary);
+          font-size: 0.68rem;
+          font-weight: 800;
+          letter-spacing: 0.07em;
+          text-transform: uppercase;
+        }
+
+        > strong {
+          overflow: hidden;
+          font-size: 1rem;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .album-link {
+          justify-self: start;
+          max-width: 100%;
+          overflow: hidden;
+          color: var(--color-secondary);
+          font-size: 0.78rem;
+          text-decoration: underline;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
     }
 
-    .external {
+    .controls {
+      width: 100%;
       position: relative;
+      flex: 1;
+      gap: 10px;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 4px;
+      flex-direction: column;
+      z-index: 2;
 
-      app-support-button {
-        --support-button-font-size: 0.7rem;
-        --support-button-padding: 4px 7px;
-        --support-heart-size: 14px;
-      }
-
-      a {
-        display: inline-flex;
+      & .time-control {
+        width: 100%;
+        display: flex;
         align-items: center;
-        gap: 3px;
-        padding: 4px 7px;
-        border: 1px solid rgb(175 104 167 / 68%);
-        border-radius: var(--radius-pill);
-        color: inherit;
-        font-size: 0.7rem;
-        font-weight: 800;
-        text-decoration: none;
-        height: 32px;
+        justify-content: center;
+        gap: 10px;
+
+        .playback-controls {
+          display: grid;
+          gap: 3px;
+          min-width: 0;
+          width: 100%;
+
+          .progress {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: var(--spacing-xs);
+            align-items: center;
+
+            input {
+              width: 100%;
+              min-width: 0;
+              accent-color: var(--color-primary);
+            }
+
+            span {
+              font-size: 0.72rem;
+              opacity: 0.7;
+              white-space: nowrap;
+            }
+          }
+        }
       }
 
-      .mobile-volume {
-        display: none;
-      }
+      .secondary-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .volume {
+          display: grid;
+          grid-template-columns: auto minmax(70px, 120px);
+          gap: var(--spacing-xs);
+          align-items: center;
+          justify-content: end;
+          color: var(--color-text);
+          font-size: 0.68rem;
+          opacity: 0.78;
+          cursor: pointer;
+          input {
+            width: 100%;
+            min-width: 0;
+            accent-color: var(--color-primary);
+            cursor: pointer;
+          }
+        }
 
-      & .external-links {
-        gap: var(--spacing-sm);
+        .volume.volume-mobile {
+          display: none;
+        }
+
+        .external {
+          position: relative;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          gap: 4px;
+
+          @include compact-layout {
+            justify-content: space-between;
+          }
+
+          app-support-button {
+            --support-button-font-size: 0.7rem;
+            --support-button-padding: 4px 7px;
+            --support-heart-size: 14px;
+          }
+
+          a {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 4px 7px;
+            border: 1px solid rgb(175 104 167 / 68%);
+            border-radius: var(--radius-pill);
+            color: inherit;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-decoration: none;
+            height: 32px;
+            margin-left: 4px;
+          }
+
+          .mobile-volume {
+            display: none;
+          }
+
+          & .external-links {
+            gap: var(--spacing-sm);
+          }
+        }
       }
     }
   }
@@ -260,8 +311,9 @@
     }
 
     .track-toggle {
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 32px;
       height: 32px;
       border: 1px solid rgb(175 104 167 / 65%);
@@ -410,11 +462,10 @@
 
 @include compact-layout {
   .player {
-    .now-playing {
-      grid-template-columns: 48px minmax(0, 1fr) auto;
-      gap: var(--spacing-xs);
-      padding: var(--spacing-xs);
-      padding: 10px;
+    & .now-playing {
+      gap: var(--spacing-md);
+      padding-top: var(--spacing-md);
+      flex-direction: column;
 
       .cover {
         width: 48px;
@@ -429,92 +480,64 @@
         .progress input {
           min-height: 36px;
         }
-
-        .volume-desktop {
-          display: none;
-        }
       }
 
-      .external {
-        align-items: center;
-        justify-content: space-between;
-        display: flex;
-        width: 100%;
-        min-height: 32px;
-        padding: 10px 0;
-        padding-right: 6px;
+      & .controls {
+        & .secondary-controls {
+          position: relative;
 
-        .mobile-volume {
-          display: block;
-          flex: 0 0 auto;
-        }
-
-        .volume-button {
-          display: grid;
-          place-items: center;
-          width: 32px;
-          height: 32px;
-          padding: 0;
-          border: 1px solid rgb(175 104 167 / 68%);
-          border-radius: var(--radius-pill);
-          background: transparent;
-          color: inherit;
-          cursor: pointer;
-
-          svg {
-            width: 17px;
-            height: 17px;
-            fill: none;
-            stroke: currentcolor;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-width: 1.8;
-          }
-        }
-
-        .volume-panel {
-          position: absolute;
-
-          z-index: 2;
-          display: flex;
-          max-width: 0;
-          overflow: hidden;
-          align-items: center;
-          gap: var(--spacing-xs);
-          min-width: 0;
-          right: 0;
-          top: 0;
-          right: 0;
-          border: 1px solid transparent;
-          border-radius: var(--radius-pill);
-
-          transition: all 0.3s ease;
-
-          &.active {
-            max-width: 100%;
-            box-shadow: 0 5px 18px rgb(0 0 0 / 25%);
-            border: 1px solid rgb(175 104 167 / 55%);
-            padding: 0 8px;
-            background: rgb(34 21 32 / 98%);
-          }
-
-          svg {
-            flex: 0 0 auto;
-            width: 18px;
-            height: 18px;
-            fill: none;
-            stroke: currentcolor;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-width: 1.8;
-          }
-
-          input {
-            flex: 1 1 auto;
+          & .external {
+            align-items: center;
+            justify-content: space-between;
+            display: flex;
             width: 100%;
-            min-width: 0;
-            min-height: 36px;
-            accent-color: var(--color-primary);
+            min-height: 43px;
+            padding-bottom: 10px;
+            padding-right: 6px;
+          }
+
+          & .volume.volume-desktop {
+            display: none !important;
+          }
+
+          & .volume.volume-mobile {
+            position: absolute;
+            right: 0;
+            bottom: 10px;
+            width: 32px;
+            display: flex !important;
+            height: 34px;
+
+            opacity: 1;
+            transition: width 0.3s ease;
+
+            & .icon {
+              width: 29px;
+            }
+
+            & input {
+              overflow: hidden;
+              position: absolute;
+              max-width: 0px;
+              left: 0px;
+              transition: width 0.3s ease;
+            }
+
+            &.active {
+              width: 100%;
+              border: 1px solid whitesmoke !important;
+              border-radius: 4px;
+              background-color: rgba(45, 24, 42, 1);
+
+              & input {
+                overflow: hidden;
+                max-width: calc(100% - 50px);
+                width: 100%;
+              }
+            }
+
+            &:not(.active) {
+            }
           }
         }
       }

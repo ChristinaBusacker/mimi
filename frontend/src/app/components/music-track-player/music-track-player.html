@@ -17,7 +17,11 @@
         (click)="toggleTrack(currentTrack)"
       >
         <span aria-hidden="true">
-          {{ playing() ? 'Ⅱ' : '▶' }}
+          @if (playing()) {
+            <app-icon name="pause" class="white" />
+          } @else {
+            <app-icon name="play" class="white" />
+          }
         </span>
       </button>
 
@@ -75,7 +79,11 @@
           (click)="toggleTrack(track)"
         >
           <span aria-hidden="true">
-            {{ isTrackPlaying(track) ? 'Ⅱ' : '▶' }}
+            @if (isTrackPlaying(track)) {
+              <app-icon name="pause" />
+            } @else {
+              <app-icon name="play" />
+            }
           </span>
         </button>
 

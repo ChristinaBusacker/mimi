@@ -16,38 +16,25 @@ import { Icon } from '../icon/icon';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    I18nPipe,
-    Icon,
-  ],
+  imports: [AsyncPipe, I18nPipe, Icon],
   selector: 'app-music-track-player',
   styleUrl: './music-track-player.scss',
   templateUrl: './music-track-player.html',
 })
 export class MusicTrackPlayer {
-  readonly tracks =
-    input.required<readonly MusicTrackSummary[]>();
+  readonly tracks = input.required<readonly MusicTrackSummary[]>();
 
-  private readonly audio =
-    viewChild<ElementRef<HTMLAudioElement>>('audio');
+  private readonly audio = viewChild<ElementRef<HTMLAudioElement>>('audio');
 
-  protected readonly activeTrackId =
-    signal<string | null>(null);
+  protected readonly activeTrackId = signal<string | null>(null);
   protected readonly playing = signal(false);
   protected readonly currentTime = signal(0);
 
   protected readonly activeTrack = computed(
-    () =>
-      this.tracks().find(
-        (track) =>
-          track.id === this.activeTrackId(),
-      ) ?? null,
+    () => this.tracks().find((track) => track.id === this.activeTrackId()) ?? null,
   );
 
-  protected async toggleTrack(
-    track: MusicTrackSummary,
-  ): Promise<void> {
+  protected async toggleTrack(track: MusicTrackSummary): Promise<void> {
     if (!track.previewAssetId) {
       return;
     }
@@ -60,9 +47,7 @@ export class MusicTrackPlayer {
 
     if (this.activeTrackId() === track.id) {
       if (audio.paused) {
-        await audio.play().catch(
-          () => undefined,
-        );
+        await audio.play().catch(() => undefined);
       } else {
         audio.pause();
       }
@@ -74,9 +59,7 @@ export class MusicTrackPlayer {
     this.currentTime.set(0);
     this.playing.set(false);
 
-    audio.src = this.assetUrl(
-      track.previewAssetId,
-    );
+    audio.src = this.assetUrl(track.previewAssetId);
     audio.currentTime = 0;
     audio.load();
 
@@ -89,10 +72,7 @@ export class MusicTrackPlayer {
     const target = event.target;
     const audio = this.audio()?.nativeElement;
 
-    if (
-      !(target instanceof HTMLInputElement) ||
-      !audio
-    ) {
+    if (!(target instanceof HTMLInputElement) || !audio) {
       return;
     }
 
@@ -129,35 +109,19 @@ export class MusicTrackPlayer {
     this.currentTime.set(0);
   }
 
-  protected isTrackPlaying(
-    track: MusicTrackSummary,
-  ): boolean {
-    return (
-      this.activeTrackId() === track.id &&
-      this.playing()
-    );
+  protected isTrackPlaying(track: MusicTrackSummary): boolean {
+    return this.activeTrackId() === track.id && this.playing();
   }
 
-  protected formatDuration(
-    seconds: number,
-  ): string {
-    const safeSeconds = Math.max(
-      0,
-      Math.floor(seconds),
-    );
-    const minutes = Math.floor(
-      safeSeconds / 60,
-    );
+  protected formatDuration(seconds: number): string {
+    const safeSeconds = Math.max(0, Math.floor(seconds));
+    const minutes = Math.floor(safeSeconds / 60);
     const remainder = safeSeconds % 60;
 
-    return `${minutes}:${remainder
-      .toString()
-      .padStart(2, '0')}`;
+    return `${minutes}:${remainder.toString().padStart(2, '0')}`;
   }
 
-  protected assetUrl(
-    assetId: string,
-  ): string {
+  protected assetUrl(assetId: string): string {
     return `/api/assets/${assetId}`;
   }
 }
