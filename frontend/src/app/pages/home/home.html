@@ -76,22 +76,7 @@
   </div>
 </app-hero>
 
-<section class="home-introduction">
-  <div class="home-introduction__copy">
-    <span class="home-eyebrow">{{ 'home.intro.eyebrow' | i18n | async }}</span>
-    <h2 class="more-suggar">{{ 'home.intro.title' | i18n | async }}</h2>
-    <p>{{ 'home.intro.text' | i18n | async }}</p>
-    <a routerLink="/about">
-      {{ 'home.intro.action' | i18n | async }}
-      →
-    </a>
-  </div>
-
-  <blockquote>
-    <p>“{{ 'home.intro.quote' | i18n | async }}”</p>
-    <footer>— Mimi</footer>
-  </blockquote>
-</section>
+<app-home-stage [community]="community" />
 
 <section class="home-content">
   <section class="home-section home-section--youtube">
@@ -198,55 +183,5 @@
     </section>
   }
 
-  <div class="home-evergreen">
-    <section class="identity-card identity-card--music">
-      <div class="identity-card__icon">
-        <app-icon name="music" />
-      </div>
-      <div>
-        <span class="home-eyebrow">{{ 'home.music.eyebrow' | i18n | async }}</span>
-        <h2 class="more-suggar">{{ 'home.music.title' | i18n | async }}</h2>
-        <p>{{ 'home.music.description' | i18n | async }}</p>
-        <a routerLink="/music">
-          {{ 'home.music.action' | i18n | async }}
-          →
-        </a>
-      </div>
-    </section>
 
-    <section class="identity-card identity-card--community">
-      <div class="identity-card__icon">
-        <app-icon name="community" />
-      </div>
-      <div>
-        <span class="home-eyebrow">{{ 'home.community.eyebrow' | i18n | async }}</span>
-        <h2 class="more-suggar">{{ 'home.community.title' | i18n | async }}</h2>
-        <p>{{ 'home.community.description' | i18n | async }}</p>
-
-        @if (community; as discord) {
-          @if (discord.connected && discord.memberCount !== null) {
-            <div class="community-stats">
-              <span>
-                <strong>{{ discord.memberCount }}</strong>
-                {{ 'home.community.members' | i18n | async }}
-              </span>
-
-              @if (discord.onlineCount !== null) {
-                <span>
-                  <i aria-hidden="true"></i>
-                  <strong>{{ discord.onlineCount }}</strong>
-                  {{ 'home.community.online' | i18n | async }}
-                </span>
-              }
-            </div>
-          }
-        }
-
-        <a routerLink="/community">
-          {{ 'home.community.action' | i18n | async }}
-          →
-        </a>
-      </div>
-    </section>
-  </div>
 </section>

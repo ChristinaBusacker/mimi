@@ -1,0 +1,23 @@
+{
+  "localizations": [
+    { "key": "home.stage.eyebrow", "de": "Willkommen in meiner Welt", "en": "Welcome to my world" },
+    { "key": "home.stage.title", "de": "Hier gibt es mehr zu entdecken", "en": "There's more to discover here" },
+    { "key": "home.stage.description", "de": "Musik, Gaming und Menschen, die aus einem Stream etwas Gemeinsames machen. Schau dich um!", "en": "Music, gaming, and people who turn a stream into something shared. Take a look around!" },
+    { "key": "home.stage.worlds", "de": "Entdecke Mimis Welten", "en": "Explore Mimi's worlds" },
+    { "key": "home.stage.music.short", "de": "Musik", "en": "Music" },
+    { "key": "home.stage.music.title", "de": "Ein Teil von mir, der bleibt", "en": "A part of me that stays" },
+    { "key": "home.stage.music.description", "de": "Meine Songs, Alben und die Geschichten hinter meiner Musik. Hör rein und entdecke mehr.", "en": "My songs, albums and the stories behind my music. Have a listen and discover more." },
+    { "key": "home.stage.music.action", "de": "Musik entdecken", "en": "Discover music" },
+    { "key": "home.stage.gaming.short", "de": "Gaming", "en": "Gaming" },
+    { "key": "home.stage.gaming.title", "de": "Nicht der perfekte Run. Lieber ein guter Abend.", "en": "Not the perfect run. Just a good evening." },
+    { "key": "home.stage.gaming.description", "de": "Gemeinsam Welten erkunden, Quatsch machen und das nächste Abenteuer erleben.", "en": "Explore worlds, have fun and experience the next adventure together." },
+    { "key": "home.stage.gaming.next", "de": "Als Nächstes", "en": "Up next" },
+    { "key": "home.stage.gaming.action", "de": "Gaming entdecken", "en": "Explore gaming" },
+    { "key": "home.stage.community.short", "de": "Community", "en": "Community" },
+    { "key": "home.stage.community.title", "de": "Nicht nur zuschauen. Dazugehören.", "en": "Don't just watch. Belong." },
+    { "key": "home.stage.community.description", "de": "Streams haben Anfang und Ende. Gespräche, Freundschaften und gemeinsame Erinnerungen nicht.", "en": "Streams begin and end. Conversations, friendships and shared memories don't." },
+    { "key": "home.stage.community.action", "de": "Community entdecken", "en": "Discover the community" },
+    { "key": "home.stage.more", "de": "Mehr über Mimi", "en": "More about Mimi" },
+    { "key": "home.stage.about", "de": "Mimi persönlich kennenlernen", "en": "Get to know Mimi" }
+  ]
+}

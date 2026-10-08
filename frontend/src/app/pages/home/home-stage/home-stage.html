@@ -1,0 +1,140 @@
+<section class="stage" aria-labelledby="home-stage-title">
+  <h2 id="home-stage-title" class="stage__visually-hidden">
+    {{ 'home.intro.title' | i18n | async }}
+  </h2>
+
+  <div class="stage__scene" [attr.data-active-world]="activeWorld()">
+    <img
+      class="stage__atmosphere"
+      src="/images/stage/background-fantasy.png"
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
+    />
+    <img
+      class="stage__light"
+      src="/images/stage/background-light.png"
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
+    />
+
+    <div class="stage__islands" role="group" [attr.aria-label]="'home.intro.title' | i18n | async">
+      <div
+        class="stage__world stage__world--gaming"
+        [class.stage__world--center]="positionFor('gaming') === 'center'"
+        [class.stage__world--left]="positionFor('gaming') === 'left'"
+        [class.stage__world--right]="positionFor('gaming') === 'right'"
+      >
+        <button
+          type="button"
+          class="stage__world-select"
+          [attr.aria-pressed]="activeWorld() === 'gaming'"
+          [attr.aria-label]="'navigation.gaming' | i18n | async"
+          (click)="selectWorld('gaming')"
+        >
+          <img src="/images/stage/gaming-island.png" alt="" loading="lazy" decoding="async" />
+        </button>
+        <div class="stage__caption">
+          <h3>{{ 'navigation.gaming' | i18n | async }}</h3>
+          @if (activeWorld() === 'gaming') {
+            <p>{{ 'hero.gaming.description' | i18n | async }}</p>
+            @if (upcomingGame()?.game; as game) {
+              <span class="stage__meta">{{ 'gaming.next.label' | i18n | async }}: {{ game.name }}</span>
+            } @else if (upcomingGame()?.stream; as stream) {
+              <span class="stage__meta">{{ 'gaming.next.label' | i18n | async }}: {{ stream.title }}</span>
+            }
+            <a routerLink="/gaming">{{ 'navigation.gaming' | i18n | async }} <span aria-hidden="true">→</span></a>
+          }
+        </div>
+      </div>
+
+      <div
+        class="stage__world stage__world--community"
+        [class.stage__world--center]="positionFor('community') === 'center'"
+        [class.stage__world--left]="positionFor('community') === 'left'"
+        [class.stage__world--right]="positionFor('community') === 'right'"
+      >
+        <button
+          type="button"
+          class="stage__world-select"
+          [attr.aria-pressed]="activeWorld() === 'community'"
+          [attr.aria-label]="'navigation.community' | i18n | async"
+          (click)="selectWorld('community')"
+        >
+          <img src="/images/stage/community-island.png" alt="" loading="lazy" decoding="async" />
+        </button>
+        <div class="stage__caption">
+          <h3>{{ 'navigation.community' | i18n | async }}</h3>
+          @if (activeWorld() === 'community') {
+            <p>{{ 'home.community.description' | i18n | async }}</p>
+            @if (community(); as discord) {
+              @if (discord.connected && discord.memberCount !== null) {
+                <span class="stage__meta">
+                  {{ discord.memberCount }} {{ 'home.community.members' | i18n | async }}
+                  @if (discord.onlineCount !== null) {
+                    · {{ discord.onlineCount }} {{ 'home.community.online' | i18n | async }}
+                  }
+                </span>
+              }
+            }
+            <a routerLink="/community">{{ 'home.community.action' | i18n | async }} <span aria-hidden="true">→</span></a>
+          }
+        </div>
+      </div>
+
+      <div
+        class="stage__world stage__world--music"
+        [class.stage__world--center]="positionFor('music') === 'center'"
+        [class.stage__world--left]="positionFor('music') === 'left'"
+        [class.stage__world--right]="positionFor('music') === 'right'"
+      >
+        <button
+          type="button"
+          class="stage__world-select"
+          [attr.aria-pressed]="activeWorld() === 'music'"
+          [attr.aria-label]="'navigation.music' | i18n | async"
+          (click)="selectWorld('music')"
+        >
+          <img src="/images/stage/music-island.png" alt="" loading="lazy" decoding="async" />
+        </button>
+        @if (featuredAlbum(); as album) {
+          @if (album.coverAssetId; as cover) {
+            <a class="stage__album" [routerLink]="['/music/albums', album.slug]" [attr.aria-label]="album.title">
+              <img [src]="coverUrl(cover)" [alt]="album.title" loading="lazy" decoding="async" />
+            </a>
+          }
+        }
+        <div class="stage__caption">
+          <h3>{{ 'navigation.music' | i18n | async }}</h3>
+          @if (activeWorld() === 'music') {
+            <p>{{ 'home.music.description' | i18n | async }}</p>
+            @if (featuredAlbum(); as album) {
+              <span class="stage__meta">{{ album.title }}</span>
+            }
+            <a routerLink="/music">{{ 'home.music.action' | i18n | async }} <span aria-hidden="true">→</span></a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <img
+      class="stage__dragon"
+      src="/images/stage/dragon.png"
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <div class="stage__switcher" role="group" [attr.aria-label]="'home.intro.title' | i18n | async">
+    <button type="button" [class.is-active]="activeWorld() === 'gaming'" [attr.aria-pressed]="activeWorld() === 'gaming'" (click)="selectWorld('gaming')">{{ 'navigation.gaming' | i18n | async }}</button>
+    <button type="button" [class.is-active]="activeWorld() === 'music'" [attr.aria-pressed]="activeWorld() === 'music'" (click)="selectWorld('music')">{{ 'navigation.music' | i18n | async }}</button>
+    <button type="button" [class.is-active]="activeWorld() === 'community'" [attr.aria-pressed]="activeWorld() === 'community'" (click)="selectWorld('community')">{{ 'navigation.community' | i18n | async }}</button>
+  </div>
+
+  <a class="stage__about" routerLink="/about">{{ 'home.intro.action' | i18n | async }} <span aria-hidden="true">→</span></a>
+</section>

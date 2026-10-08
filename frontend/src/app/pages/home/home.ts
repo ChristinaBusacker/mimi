@@ -27,6 +27,7 @@ import { TwitchState } from '../../core/twitch/twitch.state';
 import { YouTubeState } from '../../core/youtube/youtube.state';
 import type { HomeData } from './home.resolver';
 import { createTwitchPreview, createVideoPreview } from './home-preview';
+import { HomeStage } from './home-stage/home-stage';
 
 type HeroIcon = 'gaming' | 'heart' | 'music';
 
@@ -48,7 +49,7 @@ interface HeroViewModel {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Button, Countdown, Hero, I18nPipe, Icon, VideoCard, RouterLink],
+  imports: [AsyncPipe, Button, Countdown, Hero, HomeStage, I18nPipe, Icon, VideoCard, RouterLink],
   selector: 'app-home',
   styleUrl: './home.scss',
   templateUrl: './home.html',

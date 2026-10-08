@@ -35,6 +35,12 @@ export interface MusicAlbumPageData {
 export class MusicPublicService {
   private readonly request = inject(RequestService);
 
+  getAlbums(locale: Language): Observable<MusicAlbumSummary[]> {
+    return this.request.get<MusicAlbumSummary[]>(
+      `/music/albums?locale=${encodeURIComponent(locale)}`,
+    );
+  }
+
   getLanding(
     locale: Language,
   ): Observable<MusicLandingData> {

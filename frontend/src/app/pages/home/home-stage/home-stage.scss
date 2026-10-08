@@ -1,0 +1,402 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+  margin-block: clamp(0.5rem, 2vw, 1.5rem) 0;
+  min-width: 0;
+}
+
+.stage {
+  position: relative;
+  isolation: isolate;
+  // The stage is a free-standing diorama, not another full-width card.
+  width: min(118%, calc(100vw - 24px));
+  margin-inline-start: 50%;
+  color: var(--color-text);
+  transform: translateX(-50%);
+}
+
+.stage__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.stage__scene {
+  position: relative;
+  height: clamp(23rem, 42vw, 33rem);
+  isolation: isolate;
+  perspective: 1250px;
+  perspective-origin: 50% 45%;
+}
+
+.stage__atmosphere,
+.stage__light {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.stage__atmosphere {
+  z-index: 0;
+  opacity: 0.26;
+  object-position: center top;
+  mask-image: radial-gradient(ellipse 58% 62% at 50% 49%, #000 26%, transparent 100%);
+}
+
+.stage__light {
+  z-index: 1;
+  opacity: 0.48;
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 53%, #000 10%, transparent 100%);
+}
+
+.stage__islands {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transform-style: preserve-3d;
+}
+
+.stage__world {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 50%;
+  width: 58%;
+  aspect-ratio: 1448 / 1086;
+  transform-origin: 50% 78%;
+  transition: transform 620ms cubic-bezier(0.22, 0.72, 0.22, 1), opacity 500ms ease, filter 500ms ease;
+  will-change: transform;
+
+  &--center {
+    z-index: 5;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  &--left {
+    z-index: 3;
+    opacity: 0.92;
+    filter: brightness(0.83);
+    transform: translateX(-96%) translateY(2%) scale(0.76) rotateY(11deg);
+  }
+
+  &--right {
+    z-index: 3;
+    opacity: 0.92;
+    filter: brightness(0.83);
+    transform: translateX(-4%) translateY(2%) scale(0.76) rotateY(-11deg);
+  }
+}
+
+.stage__world-select {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 1rem 1rem rgb(23 8 27 / 28%));
+  }
+
+  &:hover img {
+    filter: drop-shadow(0 1rem 1rem rgb(23 8 27 / 28%)) drop-shadow(0 0 0.8rem rgb(252 160 219 / 28%));
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: -3px;
+    border-radius: 35%;
+  }
+}
+
+.stage__caption {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: 13%;
+  inset-inline-start: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  width: min(85%, 21rem);
+  padding: 1.1rem 1.6rem 0.8rem;
+  color: #fff1f9;
+  background: radial-gradient(ellipse at center, rgb(27 8 34 / 86%) 0%, rgb(27 8 34 / 71%) 42%, transparent 78%);
+  text-align: center;
+  text-shadow: 0 2px 7px rgb(19 4 23 / 85%);
+  transform: translateX(-50%);
+  pointer-events: none;
+
+  h3 {
+    margin: 0;
+    color: #fff2fb;
+    font-family: var(--font-headline);
+    font-size: clamp(1.65rem, 2.4vw, 2.3rem);
+    font-weight: 700;
+    line-height: 1.08;
+  }
+
+  p {
+    max-width: 30ch;
+    margin: 0;
+    font-size: clamp(0.75rem, 1.05vw, 0.91rem);
+    line-height: 1.35;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 36px;
+    margin-top: 0.15rem;
+    padding: 0.4rem 1.05rem;
+    border: 1px solid rgb(255 220 243 / 44%);
+    border-radius: var(--radius-pill);
+    background: var(--color-primary);
+    color: #271322;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-decoration: none;
+    text-shadow: none;
+    pointer-events: auto;
+    white-space: nowrap;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--color-primary-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+  }
+}
+
+.stage__world--left .stage__caption,
+.stage__world--right .stage__caption {
+  inset-block-end: 16%;
+  gap: 0;
+  padding-block: 0.6rem;
+  background: radial-gradient(ellipse at center, rgb(27 8 34 / 88%) 0%, rgb(27 8 34 / 54%) 46%, transparent 77%);
+
+  h3 {
+    font-size: clamp(1.75rem, 2.6vw, 2.45rem);
+  }
+}
+
+.stage__meta {
+  display: block;
+  max-width: 30ch;
+  overflow: hidden;
+  color: #ffcee6;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stage__album {
+  position: absolute;
+  z-index: 4;
+  inset-block-start: 44%;
+  inset-inline-end: 11%;
+  width: 15%;
+  border-radius: 0.5rem;
+  box-shadow: 0 12px 22px rgb(21 7 26 / 45%), 0 0 10px rgb(255 190 226 / 24%);
+  transform: rotate(5deg);
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 4px;
+  }
+}
+
+.stage__dragon {
+  position: absolute;
+  z-index: 7;
+  inset-block-end: 16%;
+  inset-inline-start: 60%;
+  display: block;
+  width: clamp(100px, 11%, 145px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 10px 12px rgb(31 8 34 / 45%));
+  animation: stage-dragon-float 6s ease-in-out infinite;
+}
+
+.stage__switcher {
+  display: none;
+}
+
+.stage__about {
+  position: relative;
+  z-index: 8;
+  display: table;
+  margin: -0.2rem auto 0;
+  padding: 0.45rem 0.75rem;
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration-color: var(--color-primary);
+  text-underline-offset: 0.2rem;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes stage-dragon-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+
+  50% {
+    transform: translateY(-7px) rotate(2deg);
+  }
+}
+
+@include compact-layout {
+  .stage {
+    width: min(115%, calc(100vw - 16px));
+  }
+
+  .stage__scene {
+    height: clamp(21rem, 54vw, 29rem);
+  }
+
+  .stage__world {
+    width: 64%;
+  }
+}
+
+@media (max-width: 640px) {
+  .stage {
+    width: 100%;
+    margin-inline-start: 0;
+    transform: none;
+  }
+
+  .stage__scene {
+    height: clamp(17.5rem, 78vw, 24rem);
+  }
+
+  .stage__world {
+    width: min(104%, 490px);
+  }
+
+  .stage__world--left,
+  .stage__world--right {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .stage__world--center {
+    transform: translateX(-50%) scale(1);
+  }
+
+  .stage__caption {
+    inset-block-end: 11%;
+    width: min(80%, 18rem);
+    padding: 0.7rem 0.8rem;
+
+    h3 {
+      font-size: 1.6rem;
+    }
+
+    p {
+      font-size: 0.75rem;
+    }
+  }
+
+  .stage__dragon {
+    inset-inline-start: 70%;
+    inset-block-end: 14%;
+    width: 22%;
+  }
+
+  .stage__switcher {
+    position: relative;
+    z-index: 8;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-block-start: 0.3rem;
+    padding: 0.25rem;
+
+    button {
+      min-height: 44px;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid rgb(255 218 241 / 50%);
+      border-radius: var(--radius-pill);
+      color: var(--color-text);
+      background: rgb(35 16 40 / 88%);
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+
+      &.is-active {
+        border-color: var(--color-primary);
+        color: #2d1730;
+        background: var(--color-primary);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+      }
+    }
+  }
+}
+
+@include reduced-motion {
+  .stage__world {
+    transition: none;
+    will-change: auto;
+  }
+
+  .stage__dragon {
+    animation: none;
+  }
+}
