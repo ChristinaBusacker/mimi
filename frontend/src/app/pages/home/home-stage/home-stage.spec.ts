@@ -27,26 +27,30 @@ describe('HomeStage', () => {
     fixture.detectChanges();
   });
 
-  it('renders three accessible, selectable islands', () => {
-    const islands = fixture.nativeElement.querySelectorAll('.stage__world-select') as NodeListOf<HTMLButtonElement>;
-
-    expect(islands.length).toBe(3);
-    expect(fixture.nativeElement.querySelector('.stage__world--music .stage__world-select').getAttribute('aria-pressed')).toBe('true');
+  it('exposes three accessible world selectors and a non-WebGL fallback', () => {
+    const choices = fixture.nativeElement.querySelectorAll('.stage__choice') as NodeListOf<HTMLButtonElement>;
+    expect(choices.length).toBe(3);
+    expect(choices[0].getAttribute('aria-pressed')).toBe('true');
+    expect(fixture.nativeElement.querySelectorAll('.stage__fallback-island').length).toBe(3);
     expect(fixture.nativeElement.querySelector('a[href="/music"]')).not.toBeNull();
   });
 
-  it('brings the selected island to the center and updates the destination', () => {
-    const gaming = fixture.nativeElement.querySelector('.stage__world--gaming .stage__world-select') as HTMLButtonElement;
-    gaming.click();
+  it('updates details and navigation when selecting a different world', () => {
+    const buttons = fixture.nativeElement.querySelectorAll('.stage__choice') as NodeListOf<HTMLButtonElement>;
+    buttons[2].click();
     fixture.detectChanges();
-
-    expect(gaming.getAttribute('aria-pressed')).toBe('true');
-    expect(fixture.nativeElement.querySelector('.stage__world--gaming').classList.contains('stage__world--center')).toBe(true);
+    expect(buttons[2].getAttribute('aria-pressed')).toBe('true');
     expect(fixture.nativeElement.querySelector('a[href="/gaming"]')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('a[href="/music"]')).toBeNull();
   });
 
-  it('uses existing localization keys instead of unreleased stage keys', () => {
-    expect(fixture.nativeElement.textContent).not.toContain('home.stage.');
+  it('supports previous and next controls without WebGL', () => {
+    const arrows = fixture.nativeElement.querySelectorAll('.stage__arrow') as NodeListOf<HTMLButtonElement>;
+    arrows[1].click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('a[href="/community"]')).not.toBeNull();
+    arrows[0].click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('a[href="/music"]')).not.toBeNull();
   });
 });

@@ -1,0 +1,19 @@
+{
+  "localizations": [
+    {
+      "key": "home.stage.previous",
+      "de": "Vorherige Bühnenwelt",
+      "en": "Previous stage world"
+    },
+    {
+      "key": "home.stage.next",
+      "de": "Nächste Bühnenwelt",
+      "en": "Next stage world"
+    },
+    {
+      "key": "home.stage.dragHint",
+      "de": "Ziehen oder wischen, um Mimis Welt zu entdecken",
+      "en": "Drag or swipe to explore Mimi's world"
+    }
+  ]
+}
