@@ -7,11 +7,10 @@
 .player {
   @include framed;
 
-  overflow: hidden;
   background: linear-gradient(180deg, rgb(45 24 42 / 96%), rgb(28 18 27 / 98%));
   color: var(--color-text);
 
-  border-radius: 0 0 var(--radius-card);
+  border-radius: var(--radius-card);
   border: none;
 
   audio {
@@ -26,7 +25,9 @@
     padding: var(--spacing-sm);
     background-size: cover;
     background-position: 50%;
-    position: relative;
+    position: sticky;
+    top: 55px;
+    z-index: 2;
 
     &::after {
       position: absolute;
