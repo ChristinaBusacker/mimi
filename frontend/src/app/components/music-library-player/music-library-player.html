@@ -1,7 +1,13 @@
-<section class="player">
+<section
+  class="player"
+  tabindex="0"
+  [attr.aria-label]="'music.player.keyboardHint' | i18n | async"
+  (keydown)="onPlayerKeyDown($event)"
+>
   <audio
     #audio
     preload="metadata"
+    (loadedmetadata)="onLoadedMetadata()"
     (timeupdate)="onTimeUpdate($event)"
     (play)="onPlay()"
     (pause)="onPause()"
@@ -9,139 +15,195 @@
   ></audio>
 
   @if (currentTrack(); as currentTrack) {
-    @if (coverAssetId(currentTrack); as coverId) {
-      <header class="now-playing" [style.background-image]="'url(' + assetUrl(coverId) + ')'">
-        <div class="details">
-          <div class="cover">
-            @if (coverAssetId(currentTrack); as coverId) {
-              <img [src]="assetUrl(coverId)" [alt]="currentTrack.title" />
-            } @else {
-              <div class="placeholder">
-                <app-icon name="music" class="secondary" />
-              </div>
-            }
-          </div>
+    @let coverId = coverAssetId(currentTrack);
+    <header
+      class="now-playing"
+      [style.background-image]="coverId ? 'url(' + assetUrl(coverId) + ')' : null"
+    >
+      <div class="details">
+        <div class="cover">
+          @if (coverId) {
+            <img [src]="assetUrl(coverId)" [alt]="currentTrack.title" />
+          } @else {
+            <div class="placeholder">
+              <app-icon name="music" class="secondary" />
+            </div>
+          }
+        </div>
 
-          <div class="current">
-            <span>
-              {{
-                (playing() ? 'music.player.nowPlaying' : 'music.library.selected') | i18n | async
-              }}
+        <div class="current">
+          <span>
+            {{ (playing() ? 'music.player.nowPlaying' : 'music.library.selected') | i18n | async }}
+          </span>
+
+          <strong>{{ currentTrack.title }}</strong>
+
+          @if (currentTrack.album; as album) {
+            <a class="album-link" [routerLink]="['/music/albums', album.slug]">
+              {{ album.title }}
+            </a>
+          }
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="time-control">
+          <button
+            type="button"
+            class="track-step"
+            [disabled]="!previousTrack()"
+            [attr.aria-label]="'music.player.previous' | i18n | async"
+            (click)="playAdjacent(-1)"
+          >
+            <app-icon name="arrow2" class="white" />
+          </button>
+          <button
+            type="button"
+            class="main-toggle"
+            [disabled]="!currentTrack.previewAssetId"
+            [attr.aria-label]="
+              (isTrackPlaying(currentTrack) ? 'music.player.pause' : 'music.player.play')
+                | i18n
+                | async
+            "
+            (click)="toggleTrack(currentTrack)"
+          >
+            <span aria-hidden="true">
+              @if (isTrackPlaying(currentTrack)) {
+                <app-icon name="pause" class="" />
+              } @else {
+                <app-icon name="play" />
+              }
             </span>
+          </button>
 
-            <strong>{{ currentTrack.title }}</strong>
+          <button
+            type="button"
+            class="track-step"
+            [disabled]="!nextTrack()"
+            [attr.aria-label]="'music.player.next' | i18n | async"
+            (click)="playAdjacent(1)"
+          >
+            <app-icon name="arrow2" class="white" />
+          </button>
 
-            @if (currentTrack.album; as album) {
-              <a class="album-link" [routerLink]="['/music/albums', album.slug]">
-                {{ album.title }}
-              </a>
-            }
+          <div class="playback-controls">
+            <div class="progress">
+              <input
+                type="range"
+                min="0"
+                [max]="currentTrack.previewDurationSeconds"
+                step="0.1"
+                [value]="currentTime()"
+                [disabled]="!currentTrack.previewAssetId"
+                [attr.aria-label]="'music.player.progress' | i18n | async"
+                [attr.aria-valuetext]="
+                  formatDuration(currentTime()) +
+                  ' / ' +
+                  formatDuration(currentTrack.previewDurationSeconds)
+                "
+                (input)="seek($event)"
+              />
+
+              <span>
+                {{ formatDuration(currentTime()) }}
+                /
+                {{ formatDuration(currentTrack.previewDurationSeconds) }}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div class="controls">
-          <div class="time-control">
-            <button
-              type="button"
-              class="main-toggle"
-              [disabled]="!currentTrack.previewAssetId"
-              [attr.aria-label]="
-                (isTrackPlaying(currentTrack) ? 'music.player.pause' : 'music.player.play')
-                  | i18n
-                  | async
-              "
-              (click)="toggleTrack(currentTrack)"
-            >
-              <span aria-hidden="true">
-                @if (isTrackPlaying(currentTrack)) {
-                  <app-icon name="pause" class="" />
-                } @else {
-                  <app-icon name="play" />
-                }
-              </span>
-            </button>
+        <div class="secondary-controls">
+          <div class="external">
+            <div class="external-links">
+              <app-support-button
+                [href]="currentTrack.supportUrl || '/unterstuetzen'"
+                [target]="currentTrack.supportUrl ? '_blank' : '_self'"
+              >
+                {{ 'music.support.action' | i18n | async }}
+              </app-support-button>
 
-            <div class="playback-controls">
-              <div class="progress">
-                <input
-                  type="range"
-                  min="0"
-                  [max]="currentTrack.previewDurationSeconds"
-                  step="0.1"
-                  [value]="currentTime()"
-                  [disabled]="!currentTrack.previewAssetId"
-                  [attr.aria-label]="'music.player.progress' | i18n | async"
-                  (input)="seek($event)"
-                />
-
-                <span>
-                  {{ formatDuration(currentTime()) }}
-                  /
-                  {{ formatDuration(currentTrack.previewDurationSeconds) }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="secondary-controls">
-            <div class="external">
-              <div class="external-links">
-                @if (currentTrack.supportUrl) {
-                  <app-support-button [href]="currentTrack.supportUrl" target="_blank">
-                    {{ 'music.support.action' | i18n | async }}
-                  </app-support-button>
-                }
-
-                @if (currentTrack.spotifyUrl) {
-                  <a [href]="currentTrack.spotifyUrl" target="_blank" rel="noopener noreferrer">
-                    <app-icon name="spotify" class="white small"></app-icon>
-                    Spotify
-                  </a>
-                }
-
-                @if (currentTrack.deezerUrl) {
-                  <a [href]="currentTrack.deezerUrl" target="_blank" rel="noopener noreferrer">
-                    <app-icon name="deezer" class="white small"></app-icon>
-                    Deezer
-                  </a>
-                }
-              </div>
-            </div>
-
-            <label class="volume volume-desktop">
-              @if (volume() > 0) {
-                <app-icon name="volume" (click)="mute()" class="white"></app-icon>
-              } @else {
-                <app-icon name="mute" (click)="unmute()" class="white"></app-icon>
+              @if (currentTrack.spotifyUrl) {
+                <a [href]="currentTrack.spotifyUrl" target="_blank" rel="noopener noreferrer">
+                  <app-icon name="spotify" class="white small"></app-icon>
+                  Spotify
+                </a>
               }
 
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                [value]="volume()"
-                (input)="setVolume($event)"
-              />
-            </label>
+              @if (currentTrack.deezerUrl) {
+                <a [href]="currentTrack.deezerUrl" target="_blank" rel="noopener noreferrer">
+                  <app-icon name="deezer" class="white small"></app-icon>
+                  Deezer
+                </a>
+              }
+            </div>
+          </div>
 
-            <div class="volume volume-mobile" [class.active]="volumeExpanded()">
+          <div style="display: flex; gap: 10px">
+            <button
+              #searchToggle
+              type="button"
+              class="search-toggle"
+              [attr.aria-label]="'music.player.search' | i18n | async"
+              [attr.aria-expanded]="searchOpen()"
+              aria-controls="music-library-search"
+              (click)="toggleSearch()"
+            >
+              <app-icon name="search" class="white small" />
+            </button>
+            <div class="volume volume-desktop">
+              <button
+                type="button"
+                class="volume-toggle"
+                [attr.aria-label]="
+                  (volume() === 0 ? 'music.player.unmute' : 'music.player.mute') | i18n | async
+                "
+                (click)="volume() === 0 ? unmute() : mute()"
+              >
+                @if (volume() > 0) {
+                  <app-icon name="volume" class="white" />
+                } @else {
+                  <app-icon name="mute" class="white" />
+                }
+              </button>
+
               <input
                 type="range"
                 min="0"
                 max="1"
                 step="0.05"
                 [value]="volume()"
+                [attr.aria-label]="'music.player.volume' | i18n | async"
                 (input)="setVolume($event)"
               />
-              <div class="icon" (click)="toggleVolume($event)">
-                <app-icon name="volume" class="white"></app-icon>
-              </div>
             </div>
           </div>
         </div>
-      </header>
-    }
+      </div>
+
+      @if (searchOpen()) {
+        <div class="search-popover" id="music-library-search" role="search">
+          <input
+            #searchInput
+            type="search"
+            autocomplete="off"
+            [value]="searchQuery()"
+            [attr.aria-label]="'music.player.search' | i18n | async"
+            [placeholder]="('music.player.searchPlaceholder' | i18n | async) ?? ''"
+            (input)="updateSearch($event)"
+          />
+          <button
+            type="button"
+            class="search-toggle"
+            [attr.aria-label]="'music.player.closeSearch' | i18n | async"
+            (click)="closeSearch()"
+          >
+            ×
+          </button>
+        </div>
+      }
+    </header>
   }
 
   <div class="body" [class.with-story]="storyVisible()">
@@ -155,7 +217,7 @@
       </div>
 
       <ol>
-        @for (track of tracks(); track track.id; let index = $index) {
+        @for (track of filteredTracks(); track track.id; let index = $index) {
           <li
             [class.active]="activeTrackId() === track.id"
             [class.story-active]="storyTrackId() === track.id"
@@ -268,6 +330,9 @@
           </li>
         }
       </ol>
+      @if (searchQuery().trim() && filteredTracks().length === 0) {
+        <p class="empty-search">{{ 'music.player.noResults' | i18n | async }}</p>
+      }
     </div>
 
     @if (storyVisible(); as visible) {

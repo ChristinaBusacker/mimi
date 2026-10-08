@@ -1,12 +1,13 @@
 import type { MusicTrack, MusicTrackListItem } from '@shared/music/music';
 
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
   HostListener,
+  PLATFORM_ID,
   computed,
   effect,
   inject,
@@ -20,6 +21,7 @@ import { firstValueFrom } from 'rxjs';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import type { Language } from '../../core/i18n/i18n.types';
 import { MusicPublicService } from '../../core/music/music-public.service';
+import { MusicPlaybackStorageService } from '../../core/music/music-playback-storage.service';
 import { Icon } from '../icon/icon';
 import { RenderedContent } from '../rendered-content/rendered-content';
 import { SupportButton } from '../support-button/support-button';
@@ -33,11 +35,30 @@ import { SupportButton } from '../support-button/support-button';
 })
 export class MusicLibraryPlayer {
   private readonly music = inject(MusicPublicService);
+  private readonly playbackStorage = inject(MusicPlaybackStorageService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly savedPlayback = this.playbackStorage.read();
   private readonly audio = viewChild<ElementRef<HTMLAudioElement>>('audio');
   private readonly volumeControl = viewChild<ElementRef<HTMLElement>>('volumeControl');
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+  private readonly searchToggle = viewChild<ElementRef<HTMLButtonElement>>('searchToggle');
   private readonly destroyRef = inject(DestroyRef);
 
   private volumeCloseTimeout: ReturnType<typeof setTimeout> | null = null;
+  private restored = false;
+  private pendingRestorePosition: number | null = null;
+  private lastSavedAt = 0;
+  private detailRequestVersion = 0;
+
+  private readonly mediaActions = [
+    'play',
+    'pause',
+    'nexttrack',
+    'previoustrack',
+    'seekto',
+    'seekbackward',
+    'seekforward',
+  ] as const;
 
   readonly tracks = input.required<readonly MusicTrackListItem[]>();
   readonly locale = input.required<Language>();
@@ -46,17 +67,19 @@ export class MusicLibraryPlayer {
   protected readonly storyTrackId = signal<string | null>(null);
   protected readonly playing = signal(false);
   protected readonly currentTime = signal(0);
-  protected readonly volume = signal(0.8);
-  protected readonly prevVolume = signal(0.8);
+  protected readonly volume = signal(this.savedPlayback?.volume ?? 0.8);
+  protected readonly prevVolume = signal(this.savedPlayback?.volume || 0.8);
   protected readonly volumeExpanded = signal(false);
   protected readonly trackDetail = signal<MusicTrack | null>(null);
   protected readonly trackDetailLoading = signal(false);
-
-  private detailRequestVersion = 0;
+  protected readonly searchOpen = signal(false);
+  protected readonly searchQuery = signal('');
 
   constructor() {
     this.destroyRef.onDestroy(() => {
       this.clearVolumeCloseTimeout();
+      this.persistPlayback();
+      this.clearMediaSession();
     });
   }
 
@@ -78,6 +101,21 @@ export class MusicLibraryPlayer {
 
   protected readonly storyVisible = computed(() => this.storyTrack()?.hasContent ?? false);
 
+  protected readonly filteredTracks = computed(() => {
+    const query = this.searchQuery().trim().toLocaleLowerCase();
+
+    if (!query) {
+      return this.tracks();
+    }
+
+    return this.tracks().filter((track) =>
+      `${track.title} ${track.album?.title ?? ''}`.toLocaleLowerCase().includes(query),
+    );
+  });
+
+  protected readonly previousTrack = computed(() => this.adjacentTrack(-1));
+  protected readonly nextTrack = computed(() => this.adjacentTrack(1));
+
   private readonly detailEffect = effect(() => {
     const track = this.storyTrack();
     const locale = this.locale();
@@ -95,6 +133,32 @@ export class MusicLibraryPlayer {
     void this.loadTrackDetail(track, locale, requestVersion);
   });
 
+  private readonly restoreEffect = effect(() => {
+    const tracks = this.tracks();
+    const audio = this.audio()?.nativeElement;
+
+    if (this.restored || !audio || !tracks.length) {
+      return;
+    }
+
+    this.restored = true;
+    audio.volume = this.volume();
+
+    const saved = this.savedPlayback;
+    const track = tracks.find((item) => item.id === saved?.trackId && item.previewAssetId);
+
+    if (track?.previewAssetId && saved) {
+      this.activeTrackId.set(track.id);
+      this.currentTime.set(saved.positionSeconds);
+      this.pendingRestorePosition = saved.positionSeconds;
+      audio.src = this.assetUrl(track.previewAssetId);
+      audio.load();
+      this.updateMediaSession(track);
+    }
+
+    this.registerMediaActions();
+  });
+
   protected async toggleTrack(track: MusicTrackListItem): Promise<void> {
     if (!track.previewAssetId) {
       return;
@@ -106,8 +170,6 @@ export class MusicLibraryPlayer {
       return;
     }
 
-    audio.volume = this.volume();
-
     if (this.activeTrackId() === track.id) {
       if (audio.paused) {
         await audio.play().catch(() => undefined);
@@ -118,17 +180,127 @@ export class MusicLibraryPlayer {
       return;
     }
 
+    await this.startTrack(track);
+  }
+
+  private async startTrack(track: MusicTrackListItem): Promise<void> {
+    if (!track.previewAssetId) {
+      return;
+    }
+
+    const audio = this.audio()?.nativeElement;
+
+    if (!audio) {
+      return;
+    }
+
+    this.persistPlayback();
+    this.pendingRestorePosition = null;
     this.activeTrackId.set(track.id);
     this.currentTime.set(0);
     this.playing.set(false);
-
+    audio.volume = this.volume();
     audio.src = this.assetUrl(track.previewAssetId);
-    audio.currentTime = 0;
     audio.load();
+    this.persistPlayback();
+    this.updateMediaSession(track);
 
     await audio.play().catch(() => {
       this.playing.set(false);
     });
+  }
+
+  protected playAdjacent(direction: -1 | 1): void {
+    const track = this.adjacentTrack(direction);
+
+    if (track) {
+      void this.startTrack(track);
+    }
+  }
+
+  private adjacentTrack(direction: -1 | 1): MusicTrackListItem | null {
+    const tracks = this.tracks();
+    const currentId = this.currentTrack()?.id;
+    const index = tracks.findIndex((track) => track.id === currentId);
+
+    for (let position = index + direction; position >= 0 && position < tracks.length; position += direction) {
+      if (tracks[position]?.previewAssetId) {
+        return tracks[position];
+      }
+    }
+
+    return null;
+  }
+
+  protected toggleSearch(): void {
+    this.searchOpen.update((open) => !open);
+
+    if (this.searchOpen()) {
+      setTimeout(() => this.searchInput()?.nativeElement.focus(), 0);
+    } else {
+      this.searchQuery.set('');
+      this.searchToggle()?.nativeElement.focus();
+    }
+  }
+
+  protected updateSearch(event: Event): void {
+    const input = event.target;
+
+    if (input instanceof HTMLInputElement) {
+      this.searchQuery.set(input.value);
+    }
+  }
+
+  protected closeSearch(): void {
+    this.searchOpen.set(false);
+    this.searchQuery.set('');
+    this.searchToggle()?.nativeElement.focus();
+  }
+
+  protected onPlayerKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      if (this.searchOpen()) {
+        event.preventDefault();
+        this.closeSearch();
+      } else if (this.storyTrackId()) {
+        event.preventDefault();
+        this.closeStory();
+      }
+
+      return;
+    }
+
+    // Shortcut keys are active only when the player region itself has focus.
+    // Inputs, links, buttons and browser shortcuts keep their native behavior.
+    if (event.target !== event.currentTarget || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+
+    if (event.code === 'Space') {
+      event.preventDefault();
+      const track = this.currentTrack();
+
+      if (track) {
+        void this.toggleTrack(track);
+      }
+
+      return;
+    }
+
+    switch (event.key.toLocaleLowerCase()) {
+      case 'n':
+        event.preventDefault();
+        this.playAdjacent(1);
+        break;
+      case 'p':
+        event.preventDefault();
+        this.playAdjacent(-1);
+        break;
+      case 'm':
+        event.preventDefault();
+        this.volume() === 0 ? this.unmute() : this.mute();
+        break;
+    }
   }
 
   protected onTrackRowClick(track: MusicTrackListItem, event: MouseEvent): void {
@@ -205,6 +377,8 @@ export class MusicLibraryPlayer {
     if (audio) {
       audio.volume = 0;
     }
+
+    this.persistPlayback();
   }
 
   protected unmute(): void {
@@ -216,6 +390,8 @@ export class MusicLibraryPlayer {
     if (audio) {
       audio.volume = prev;
     }
+
+    this.persistPlayback();
   }
 
   protected setVolume(event: Event): void {
@@ -234,12 +410,17 @@ export class MusicLibraryPlayer {
     const volume = Math.min(1, Math.max(0, value));
 
     this.volume.set(volume);
+    if (volume > 0) {
+      this.prevVolume.set(volume);
+    }
 
     const audio = this.audio()?.nativeElement;
 
     if (audio) {
       audio.volume = volume;
     }
+
+    this.persistPlayback();
 
     if (this.volumeExpanded()) {
       this.scheduleVolumeClose();
@@ -262,6 +443,7 @@ export class MusicLibraryPlayer {
 
     audio.currentTime = value;
     this.currentTime.set(value);
+    this.persistPlayback();
   }
 
   protected onTimeUpdate(event: Event): void {
@@ -272,19 +454,171 @@ export class MusicLibraryPlayer {
     }
 
     this.currentTime.set(target.currentTime);
+
+    if (this.pendingRestorePosition === null && Date.now() - this.lastSavedAt >= 4_000) {
+      this.persistPlayback();
+    }
+  }
+
+  protected onLoadedMetadata(): void {
+    const audio = this.audio()?.nativeElement;
+    const position = this.pendingRestorePosition;
+
+    if (!audio || position === null) {
+      return;
+    }
+
+    this.pendingRestorePosition = null;
+    const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    const safePosition = duration > 0 && position < duration - 1 ? position : 0;
+    audio.currentTime = safePosition;
+    this.currentTime.set(safePosition);
   }
 
   protected onPlay(): void {
     this.playing.set(true);
+    this.setMediaPlaybackState('playing');
   }
 
   protected onPause(): void {
     this.playing.set(false);
+    this.setMediaPlaybackState('paused');
+
+    if (this.pendingRestorePosition === null) {
+      this.persistPlayback();
+    }
   }
 
   protected onEnded(): void {
+    const next = this.adjacentTrack(1);
+
+    if (next) {
+      void this.startTrack(next);
+      return;
+    }
+
+    const audio = this.audio()?.nativeElement;
+    if (audio) {
+      audio.currentTime = 0;
+    }
+
     this.playing.set(false);
     this.currentTime.set(0);
+    this.persistPlayback();
+    this.setMediaPlaybackState('paused');
+  }
+
+  @HostListener('window:pagehide')
+  protected onPageHide(): void {
+    this.persistPlayback();
+  }
+
+  private persistPlayback(): void {
+    const track = this.activeTrack();
+
+    // An album page must not overwrite the last song from another album.
+    if (!track?.previewAssetId || this.pendingRestorePosition !== null) {
+      return;
+    }
+
+    this.playbackStorage.save({
+      trackId: track.id,
+      positionSeconds: this.currentTime(),
+      volume: this.volume(),
+    });
+    this.lastSavedAt = Date.now();
+    this.updateMediaPosition();
+  }
+
+  private registerMediaActions(): void {
+    if (!this.isBrowser || !('mediaSession' in navigator)) {
+      return;
+    }
+
+    const actions: Partial<Record<(typeof this.mediaActions)[number], MediaSessionActionHandler>> = {
+      play: () => {
+        if (this.audio()?.nativeElement.paused) {
+          const track = this.currentTrack();
+          if (track) void this.toggleTrack(track);
+        }
+      },
+      pause: () => this.audio()?.nativeElement.pause(),
+      nexttrack: () => this.playAdjacent(1),
+      previoustrack: () => this.playAdjacent(-1),
+      seekto: ({ seekTime }) => this.seekToSeconds(seekTime ?? this.currentTime()),
+      seekbackward: ({ seekOffset }) => this.seekToSeconds(this.currentTime() - (seekOffset ?? 5)),
+      seekforward: ({ seekOffset }) => this.seekToSeconds(this.currentTime() + (seekOffset ?? 5)),
+    };
+
+    for (const action of this.mediaActions) {
+      try {
+        navigator.mediaSession.setActionHandler(action, actions[action] ?? null);
+      } catch {
+        // The browser may not support every media action.
+      }
+    }
+  }
+
+  private seekToSeconds(seconds: number): void {
+    const audio = this.audio()?.nativeElement;
+    if (!audio || !Number.isFinite(audio.duration)) return;
+
+    const position = Math.max(0, Math.min(audio.duration, seconds));
+    audio.currentTime = position;
+    this.currentTime.set(position);
+    this.persistPlayback();
+  }
+
+  private updateMediaSession(track: MusicTrackListItem): void {
+    if (!this.isBrowser || !('mediaSession' in navigator) || typeof MediaMetadata === 'undefined') {
+      return;
+    }
+
+    const cover = this.coverAssetId(track);
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: track.title,
+      artist: 'Mimi',
+      album: track.album?.title ?? '',
+      artwork: cover ? [{ src: this.assetUrl(cover) }] : [],
+    });
+    this.updateMediaPosition();
+  }
+
+  private updateMediaPosition(): void {
+    if (!this.isBrowser || !('mediaSession' in navigator)) return;
+
+    const duration = this.activeTrack()?.previewDurationSeconds ?? 0;
+    if (!duration || !Number.isFinite(duration)) return;
+
+    try {
+      navigator.mediaSession.setPositionState({
+        duration,
+        playbackRate: 1,
+        position: Math.max(0, Math.min(this.currentTime(), duration)),
+      });
+    } catch {
+      // Position updates are optional and vary by browser.
+    }
+  }
+
+  private setMediaPlaybackState(state: MediaSessionPlaybackState): void {
+    if (this.isBrowser && 'mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = state;
+    }
+  }
+
+  private clearMediaSession(): void {
+    if (!this.isBrowser || !('mediaSession' in navigator)) return;
+
+    for (const action of this.mediaActions) {
+      try {
+        navigator.mediaSession.setActionHandler(action, null);
+      } catch {
+        // Unsupported action.
+      }
+    }
+    navigator.mediaSession.metadata = null;
+    navigator.mediaSession.playbackState = 'none';
   }
 
   protected isTrackPlaying(track: MusicTrackListItem): boolean {

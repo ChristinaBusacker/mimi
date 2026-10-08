@@ -1,0 +1,14 @@
+{
+  "localizations": [
+    { "key": "music.player.previous", "de": "Vorherigen Song abspielen", "en": "Play previous track" },
+    { "key": "music.player.next", "de": "Nächsten Song abspielen", "en": "Play next track" },
+    { "key": "music.player.search", "de": "Musik durchsuchen", "en": "Search music" },
+    { "key": "music.player.searchPlaceholder", "de": "Song oder Album suchen …", "en": "Search by song or album …" },
+    { "key": "music.player.closeSearch", "de": "Suche schließen", "en": "Close search" },
+    { "key": "music.player.noResults", "de": "Keine passenden Songs gefunden.", "en": "No matching songs found." },
+    { "key": "music.player.volume", "de": "Lautstärke", "en": "Volume" },
+    { "key": "music.player.mute", "de": "Stummschalten", "en": "Mute" },
+    { "key": "music.player.unmute", "de": "Stummschaltung aufheben", "en": "Unmute" },
+    { "key": "music.player.keyboardHint", "de": "Musikplayer: Mit Leertaste abspielen oder pausieren; N nächster Song, P vorheriger Song, M stummschalten. Diese Kürzel gelten nur bei Fokus auf dem Player.", "en": "Music player: Space plays or pauses; N next track, P previous track, M mute. Shortcuts work only when the player has focus." }
+  ]
+}

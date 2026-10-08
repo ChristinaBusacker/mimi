@@ -1,0 +1,114 @@
+@use 'mixins' as *;
+
+.player {
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .now-playing {
+    // The search popover floats above the list without changing the sticky header's height.
+    .search-toggle,
+    .track-step,
+    .volume-toggle {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid rgb(175 104 167 / 65%);
+      border-radius: var(--radius-pill);
+      background: rgb(36 17 34 / 45%);
+      color: var(--color-text);
+      cursor: pointer;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+      }
+
+      &:not(:disabled):hover,
+      &:focus-visible {
+        border-color: var(--color-primary);
+        background: rgb(252 170 193 / 16%);
+      }
+    }
+
+    .track-step {
+      width: 28px;
+      height: 28px;
+
+      &:first-child app-icon {
+        transform: rotate(180deg);
+      }
+    }
+
+    .volume-mobile .icon {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .external-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .search-popover {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      width: min(460px, 100%);
+      padding: var(--spacing-sm);
+      border: 1px solid var(--color-primary);
+      border-radius: 0 0 var(--radius-card) var(--radius-card);
+      background: rgb(36 17 34 / 98%);
+      box-shadow: 0 12px 26px rgb(0 0 0 / 35%);
+
+      input {
+        width: 100%;
+        min-width: 0;
+        min-height: 36px;
+        padding: 6px 10px;
+        border: 1px solid var(--color-secondary);
+        border-radius: 8px;
+        background: var(--color-surface);
+        color: var(--color-text);
+        font: inherit;
+      }
+    }
+  }
+
+  .list .empty-search {
+    padding: var(--spacing-md);
+    color: var(--color-text);
+    text-align: center;
+  }
+}
+
+@include compact-layout {
+  :host .player .now-playing {
+    .search-popover {
+      width: 100%;
+    }
+
+    .controls .secondary-controls .external {
+      padding-right: 40px;
+    }
+  }
+}
+
+@include reduced-motion {
+  .player .now-playing .search-popover {
+    scroll-behavior: auto;
+  }
+}
