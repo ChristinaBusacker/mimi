@@ -16,39 +16,37 @@
       </div>
     </div>
 
-    <div class="logo">
-      <img src="images/logo.png" alt="" />
-    </div>
-
     <div class="text">
       <h1 class="more-suggar">{{ heroView.titleKey | i18n | async }}</h1>
 
       @if (!heroView.isUpcoming) {
         <p>{{ heroView.descriptionKey | i18n | async }}</p>
       }
-
-      @if (heroView.isUpcoming) {
-        <div class="upcoming-details">
-          @if (heroView.startsAt; as startsAt) {
-            <app-countdown [startsAt]="startsAt" />
-          }
-
-          @if (heroView.streamTitle) {
-            <div class="stream-meta upcoming">
-              <strong>{{ heroView.streamTitle }}</strong>
-
-              @if (heroView.scheduledAt) {
-                <span>{{ heroView.scheduledAt }}</span>
-              }
-            </div>
-          }
-        </div>
-      } @else if (heroView.streamTitle) {
-        <div class="stream-meta">
-          <strong>{{ heroView.streamTitle }}</strong>
-        </div>
-      }
     </div>
+  </div>
+
+  <div hero-right class="visual">
+    @if (heroView.isUpcoming) {
+      <div class="upcoming-details">
+        @if (heroView.startsAt; as startsAt) {
+          <app-countdown [startsAt]="startsAt" />
+        }
+
+        @if (heroView.streamTitle) {
+          <div class="stream-meta upcoming">
+            <strong>{{ heroView.streamTitle }}</strong>
+
+            @if (heroView.scheduledAt) {
+              <span>{{ heroView.scheduledAt }}</span>
+            }
+          </div>
+        }
+      </div>
+    } @else if (heroView.streamTitle) {
+      <div class="stream-meta">
+        <strong>{{ heroView.streamTitle }}</strong>
+      </div>
+    }
 
     @if (heroView.channelUrl; as channelUrl) {
       <div class="cta">
@@ -67,12 +65,6 @@
         </app-button>
       </div>
     }
-  </div>
-
-  <div hero-right class="visual">
-    <div class="avatar">
-      <img src="images/avatar1.png" alt="" />
-    </div>
   </div>
 </app-hero>
 
@@ -182,6 +174,4 @@
       </div>
     </section>
   }
-
-
 </section>

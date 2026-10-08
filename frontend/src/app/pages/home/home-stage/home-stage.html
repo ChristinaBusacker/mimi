@@ -3,35 +3,56 @@
     {{ 'home.intro.title' | i18n | async }}
   </h2>
 
-  <div class="stage__scene">
-    <img
-      class="stage__atmosphere"
-      src="/images/stage/background-fantasy.png"
-      alt=""
-      aria-hidden="true"
-      loading="lazy"
-      decoding="async"
-    />
-    <img
-      class="stage__light"
-      src="/images/stage/background-light.png"
-      alt=""
-      aria-hidden="true"
-      loading="lazy"
-      decoding="async"
-    />
+  <div #stageScene class="stage__scene">
+    <div class="stage__backdrop" aria-hidden="true">
+      <img
+        class="stage__atmosphere"
+        src="/images/stage/background-fantasy.png"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <img
+        class="stage__light"
+        src="/images/stage/background-light.png"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
 
     <div class="stage__fallback" [class.stage__fallback--hidden]="webglReady()" aria-hidden="true">
-      <img class="stage__fallback-island stage__fallback-island--gaming"
-           [class.is-active]="activeWorld() === 'gaming'"
-           src="/images/stage/gaming-island.png" alt="" loading="lazy" decoding="async" />
-      <img class="stage__fallback-island stage__fallback-island--community"
-           [class.is-active]="activeWorld() === 'community'"
-           src="/images/stage/community-island.png" alt="" loading="lazy" decoding="async" />
-      <img class="stage__fallback-island stage__fallback-island--music"
-           [class.is-active]="activeWorld() === 'music'"
-           src="/images/stage/music-island.png" alt="" loading="lazy" decoding="async" />
-      <img class="stage__fallback-dragon" src="/images/stage/dragon.png" alt="" loading="lazy" decoding="async" />
+      <img
+        class="stage__fallback-island stage__fallback-island--gaming"
+        [class.is-active]="activeWorld() === 'gaming'"
+        src="/images/stage/gaming-island.png"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <img
+        class="stage__fallback-island stage__fallback-island--community"
+        [class.is-active]="activeWorld() === 'community'"
+        src="/images/stage/community-island.png"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <img
+        class="stage__fallback-island stage__fallback-island--music"
+        [class.is-active]="activeWorld() === 'music'"
+        src="/images/stage/music-island.png"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <img
+        class="stage__fallback-dragon"
+        src="/images/stage/dragon.png"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
     </div>
 
     <canvas
@@ -40,13 +61,15 @@
       [class.stage__canvas--ready]="webglReady()"
       [attr.aria-hidden]="true"
     ></canvas>
-    @if (webglReady()) {
-      <span class="stage__hint" aria-hidden="true">{{ 'home.stage.dragHint' | i18n | async }}</span>
-    }
   </div>
 
   <nav class="stage__navigation" [attr.aria-label]="'home.intro.title' | i18n | async">
-    <button type="button" class="stage__arrow" (click)="step(-1)" [attr.aria-label]="'home.stage.previous' | i18n | async">
+    <button
+      type="button"
+      class="stage__arrow"
+      (click)="step(-1)"
+      [attr.aria-label]="'home.stage.previous' | i18n | async"
+    >
       <span aria-hidden="true">‹</span>
     </button>
     <div class="stage__choices">
@@ -58,11 +81,16 @@
           [attr.aria-pressed]="activeWorld() === world"
           (click)="selectWorld(world)"
         >
-          {{ ('navigation.' + world) | i18n | async }}
+          {{ 'navigation.' + world | i18n | async }}
         </button>
       }
     </div>
-    <button type="button" class="stage__arrow" (click)="step(1)" [attr.aria-label]="'home.stage.next' | i18n | async">
+    <button
+      type="button"
+      class="stage__arrow"
+      (click)="step(1)"
+      [attr.aria-label]="'home.stage.next' | i18n | async"
+    >
       <span aria-hidden="true">›</span>
     </button>
   </nav>
@@ -84,7 +112,9 @@
             </a>
           }
         </div>
-        <a class="stage__action" routerLink="/music">{{ 'home.music.action' | i18n | async }} <span aria-hidden="true">→</span></a>
+        <a class="stage__action" routerLink="/music"
+          >{{ 'home.music.action' | i18n | async }} <span aria-hidden="true">→</span></a
+        >
       }
       @case ('gaming') {
         <div class="stage__copy">
@@ -92,12 +122,18 @@
           <h3>{{ 'hero.gaming.title' | i18n | async }}</h3>
           <p>{{ 'hero.gaming.description' | i18n | async }}</p>
           @if (upcomingGame()?.game; as game) {
-            <span class="stage__meta">{{ 'gaming.next.label' | i18n | async }}: {{ game.name }}</span>
+            <span class="stage__meta"
+              >{{ 'gaming.next.label' | i18n | async }}: {{ game.name }}</span
+            >
           } @else if (upcomingGame()?.stream; as stream) {
-            <span class="stage__meta">{{ 'gaming.next.label' | i18n | async }}: {{ stream.title }}</span>
+            <span class="stage__meta"
+              >{{ 'gaming.next.label' | i18n | async }}: {{ stream.title }}</span
+            >
           }
         </div>
-        <a class="stage__action" routerLink="/gaming">{{ 'navigation.gaming' | i18n | async }} <span aria-hidden="true">→</span></a>
+        <a class="stage__action" routerLink="/gaming"
+          >{{ 'navigation.gaming' | i18n | async }} <span aria-hidden="true">→</span></a
+        >
       }
       @case ('community') {
         <div class="stage__copy">
@@ -115,9 +151,13 @@
             }
           }
         </div>
-        <a class="stage__action" routerLink="/community">{{ 'home.community.action' | i18n | async }} <span aria-hidden="true">→</span></a>
+        <a class="stage__action" routerLink="/community"
+          >{{ 'home.community.action' | i18n | async }} <span aria-hidden="true">→</span></a
+        >
       }
     }
   </div>
-  <a class="stage__about" routerLink="/about">{{ 'home.intro.action' | i18n | async }} <span aria-hidden="true">→</span></a>
+  <a class="stage__about" routerLink="/about"
+    >{{ 'home.intro.action' | i18n | async }} <span aria-hidden="true">→</span></a
+  >
 </section>

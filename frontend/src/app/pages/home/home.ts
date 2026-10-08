@@ -6,13 +6,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Store } from '@ngxs/store';
-import {
-  catchError,
-  distinctUntilChanged,
-  map,
-  of,
-  switchMap,
-} from 'rxjs';
+import { catchError, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 
 import { Button } from '../../components/button/button';
 import { Countdown } from '../../components/countdown/countdown';
@@ -103,10 +97,7 @@ export class Home {
     this.createHeroViewModel(this.effectiveTwitchStatus(), this.language()),
   );
 
-  protected imageVariantUrl(
-    assetId: string,
-    variant: 'thumbnail' | 'medium' | 'large',
-  ): string {
+  protected imageVariantUrl(assetId: string, variant: 'thumbnail' | 'medium' | 'large'): string {
     return `/api/assets/${assetId}/image/${variant}/webp`;
   }
 

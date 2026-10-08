@@ -3,16 +3,16 @@
 :host {
   display: block;
   min-width: 0;
-  margin-block: clamp(0.5rem, 2vw, 1.5rem) 0;
+  margin-top: 0;
 }
 
 .stage {
   position: relative;
   isolation: isolate;
-  width: min(118%, calc(100vw - 24px));
-  margin-inline-start: 50%;
+  width: 100vw;
+  max-width: none;
+  margin-inline-start: calc(50% - 50vw);
   color: var(--color-text);
-  transform: translateX(-50%);
 }
 
 .stage__visually-hidden {
@@ -27,20 +27,30 @@
 
 .stage__scene {
   position: relative;
-  height: clamp(23rem, 47vw, 36rem);
+  height: 500px;
   isolation: isolate;
+}
+
+.stage__backdrop {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .stage__atmosphere,
 .stage__light {
   position: absolute;
-  inset: 0;
+  inset: -14% 0;
   display: block;
   width: 100%;
-  height: 100%;
+  height: 128%;
   object-fit: cover;
   pointer-events: none;
   user-select: none;
+  transform: translate3d(0, var(--stage-parallax-y, 0px), 0);
+  will-change: transform;
 }
 
 .stage__atmosphere {
@@ -60,7 +70,7 @@
   inset: 0;
   display: block;
   width: 100%;
-  height: 100%;
+  height: 500px;
   opacity: 0;
   touch-action: pan-y;
   cursor: grab;
@@ -91,23 +101,25 @@
 
 .stage__fallback-island {
   position: absolute;
-  inset-block-end: 6%;
-  width: 46%;
+  inset-block-end: 15%;
+  width: min(27vw, 26rem);
   height: auto;
   filter: drop-shadow(0 12px 17px rgb(23 8 27 / 38%));
 
   &--music {
     z-index: 2;
-    left: 27%;
-    width: 48%;
+    left: 50%;
+    inset-block-end: 6%;
+    width: min(40vw, 34rem);
+    transform: translateX(-50%);
   }
 
   &--gaming {
-    left: 1%;
+    left: 10%;
   }
 
   &--community {
-    right: 1%;
+    right: 10%;
   }
 
   &.is-active {
@@ -308,24 +320,14 @@
 }
 
 @include compact-layout {
-  .stage {
-    width: min(115%, calc(100vw - 16px));
-  }
-
   .stage__scene {
-    height: clamp(21rem, 54vw, 30rem);
+    height: 500px;
   }
 }
 
 @media (max-width: 640px) {
-  .stage {
-    width: 100%;
-    margin-inline-start: 0;
-    transform: none;
-  }
-
   .stage__scene {
-    height: clamp(18rem, 83vw, 24rem);
+    height: clamp(23rem, 88vw, 31rem);
   }
 
   .stage__hint {
@@ -347,11 +349,13 @@
     inset-block-end: 10%;
     width: 72%;
     opacity: 0;
+    transform: none;
 
     &.is-active {
       inset-inline-start: 14%;
       width: 72%;
       opacity: 1;
+      transform: none;
     }
   }
 
@@ -363,6 +367,12 @@
 }
 
 @include reduced-motion {
+  .stage__atmosphere,
+  .stage__light {
+    transform: none;
+    will-change: auto;
+  }
+
   .stage__canvas,
   .stage__fallback {
     transition: none;

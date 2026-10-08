@@ -28,7 +28,8 @@ interface StageIsland {
   mesh: Mesh<PlaneGeometry, MeshBasicMaterial>;
 }
 
-const ORBIT_RADIUS = 4.5;
+const ORBIT_RADIUS = 8.2;
+const NARROW_ORBIT_RADIUS = 6.3;
 const ASSET_ROOT = '/images/stage/';
 
 /** Owns the browser-only WebGL scene. Angular continues to own all accessible content. */
@@ -69,7 +70,7 @@ export class StageOrbitRenderer {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.outputColorSpace = SRGBColorSpace;
-    this.camera.position.set(0, 1.4, 12.6);
+    this.camera.position.set(0, 1.65, 14.4);
     this.camera.lookAt(0, 0, 0);
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -208,20 +209,25 @@ export class StageOrbitRenderer {
     const width = Math.max(1, this.canvas.clientWidth);
     const height = Math.max(1, this.canvas.clientHeight);
     this.camera.aspect = width / height;
-    this.camera.fov = width < 680 ? 52 : 39;
-    this.camera.position.z = width < 680 ? 14.8 : 12.6;
+    this.camera.fov = width < 680 ? 51 : 38;
+    this.camera.position.z = width < 680 ? 12.8 : 14.4;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
     this.invalidate();
   }
 
   private placeIslands(): void {
+    const radius = this.canvas.clientWidth < 680 ? NARROW_ORBIT_RADIUS : ORBIT_RADIUS;
     this.islands.forEach(({ group, material }, index) => {
       const angle = index * STAGE_STEP - this.rotation;
       const facing = Math.cos(angle);
-      group.position.set(Math.sin(angle) * ORBIT_RADIUS, (1 - facing) * 0.15, facing * ORBIT_RADIUS * 0.78);
+      group.position.set(
+        Math.sin(angle) * radius,
+        (1 - facing) * 0.24,
+        facing * radius * 0.66,
+      );
       group.quaternion.copy(this.camera.quaternion);
-      group.rotateY(-Math.sin(angle) * 0.1);
+      group.rotateY(-Math.sin(angle) * 0.3);
       material.opacity = 0.79 + 0.21 * ((facing + 1) / 2);
       group.scale.setScalar(0.97 + 0.06 * ((facing + 1) / 2));
     });
