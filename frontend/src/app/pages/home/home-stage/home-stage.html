@@ -1,4 +1,11 @@
-<section class="stage" aria-labelledby="home-stage-title" (keydown)="onKeyDown($event)">
+<section
+  class="stage"
+  [class.stage--music]="activeWorld() === 'music'"
+  [class.stage--gaming]="activeWorld() === 'gaming'"
+  [class.stage--community]="activeWorld() === 'community'"
+  aria-labelledby="home-stage-title"
+  (keydown)="onKeyDown($event)"
+>
   <h2 id="home-stage-title" class="stage__visually-hidden">
     {{ 'home.intro.title' | i18n | async }}
   </h2>
@@ -21,7 +28,12 @@
       />
     </div>
 
-    <div class="stage__fallback" [class.stage__fallback--hidden]="webglReady()" aria-hidden="true">
+    <div
+      class="stage__fallback"
+      [class.stage__fallback--hidden]="webglReady()"
+      [class.stage__fallback--music]="activeWorld() === 'music'"
+      aria-hidden="true"
+    >
       <img
         class="stage__fallback-island stage__fallback-island--gaming"
         [class.is-active]="activeWorld() === 'gaming'"
@@ -61,41 +73,22 @@
       [class.stage__canvas--ready]="webglReady()"
       [attr.aria-hidden]="true"
     ></canvas>
-  </div>
 
-  <nav class="stage__navigation" [attr.aria-label]="'home.intro.title' | i18n | async">
-    <button
-      type="button"
-      class="stage__arrow"
-      (click)="step(-1)"
-      [attr.aria-label]="'home.stage.previous' | i18n | async"
-    >
-      <span aria-hidden="true">‹</span>
-    </button>
-    <div class="stage__choices">
+    <div class="stage__island-labels" aria-hidden="true">
       @for (world of worlds; track world) {
-        <button
-          type="button"
-          class="stage__choice"
+        <span
+          #stageWorldLabel
+          class="stage__island-label"
           [class.is-active]="activeWorld() === world"
-          [attr.aria-pressed]="activeWorld() === world"
-          (click)="selectWorld(world)"
+          [attr.data-world]="world"
         >
           {{ 'navigation.' + world | i18n | async }}
-        </button>
+        </span>
       }
     </div>
-    <button
-      type="button"
-      class="stage__arrow"
-      (click)="step(1)"
-      [attr.aria-label]="'home.stage.next' | i18n | async"
-    >
-      <span aria-hidden="true">›</span>
-    </button>
-  </nav>
+  </div>
 
-  <div class="stage__details" aria-live="polite">
+  <div class="stage__spotlight" aria-live="polite">
     @switch (activeWorld()) {
       @case ('music') {
         <div class="stage__copy">
@@ -157,6 +150,39 @@
       }
     }
   </div>
+
+  <nav class="stage__navigation" [attr.aria-label]="'home.intro.title' | i18n | async">
+    <button
+      type="button"
+      class="stage__arrow"
+      (click)="step(-1)"
+      [attr.aria-label]="'home.stage.previous' | i18n | async"
+    >
+      <span aria-hidden="true">‹</span>
+    </button>
+    <div class="stage__choices">
+      @for (world of worlds; track world) {
+        <button
+          type="button"
+          class="stage__choice"
+          [class.is-active]="activeWorld() === world"
+          [attr.aria-pressed]="activeWorld() === world"
+          (click)="selectWorld(world)"
+        >
+          {{ 'navigation.' + world | i18n | async }}
+        </button>
+      }
+    </div>
+    <button
+      type="button"
+      class="stage__arrow"
+      (click)="step(1)"
+      [attr.aria-label]="'home.stage.next' | i18n | async"
+    >
+      <span aria-hidden="true">›</span>
+    </button>
+  </nav>
+
   <a class="stage__about" routerLink="/about"
     >{{ 'home.intro.action' | i18n | async }} <span aria-hidden="true">→</span></a
   >

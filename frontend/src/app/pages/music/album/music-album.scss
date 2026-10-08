@@ -84,7 +84,6 @@
 .story,
 .tracks {
   @include framed;
-  overflow: hidden;
   background: var(--color-surface-translucent);
 }
 

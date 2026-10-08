@@ -14,6 +14,7 @@ import {
   input,
   signal,
   viewChild,
+  viewChildren,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -42,6 +43,7 @@ export class HomeStage {
   private readonly gaming = inject(GamingService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('stageCanvas');
+  private readonly worldLabels = viewChildren<ElementRef<HTMLSpanElement>>('stageWorldLabel');
   private readonly stageScene = viewChild<ElementRef<HTMLElement>>('stageScene');
   private readonly language = this.store.selectSignal(I18nState.language);
   private renderer: StageOrbitRenderer | null = null;
@@ -188,6 +190,7 @@ export class HomeStage {
         () => this.webglReady.set(true),
         () => this.webglReady.set(false),
         window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        this.worldLabels().map((label) => label.nativeElement),
       );
       this.renderer = instance;
       await instance.init();

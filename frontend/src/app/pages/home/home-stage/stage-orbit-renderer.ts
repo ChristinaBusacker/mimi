@@ -10,6 +10,7 @@ import {
   SRGBColorSpace,
   TextureLoader,
   Vector2,
+  Vector3,
   WebGLRenderer,
 } from 'three';
 import type { Texture } from 'three';
@@ -28,8 +29,11 @@ interface StageIsland {
   mesh: Mesh<PlaneGeometry, MeshBasicMaterial>;
 }
 
-const ORBIT_RADIUS = 8.2;
-const NARROW_ORBIT_RADIUS = 6.3;
+// The ellipse is wider than it is deep; the back islands leave room for the central artwork.
+const ORBIT_X_RADIUS = 11.4;
+const ORBIT_DEPTH_RADIUS = 5.8;
+const NARROW_ORBIT_X_RADIUS = 5.4;
+const NARROW_ORBIT_DEPTH_RADIUS = 3.8;
 const ASSET_ROOT = '/images/stage/';
 
 /** Owns the browser-only WebGL scene. Angular continues to own all accessible content. */
@@ -39,6 +43,7 @@ export class StageOrbitRenderer {
   private readonly camera = new PerspectiveCamera(39, 1, 0.1, 100);
   private readonly raycaster = new Raycaster();
   private readonly pointer = new Vector2();
+  private readonly labelAnchor = new Vector3();
   private readonly islands: StageIsland[] = [];
   private readonly textures: Texture[] = [];
   private readonly resizeObserver: ResizeObserver;
@@ -65,12 +70,13 @@ export class StageOrbitRenderer {
     private readonly onReady: () => void,
     private readonly onUnavailable: () => void,
     private readonly reducedMotion: boolean,
+    private readonly worldLabels: readonly HTMLElement[],
   ) {
     this.renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.outputColorSpace = SRGBColorSpace;
-    this.camera.position.set(0, 1.65, 14.4);
+    this.camera.position.set(0, 1.65, 15);
     this.camera.lookAt(0, 0, 0);
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -209,27 +215,52 @@ export class StageOrbitRenderer {
     const width = Math.max(1, this.canvas.clientWidth);
     const height = Math.max(1, this.canvas.clientHeight);
     this.camera.aspect = width / height;
-    this.camera.fov = width < 680 ? 51 : 38;
-    this.camera.position.z = width < 680 ? 12.8 : 14.4;
+    const spread = Math.max(0, Math.min(1, (width - 640) / 480));
+    this.camera.fov = 51 - spread * 14;
+    this.camera.position.z = 14.2 + spread * 0.8;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
     this.invalidate();
   }
 
   private placeIslands(): void {
-    const radius = this.canvas.clientWidth < 680 ? NARROW_ORBIT_RADIUS : ORBIT_RADIUS;
+    const spread = Math.max(0, Math.min(1, (this.canvas.clientWidth - 640) / 480));
+    const xRadius = NARROW_ORBIT_X_RADIUS + (ORBIT_X_RADIUS - NARROW_ORBIT_X_RADIUS) * spread;
+    const depthRadius = NARROW_ORBIT_DEPTH_RADIUS + (ORBIT_DEPTH_RADIUS - NARROW_ORBIT_DEPTH_RADIUS) * spread;
+
     this.islands.forEach(({ group, material }, index) => {
       const angle = index * STAGE_STEP - this.rotation;
       const facing = Math.cos(angle);
+      // Full focus only at the front; side worlds recede on the same continuous orbit.
+      const focus = Math.max(0, (facing + 0.5) / 1.5);
       group.position.set(
-        Math.sin(angle) * radius,
-        (1 - facing) * 0.24,
-        facing * radius * 0.66,
+        Math.sin(angle) * xRadius,
+        (1 - facing) * 0.18 - 0.12 * focus,
+        facing * depthRadius,
       );
       group.quaternion.copy(this.camera.quaternion);
-      group.rotateY(-Math.sin(angle) * 0.3);
-      material.opacity = 0.79 + 0.21 * ((facing + 1) / 2);
-      group.scale.setScalar(0.97 + 0.06 * ((facing + 1) / 2));
+      group.rotateY(-Math.sin(angle) * 0.24);
+      material.opacity = 0.75 + 0.25 * focus;
+      group.scale.setScalar(0.79 + 0.09 * spread + (0.46 + 0.04 * spread) * focus);
+    });
+  }
+
+  private positionLabels(): void {
+    // Project the bottom of each 3D plane into the HTML overlay. Text stays sharp and accessible.
+    this.islands.forEach(({ group }, index) => {
+      const label = this.worldLabels[index];
+      if (!label) {
+        return;
+      }
+      const angle = index * STAGE_STEP - this.rotation;
+      const facing = Math.cos(angle);
+      this.labelAnchor.set(0, -1.83, 0).applyMatrix4(group.matrixWorld).project(this.camera);
+      const left = (this.labelAnchor.x + 1) * this.canvas.clientWidth / 2;
+      const top = (1 - this.labelAnchor.y) * this.canvas.clientHeight / 2;
+      label.style.left = '0';
+      label.style.top = '0';
+      label.style.transform = `translate3d(${left.toFixed(1)}px, ${top.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      label.style.opacity = `${(0.55 + 0.45 * Math.max(0, facing)).toFixed(2)}`;
     });
   }
 
@@ -239,6 +270,7 @@ export class StageOrbitRenderer {
     }
     this.placeIslands();
     this.renderer.render(this.scene, this.camera);
+    this.positionLabels();
   }
 
   private invalidate(): void {

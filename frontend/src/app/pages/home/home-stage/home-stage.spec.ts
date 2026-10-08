@@ -33,6 +33,9 @@ describe('HomeStage', () => {
     expect(choices[0].getAttribute('aria-pressed')).toBe('true');
     expect(fixture.nativeElement.querySelectorAll('.stage__fallback-island').length).toBe(3);
     expect(fixture.nativeElement.querySelector('a[href="/music"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('.stage__island-label').length).toBe(3);
+    expect(fixture.nativeElement.querySelector('.stage__spotlight')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.stage__details')).toBeNull();
   });
 
   it('updates details and navigation when selecting a different world', () => {
@@ -41,6 +44,8 @@ describe('HomeStage', () => {
     fixture.detectChanges();
     expect(buttons[2].getAttribute('aria-pressed')).toBe('true');
     expect(fixture.nativeElement.querySelector('a[href="/gaming"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.stage--gaming')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.stage__island-label[data-world="gaming"].is-active')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('a[href="/music"]')).toBeNull();
   });
 
@@ -52,5 +57,8 @@ describe('HomeStage', () => {
     arrows[0].click();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('a[href="/music"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('.stage__island-label').length).toBe(3);
+    expect(fixture.nativeElement.querySelector('.stage__spotlight')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.stage__details')).toBeNull();
   });
 });

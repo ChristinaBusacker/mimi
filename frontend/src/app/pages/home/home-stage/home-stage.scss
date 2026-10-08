@@ -13,6 +13,18 @@
   max-width: none;
   margin-inline-start: calc(50% - 50vw);
   color: var(--color-text);
+  --stage-accent: #ffc0db;
+  --stage-accent-glow: rgb(255 158 203 / 30%);
+
+  &--gaming {
+    --stage-accent: #c3b1ff;
+    --stage-accent-glow: rgb(149 120 238 / 29%);
+  }
+
+  &--community {
+    --stage-accent: #b4c2ff;
+    --stage-accent-glow: rgb(132 151 244 / 28%);
+  }
 }
 
 .stage__visually-hidden {
@@ -27,7 +39,7 @@
 
 .stage__scene {
   position: relative;
-  height: 500px;
+  height: clamp(33rem, 46vw, 42rem);
   isolation: isolate;
 }
 
@@ -70,7 +82,7 @@
   inset: 0;
   display: block;
   width: 100%;
-  height: 500px;
+  height: 100%;
   opacity: 0;
   touch-action: pan-y;
   cursor: grab;
@@ -101,30 +113,71 @@
 
 .stage__fallback-island {
   position: absolute;
-  inset-block-end: 15%;
-  width: min(27vw, 26rem);
+  inset-block-end: 20%;
+  width: min(24vw, 24rem);
   height: auto;
   filter: drop-shadow(0 12px 17px rgb(23 8 27 / 38%));
+  transition: opacity 180ms ease, width 180ms ease;
 
   &--music {
-    z-index: 2;
     left: 50%;
-    inset-block-end: 6%;
-    width: min(40vw, 34rem);
     transform: translateX(-50%);
   }
 
   &--gaming {
-    left: 10%;
+    left: 6%;
   }
 
   &--community {
-    right: 10%;
+    right: 6%;
   }
 
   &.is-active {
     z-index: 4;
-    filter: drop-shadow(0 12px 20px rgb(23 8 27 / 50%));
+    inset-block-end: 5%;
+    left: 50%;
+    right: auto;
+    width: min(47vw, 38rem);
+    transform: translateX(-50%);
+    filter: drop-shadow(0 16px 22px rgb(23 8 27 / 48%));
+  }
+}
+
+.stage__island-labels {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.stage__island-label {
+  position: absolute;
+  top: 71%;
+  left: 50%;
+  max-width: 11rem;
+  color: #fff1fb;
+  font-family: var(--font-headline);
+  font-size: clamp(1rem, 1.6vw, 1.4rem);
+  text-shadow: 0 2px 8px rgb(24 8 28 / 95%), 0 0 19px rgb(26 9 30 / 75%);
+  text-align: center;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+
+  &[data-world='gaming'] {
+    left: 19%;
+    top: 67%;
+  }
+
+  &[data-world='community'] {
+    left: 81%;
+    top: 67%;
+  }
+
+  &.is-active {
+    color: var(--stage-accent);
+    font-size: clamp(1.2rem, 2vw, 1.65rem);
   }
 }
 
@@ -135,22 +188,12 @@
   left: 59%;
   width: 11%;
   filter: drop-shadow(0 10px 12px rgb(31 8 34 / 45%));
+  opacity: 0;
   pointer-events: none;
 }
 
-.stage__hint {
-  position: absolute;
-  z-index: 4;
-  inset-block-end: 0;
-  inset-inline-start: 50%;
-  padding: 0.4rem 1rem;
-  border-radius: var(--radius-pill);
-  color: rgb(255 238 250 / 90%);
-  background: rgb(38 15 39 / 68%);
-  font-size: 0.76rem;
-  pointer-events: none;
-  white-space: nowrap;
-  transform: translateX(-50%);
+.stage__fallback--music .stage__fallback-dragon {
+  opacity: 1;
 }
 
 .stage__navigation {
@@ -160,7 +203,7 @@
   justify-content: center;
   align-items: center;
   gap: clamp(0.4rem, 1.5vw, 1.1rem);
-  margin-block: 0.45rem 0;
+  margin-block: 0.2rem 0;
 }
 
 .stage__choices {
@@ -210,19 +253,50 @@
   line-height: 1;
 }
 
-.stage__details {
+.stage__spotlight {
+  position: relative;
+  z-index: 5;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: clamp(1rem, 4vw, 3rem);
-  width: min(100%, 980px);
-  min-height: 135px;
-  margin: 0.8rem auto 0;
-  padding: clamp(1rem, 2.3vw, 1.45rem) clamp(1.2rem, 3vw, 2rem);
-  border: 1px solid rgb(255 209 237 / 24%);
-  border-radius: var(--radius-card);
-  background: linear-gradient(110deg, rgb(46 21 43 / 91%), rgb(57 29 62 / 83%));
-  box-shadow: 0 15px 30px rgb(24 8 31 / 20%);
+  gap: clamp(1.2rem, 5vw, 3.5rem);
+  width: min(calc(100% - 2rem), 1040px);
+  min-height: 112px;
+  margin: -0.65rem auto 0;
+  padding: 1.5rem clamp(1.25rem, 4vw, 3.5rem) 1.1rem;
+  background:
+    radial-gradient(ellipse 65% 120% at 50% 0, var(--stage-accent-glow), transparent 74%),
+    linear-gradient(90deg, transparent, rgb(34 13 35 / 62%) 22%, rgb(34 13 35 / 77%) 50%, rgb(34 13 35 / 62%) 78%, transparent);
+  text-shadow: 0 2px 8px rgb(20 7 23 / 75%);
+
+  // A narrow glow ties the information to the active island instead of framing it as another card.
+  &::before {
+    position: absolute;
+    bottom: calc(100% - 0.4rem);
+    left: calc(50% - 1px);
+    width: 2px;
+    height: 76px;
+    background: linear-gradient(to bottom, transparent, var(--stage-accent));
+    box-shadow: 0 0 20px 3px var(--stage-accent-glow);
+    content: '';
+    pointer-events: none;
+  }
+
+  &::after {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: min(85%, 710px);
+    height: 22px;
+    border-top: 1px solid var(--stage-accent);
+    border-radius: 50%;
+    box-shadow: 0 -3px 22px -12px var(--stage-accent);
+    opacity: 0.75;
+    transform: translateX(-50%);
+    mask-image: linear-gradient(to right, transparent, #000 22%, #000 78%, transparent);
+    content: '';
+    pointer-events: none;
+  }
 }
 
 .stage__copy {
@@ -232,9 +306,9 @@
 
   h3 {
     margin: 0;
-    color: var(--color-primary);
+    color: var(--stage-accent);
     font-family: var(--font-headline);
-    font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+    font-size: clamp(1.75rem, 3.2vw, 2.6rem);
     line-height: 1.08;
   }
 
@@ -248,7 +322,7 @@
 }
 
 .stage__eyebrow {
-  color: var(--color-primary);
+  color: var(--stage-accent);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -256,8 +330,8 @@
 }
 
 .stage__meta {
-  color: #ffd4ec;
-  font-size: 0.78rem;
+  color: var(--stage-accent);
+  font-size: 0.8rem;
 }
 
 .stage__album {
@@ -265,8 +339,8 @@
   align-items: center;
   gap: 0.45rem;
   justify-self: start;
-  color: #ffd4ec;
-  font-size: 0.78rem;
+  color: var(--stage-accent);
+  font-size: 0.8rem;
   text-decoration: none;
 
   img {
@@ -293,13 +367,13 @@
   padding: 0.7rem 1.3rem;
   border-radius: var(--radius-pill);
   color: #2b1223;
-  background: var(--color-primary);
+  background: var(--stage-accent);
   font-weight: 800;
   text-decoration: none;
 
   &:hover,
   &:focus-visible {
-    background: var(--color-primary-hover);
+    filter: brightness(1.08);
   }
 
   &:focus-visible {
@@ -321,28 +395,45 @@
 
 @include compact-layout {
   .stage__scene {
-    height: 500px;
+    height: clamp(29rem, 55vw, 37rem);
   }
 }
 
 @media (max-width: 640px) {
   .stage__scene {
-    height: clamp(23rem, 88vw, 31rem);
+    height: clamp(22rem, 90vw, 30rem);
   }
 
-  .stage__hint {
-    font-size: 0.68rem;
-  }
-
-  .stage__details {
+  .stage__spotlight {
     display: grid;
+    gap: 0.85rem;
+    width: min(calc(100% - 1.5rem), 33rem);
     min-height: 0;
-    gap: 1rem;
-    padding: 1rem;
+    margin-top: -0.4rem;
+    padding: 1.6rem 1.1rem 0.8rem;
+    background:
+      radial-gradient(ellipse 95% 100% at 50% 0, var(--stage-accent-glow), transparent 80%),
+      linear-gradient(90deg, transparent, rgb(34 13 35 / 74%) 14%, rgb(34 13 35 / 83%) 50%, rgb(34 13 35 / 74%) 86%, transparent);
+
+    &::before {
+      height: 47px;
+    }
+  }
+
+  .stage__copy h3 {
+    font-size: clamp(1.65rem, 6vw, 2.2rem);
   }
 
   .stage__action {
     justify-self: start;
+  }
+
+  .stage__island-label {
+    display: none;
+
+    &.is-active {
+      display: block;
+    }
   }
 
   .stage__fallback-island {
@@ -353,6 +444,7 @@
 
     &.is-active {
       inset-inline-start: 14%;
+      inset-block-end: 6%;
       width: 72%;
       opacity: 1;
       transform: none;
@@ -374,7 +466,12 @@
   }
 
   .stage__canvas,
-  .stage__fallback {
+  .stage__fallback,
+  .stage__fallback-island {
     transition: none;
+  }
+
+  .stage__island-label {
+    will-change: auto;
   }
 }

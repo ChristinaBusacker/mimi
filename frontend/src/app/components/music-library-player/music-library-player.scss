@@ -10,7 +10,7 @@
 
   background: linear-gradient(180deg, rgb(45 24 42 / 96%), rgb(28 18 27 / 98%));
   color: var(--color-text);
-
+  position: relative;
   border: none;
 
   audio {
@@ -28,6 +28,7 @@
     position: sticky;
     top: 55px;
     z-index: 2;
+    border-radius: var(--radius-card) var(--radius-card) 0;
 
     &::after {
       position: absolute;
@@ -35,6 +36,7 @@
       content: '';
       background: linear-gradient(90deg, rgb(58 27 47 / 98%), rgb(58 27 47 / 54%));
       z-index: 0;
+      border-radius: var(--radius-card) var(--radius-card) 0;
     }
 
     .main-toggle {
