@@ -59,104 +59,17 @@
   }
 }
 
-.featured {
-  display: grid;
-  grid-template-columns:
-    170px
-    minmax(0, 1fr);
-  gap: var(--spacing-sm);
-  align-items: center;
+.image-container {
+  display: flex;
+  justify-content: flex-end;
   width: 100%;
-  padding: var(--spacing-sm);
-  border: 1px solid var(--page-accent);
-  border-radius: var(--radius-card);
-  background: linear-gradient(120deg, rgb(214 154 203 / 12%), transparent 52%), rgb(39 24 36 / 92%);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 4%);
-  backdrop-filter: blur(8px);
 
-  .cover {
-    display: block;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    border-radius: var(--radius-card);
-
-    img,
-    &.placeholder {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    img {
-      object-fit: cover;
-    }
-
-    &.placeholder {
-      display: grid;
-      place-items: center;
-      background: var(--color-menu-surface);
-
-      app-icon {
-        width: 52px;
-      }
-    }
+  @include compact-layout {
+    justify-content: center;
   }
 
-  .details {
-    display: grid;
-    gap: 5px;
-    min-width: 0;
-
-    > span {
-      color: var(--page-accent);
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: clamp(1.5rem, 3vw, 2.25rem);
-      line-height: 1.1;
-    }
-
-    small {
-      opacity: 0.68;
-
-      a {
-        color: inherit;
-        text-decoration: none;
-
-        &:hover,
-        &:focus-visible {
-          color: var(--page-accent);
-        }
-      }
-    }
-
-    p {
-      display: -webkit-box;
-      margin: var(--spacing-xs) 0 0;
-      overflow: hidden;
-      opacity: 0.82;
-      line-height: 1.45;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-    }
-
-    > a {
-      justify-self: start;
-      margin-top: var(--spacing-xs);
-      color: var(--page-accent);
-      font-weight: 800;
-      text-decoration: none;
-
-      &:hover,
-      &:focus-visible {
-        color: var(--color-primary);
-      }
-    }
+  & img {
+    height: 180px;
   }
 }
 

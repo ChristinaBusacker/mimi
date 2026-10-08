@@ -20,48 +20,9 @@
       </p>
     </div>
 
-    @if (featuredPost) {
-      <article hero-right class="featured">
-        @if (featuredPost.coverAssetId; as coverId) {
-          <picture class="cover">
-            <source [srcset]="imageVariantUrl(coverId, 'medium')" type="image/webp" />
-            <img
-              [src]="assetUrl(coverId)"
-              [alt]="featuredPost.coverImageDescription || featuredPost.title"
-            />
-          </picture>
-        } @else {
-          <div class="cover placeholder">
-            <app-icon name="heart" class="secondary" />
-          </div>
-        }
-
-        <div class="details">
-          <span>
-            {{ 'blog.page.latest' | i18n | async }}
-          </span>
-
-          <h2>{{ featuredPost.title }}</h2>
-
-          <small>
-            {{ formatDate(featuredPost.publishedAt, blogData.locale) }}
-            ·
-            <a [routerLink]="['/blog/autoren', featuredPost.author.slug]">
-              {{ featuredPost.author.displayName }}
-            </a>
-          </small>
-
-          @if (featuredPost.excerpt) {
-            <p>{{ featuredPost.excerpt }}</p>
-          }
-
-          <a [routerLink]="['/blog', featuredPost.slug]">
-            {{ 'blog.page.read' | i18n | async }}
-            →
-          </a>
-        </div>
-      </article>
-    }
+    <div class="image-container" hero-right>
+      <img src="/images/avatars/Drache-Blog-2.png" />
+    </div>
   </app-hero>
 
   <section class="posts">
