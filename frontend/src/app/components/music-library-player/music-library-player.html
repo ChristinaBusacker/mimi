@@ -9,6 +9,7 @@
     preload="metadata"
     (loadedmetadata)="onLoadedMetadata()"
     (timeupdate)="onTimeUpdate($event)"
+    [volume]="volume()"
     (play)="onPlay()"
     (pause)="onPause()"
     (ended)="onEnded()"

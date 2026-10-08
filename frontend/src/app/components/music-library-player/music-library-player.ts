@@ -151,8 +151,9 @@ export class MusicLibraryPlayer {
       this.activeTrackId.set(track.id);
       this.currentTime.set(saved.positionSeconds);
       this.pendingRestorePosition = saved.positionSeconds;
-      audio.src = this.assetUrl(track.previewAssetId);
-      audio.load();
+      this.volume.set(this.savedPlayback.volume);
+
+      audio.volume = this.savedPlayback.volume;
       this.updateMediaSession(track);
     }
 
@@ -171,10 +172,21 @@ export class MusicLibraryPlayer {
     }
 
     if (this.activeTrackId() === track.id) {
-      if (audio.paused) {
-        await audio.play().catch(() => undefined);
-      } else {
+      if (!audio.paused) {
         audio.pause();
+        return;
+      }
+
+      if (!audio.currentSrc || audio.error) {
+        audio.src = this.assetUrl(track.previewAssetId);
+        audio.load();
+      }
+
+      try {
+        await audio.play();
+      } catch (error: unknown) {
+        console.error('Could not resume music playback:', error);
+        this.playing.set(false);
       }
 
       return;
@@ -223,7 +235,11 @@ export class MusicLibraryPlayer {
     const currentId = this.currentTrack()?.id;
     const index = tracks.findIndex((track) => track.id === currentId);
 
-    for (let position = index + direction; position >= 0 && position < tracks.length; position += direction) {
+    for (
+      let position = index + direction;
+      position >= 0 && position < tracks.length;
+      position += direction
+    ) {
       if (tracks[position]?.previewAssetId) {
         return tracks[position];
       }
@@ -272,7 +288,13 @@ export class MusicLibraryPlayer {
 
     // Shortcut keys are active only when the player region itself has focus.
     // Inputs, links, buttons and browser shortcuts keep their native behavior.
-    if (event.target !== event.currentTarget || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+    if (
+      event.target !== event.currentTarget ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
+    ) {
       return;
     }
 
@@ -535,20 +557,22 @@ export class MusicLibraryPlayer {
       return;
     }
 
-    const actions: Partial<Record<(typeof this.mediaActions)[number], MediaSessionActionHandler>> = {
-      play: () => {
-        if (this.audio()?.nativeElement.paused) {
-          const track = this.currentTrack();
-          if (track) void this.toggleTrack(track);
-        }
-      },
-      pause: () => this.audio()?.nativeElement.pause(),
-      nexttrack: () => this.playAdjacent(1),
-      previoustrack: () => this.playAdjacent(-1),
-      seekto: ({ seekTime }) => this.seekToSeconds(seekTime ?? this.currentTime()),
-      seekbackward: ({ seekOffset }) => this.seekToSeconds(this.currentTime() - (seekOffset ?? 5)),
-      seekforward: ({ seekOffset }) => this.seekToSeconds(this.currentTime() + (seekOffset ?? 5)),
-    };
+    const actions: Partial<Record<(typeof this.mediaActions)[number], MediaSessionActionHandler>> =
+      {
+        play: () => {
+          if (this.audio()?.nativeElement.paused) {
+            const track = this.currentTrack();
+            if (track) void this.toggleTrack(track);
+          }
+        },
+        pause: () => this.audio()?.nativeElement.pause(),
+        nexttrack: () => this.playAdjacent(1),
+        previoustrack: () => this.playAdjacent(-1),
+        seekto: ({ seekTime }) => this.seekToSeconds(seekTime ?? this.currentTime()),
+        seekbackward: ({ seekOffset }) =>
+          this.seekToSeconds(this.currentTime() - (seekOffset ?? 5)),
+        seekforward: ({ seekOffset }) => this.seekToSeconds(this.currentTime() + (seekOffset ?? 5)),
+      };
 
     for (const action of this.mediaActions) {
       try {
