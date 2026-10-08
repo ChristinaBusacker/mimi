@@ -1,0 +1,88 @@
+@use 'mixins' as *;
+
+:host {
+  position: relative;
+  z-index: 1100;
+}
+
+.pwa-update-banner {
+  position: fixed;
+  right: var(--spacing-md);
+  bottom: var(--spacing-md);
+  left: var(--spacing-md);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  width: min(calc(100% - var(--spacing-md) - var(--spacing-md)), 620px);
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  border: var(--control-border-width) solid var(--color-secondary);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: 0 12px 35px rgb(0 0 0 / 32%);
+  color: var(--color-text);
+}
+
+.pwa-update-banner__copy {
+  min-width: 0;
+
+  strong {
+    display: block;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: var(--spacing-xs) 0 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+}
+
+.pwa-update-banner__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--spacing-sm);
+
+  button {
+    min-height: 40px;
+    padding: 8px 14px;
+    border: var(--control-border-width) solid var(--color-primary);
+    border-radius: var(--radius-pill);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+}
+
+.pwa-update-banner__later {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.pwa-update-banner__reload {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.pwa-update-banner__actions button:focus-visible {
+  outline: 3px solid var(--color-primary-hover);
+  outline-offset: 3px;
+}
+
+@include compact-layout {
+  .pwa-update-banner {
+    right: var(--spacing-sm);
+    bottom: var(--spacing-sm);
+    left: var(--spacing-sm);
+    display: grid;
+    padding: var(--spacing-sm);
+    width: calc(100% - 2 * var(--spacing-sm));
+  }
+
+  .pwa-update-banner__actions {
+    justify-content: flex-end;
+  }
+}

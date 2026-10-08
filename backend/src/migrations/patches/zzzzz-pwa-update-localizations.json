@@ -1,0 +1,29 @@
+{
+  "localizations": [
+    {
+      "key": "pwa.update.title",
+      "de": "Mimishow hat sich verändert!",
+      "en": "Mimishow has been updated!"
+    },
+    {
+      "key": "pwa.update.description",
+      "de": "Eine neue Version ist bereit. Du kannst sie jetzt laden oder später aktualisieren.",
+      "en": "A new version is ready. You can load it now or update later."
+    },
+    {
+      "key": "pwa.update.recovery",
+      "de": "Diese Version kann nicht mehr alle Dateien laden. Bitte aktualisiere die Seite.",
+      "en": "This version can no longer load all its files. Please reload the page."
+    },
+    {
+      "key": "pwa.update.later",
+      "de": "Später",
+      "en": "Later"
+    },
+    {
+      "key": "pwa.update.reload",
+      "de": "Jetzt aktualisieren",
+      "en": "Update now"
+    }
+  ]
+}

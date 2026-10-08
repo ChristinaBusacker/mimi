@@ -8,6 +8,11 @@ import express, { type Request } from 'express';
 import { basename, join } from 'node:path';
 
 import {
+  REVALIDATE_CACHE_CONTROL,
+  staticCacheControl,
+} from './server/cache-control';
+
+import {
   isIndexableHostname,
   normalizePublicOrigin,
 } from './app/core/seo/seo.config';
@@ -33,15 +38,6 @@ const seoContentCache = new SeoContentCache(5 * 60 * 1000);
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-const noCacheStaticFiles = new Set([
-  'index.csr.html',
-  'index.html',
-  'manifest.webmanifest',
-  'ngsw-worker.js',
-  'ngsw.json',
-  'safety-worker.js',
-  'worker-basic.min.js',
-]);
 
 app.get('/robots.txt', (request, response) => {
   const requestUrlOrigin = requestOrigin(request);
@@ -108,13 +104,11 @@ app.get('/feed.xml', async (request, response) => {
  */
 app.use(
   express.static(browserDistFolder, {
-    maxAge: '1y',
+    maxAge: 0,
     index: false,
     redirect: false,
     setHeaders: (response, filePath) => {
-      if (noCacheStaticFiles.has(basename(filePath))) {
-        response.setHeader('Cache-Control', 'no-cache');
-      }
+      response.setHeader('Cache-Control', staticCacheControl(basename(filePath)));
     },
   }),
 );
@@ -125,9 +119,19 @@ app.use(
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .then((response) => {
+      if (!response) {
+        next();
+        return;
+      }
+
+      // SSR HTML must always be revalidated after a deployment.
+      if (response.headers.get('content-type')?.includes('text/html')) {
+        response.headers.set('Cache-Control', REVALIDATE_CACHE_CONTROL);
+      }
+
+      return writeResponseToNodeResponse(response, res);
+    })
     .catch(next);
 });
 

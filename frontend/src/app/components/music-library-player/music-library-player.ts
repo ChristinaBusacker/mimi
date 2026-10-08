@@ -152,7 +152,6 @@ export class MusicLibraryPlayer {
       this.currentTime.set(saved.positionSeconds);
       this.pendingRestorePosition = saved.positionSeconds;
       this.volume.set(this.savedPlayback.volume);
-
       audio.volume = this.savedPlayback.volume;
       this.updateMediaSession(track);
     }

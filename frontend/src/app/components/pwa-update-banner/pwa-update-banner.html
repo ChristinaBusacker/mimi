@@ -1,0 +1,30 @@
+@if (updates.updateAvailable()) {
+  <aside
+    class="pwa-update-banner"
+    role="status"
+    aria-labelledby="pwa-update-title"
+    aria-describedby="pwa-update-description"
+  >
+    <div class="pwa-update-banner__copy">
+      <strong id="pwa-update-title">
+        {{ 'pwa.update.title' | i18n | async }}
+      </strong>
+      <p id="pwa-update-description">
+        {{
+          (updates.recoveryRequired() ? 'pwa.update.recovery' : 'pwa.update.description')
+            | i18n
+            | async
+        }}
+      </p>
+    </div>
+
+    <div class="pwa-update-banner__actions">
+      <button type="button" class="pwa-update-banner__later" (click)="updates.dismiss()">
+        {{ 'pwa.update.later' | i18n | async }}
+      </button>
+      <button type="button" class="pwa-update-banner__reload" (click)="updates.reload()">
+        {{ 'pwa.update.reload' | i18n | async }}
+      </button>
+    </div>
+  </aside>
+}
