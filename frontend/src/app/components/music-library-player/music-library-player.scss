@@ -457,6 +457,11 @@
       padding: 0 var(--spacing-sm) var(--spacing-md);
     }
   }
+
+  .desktop-story {
+    position: sticky;
+    top: 150px;
+  }
 }
 
 @include compact-layout {
