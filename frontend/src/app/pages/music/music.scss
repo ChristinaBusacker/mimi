@@ -208,13 +208,13 @@
   }
 }
 
+app-music-library-player {
+  margin: -20px;
+}
+
 @include compact-layout {
   .release {
     grid-template-columns: 96px minmax(0, 1fr);
-  }
-
-  app-music-library-player {
-    margin: -24px;
   }
 
   .library > header {

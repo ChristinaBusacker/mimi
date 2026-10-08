@@ -11,10 +11,8 @@
   background: linear-gradient(180deg, rgb(45 24 42 / 96%), rgb(28 18 27 / 98%));
   color: var(--color-text);
 
-  @include compact-layout {
-    border-radius: 0 0 var(--radius-card);
-    border-top: 0px;
-  }
+  border-radius: 0 0 var(--radius-card);
+  border: none;
 
   audio {
     display: none;

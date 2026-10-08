@@ -43,11 +43,6 @@
   }
 
   <section class="tracks">
-    <header>
-      <span>{{ 'music.album.listenLabel' | i18n | async }}</span>
-      <h2>{{ 'music.album.listenTitle' | i18n | async }}</h2>
-    </header>
-
     @if (tracks().length) {
       <app-music-library-player [tracks]="tracks()" [locale]="albumData.locale" />
     } @else {

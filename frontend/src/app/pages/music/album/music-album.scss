@@ -2,6 +2,10 @@
 
 :host {
   display: block;
+
+  app-music-library-player {
+    margin: -20px;
+  }
 }
 
 .page {
@@ -80,7 +84,7 @@
 .story,
 .tracks {
   @include framed;
-
+  overflow: hidden;
   background: var(--color-surface-translucent);
 }
 
