@@ -1,5 +1,79 @@
 @use 'mixins' as *;
 
+// A quiet personal introduction between the fantasy stage and editorial content.
+.home-about-bridge {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  max-width: 62rem;
+  margin: clamp(0.8rem, 2vw, 1.5rem) auto clamp(1.1rem, 2.5vw, 2rem);
+  padding: clamp(1.25rem, 2.5vw, 1.9rem) clamp(1rem, 4vw, 2.4rem);
+  color: #422039;
+  text-align: center;
+  text-shadow: none;
+  background: radial-gradient(
+    ellipse 78% 100% at 50% 50%,
+    rgb(255 220 237 / 96%) 0%,
+    rgb(255 198 223 / 85%) 65%,
+    transparent 100%
+  );
+
+  &__eyebrow {
+    color: #74405e;
+    font-size: 0.73rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    color: #512442;
+    font-family: var(--font-headline);
+    font-size: clamp(2rem, 4vw, 2.85rem);
+    line-height: 1.08;
+  }
+
+  p {
+    max-width: 63ch;
+    margin: 0;
+    font-size: clamp(0.9rem, 1.4vw, 1rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 44px;
+    margin-top: 0.25rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-pill);
+    color: #fff0f8;
+    background: #442139;
+    font-weight: 800;
+    text-decoration: none;
+
+    &:hover {
+      background: #693656;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #442139;
+      outline-offset: 3px;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .home-about-bridge {
+    margin: 0.65rem auto 1.25rem;
+    padding: 1rem 1rem 1.25rem;
+  }
+}
+
 // Editorial home layout: the stage remains the main visual attraction.
 :host {
   .home-content {

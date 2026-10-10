@@ -4,6 +4,15 @@
 
 <app-home-stage [community]="community" />
 
+<section class="home-about-bridge" aria-labelledby="home-about-bridge-title">
+  <span class="home-about-bridge__eyebrow">{{ 'about.page.eyebrow' | i18n | async }}</span>
+  <h2 id="home-about-bridge-title">{{ 'about.page.title' | i18n | async }}</h2>
+  <p>{{ 'about.page.intro' | i18n | async }}</p>
+  <a class="home-about-bridge__link" routerLink="/about">
+    {{ 'home.intro.action' | i18n | async }} <span aria-hidden="true">→</span>
+  </a>
+</section>
+
 <section class="home-content">
   <section class="home-section home-section--youtube" aria-labelledby="home-youtube-title">
     <header class="home-section__header">

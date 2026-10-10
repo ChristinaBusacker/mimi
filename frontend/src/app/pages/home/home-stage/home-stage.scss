@@ -4,12 +4,13 @@
   display: block;
   min-width: 0;
   margin-top: 0;
+  margin: calc(var(--spacing-md) * -1);
 }
 
 .stage {
   position: relative;
   isolation: isolate;
-  width: 100vw;
+  width: 100%;
   max-width: none;
   margin-inline-start: calc(50% - 50vw);
   color: var(--color-text);
@@ -69,6 +70,10 @@
   transform: translate3d(0, var(--stage-parallax-y, 0px), 0);
   will-change: transform;
   top: -25%;
+
+  @include compact-layout {
+    top: 8px;
+  }
 }
 
 .stage__atmosphere {
@@ -440,17 +445,6 @@
   }
 }
 
-.stage__about {
-  display: table;
-  margin: 0.4rem auto 0;
-  padding: 0.45rem;
-  color: var(--color-text);
-  font-size: 0.88rem;
-  font-weight: 700;
-  text-decoration-color: var(--color-primary);
-  text-underline-offset: 0.2rem;
-}
-
 @include compact-layout {
   .stage__scene {
     height: clamp(35rem, 60vw, 43rem);
@@ -592,13 +586,6 @@
     white-space: nowrap;
   }
 
-  .stage__about {
-    min-height: 44px;
-    margin: 0.45rem auto 0.6rem;
-    padding: 0.65rem;
-    font-size: 0.92rem;
-  }
-
   .stage__island-label {
     display: none;
 
@@ -685,13 +672,25 @@
 // The preview belongs to the island; the actual heading stays in the
 // reading panel. Crossfading them avoids moving text across the navigation.
 @keyframes stage-mobile-preview-out {
-  from { opacity: 1; translate: 0 0; }
-  to { opacity: 0; translate: 0 2rem; }
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+  to {
+    opacity: 0;
+    translate: 0 2rem;
+  }
 }
 
 @keyframes stage-mobile-heading-in {
-  from { opacity: 0; translate: 0 -0.5rem; }
-  to { opacity: 1; translate: 0 0; }
+  from {
+    opacity: 0;
+    translate: 0 -0.5rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 @media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
