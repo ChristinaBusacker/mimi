@@ -76,3 +76,150 @@
     transition: none;
   }
 }
+
+// Home-page highlights share the standard video model, but not the generic card layout.
+.video-card--featured {
+  position: relative;
+  min-height: 20rem;
+  border: 1px solid rgb(255 200 230 / 30%);
+  background: #261329;
+
+  .thumbnail {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+
+    &::after {
+      position: absolute;
+      inset: 25% 0 0;
+      background: linear-gradient(transparent 0%, rgb(19 8 23 / 50%) 38%, rgb(19 8 23 / 96%) 100%);
+      content: '';
+      pointer-events: none;
+    }
+
+    .duration {
+      z-index: 2;
+      top: auto;
+      bottom: 0.55rem;
+    }
+  }
+
+  .video-card__play {
+    position: absolute;
+    z-index: 2;
+    top: 47%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 3.1rem;
+    height: 3.1rem;
+    border: 2px solid rgb(255 230 247 / 90%);
+    border-radius: 50%;
+    color: #fff;
+    background: rgb(38 15 43 / 80%);
+    box-shadow: 0 2px 18px rgb(17 7 22 / 65%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+
+    svg {
+      width: 1.65rem;
+      height: 1.65rem;
+      margin-left: 0.15rem;
+    }
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    margin-top: auto;
+    padding: clamp(1rem, 2.8vw, 1.5rem);
+    pointer-events: none;
+
+    h3 {
+      color: #fff2fc;
+      font-family: var(--font-headline);
+      font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+      line-height: 1.12;
+    }
+
+    p {
+      color: #f0dbe9;
+      font-size: 0.86rem;
+      line-height: 1.4;
+      -webkit-line-clamp: 2;
+    }
+  }
+}
+
+.video-card--compact {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0.75rem;
+  min-height: 0;
+  padding: 0.35rem;
+  border: 1px solid transparent;
+  background: rgb(31 14 37 / 26%);
+
+  .thumbnail {
+    flex: 0 0 40%;
+    min-width: 0;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-card);
+
+    .duration {
+      right: 0.25rem;
+      top: auto;
+      bottom: 0.25rem;
+      font-size: 0.65rem;
+    }
+  }
+
+  .content {
+    justify-content: center;
+    gap: 0.3rem;
+    min-width: 0;
+    padding: 0.3rem 0.5rem 0.3rem 0;
+
+    h3 {
+      color: #ffd3ec;
+      font-family: var(--font-headline);
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      line-height: 1.2;
+    }
+
+    p {
+      color: #e9cede;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      -webkit-line-clamp: 2;
+    }
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgb(255 200 230 / 45%);
+    background: rgb(73 35 71 / 44%);
+  }
+}
+
+.video-card--featured,
+.video-card--compact {
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 560px) {
+  .video-card--featured {
+    min-height: 16rem;
+  }
+
+  .video-card--compact {
+    .thumbnail {
+      flex-basis: 42%;
+    }
+  }
+}

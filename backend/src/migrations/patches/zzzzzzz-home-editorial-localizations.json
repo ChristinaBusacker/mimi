@@ -1,0 +1,39 @@
+{
+  "localizations": [
+    {
+      "key": "home.youtube.eyebrow",
+      "de": "Videos & Highlights",
+      "en": "Videos & Highlights"
+    },
+    {
+      "key": "home.blog.recent",
+      "de": "Weitere aktuelle Themen",
+      "en": "More recent stories"
+    },
+    {
+      "key": "home.invite.eyebrow",
+      "de": "Teil der Reise",
+      "en": "Be part of the journey"
+    },
+    {
+      "key": "home.invite.title",
+      "de": "Schön, dass du hier bist!",
+      "en": "So glad you're here!"
+    },
+    {
+      "key": "home.invite.description",
+      "de": "Ob Musik, Gaming, ehrliche Gespräche oder einfach eine gute Zeit: Bei Mimishow geht es um Gemeinschaft, Kreativität und ganz viel Herz.",
+      "en": "Whether it's music, gaming, honest conversations or simply a good time: Mimishow is all about community, creativity and a whole lot of heart."
+    },
+    {
+      "key": "home.invite.action",
+      "de": "Werde Teil der Community",
+      "en": "Join the community"
+    },
+    {
+      "key": "home.invite.actionDescription",
+      "de": "Auf Discord mitreden, neue Menschen kennenlernen und lange nach dem Stream noch verbunden bleiben.",
+      "en": "Join the conversation on Discord, meet new people and stay connected long after the stream ends."
+    }
+  ]
+}

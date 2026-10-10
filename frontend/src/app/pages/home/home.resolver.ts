@@ -36,7 +36,7 @@ export const homeDataResolver: ResolveFn<HomeData> = () => {
       new LoadYouTubeVideos(),
     ]),
     posts: blog.getPosts(locale).pipe(
-      map((posts) => posts.slice(0, 3)),
+      map((posts) => posts.slice(0, 5)),
       catchError(() => of<BlogPostSummary[]>([])),
     ),
     community: community.getSummary().pipe(

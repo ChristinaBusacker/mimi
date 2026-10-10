@@ -33,4 +33,20 @@ describe('VideoCard', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('supports a featured homepage video', () => {
+    fixture.componentRef.setInput('layout', 'featured');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.video-card--featured')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.video-card__play')).not.toBeNull();
+  });
+
+  it('supports a compact homepage video without a decorative play button', () => {
+    fixture.componentRef.setInput('layout', 'compact');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.video-card--compact')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.video-card__play')).toBeNull();
+  });
 });

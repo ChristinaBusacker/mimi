@@ -16,6 +16,7 @@ import type { YouTubeVideo } from '@shared/youtube/youtube-video';
 })
 export class VideoCard {
   readonly video = input.required<YouTubeVideo>();
+  readonly layout = input<'default' | 'featured' | 'compact'>('default');
 
   protected readonly duration = computed(() =>
     this.formatDuration(this.video().durationSeconds),

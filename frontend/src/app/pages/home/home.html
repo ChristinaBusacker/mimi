@@ -5,46 +5,44 @@
 <app-home-stage [community]="community" />
 
 <section class="home-content">
-  <section class="home-section home-section--youtube">
+  <section class="home-section home-section--youtube" aria-labelledby="home-youtube-title">
     <header class="home-section__header">
       <div>
         <span class="home-eyebrow home-eyebrow--youtube">
           <app-icon name="youtube" />
-          YouTube
+          {{ 'home.youtube.eyebrow' | i18n | async }}
         </span>
-        <h2 class="more-suggar">{{ 'home.youtube.title' | i18n | async }}</h2>
+        <h2 id="home-youtube-title" class="more-suggar">{{ 'home.youtube.title' | i18n | async }}</h2>
         <p>{{ 'home.youtube.description' | i18n | async }}</p>
       </div>
 
-      <app-button
-        class="primary round white youtube-button"
-        [href]="youtubeChannelUrl"
-        target="_blank"
-      >
-        <app-icon name="youtube" class="white" />
+      <app-button class="primary round font-black" [href]="youtubeChannelUrl" target="_blank">
         {{ 'home.youtube.channel' | i18n | async }}
-        <app-icon name="arrow" class="white" />
+        <app-icon name="arrow" />
       </app-button>
     </header>
 
     @if (latestVideos().length > 0) {
       <div class="video-grid">
         @for (video of latestVideos(); track video.id) {
-          <app-video-card [video]="video" />
+          <app-video-card
+            [video]="video"
+            [layout]="$first ? 'featured' : 'compact'"
+          />
         }
       </div>
     }
   </section>
 
-  @if (posts().length > 0) {
-    <section class="home-section home-section--blog">
+  @if (selectedPost(); as post) {
+    <section class="home-section home-section--blog" aria-labelledby="home-blog-title">
       <header class="home-section__header">
         <div>
           <span class="home-eyebrow">
             <app-icon name="news" />
             {{ 'home.blog.eyebrow' | i18n | async }}
           </span>
-          <h2 class="more-suggar">{{ 'home.blog.title' | i18n | async }}</h2>
+          <h2 id="home-blog-title" class="more-suggar">{{ 'home.blog.title' | i18n | async }}</h2>
           <p>{{ 'home.blog.description' | i18n | async }}</p>
         </div>
 
@@ -54,58 +52,91 @@
         </app-button>
       </header>
 
-      <div class="blog-grid">
-        @for (post of posts(); track post.id) {
-          <article class="blog-card">
-            <a class="blog-card__media" [routerLink]="['/blog', post.slug]">
-              @if (post.coverAssetId; as coverId) {
-                <img
-                  [src]="imageVariantUrl(coverId, 'medium')"
-                  [alt]="post.coverImageDescription || post.title"
-                  loading="lazy"
-                />
-              } @else {
-                <div class="blog-card__placeholder">
-                  <app-icon name="heart" class="secondary" />
-                </div>
-              }
+      <div class="home-blog-layout">
+        <article class="home-blog-feature" [attr.aria-label]="post.title">
+          <a class="home-blog-feature__image" [routerLink]="['/blog', post.slug]">
+            @if (post.coverAssetId; as coverId) {
+              <img
+                [src]="imageVariantUrl(coverId, 'medium')"
+                [alt]="post.coverImageDescription || post.title"
+                loading="lazy"
+              />
+            } @else {
+              <span class="home-blog-feature__placeholder" aria-hidden="true">
+                <app-icon name="heart" />
+              </span>
+            }
+          </a>
+
+          <div class="home-blog-feature__body">
+            <div class="home-blog-feature__meta">
+              <time [attr.datetime]="post.publishedAt">{{ formatBlogDate(post.publishedAt) }}</time>
+              <span aria-hidden="true">·</span>
+              <a [routerLink]="['/blog/autoren', post.author.slug]">{{ post.author.displayName }}</a>
+            </div>
+            <h3><a [routerLink]="['/blog', post.slug]">{{ post.title }}</a></h3>
+            @if (post.excerpt) {
+              <p>{{ post.excerpt }}</p>
+            }
+            <a class="home-blog-feature__read" [routerLink]="['/blog', post.slug]">
+              {{ 'blog.page.read' | i18n | async }} <span aria-hidden="true">→</span>
             </a>
+          </div>
+        </article>
 
-            <div class="blog-card__content">
-              @if (post.categories.length) {
-                <div class="blog-card__categories">
-                  @for (category of post.categories; track category.slug) {
-                    <span>{{ category.name }}</span>
-                  }
-                </div>
-              }
-
-              <h3>
-                <a [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
-              </h3>
-
-              <div class="blog-card__meta">
-                <time [attr.datetime]="post.publishedAt">
-                  {{ formatBlogDate(post.publishedAt) }}
-                </time>
-                <span>·</span>
-                <a [routerLink]="['/blog/autoren', post.author.slug]">
-                  {{ post.author.displayName }}
+        <div class="home-blog-topics">
+          <div class="home-blog-topics__heading">
+            <h3>{{ 'home.blog.recent' | i18n | async }}</h3>
+            <a routerLink="/blog">
+              {{ 'home.blog.action' | i18n | async }} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <div class="home-blog-topics__list">
+            @for (topic of posts(); track topic.id) {
+              <div class="home-blog-topics__row" [class.is-active]="post.id === topic.id">
+                <button
+                  type="button"
+                  class="home-blog-topics__item"
+                  [attr.aria-pressed]="post.id === topic.id"
+                  (pointerenter)="selectPost(topic.id)"
+                  (focus)="selectPost(topic.id)"
+                  (click)="selectPost(topic.id)"
+                >
+                  <time [attr.datetime]="topic.publishedAt">{{ formatBlogShortDate(topic.publishedAt) }}</time>
+                  <span class="home-blog-topics__bullet" aria-hidden="true"></span>
+                  <span class="home-blog-topics__title">{{ topic.title }}</span>
+                </button>
+                <a class="home-blog-topics__link" [routerLink]="['/blog', topic.slug]" [attr.aria-label]="topic.title">
+                  <span aria-hidden="true">›</span>
                 </a>
               </div>
-
-              @if (post.excerpt) {
-                <p>{{ post.excerpt }}</p>
-              }
-
-              <a class="blog-card__read" [routerLink]="['/blog', post.slug]">
-                {{ 'blog.page.read' | i18n | async }}
-                →
-              </a>
-            </div>
-          </article>
-        }
+            }
+          </div>
+        </div>
       </div>
     </section>
   }
+
+  <section class="home-invite" aria-labelledby="home-invite-title">
+    <img
+      class="home-invite__illustration"
+      src="/images/avatars/Main-Drache-Paragraph.png"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="home-invite__copy">
+      <span class="home-eyebrow"><app-icon name="heart" /> {{ 'home.invite.eyebrow' | i18n | async }}</span>
+      <h2 id="home-invite-title" class="more-suggar">{{ 'home.invite.title' | i18n | async }}</h2>
+      <p>{{ 'home.invite.description' | i18n | async }}</p>
+    </div>
+    <a class="home-invite__action" routerLink="/community">
+      <span class="home-invite__discord"><app-icon name="community" /></span>
+      <span class="home-invite__action-copy">
+        <strong>{{ 'home.invite.action' | i18n | async }}</strong>
+        <small>{{ 'home.invite.actionDescription' | i18n | async }}</small>
+      </span>
+      <span class="home-invite__arrow" aria-hidden="true">›</span>
+    </a>
+  </section>
 </section>

@@ -1,5 +1,7 @@
 <a
   class="video-card"
+  [class.video-card--featured]="layout() === 'featured'"
+  [class.video-card--compact]="layout() === 'compact'"
   [href]="video().url"
   target="_blank"
   rel="noopener noreferrer"
@@ -10,6 +12,11 @@
       [alt]="video().title"
       loading="lazy"
     />
+    @if (layout() === 'featured') {
+      <span class="video-card__play" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="m9 6 10 6-10 6z" /></svg>
+      </span>
+    }
     <span class="duration">{{ duration() }}</span>
   </div>
 

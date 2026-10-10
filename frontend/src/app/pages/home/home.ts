@@ -2,7 +2,7 @@ import type { BlogPostSummary } from '@shared/blog/blog';
 import type { HeroType, TwitchStatus } from '@shared/twitch/twitch-status';
 
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Store } from '@ngxs/store';
@@ -44,7 +44,7 @@ interface HeroViewModel {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AsyncPipe, Button, HomeHero, HomeStage, I18nPipe, Icon, VideoCard, RouterLink],
   selector: 'app-home',
-  styleUrl: './home.scss',
+  styleUrls: ['./home.scss', './home-showcase.scss'],
   templateUrl: './home.html',
 })
 export class Home {
@@ -82,7 +82,7 @@ export class Home {
         locale === this.initialData?.locale
           ? of(this.initialPosts)
           : this.blog.getPosts(locale).pipe(
-              map((posts) => posts.slice(0, 3)),
+              map((posts) => posts.slice(0, 5)),
               catchError(() => of<BlogPostSummary[]>([])),
             ),
       ),
@@ -91,6 +91,15 @@ export class Home {
       initialValue: this.initialPosts,
     },
   );
+
+  private readonly selectedPostId = signal<string | null>(null);
+  protected readonly selectedPost = computed(() =>
+    this.posts().find((post) => post.id === this.selectedPostId()) ?? this.posts()[0] ?? null,
+  );
+
+  protected selectPost(postId: string): void {
+    this.selectedPostId.set(postId);
+  }
 
   protected readonly hero = computed(() =>
     this.createHeroViewModel(this.effectiveTwitchStatus(), this.language()),
@@ -105,6 +114,13 @@ export class Home {
       year: 'numeric',
       month: 'long',
       day: '2-digit',
+    }).format(new Date(value));
+  }
+
+  protected formatBlogShortDate(value: string): string {
+    return new Intl.DateTimeFormat(this.language() === 'de' ? 'de-DE' : 'en-US', {
+      day: '2-digit',
+      month: 'short',
     }).format(new Date(value));
   }
 
