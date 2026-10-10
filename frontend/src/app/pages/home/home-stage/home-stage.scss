@@ -299,6 +299,7 @@
   transition:
     opacity 200ms ease,
     transform 250ms ease;
+  pointer-events: none;
 
   // The glow follows the projected anchor below the front island.
   &::before {
@@ -317,6 +318,10 @@
     opacity: 0;
     pointer-events: none;
     transform: translate(-50%, 0.6rem);
+  }
+
+  & a {
+    pointer-events: all;
   }
 }
 
