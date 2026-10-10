@@ -385,7 +385,7 @@ export class StageOrbitRenderer {
     const angularSpeed = (this.rotation - this.lastRenderedRotation) / dt;
     const targetTilt = this.reducedMotion
       ? 0
-      : Math.max(-0.085, Math.min(0.25, angularSpeed * 0.05));
+      : Math.max(-0.085, Math.min(0.5, angularSpeed * 0.06));
     this.tilt += (targetTilt - this.tilt) * (1 - Math.exp(-12 * dt));
     const easingTilt = Math.abs(this.tilt) > 0.001 || Math.abs(targetTilt - this.tilt) > 0.001;
     const easingParallax =

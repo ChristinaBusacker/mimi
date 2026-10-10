@@ -52,7 +52,13 @@
     position: absolute;
     z-index: -1;
     inset: 0;
-    background: linear-gradient(90deg, #29122c 0%, rgb(41 18 43 / 94%) 30%, rgb(41 18 43 / 78%) 57%, rgb(39 16 44 / 46%) 100%);
+    background: linear-gradient(
+      90deg,
+      #29122c 0%,
+      rgb(41 18 43 / 94%) 30%,
+      rgb(41 18 43 / 78%) 57%,
+      rgb(39 16 44 / 46%) 100%
+    );
     content: '';
     pointer-events: none;
   }
@@ -195,7 +201,11 @@
   line-height: 1.15;
   text-align: center;
   text-decoration: none;
-  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+  width: 100%;
 
   app-icon {
     display: inline-flex;

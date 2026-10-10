@@ -49,6 +49,7 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  z-index: -1;
 }
 
 .stage__atmosphere,
@@ -63,10 +64,12 @@
   user-select: none;
   transform: translate3d(0, var(--stage-parallax-y, 0px), 0);
   will-change: transform;
+  top: -25%;
 }
 
 .stage__atmosphere {
-  opacity: 0.24;
+  opacity: 0.74;
+
   mask-image: radial-gradient(ellipse 62% 68% at 50% 48%, #000 23%, transparent 100%);
 }
 
@@ -90,7 +93,7 @@
 
   &--ready {
     opacity: 1;
-    top: -15px;
+    top: -20px;
   }
 
   &:active {
