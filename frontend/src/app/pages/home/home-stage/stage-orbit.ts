@@ -4,6 +4,11 @@ export type StageWorld = (typeof STAGE_WORLDS)[number];
 
 export const STAGE_STEP = (Math.PI * 2) / STAGE_WORLDS.length;
 
+/** The spotlight reflects carousel motion, never the independent pointer/sensor spring. */
+export function isStageCarouselMoving(dragging: boolean, angleDelta: number, angularVelocity: number): boolean {
+  return dragging || Math.abs(angleDelta) > 0.0005 || Math.abs(angularVelocity) > 0.002;
+}
+
 export function wrapStageIndex(index: number): number {
   return ((index % STAGE_WORLDS.length) + STAGE_WORLDS.length) % STAGE_WORLDS.length;
 }

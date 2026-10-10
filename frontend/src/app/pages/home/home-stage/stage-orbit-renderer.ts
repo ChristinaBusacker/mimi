@@ -9,14 +9,11 @@ import {
 } from 'three';
 import type { Texture } from 'three';
 
-import {
-  createStageVisuals,
-  disposeStageIsland,
-  type StageIsland,
-} from './stage-island-visuals';
+import { createStageVisuals, disposeStageIsland, type StageIsland } from './stage-island-visuals';
 import { advanceStageParallax } from './stage-parallax';
 
 import {
+  isStageCarouselMoving,
   nearestStageIndex,
   nearestStageStop,
   STAGE_STEP,
@@ -77,7 +74,12 @@ export class StageOrbitRenderer {
     private readonly spotlight: HTMLElement,
     private readonly onMotionChange: (moving: boolean) => void,
   ) {
-    this.renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
+    this.renderer = new WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'low-power',
+    });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.outputColorSpace = SRGBColorSpace;
@@ -127,12 +129,14 @@ export class StageOrbitRenderer {
 
   /** Sensor access is optional and may require a user gesture on iOS. */
   async enableOrientation(): Promise<boolean> {
-    if (this.destroyed || this.reducedMotion || typeof DeviceOrientationEvent === 'undefined') return false;
+    if (this.destroyed || this.reducedMotion || typeof DeviceOrientationEvent === 'undefined')
+      return false;
     const sensor = DeviceOrientationEvent as typeof DeviceOrientationEvent & {
       requestPermission?: () => Promise<'granted' | 'denied'>;
     };
     try {
-      if (sensor.requestPermission && await sensor.requestPermission() !== 'granted') return false;
+      if (sensor.requestPermission && (await sensor.requestPermission()) !== 'granted')
+        return false;
     } catch {
       return false;
     }
@@ -172,7 +176,8 @@ export class StageOrbitRenderer {
     if (this.destroyed || !this.ready) {
       return;
     }
-    this.targetRotation = Math.round(this.targetRotation / STAGE_STEP) * STAGE_STEP + direction * STAGE_STEP;
+    this.targetRotation =
+      Math.round(this.targetRotation / STAGE_STEP) * STAGE_STEP + direction * STAGE_STEP;
     if (!this.reducedMotion) {
       this.setMoving(true);
     }
@@ -229,32 +234,32 @@ export class StageOrbitRenderer {
   private placeIslands(): void {
     const spread = Math.max(0, Math.min(1, (this.canvas.clientWidth - 640) / 480));
     const xRadius = NARROW_ORBIT_X_RADIUS + (ORBIT_X_RADIUS - NARROW_ORBIT_X_RADIUS) * spread;
-    const depthRadius = NARROW_ORBIT_DEPTH_RADIUS + (ORBIT_DEPTH_RADIUS - NARROW_ORBIT_DEPTH_RADIUS) * spread;
+    const depthRadius =
+      NARROW_ORBIT_DEPTH_RADIUS + (ORBIT_DEPTH_RADIUS - NARROW_ORBIT_DEPTH_RADIUS) * spread;
 
     this.islands.forEach((island, index) => {
       const { group, materials, meshes, shadow } = island;
       const angle = index * STAGE_STEP - this.rotation;
       const facing = Math.cos(angle);
       const focus = Math.max(0, (facing + 0.5) / 1.5);
+      const verticalOffset = 1.15;
+
       group.position.set(
         Math.sin(angle) * xRadius,
-        (1 - facing) * 0.18 - 0.12 * focus,
+        (1 - facing) * 0.18 - 0.12 * focus + verticalOffset,
         facing * depthRadius,
       );
       group.quaternion.copy(this.camera.quaternion);
-      // Side islands turn further away. The character meshes remain almost flat,
-      // while the bases provide the relief and parallax.
+      // Rotate the whole diorama together: figures remain seated on their bases.
       group.rotateY(-Math.sin(angle) * 0.18 + this.tilt * focus + this.parallax.x * (0.5 + focus));
       group.rotateX(this.tilt * 0.14 * focus + this.parallax.y * (0.5 + focus));
-      if (meshes[1]) {
-        meshes[1].position.x = this.parallax.x * 0.36 * focus;
-        meshes[1].position.y = this.parallax.y * 0.26 * focus;
-      }
       // Transparent planes need depth-aware ordering between islands, not a fixed
       // world-index order. Within an island the character always renders last.
       const depthOrder = Math.round((facing + 1) * 100) * 10;
       shadow.renderOrder = depthOrder;
-      meshes.forEach((mesh, layerIndex) => { mesh.renderOrder = depthOrder + layerIndex + 1; });
+      meshes.forEach((mesh, layerIndex) => {
+        mesh.renderOrder = depthOrder + layerIndex + 1;
+      });
       const opacity = 0.84 + 0.16 * focus;
       for (const material of materials) {
         material.opacity = opacity;
@@ -275,8 +280,8 @@ export class StageOrbitRenderer {
       const angle = index * STAGE_STEP - this.rotation;
       const facing = Math.cos(angle);
       this.labelAnchor.set(0, -1.83, 0).applyMatrix4(group.matrixWorld).project(this.camera);
-      const left = (this.labelAnchor.x + 1) * this.canvas.clientWidth / 2;
-      const top = (1 - this.labelAnchor.y) * this.canvas.clientHeight / 2;
+      const left = ((this.labelAnchor.x + 1) * this.canvas.clientWidth) / 2;
+      const top = ((1 - this.labelAnchor.y) * this.canvas.clientHeight) / 2;
       label.style.left = '0';
       label.style.top = '0';
       label.style.transform = `translate3d(${left.toFixed(1)}px, ${top.toFixed(1)}px, 0) translate(-50%, -50%)`;
@@ -293,15 +298,16 @@ export class StageOrbitRenderer {
 
     // Anchor the Angular-owned HTML beneath the focused Three.js island.
     // Unlike CSS2DObject this does not reparent Angular's hydrated DOM nodes.
-    this.spotlightAnchor.set(0, -1.92, 0)
+    this.spotlightAnchor
+      .set(0, -1.92, 0)
       .applyMatrix4(island.group.matrixWorld)
       .project(this.camera);
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
     const halfWidth = this.spotlight.offsetWidth / 2;
     const maxX = Math.max(halfWidth + 12, width - halfWidth - 12);
-    const x = Math.min(maxX, Math.max(halfWidth + 12, (this.spotlightAnchor.x + 1) * width / 2));
-    const projectedY = (1 - this.spotlightAnchor.y) * height / 2 + 10;
+    const x = Math.min(maxX, Math.max(halfWidth + 12, ((this.spotlightAnchor.x + 1) * width) / 2));
+    const projectedY = ((1 - this.spotlightAnchor.y) * height) / 2 + 10;
     const maxY = Math.max(0, height - this.spotlight.offsetHeight - 12);
     const y = Math.max(0, Math.min(maxY, projectedY));
     this.spotlight.style.left = `${x.toFixed(1)}px`;
@@ -343,7 +349,9 @@ export class StageOrbitRenderer {
 
   private readonly animate = (timestamp: number): void => {
     this.frameId = null;
-    const dt = this.lastFrameTime ? Math.min((timestamp - this.lastFrameTime) / 1000, 0.04) : 1 / 60;
+    const dt = this.lastFrameTime
+      ? Math.min((timestamp - this.lastFrameTime) / 1000, 0.04)
+      : 1 / 60;
     this.lastFrameTime = timestamp;
     let rotating = false;
     if (this.pointerId === null && !this.reducedMotion) {
@@ -361,19 +369,29 @@ export class StageOrbitRenderer {
     // A little lag during rotation reveals the relief of the depth meshes.
     // At rest it settles to zero and stops the frame loop entirely.
     const angularSpeed = (this.rotation - this.lastRenderedRotation) / dt;
-    const targetTilt = this.reducedMotion ? 0 : Math.max(-0.085, Math.min(0.085, angularSpeed * 0.016));
+    const targetTilt = this.reducedMotion
+      ? 0
+      : Math.max(-0.085, Math.min(0.085, angularSpeed * 0.016));
     this.tilt += (targetTilt - this.tilt) * (1 - Math.exp(-12 * dt));
     const easingTilt = Math.abs(this.tilt) > 0.001 || Math.abs(targetTilt - this.tilt) > 0.001;
-    const easingParallax = !this.reducedMotion && advanceStageParallax(
-      this.parallax, this.parallaxVelocity, this.parallaxTarget, dt,
-    );
+    const easingParallax =
+      !this.reducedMotion &&
+      advanceStageParallax(this.parallax, this.parallaxVelocity, this.parallaxTarget, dt);
     this.render();
     this.lastRenderedRotation = this.rotation;
+    // Pointer/sensor parallax may keep rendering, but must never hide the spotlight.
+    this.setMoving(
+      !this.reducedMotion &&
+        isStageCarouselMoving(
+          this.pointerId !== null && this.dragged,
+          this.targetRotation - this.rotation,
+          this.velocity,
+        ),
+    );
     if (rotating || easingTilt || easingParallax) {
       this.invalidate();
     } else if (this.pointerId === null) {
       this.tilt = 0;
-      this.setMoving(false);
     }
   };
 
@@ -396,8 +414,12 @@ export class StageOrbitRenderer {
     if (this.pointerId === null) {
       if (!this.reducedMotion && !this.orientationActive && event.pointerType === 'mouse') {
         const bounds = this.canvas.getBoundingClientRect();
-        this.parallaxTarget.x = Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2)) * 0.045;
-        this.parallaxTarget.y = Math.max(-1, Math.min(1, (0.5 - (event.clientY - bounds.top) / bounds.height) * 2)) * 0.028;
+        this.parallaxTarget.x =
+          Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2)) *
+          0.045;
+        this.parallaxTarget.y =
+          Math.max(-1, Math.min(1, (0.5 - (event.clientY - bounds.top) / bounds.height) * 2)) *
+          0.028;
         this.invalidate();
       }
       return;
@@ -488,7 +510,9 @@ export class StageOrbitRenderer {
     if (!hit) {
       return null;
     }
-    const index = this.islands.findIndex(({ meshes }) => meshes.some((mesh) => mesh === hit.object));
+    const index = this.islands.findIndex(({ meshes }) =>
+      meshes.some((mesh) => mesh === hit.object),
+    );
     return index < 0 ? null : STAGE_WORLDS[index];
   }
 
@@ -501,10 +525,17 @@ export class StageOrbitRenderer {
   };
 
   private readonly onDeviceOrientation = (event: DeviceOrientationEvent): void => {
-    if (!this.orientationActive || this.pointerId !== null || event.beta === null || event.gamma === null) return;
+    if (
+      !this.orientationActive ||
+      this.pointerId !== null ||
+      event.beta === null ||
+      event.gamma === null
+    )
+      return;
     this.orientationBaseline ??= event.beta;
     this.parallaxTarget.x = Math.max(-1, Math.min(1, event.gamma / 35)) * 0.035;
-    this.parallaxTarget.y = Math.max(-1, Math.min(1, (event.beta - this.orientationBaseline) / 30)) * 0.022;
+    this.parallaxTarget.y =
+      Math.max(-1, Math.min(1, (event.beta - this.orientationBaseline) / 30)) * 0.022;
     this.invalidate();
   };
 

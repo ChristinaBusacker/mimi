@@ -21,20 +21,20 @@ interface LayerAsset {
   character?: boolean;
 }
 
-// Two visible layers at most. Both PNGs use the same 1448 × 1086 canvas and UVs.
+// The two PNGs must remain registered: their centers, transforms and Z origins match.
 // The slight height difference in the depth files is handled by normalized UV sampling.
 const WORLD_LAYERS: Record<StageWorld, readonly LayerAsset[]> = {
   music: [
-    { image: 'music-island.png', depth: 'music-island-depth.png', relief: 0.52, z: 0 },
-    { image: 'music-character.png', depth: 'music-character-depth.png', relief: 0.035, z: 0.38, character: true },
+    { image: 'music-island.png', depth: 'music-island-depth.png', relief: 0.28, z: 0 },
+    { image: 'music-character.png', depth: 'music-character-depth.png', relief: 0.01, z: 0, character: true },
   ],
   community: [
     { image: 'community.png', depth: 'community-depth.png', relief: 0.55, z: 0 },
   ],
   gaming: [
     // The uploaded filename is intentionally "gamin", not "gaming".
-    { image: 'gaming-island.png', depth: 'gamin-island-depth.png', relief: 0.55, z: 0 },
-    { image: 'gaming-character.png', depth: 'gaming-character-depth.png', relief: 0.035, z: 0.38, character: true },
+    { image: 'gaming-island.png', depth: 'gamin-island-depth.png', relief: 0.3, z: 0 },
+    { image: 'gaming-character.png', depth: 'gaming-character-depth.png', relief: 0.01, z: 0, character: true },
   ],
 };
 
@@ -132,8 +132,8 @@ export async function createStageVisuals(renderer: WebGLRenderer): Promise<Stage
         });
         const mesh = new Mesh(geometry, material);
         mesh.position.z = layer.z;
-        // PNG transparency and explicit order prevent the character from being occluded
-        // by protruding vertices of the island base.
+        // Both transparent layers share their origin; explicit rendering order keeps
+        // the character on top without moving it away from its contact points.
         mesh.renderOrder = index * 10 + layerIndex + 1;
         group.add(mesh);
         meshes.push(mesh);
