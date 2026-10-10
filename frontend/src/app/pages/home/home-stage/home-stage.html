@@ -34,30 +34,26 @@
       [class.stage__fallback--music]="activeWorld() === 'music'"
       aria-hidden="true"
     >
-      <img
+      <div
         class="stage__fallback-island stage__fallback-island--gaming"
         [class.is-active]="activeWorld() === 'gaming'"
-        src="/images/island/gaming.png"
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
-      <img
+      >
+        <img src="/images/island/gaming-island.png" alt="" loading="lazy" decoding="async" />
+        <img class="stage__fallback-character" src="/images/island/gaming-character.png" alt="" loading="lazy" decoding="async" />
+      </div>
+      <div
         class="stage__fallback-island stage__fallback-island--community"
         [class.is-active]="activeWorld() === 'community'"
-        src="/images/island/community.png"
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
-      <img
+      >
+        <img src="/images/island/community.png" alt="" loading="lazy" decoding="async" />
+      </div>
+      <div
         class="stage__fallback-island stage__fallback-island--music"
         [class.is-active]="activeWorld() === 'music'"
-        src="/images/island/music.png"
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
+      >
+        <img src="/images/island/music-island.png" alt="" loading="lazy" decoding="async" />
+        <img class="stage__fallback-character" src="/images/island/music-character.png" alt="" loading="lazy" decoding="async" />
+      </div>
     </div>
 
     <canvas
@@ -181,6 +177,17 @@
       <span aria-hidden="true">›</span>
     </button>
   </nav>
+
+  @if (motionSupported() && webglReady()) {
+    <button
+      type="button"
+      class="stage__motion"
+      [attr.aria-pressed]="motionEnabled()"
+      (click)="toggleMotion()"
+    >
+      {{ (motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async }}
+    </button>
+  }
 
   <a class="stage__about" routerLink="/about"
     >{{ 'home.intro.action' | i18n | async }} <span aria-hidden="true">→</span></a

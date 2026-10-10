@@ -54,6 +54,8 @@ export class HomeStage {
   protected readonly activeWorld = signal<StageWorld>('music');
   protected readonly webglReady = signal(false);
   protected readonly spotlightVisible = signal(true);
+  protected readonly motionSupported = signal(false);
+  protected readonly motionEnabled = signal(false);
 
   protected readonly albums = toSignal(
     toObservable(this.language).pipe(
@@ -79,6 +81,11 @@ export class HomeStage {
 
   constructor() {
     afterNextRender(() => {
+      this.motionSupported.set(
+        typeof DeviceOrientationEvent !== 'undefined' &&
+        window.isSecureContext &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      );
       const scene = this.stageScene()?.nativeElement;
       if (scene) {
         this.initializeParallax(scene);
@@ -93,6 +100,21 @@ export class HomeStage {
       this.renderer?.dispose();
       this.renderer = null;
     });
+  }
+
+  protected async toggleMotion(): Promise<void> {
+    if (!this.renderer || !this.webglReady()) return;
+    if (this.motionEnabled()) {
+      this.renderer.disableOrientation();
+      this.motionEnabled.set(false);
+      return;
+    }
+    const enabled = await this.renderer.enableOrientation();
+    if (this.destroyRef.destroyed) {
+      this.renderer?.disableOrientation();
+      return;
+    }
+    this.motionEnabled.set(enabled);
   }
 
   protected selectWorld(world: StageWorld): void {

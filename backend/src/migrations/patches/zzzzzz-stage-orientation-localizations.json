@@ -1,0 +1,14 @@
+{
+  "localizations": [
+    {
+      "key": "home.stage.motionOn",
+      "de": "Bewegungssensor aktivieren",
+      "en": "Enable motion sensor"
+    },
+    {
+      "key": "home.stage.motionOff",
+      "de": "Bewegungssensor deaktivieren",
+      "en": "Disable motion sensor"
+    }
+  ]
+}

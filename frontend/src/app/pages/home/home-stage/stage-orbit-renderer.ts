@@ -1,21 +1,20 @@
 import {
-  DoubleSide,
-  Group,
-  Mesh,
-  MeshBasicMaterial,
   PerspectiveCamera,
-  PlaneGeometry,
   Raycaster,
   Scene,
   SRGBColorSpace,
-  TextureLoader,
   Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three';
 import type { Texture } from 'three';
 
-import { applyStageDepth } from './stage-depth';
+import {
+  createStageVisuals,
+  disposeStageIsland,
+  type StageIsland,
+} from './stage-island-visuals';
+import { advanceStageParallax } from './stage-parallax';
 
 import {
   nearestStageIndex,
@@ -25,19 +24,11 @@ import {
   type StageWorld,
 } from './stage-orbit';
 
-interface StageIsland {
-  group: Group;
-  material: MeshBasicMaterial;
-  mesh: Mesh<PlaneGeometry, MeshBasicMaterial>;
-}
-
 // The ellipse is wider than it is deep; the back islands leave room for the central artwork.
 const ORBIT_X_RADIUS = 8.4;
 const ORBIT_DEPTH_RADIUS = 4.8;
 const NARROW_ORBIT_X_RADIUS = 5.1;
 const NARROW_ORBIT_DEPTH_RADIUS = 3.6;
-const ASSET_ROOT = '/images/island/';
-
 /** Owns the browser-only WebGL scene. Angular continues to own all accessible content. */
 export class StageOrbitRenderer {
   private readonly renderer: WebGLRenderer;
@@ -65,6 +56,11 @@ export class StageOrbitRenderer {
   private pointerStartRotation = 0;
   private dragged = false;
   private tilt = 0;
+  private readonly parallax = { x: 0, y: 0 };
+  private readonly parallaxVelocity = { x: 0, y: 0 };
+  private readonly parallaxTarget = { x: 0, y: 0 };
+  private orientationActive = false;
+  private orientationBaseline: number | null = null;
   private lastRenderedRotation = 0;
   private motionActive = false;
   private visible = true;
@@ -103,6 +99,7 @@ export class StageOrbitRenderer {
     this.visibilityObserver.observe(canvas);
     canvas.addEventListener('pointerdown', this.onPointerDown);
     canvas.addEventListener('pointermove', this.onPointerMove);
+    canvas.addEventListener('pointerleave', this.onPointerLeave);
     canvas.addEventListener('pointerup', this.onPointerUp);
     canvas.addEventListener('pointercancel', this.onPointerCancel);
     canvas.addEventListener('lostpointercapture', this.onLostPointerCapture);
@@ -112,72 +109,46 @@ export class StageOrbitRenderer {
   }
 
   async init(): Promise<void> {
-    const loader = new TextureLoader();
-    // Depth maps are aligned to the artwork by normalized UVs, not absolute pixels.
-    // Failed depth loading leaves that island usable as a flat plane.
-    const assets = await Promise.all(STAGE_WORLDS.map(async (world) => {
-      const color = await loader.loadAsync(`${ASSET_ROOT}${world}.png`);
-      let depth: Texture | null = null;
-      try {
-        depth = await loader.loadAsync(`${ASSET_ROOT}${world}-depth.png`);
-      } catch {
-        // The RGB artwork remains usable when a depth map is temporarily unavailable.
-      }
-      return { color, depth };
-    }));
-
+    const visuals = await createStageVisuals(this.renderer);
     if (this.destroyed) {
-      for (const { color, depth } of assets) {
-        color.dispose();
-        depth?.dispose();
-      }
+      for (const island of visuals.islands) disposeStageIsland(island);
+      for (const texture of visuals.textures) texture.dispose();
       return;
     }
-
-    for (const [index, { color, depth }] of assets.entries()) {
-      color.colorSpace = SRGBColorSpace;
-      color.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy(), 4);
-      this.textures.push(color);
-
-      const geometry = new PlaneGeometry(4.8, 3.6, 112, 84);
-      if (depth) {
-        try {
-          const source = depth.image as HTMLImageElement;
-          const samplingCanvas = document.createElement('canvas');
-          // Downsampling keeps the per-vertex sampling inexpensive and smooths noisy depth.
-          samplingCanvas.width = 512;
-          samplingCanvas.height = 384;
-          const context = samplingCanvas.getContext('2d', { willReadFrequently: true });
-          if (context) {
-            context.drawImage(source, 0, 0, samplingCanvas.width, samplingCanvas.height);
-            const pixels = context.getImageData(0, 0, samplingCanvas.width, samplingCanvas.height);
-            applyStageDepth(geometry, pixels.data, pixels.width, pixels.height, index === 0 ? 1.25 : 1.1);
-          }
-        } catch {
-          // Security restrictions or damaged depth maps must not hide the artwork.
-        } finally {
-          depth.dispose();
-        }
-      }
-
-      const material = new MeshBasicMaterial({
-        map: color,
-        transparent: true,
-        side: DoubleSide,
-        depthWrite: false,
-        alphaTest: 0.025,
-      });
-      const mesh = new Mesh(geometry, material);
-      const group = new Group();
-      group.add(mesh);
-      this.scene.add(group);
-      this.islands.push({ group, material, mesh });
-    }
+    this.textures.push(...visuals.textures);
+    this.islands.push(...visuals.islands);
+    for (const island of visuals.islands) this.scene.add(island.group);
 
     this.placeIslands();
     this.render();
     this.ready = true;
     this.onReady();
+  }
+
+  /** Sensor access is optional and may require a user gesture on iOS. */
+  async enableOrientation(): Promise<boolean> {
+    if (this.destroyed || this.reducedMotion || typeof DeviceOrientationEvent === 'undefined') return false;
+    const sensor = DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+      requestPermission?: () => Promise<'granted' | 'denied'>;
+    };
+    try {
+      if (sensor.requestPermission && await sensor.requestPermission() !== 'granted') return false;
+    } catch {
+      return false;
+    }
+    this.orientationActive = true;
+    this.orientationBaseline = null;
+    window.addEventListener('deviceorientation', this.onDeviceOrientation, { passive: true });
+    return true;
+  }
+
+  disableOrientation(): void {
+    this.orientationActive = false;
+    this.orientationBaseline = null;
+    window.removeEventListener('deviceorientation', this.onDeviceOrientation);
+    this.parallaxTarget.x = 0;
+    this.parallaxTarget.y = 0;
+    this.invalidate();
   }
 
   select(world: StageWorld): void {
@@ -225,19 +196,14 @@ export class StageOrbitRenderer {
     this.visibilityObserver.disconnect();
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
+    this.canvas.removeEventListener('pointerleave', this.onPointerLeave);
     this.canvas.removeEventListener('pointerup', this.onPointerUp);
+    this.disableOrientation();
     this.canvas.removeEventListener('pointercancel', this.onPointerCancel);
     this.canvas.removeEventListener('lostpointercapture', this.onLostPointerCapture);
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
-    this.scene.traverse((object) => {
-      if (object instanceof Mesh) {
-        object.geometry.dispose();
-        if (object.material instanceof MeshBasicMaterial) {
-          object.material.dispose();
-        }
-      }
-    });
+    for (const island of this.islands) disposeStageIsland(island);
     this.textures.forEach((texture) => texture.dispose());
     this.spotlight.style.removeProperty('left');
     this.spotlight.style.removeProperty('top');
@@ -265,10 +231,10 @@ export class StageOrbitRenderer {
     const xRadius = NARROW_ORBIT_X_RADIUS + (ORBIT_X_RADIUS - NARROW_ORBIT_X_RADIUS) * spread;
     const depthRadius = NARROW_ORBIT_DEPTH_RADIUS + (ORBIT_DEPTH_RADIUS - NARROW_ORBIT_DEPTH_RADIUS) * spread;
 
-    this.islands.forEach(({ group, material }, index) => {
+    this.islands.forEach((island, index) => {
+      const { group, materials, meshes, shadow } = island;
       const angle = index * STAGE_STEP - this.rotation;
       const facing = Math.cos(angle);
-      // Full focus only at the front; side worlds recede on the same continuous orbit.
       const focus = Math.max(0, (facing + 0.5) / 1.5);
       group.position.set(
         Math.sin(angle) * xRadius,
@@ -276,12 +242,25 @@ export class StageOrbitRenderer {
         facing * depthRadius,
       );
       group.quaternion.copy(this.camera.quaternion);
-      // A restrained local change of viewpoint reveals the depth-map geometry.
-      // Avoid large rotations: these illustrations have no real reverse side.
-      // Local depth movement is coupled to orbit velocity, not idle pointer position.
-      group.rotateY(-Math.sin(angle) * 0.10 + this.tilt * focus);
-      group.rotateX(this.tilt * 0.18 * focus);
-      material.opacity = 0.75 + 0.25 * focus;
+      // Side islands turn further away. The character meshes remain almost flat,
+      // while the bases provide the relief and parallax.
+      group.rotateY(-Math.sin(angle) * 0.18 + this.tilt * focus + this.parallax.x * (0.5 + focus));
+      group.rotateX(this.tilt * 0.14 * focus + this.parallax.y * (0.5 + focus));
+      if (meshes[1]) {
+        meshes[1].position.x = this.parallax.x * 0.36 * focus;
+        meshes[1].position.y = this.parallax.y * 0.26 * focus;
+      }
+      // Transparent planes need depth-aware ordering between islands, not a fixed
+      // world-index order. Within an island the character always renders last.
+      const depthOrder = Math.round((facing + 1) * 100) * 10;
+      shadow.renderOrder = depthOrder;
+      meshes.forEach((mesh, layerIndex) => { mesh.renderOrder = depthOrder + layerIndex + 1; });
+      const opacity = 0.84 + 0.16 * focus;
+      for (const material of materials) {
+        material.opacity = opacity;
+        material.color.setRGB(0.93 + 0.07 * focus, 0.92 + 0.08 * focus, 1);
+      }
+      shadow.material.opacity = 0.22 + focus * 0.32;
       group.scale.setScalar(0.85 + 0.08 * spread + (0.62 + 0.07 * spread) * focus);
     });
   }
@@ -385,9 +364,12 @@ export class StageOrbitRenderer {
     const targetTilt = this.reducedMotion ? 0 : Math.max(-0.085, Math.min(0.085, angularSpeed * 0.016));
     this.tilt += (targetTilt - this.tilt) * (1 - Math.exp(-12 * dt));
     const easingTilt = Math.abs(this.tilt) > 0.001 || Math.abs(targetTilt - this.tilt) > 0.001;
+    const easingParallax = !this.reducedMotion && advanceStageParallax(
+      this.parallax, this.parallaxVelocity, this.parallaxTarget, dt,
+    );
     this.render();
     this.lastRenderedRotation = this.rotation;
-    if (rotating || easingTilt) {
+    if (rotating || easingTilt || easingParallax) {
       this.invalidate();
     } else if (this.pointerId === null) {
       this.tilt = 0;
@@ -412,6 +394,12 @@ export class StageOrbitRenderer {
 
   private readonly onPointerMove = (event: PointerEvent): void => {
     if (this.pointerId === null) {
+      if (!this.reducedMotion && !this.orientationActive && event.pointerType === 'mouse') {
+        const bounds = this.canvas.getBoundingClientRect();
+        this.parallaxTarget.x = Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2)) * 0.045;
+        this.parallaxTarget.y = Math.max(-1, Math.min(1, (0.5 - (event.clientY - bounds.top) / bounds.height) * 2)) * 0.028;
+        this.invalidate();
+      }
       return;
     }
     if (event.pointerId !== this.pointerId) {
@@ -495,14 +483,30 @@ export class StageOrbitRenderer {
       -((event.clientY - bounds.top) / bounds.height) * 2 + 1,
     );
     this.raycaster.setFromCamera(this.pointer, this.camera);
-    const hits = this.raycaster.intersectObjects(this.islands.map((island) => island.mesh));
+    const hits = this.raycaster.intersectObjects(this.islands.flatMap((island) => island.meshes));
     const hit = hits[0];
     if (!hit) {
       return null;
     }
-    const index = this.islands.findIndex(({ mesh }) => mesh === hit.object);
+    const index = this.islands.findIndex(({ meshes }) => meshes.some((mesh) => mesh === hit.object));
     return index < 0 ? null : STAGE_WORLDS[index];
   }
+
+  private readonly onPointerLeave = (): void => {
+    if (this.pointerId === null && !this.orientationActive) {
+      this.parallaxTarget.x = 0;
+      this.parallaxTarget.y = 0;
+      this.invalidate();
+    }
+  };
+
+  private readonly onDeviceOrientation = (event: DeviceOrientationEvent): void => {
+    if (!this.orientationActive || this.pointerId !== null || event.beta === null || event.gamma === null) return;
+    this.orientationBaseline ??= event.beta;
+    this.parallaxTarget.x = Math.max(-1, Math.min(1, event.gamma / 35)) * 0.035;
+    this.parallaxTarget.y = Math.max(-1, Math.min(1, (event.beta - this.orientationBaseline) / 30)) * 0.022;
+    this.invalidate();
+  };
 
   private readonly onContextLost = (event: Event): void => {
     event.preventDefault();

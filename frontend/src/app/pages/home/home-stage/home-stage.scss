@@ -116,8 +116,21 @@
   inset-block-end: 20%;
   width: min(24vw, 24rem);
   height: auto;
+  aspect-ratio: 1448 / 1086;
   filter: drop-shadow(0 12px 17px rgb(23 8 27 / 38%));
   transition: opacity 180ms ease, width 180ms ease;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .stage__fallback-character {
+    position: absolute;
+    inset: 0;
+  }
 
   &--music {
     left: 50%;
@@ -374,6 +387,30 @@
   &:focus-visible {
     outline: 2px solid #fff;
     outline-offset: 3px;
+  }
+}
+
+.stage__motion {
+  display: table;
+  margin: 0.4rem auto 0;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgb(255 216 239 / 48%);
+  border-radius: var(--radius-pill);
+  color: #ffe5f4;
+  background: rgb(42 18 43 / 75%);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stage__motion {
+    display: none;
   }
 }
 
