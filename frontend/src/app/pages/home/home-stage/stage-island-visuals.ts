@@ -11,6 +11,7 @@ import {
 import type { Texture, WebGLRenderer } from 'three';
 
 import { applyStageDepth } from './stage-depth';
+import { enableStageOcclusion, stageOcclusionSamples } from './stage-occlusion-material';
 import { STAGE_WORLDS, type StageWorld } from './stage-orbit';
 
 interface LayerAsset {
@@ -25,23 +26,22 @@ interface LayerAsset {
 // The slight height difference in the depth files is handled by normalized UV sampling.
 const WORLD_LAYERS: Record<StageWorld, readonly LayerAsset[]> = {
   music: [
-    { image: 'music-island.png', depth: 'music-island-depth.png', relief: 0.6, z: 0 },
+    { image: 'music-island.png', depth: 'music-island-depth.png', relief: 1, z: 0 },
     {
       image: 'music-character.png',
-      depth: 'music-character-depth.png',
-      relief: 0.2,
+      depth: 'music-character-depth2.png',
+      relief: 1.6,
       z: 0,
       character: true,
     },
   ],
-  community: [{ image: 'community.png', depth: 'community-depth.png', relief: 0.2, z: 0 }],
+  community: [{ image: 'community.png', depth: 'community-depth.png', relief: 1, z: 0 }],
   gaming: [
-    // The uploaded filename is intentionally "gamin", not "gaming".
-    { image: 'gaming-island.png', depth: 'gamin-island-depth.png', relief: 0.8, z: 0 },
+    { image: 'gaming-island.png', depth: 'gaming-island-depth.png', relief: 1, z: 0 },
     {
       image: 'gaming-character.png',
-      depth: 'gaming-character-depth.png',
-      relief: 0.3,
+      depth: 'gaming-character-depth2.png',
+      relief: 1,
       z: 0,
       character: true,
     },
@@ -77,7 +77,7 @@ function makeShadowTexture(): CanvasTexture {
 }
 
 function makeGeometry(depth: Texture | null, relief: number, character: boolean): PlaneGeometry {
-  const geometry = new PlaneGeometry(4.8, 3.6, character ? 48 : 112, character ? 36 : 84);
+  const geometry = new PlaneGeometry(4.8, 3.6, character ? 256 : 112, character ? 256 : 84);
   if (!depth) return geometry;
   try {
     const canvas = document.createElement('canvas');
@@ -91,8 +91,6 @@ function makeGeometry(depth: Texture | null, relief: number, character: boolean)
     }
   } catch {
     // A missing or unreadable depth map must never hide the image.
-  } finally {
-    depth.dispose();
   }
   return geometry;
 }
@@ -104,6 +102,10 @@ export async function createStageVisuals(renderer: WebGLRenderer): Promise<Stage
   const islands: StageIsland[] = [];
   const shadowTexture = makeShadowTexture();
   textures.push(shadowTexture);
+  const pomSamples = stageOcclusionSamples(
+    renderer.domElement.clientWidth,
+    renderer.getPixelRatio(),
+  );
 
   try {
     // Load each island concurrently, preserving background-before-character ordering.
@@ -116,6 +118,7 @@ export async function createStageVisuals(renderer: WebGLRenderer): Promise<Stage
             let depth: Texture | null = null;
             try {
               depth = await loader.loadAsync(`/images/island/${layer.depth}`);
+              if (pomSamples > 0) textures.push(depth);
             } catch {
               // Keep the RGB layer if only its optional depth map is missing.
             }
@@ -140,6 +143,14 @@ export async function createStageVisuals(renderer: WebGLRenderer): Promise<Stage
           depthWrite: false,
           alphaTest: 0.035,
         });
+        if (depth) {
+          if (pomSamples > 0) {
+            enableStageOcclusion(material, depth, layer.relief, pomSamples);
+          } else {
+            // No shader sampling on this display; free the GPU depth texture.
+            depth.dispose();
+          }
+        }
         const mesh = new Mesh(geometry, material);
         mesh.position.z = layer.z;
         // Both transparent layers share their origin; explicit rendering order keeps

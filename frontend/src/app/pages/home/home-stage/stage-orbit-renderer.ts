@@ -10,6 +10,7 @@ import {
 import type { Texture } from 'three';
 
 import { createStageVisuals, disposeStageIsland, type StageIsland } from './stage-island-visuals';
+import { setStageOcclusionFocus } from './stage-occlusion-material';
 import { advanceStageParallax } from './stage-parallax';
 
 import {
@@ -278,6 +279,7 @@ export class StageOrbitRenderer {
       for (const material of materials) {
         material.opacity = opacity;
         material.color.setRGB(0.93 + 0.07 * focus, 0.92 + 0.08 * focus, 1);
+        setStageOcclusionFocus(material, focus);
       }
       shadow.material.opacity = 0.22 + focus * 0.32;
       group.scale.setScalar(0.85 + 0.08 * spread + (0.62 + 0.07 * spread) * focus);
