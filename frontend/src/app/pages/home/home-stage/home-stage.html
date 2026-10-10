@@ -14,14 +14,14 @@
     <div class="stage__backdrop" aria-hidden="true">
       <img
         class="stage__atmosphere"
-        src="/images/stage/background-fantasy.png"
+        src="/images/stage/background-fantasy.webp"
         alt=""
         loading="lazy"
         decoding="async"
       />
       <img
         class="stage__light"
-        src="/images/stage/background-light.png"
+        src="/images/stage/background-light.webp"
         alt=""
         loading="lazy"
         decoding="async"
@@ -38,21 +38,33 @@
         class="stage__fallback-island stage__fallback-island--gaming"
         [class.is-active]="activeWorld() === 'gaming'"
       >
-        <img src="/images/island/gaming-island.png" alt="" loading="lazy" decoding="async" />
-        <img class="stage__fallback-character" src="/images/island/gaming-character.png" alt="" loading="lazy" decoding="async" />
+        <img src="/images/island/gaming-island.webp" alt="" loading="lazy" decoding="async" />
+        <img
+          class="stage__fallback-character"
+          src="/images/island/gaming-character.webp"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
       </div>
       <div
         class="stage__fallback-island stage__fallback-island--community"
         [class.is-active]="activeWorld() === 'community'"
       >
-        <img src="/images/island/community.png" alt="" loading="lazy" decoding="async" />
+        <img src="/images/island/community.webp" alt="" loading="lazy" decoding="async" />
       </div>
       <div
         class="stage__fallback-island stage__fallback-island--music"
         [class.is-active]="activeWorld() === 'music'"
       >
-        <img src="/images/island/music-island.png" alt="" loading="lazy" decoding="async" />
-        <img class="stage__fallback-character" src="/images/island/music-character.png" alt="" loading="lazy" decoding="async" />
+        <img src="/images/island/music-island.webp" alt="" loading="lazy" decoding="async" />
+        <img
+          class="stage__fallback-character"
+          src="/images/island/music-character.webp"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
       </div>
     </div>
 

@@ -26,21 +26,21 @@ interface LayerAsset {
 // The slight height difference in the depth files is handled by normalized UV sampling.
 const WORLD_LAYERS: Record<StageWorld, readonly LayerAsset[]> = {
   music: [
-    { image: 'music-island.png', depth: 'music-island-depth.png', relief: 1, z: 0 },
+    { image: 'music-island.webp', depth: 'music-island-depth.webp', relief: 1, z: 0 },
     {
-      image: 'music-character.png',
-      depth: 'music-character-depth2.png',
+      image: 'music-character.webp',
+      depth: 'music-character-depth.webp',
       relief: 1.6,
       z: 0,
       character: true,
     },
   ],
-  community: [{ image: 'community.png', depth: 'community-depth.png', relief: 1, z: 0 }],
+  community: [{ image: 'community.webp', depth: 'community-depth.webp', relief: 1, z: 0 }],
   gaming: [
-    { image: 'gaming-island.png', depth: 'gaming-island-depth.png', relief: 1, z: 0 },
+    { image: 'gaming-island.webp', depth: 'gaming-island-depth.webp', relief: 1, z: 0 },
     {
-      image: 'gaming-character.png',
-      depth: 'gaming-character-depth2.png',
+      image: 'gaming-character.webp',
+      depth: 'gaming-character-depth.webp',
       relief: 1,
       z: 0,
       character: true,

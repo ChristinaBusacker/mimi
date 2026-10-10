@@ -12,7 +12,9 @@
           <app-icon name="youtube" />
           {{ 'home.youtube.eyebrow' | i18n | async }}
         </span>
-        <h2 id="home-youtube-title" class="more-suggar">{{ 'home.youtube.title' | i18n | async }}</h2>
+        <h2 id="home-youtube-title" class="more-suggar">
+          {{ 'home.youtube.title' | i18n | async }}
+        </h2>
         <p>{{ 'home.youtube.description' | i18n | async }}</p>
       </div>
 
@@ -25,10 +27,7 @@
     @if (latestVideos().length > 0) {
       <div class="video-grid">
         @for (video of latestVideos(); track video.id) {
-          <app-video-card
-            [video]="video"
-            [layout]="$first ? 'featured' : 'compact'"
-          />
+          <app-video-card [video]="video" [layout]="$first ? 'featured' : 'compact'" />
         }
       </div>
     }
@@ -72,9 +71,13 @@
             <div class="home-blog-feature__meta">
               <time [attr.datetime]="post.publishedAt">{{ formatBlogDate(post.publishedAt) }}</time>
               <span aria-hidden="true">·</span>
-              <a [routerLink]="['/blog/autoren', post.author.slug]">{{ post.author.displayName }}</a>
+              <a [routerLink]="['/blog/autoren', post.author.slug]">{{
+                post.author.displayName
+              }}</a>
             </div>
-            <h3><a [routerLink]="['/blog', post.slug]">{{ post.title }}</a></h3>
+            <h3>
+              <a [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+            </h3>
             @if (post.excerpt) {
               <p>{{ post.excerpt }}</p>
             }
@@ -102,11 +105,17 @@
                   (focus)="selectPost(topic.id)"
                   (click)="selectPost(topic.id)"
                 >
-                  <time [attr.datetime]="topic.publishedAt">{{ formatBlogShortDate(topic.publishedAt) }}</time>
+                  <time [attr.datetime]="topic.publishedAt">{{
+                    formatBlogShortDate(topic.publishedAt)
+                  }}</time>
                   <span class="home-blog-topics__bullet" aria-hidden="true"></span>
                   <span class="home-blog-topics__title">{{ topic.title }}</span>
                 </button>
-                <a class="home-blog-topics__link" [routerLink]="['/blog', topic.slug]" [attr.aria-label]="topic.title">
+                <a
+                  class="home-blog-topics__link"
+                  [routerLink]="['/blog', topic.slug]"
+                  [attr.aria-label]="topic.title"
+                >
                   <span aria-hidden="true">›</span>
                 </a>
               </div>
@@ -120,13 +129,15 @@
   <section class="home-invite" aria-labelledby="home-invite-title">
     <img
       class="home-invite__illustration"
-      src="/images/avatars/Main-Drache-Paragraph.png"
+      src="/images/avatars/Main-Drache-Paragraph.webp"
       alt=""
       loading="lazy"
       decoding="async"
     />
     <div class="home-invite__copy">
-      <span class="home-eyebrow"><app-icon name="heart" /> {{ 'home.invite.eyebrow' | i18n | async }}</span>
+      <span class="home-eyebrow"
+        ><app-icon name="heart" /> {{ 'home.invite.eyebrow' | i18n | async }}</span
+      >
       <h2 id="home-invite-title" class="more-suggar">{{ 'home.invite.title' | i18n | async }}</h2>
       <p>{{ 'home.invite.description' | i18n | async }}</p>
     </div>
