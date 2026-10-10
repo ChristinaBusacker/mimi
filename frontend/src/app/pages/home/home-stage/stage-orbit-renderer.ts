@@ -15,6 +15,8 @@ import {
 } from 'three';
 import type { Texture } from 'three';
 
+import { applyStageDepth } from './stage-depth';
+
 import {
   nearestStageIndex,
   nearestStageStop,
@@ -34,7 +36,7 @@ const ORBIT_X_RADIUS = 11.4;
 const ORBIT_DEPTH_RADIUS = 5.8;
 const NARROW_ORBIT_X_RADIUS = 5.4;
 const NARROW_ORBIT_DEPTH_RADIUS = 3.8;
-const ASSET_ROOT = '/images/stage/';
+const ASSET_ROOT = '/images/island/';
 
 /** Owns the browser-only WebGL scene. Angular continues to own all accessible content. */
 export class StageOrbitRenderer {
@@ -60,6 +62,10 @@ export class StageOrbitRenderer {
   private pointerVelocity = 0;
   private pointerStartRotation = 0;
   private dragged = false;
+  private lookX = 0;
+  private lookY = 0;
+  private targetLookX = 0;
+  private targetLookY = 0;
   private visible = true;
   private destroyed = false;
   private ready = false;
@@ -94,6 +100,7 @@ export class StageOrbitRenderer {
     canvas.addEventListener('pointermove', this.onPointerMove);
     canvas.addEventListener('pointerup', this.onPointerUp);
     canvas.addEventListener('pointercancel', this.onPointerCancel);
+    canvas.addEventListener('pointerleave', this.onPointerLeave);
     canvas.addEventListener('lostpointercapture', this.onLostPointerCapture);
     canvas.addEventListener('webglcontextlost', this.onContextLost);
     document.addEventListener('visibilitychange', this.onVisibilityChange);
@@ -102,54 +109,67 @@ export class StageOrbitRenderer {
 
   async init(): Promise<void> {
     const loader = new TextureLoader();
-    const urls = [
-      'music-island.png',
-      'community-island.png',
-      'gaming-island.png',
-      'dragon.png',
-    ];
-    const loaded = await Promise.all(urls.map((file) => loader.loadAsync(ASSET_ROOT + file)));
+    // Depth maps are aligned to the artwork by normalized UVs, not absolute pixels.
+    // Failed depth loading leaves that island usable as a flat plane.
+    const assets = await Promise.all(STAGE_WORLDS.map(async (world) => {
+      const color = await loader.loadAsync(`${ASSET_ROOT}${world}.png`);
+      let depth: Texture | null = null;
+      try {
+        depth = await loader.loadAsync(`${ASSET_ROOT}${world}-depth.png`);
+      } catch {
+        // The RGB artwork remains usable when a depth map is temporarily unavailable.
+      }
+      return { color, depth };
+    }));
 
     if (this.destroyed) {
-      loaded.forEach((texture) => texture.dispose());
+      for (const { color, depth } of assets) {
+        color.dispose();
+        depth?.dispose();
+      }
       return;
     }
 
-    for (const texture of loaded) {
-      texture.colorSpace = SRGBColorSpace;
-      texture.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy(), 4);
-      this.textures.push(texture);
-    }
+    for (const [index, { color, depth }] of assets.entries()) {
+      color.colorSpace = SRGBColorSpace;
+      color.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy(), 4);
+      this.textures.push(color);
 
-    STAGE_WORLDS.forEach((_, index) => {
-      const geometry = new PlaneGeometry(4.8, 3.6);
+      const geometry = new PlaneGeometry(4.8, 3.6, 112, 84);
+      if (depth) {
+        try {
+          const source = depth.image as HTMLImageElement;
+          const samplingCanvas = document.createElement('canvas');
+          // Downsampling keeps the per-vertex sampling inexpensive and smooths noisy depth.
+          samplingCanvas.width = 512;
+          samplingCanvas.height = 384;
+          const context = samplingCanvas.getContext('2d', { willReadFrequently: true });
+          if (context) {
+            context.drawImage(source, 0, 0, samplingCanvas.width, samplingCanvas.height);
+            const pixels = context.getImageData(0, 0, samplingCanvas.width, samplingCanvas.height);
+            applyStageDepth(geometry, pixels.data, pixels.width, pixels.height, index === 0 ? 1.25 : 1.1);
+          }
+        } catch {
+          // Security restrictions or damaged depth maps must not hide the artwork.
+        } finally {
+          depth.dispose();
+        }
+      }
+
       const material = new MeshBasicMaterial({
-        map: loaded[index],
+        map: color,
         transparent: true,
         side: DoubleSide,
         depthWrite: false,
-        alphaTest: 0.015,
+        alphaTest: 0.025,
       });
       const mesh = new Mesh(geometry, material);
       const group = new Group();
       group.add(mesh);
       this.scene.add(group);
       this.islands.push({ group, material, mesh });
-    });
+    }
 
-    // The dragon travels with Mimi's music island instead of hovering in screen space.
-    const dragon = new Mesh(
-      new PlaneGeometry(1.12, 1.12),
-      new MeshBasicMaterial({
-        map: loaded[3],
-        transparent: true,
-        side: DoubleSide,
-        depthWrite: false,
-        alphaTest: 0.015,
-      }),
-    );
-    dragon.position.set(1.1, -0.9, 0.04);
-    this.islands[0].group.add(dragon);
     this.placeIslands();
     this.render();
     this.ready = true;
@@ -193,6 +213,7 @@ export class StageOrbitRenderer {
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
     this.canvas.removeEventListener('pointerup', this.onPointerUp);
     this.canvas.removeEventListener('pointercancel', this.onPointerCancel);
+    this.canvas.removeEventListener('pointerleave', this.onPointerLeave);
     this.canvas.removeEventListener('lostpointercapture', this.onLostPointerCapture);
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
@@ -239,7 +260,10 @@ export class StageOrbitRenderer {
         facing * depthRadius,
       );
       group.quaternion.copy(this.camera.quaternion);
-      group.rotateY(-Math.sin(angle) * 0.24);
+      // A restrained local change of viewpoint reveals the depth-map geometry.
+      // Avoid large rotations: these illustrations have no real reverse side.
+      group.rotateY(-Math.sin(angle) * 0.16 + this.lookX * 0.18 * focus);
+      group.rotateX(this.lookY * 0.12 * focus);
       material.opacity = 0.75 + 0.25 * focus;
       group.scale.setScalar(0.79 + 0.09 * spread + (0.46 + 0.04 * spread) * focus);
     });
@@ -294,12 +318,20 @@ export class StageOrbitRenderer {
     this.lastFrameTime = timestamp;
     let moving = false;
 
+    if (!this.reducedMotion) {
+      const blend = 1 - Math.exp(-10 * dt);
+      this.lookX += (this.targetLookX - this.lookX) * blend;
+      this.lookY += (this.targetLookY - this.lookY) * blend;
+      moving = Math.abs(this.targetLookX - this.lookX) > 0.001 ||
+        Math.abs(this.targetLookY - this.lookY) > 0.001;
+    }
+
     if (this.pointerId === null && !this.reducedMotion) {
       const difference = this.targetRotation - this.rotation;
       this.velocity += difference * 85 * dt;
       this.velocity *= Math.exp(-17 * dt);
       this.rotation += this.velocity * dt;
-      moving = Math.abs(difference) > 0.0005 || Math.abs(this.velocity) > 0.002;
+      moving ||= Math.abs(difference) > 0.0005 || Math.abs(this.velocity) > 0.002;
       if (!moving) {
         this.rotation = this.targetRotation;
         this.velocity = 0;
@@ -328,6 +360,15 @@ export class StageOrbitRenderer {
   };
 
   private readonly onPointerMove = (event: PointerEvent): void => {
+    if (this.pointerId === null) {
+      if (!this.reducedMotion && event.pointerType !== 'touch') {
+        const bounds = this.canvas.getBoundingClientRect();
+        this.targetLookX = Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2));
+        this.targetLookY = Math.max(-1, Math.min(1, (0.5 - (event.clientY - bounds.top) / bounds.height) * 2));
+        this.invalidate();
+      }
+      return;
+    }
     if (event.pointerId !== this.pointerId) {
       return;
     }
@@ -367,6 +408,12 @@ export class StageOrbitRenderer {
     if (this.reducedMotion) {
       this.rotation = this.targetRotation;
     }
+    this.invalidate();
+  };
+
+  private readonly onPointerLeave = (): void => {
+    this.targetLookX = 0;
+    this.targetLookY = 0;
     this.invalidate();
   };
 
