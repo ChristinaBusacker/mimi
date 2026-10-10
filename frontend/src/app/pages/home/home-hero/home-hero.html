@@ -1,0 +1,77 @@
+<section
+  class="home-hero"
+  [class.home-hero--gaming]="hero().heroType === 'gaming'"
+  [class.home-hero--chatting]="hero().heroType === 'chatting'"
+  [class.home-hero--live]="hero().isLive"
+  aria-labelledby="home-hero-title"
+>
+  <div class="home-hero__status">
+    @if (hero().startsAt; as startsAt) {
+      <app-home-hero-countdown [startsAt]="startsAt" />
+    } @else if (hero().isLive) {
+      <div class="home-hero__live-status">
+        <span class="home-hero__live-label">
+          {{ 'stream.status.live' | i18n | async }}
+        </span>
+        <strong>{{ 'home.hero.liveNow' | i18n | async }}</strong>
+      </div>
+    } @else {
+      <div class="home-hero__offline-status">
+        <span class="home-hero__offline-label">{{ 'home.hero.welcome' | i18n | async }}</span>
+        <strong>Mimishow</strong>
+      </div>
+    }
+  </div>
+
+  <div class="home-hero__main">
+    <div class="home-hero__tags">
+      @if (hero().statusKey; as statusKey) {
+        <span class="home-hero__tag" [class.home-hero__tag--live]="hero().isLive">
+          {{ statusKey | i18n | async }}
+        </span>
+      }
+      <span class="home-hero__tag home-hero__tag--type">
+        <app-icon [name]="hero().icon" />
+        {{ hero().typeKey | i18n | async }}
+      </span>
+    </div>
+    <h1 id="home-hero-title">{{ hero().titleKey | i18n | async }}</h1>
+    @if (hero().isLive && hero().streamTitle) {
+      <p class="home-hero__stream-name">{{ hero().streamTitle }}</p>
+    } @else if (!hero().isUpcoming && !hero().isLive) {
+      <p class="home-hero__intro">{{ hero().descriptionKey | i18n | async }}</p>
+    }
+  </div>
+
+  <div class="home-hero__actions">
+    @if (hero().isUpcoming) {
+      @if (hero().streamTitle) {
+        <strong class="home-hero__stream-title">{{ hero().streamTitle }}</strong>
+      }
+      @if (hero().scheduledAt) {
+        <time [attr.datetime]="hero().startsAt">{{ hero().scheduledAt }}</time>
+      }
+    }
+    @if (hero().channelUrl; as channelUrl) {
+      <a class="home-hero__primary" [href]="channelUrl" target="_blank" rel="noopener noreferrer">
+        <app-icon name="twitch" />
+        {{ (hero().isLive ? 'home.hero.goLive' : hero().actionKey) | i18n | async }}
+        <app-icon name="arrow" />
+      </a>
+    } @else {
+      <a class="home-hero__primary" routerLink="/music">
+        {{ 'home.music.action' | i18n | async }}
+        <app-icon name="arrow" />
+      </a>
+    }
+    @if (calendarUrl(); as calendar) {
+      <a class="home-hero__calendar" [href]="calendar" target="_blank" rel="noopener noreferrer">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M7 3v4M17 3v4M3 10h18" />
+        </svg>
+        {{ 'home.hero.calendar' | i18n | async }}
+      </a>
+    }
+  </div>
+</section>

@@ -1,0 +1,13 @@
+{
+  "localizations": [
+    { "key": "home.hero.nextStream", "de": "Nächster Stream", "en": "Next stream" },
+    { "key": "home.hero.days", "de": "Tage", "en": "Days" },
+    { "key": "home.hero.hours", "de": "Std", "en": "Hours" },
+    { "key": "home.hero.minutes", "de": "Min", "en": "Minutes" },
+    { "key": "home.hero.seconds", "de": "Sek", "en": "Seconds" },
+    { "key": "home.hero.liveNow", "de": "Jetzt auf Sendung", "en": "On air now" },
+    { "key": "home.hero.welcome", "de": "Schön, dass du da bist", "en": "Glad you're here" },
+    { "key": "home.hero.goLive", "de": "Direkt zum Stream", "en": "Watch the live stream" },
+    { "key": "home.hero.calendar", "de": "In Kalender eintragen", "en": "Add to calendar" }
+  ]
+}

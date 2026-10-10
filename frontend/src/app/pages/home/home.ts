@@ -9,8 +9,6 @@ import { Store } from '@ngxs/store';
 import { catchError, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 
 import { Button } from '../../components/button/button';
-import { Countdown } from '../../components/countdown/countdown';
-import { Hero } from '../../components/hero/hero';
 import { Icon } from '../../components/icon/icon';
 import { VideoCard } from '../../components/video-card/video-card';
 import { BlogPublicService } from '../../core/blog/blog-public.service';
@@ -21,6 +19,7 @@ import { TwitchState } from '../../core/twitch/twitch.state';
 import { YouTubeState } from '../../core/youtube/youtube.state';
 import type { HomeData } from './home.resolver';
 import { createTwitchPreview, createVideoPreview } from './home-preview';
+import { HomeHero } from './home-hero/home-hero';
 import { HomeStage } from './home-stage/home-stage';
 
 type HeroIcon = 'gaming' | 'heart' | 'music';
@@ -43,7 +42,7 @@ interface HeroViewModel {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, Button, Countdown, Hero, HomeStage, I18nPipe, Icon, VideoCard, RouterLink],
+  imports: [AsyncPipe, Button, HomeHero, HomeStage, I18nPipe, Icon, VideoCard, RouterLink],
   selector: 'app-home',
   styleUrl: './home.scss',
   templateUrl: './home.html',

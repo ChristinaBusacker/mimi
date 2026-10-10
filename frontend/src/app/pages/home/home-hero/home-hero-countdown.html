@@ -1,0 +1,29 @@
+@let remaining = countdown();
+<div class="home-countdown" role="timer" aria-live="off">
+  <span class="home-countdown__eyebrow">
+    {{ 'home.hero.nextStream' | i18n | async }}
+  </span>
+  <div class="home-countdown__units">
+    <div class="home-countdown__unit">
+      <strong>{{ remaining?.days ?? '--' }}</strong>
+      <span>{{ 'home.hero.days' | i18n | async }}</span>
+    </div>
+    <div class="home-countdown__unit">
+      <strong>{{ remaining?.hours ?? '--' }}</strong>
+      <span>{{ 'home.hero.hours' | i18n | async }}</span>
+    </div>
+    <div class="home-countdown__unit">
+      <strong>{{ remaining?.minutes ?? '--' }}</strong>
+      <span>{{ 'home.hero.minutes' | i18n | async }}</span>
+    </div>
+    <div class="home-countdown__unit">
+      <strong>{{ remaining?.seconds ?? '--' }}</strong>
+      <span>{{ 'home.hero.seconds' | i18n | async }}</span>
+    </div>
+  </div>
+  @if (remaining?.hasStarted) {
+    <span class="home-countdown__starting">
+      {{ 'hero.upcoming.countdown.starting' | i18n | async }}
+    </span>
+  }
+</div>
