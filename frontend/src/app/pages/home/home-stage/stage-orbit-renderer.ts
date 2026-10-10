@@ -32,10 +32,10 @@ interface StageIsland {
 }
 
 // The ellipse is wider than it is deep; the back islands leave room for the central artwork.
-const ORBIT_X_RADIUS = 11.4;
-const ORBIT_DEPTH_RADIUS = 5.8;
-const NARROW_ORBIT_X_RADIUS = 5.4;
-const NARROW_ORBIT_DEPTH_RADIUS = 3.8;
+const ORBIT_X_RADIUS = 8.4;
+const ORBIT_DEPTH_RADIUS = 4.8;
+const NARROW_ORBIT_X_RADIUS = 5.1;
+const NARROW_ORBIT_DEPTH_RADIUS = 3.6;
 const ASSET_ROOT = '/images/island/';
 
 /** Owns the browser-only WebGL scene. Angular continues to own all accessible content. */
@@ -46,9 +46,11 @@ export class StageOrbitRenderer {
   private readonly raycaster = new Raycaster();
   private readonly pointer = new Vector2();
   private readonly labelAnchor = new Vector3();
+  private readonly spotlightAnchor = new Vector3();
   private readonly islands: StageIsland[] = [];
   private readonly textures: Texture[] = [];
   private readonly resizeObserver: ResizeObserver;
+  private readonly spotlightResizeObserver: ResizeObserver;
   private readonly visibilityObserver: IntersectionObserver;
   private frameId: number | null = null;
   private lastFrameTime = 0;
@@ -62,10 +64,9 @@ export class StageOrbitRenderer {
   private pointerVelocity = 0;
   private pointerStartRotation = 0;
   private dragged = false;
-  private lookX = 0;
-  private lookY = 0;
-  private targetLookX = 0;
-  private targetLookY = 0;
+  private tilt = 0;
+  private lastRenderedRotation = 0;
+  private motionActive = false;
   private visible = true;
   private destroyed = false;
   private ready = false;
@@ -77,6 +78,8 @@ export class StageOrbitRenderer {
     private readonly onUnavailable: () => void,
     private readonly reducedMotion: boolean,
     private readonly worldLabels: readonly HTMLElement[],
+    private readonly spotlight: HTMLElement,
+    private readonly onMotionChange: (moving: boolean) => void,
   ) {
     this.renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
@@ -87,6 +90,8 @@ export class StageOrbitRenderer {
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
+    this.spotlightResizeObserver = new ResizeObserver(() => this.invalidate());
+    this.spotlightResizeObserver.observe(spotlight);
     this.visibilityObserver = new IntersectionObserver(([entry]) => {
       this.visible = entry?.isIntersecting ?? false;
       if (this.visible) {
@@ -100,7 +105,6 @@ export class StageOrbitRenderer {
     canvas.addEventListener('pointermove', this.onPointerMove);
     canvas.addEventListener('pointerup', this.onPointerUp);
     canvas.addEventListener('pointercancel', this.onPointerCancel);
-    canvas.addEventListener('pointerleave', this.onPointerLeave);
     canvas.addEventListener('lostpointercapture', this.onLostPointerCapture);
     canvas.addEventListener('webglcontextlost', this.onContextLost);
     document.addEventListener('visibilitychange', this.onVisibilityChange);
@@ -180,10 +184,15 @@ export class StageOrbitRenderer {
     if (this.destroyed || !this.ready) {
       return;
     }
-    this.targetRotation = nearestStageStop(this.targetRotation, world);
+    const target = nearestStageStop(this.targetRotation, world);
+    if (Math.abs(target - this.rotation) > 0.001 && !this.reducedMotion) {
+      this.setMoving(true);
+    }
+    this.targetRotation = target;
     if (this.reducedMotion) {
       this.rotation = this.targetRotation;
       this.velocity = 0;
+      this.setMoving(false);
     }
     this.invalidate();
   }
@@ -193,10 +202,14 @@ export class StageOrbitRenderer {
       return;
     }
     this.targetRotation = Math.round(this.targetRotation / STAGE_STEP) * STAGE_STEP + direction * STAGE_STEP;
+    if (!this.reducedMotion) {
+      this.setMoving(true);
+    }
     this.onSelection(STAGE_WORLDS[nearestStageIndex(this.targetRotation)]);
     if (this.reducedMotion) {
       this.rotation = this.targetRotation;
       this.velocity = 0;
+      this.setMoving(false);
     }
     this.invalidate();
   }
@@ -208,12 +221,12 @@ export class StageOrbitRenderer {
     this.destroyed = true;
     this.stopFrame();
     this.resizeObserver.disconnect();
+    this.spotlightResizeObserver.disconnect();
     this.visibilityObserver.disconnect();
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
     this.canvas.removeEventListener('pointerup', this.onPointerUp);
     this.canvas.removeEventListener('pointercancel', this.onPointerCancel);
-    this.canvas.removeEventListener('pointerleave', this.onPointerLeave);
     this.canvas.removeEventListener('lostpointercapture', this.onLostPointerCapture);
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
@@ -226,6 +239,9 @@ export class StageOrbitRenderer {
       }
     });
     this.textures.forEach((texture) => texture.dispose());
+    this.spotlight.style.removeProperty('left');
+    this.spotlight.style.removeProperty('top');
+    this.setMoving(false);
     this.renderer.dispose();
   }
 
@@ -262,10 +278,11 @@ export class StageOrbitRenderer {
       group.quaternion.copy(this.camera.quaternion);
       // A restrained local change of viewpoint reveals the depth-map geometry.
       // Avoid large rotations: these illustrations have no real reverse side.
-      group.rotateY(-Math.sin(angle) * 0.16 + this.lookX * 0.18 * focus);
-      group.rotateX(this.lookY * 0.12 * focus);
+      // Local depth movement is coupled to orbit velocity, not idle pointer position.
+      group.rotateY(-Math.sin(angle) * 0.10 + this.tilt * focus);
+      group.rotateX(this.tilt * 0.18 * focus);
       material.opacity = 0.75 + 0.25 * focus;
-      group.scale.setScalar(0.79 + 0.09 * spread + (0.46 + 0.04 * spread) * focus);
+      group.scale.setScalar(0.85 + 0.08 * spread + (0.62 + 0.07 * spread) * focus);
     });
   }
 
@@ -284,8 +301,40 @@ export class StageOrbitRenderer {
       label.style.left = '0';
       label.style.top = '0';
       label.style.transform = `translate3d(${left.toFixed(1)}px, ${top.toFixed(1)}px, 0) translate(-50%, -50%)`;
-      label.style.opacity = `${(0.55 + 0.45 * Math.max(0, facing)).toFixed(2)}`;
+      // The focused island has its own HTML spotlight: no duplicate label beneath it.
+      label.style.opacity = `${Math.max(0, Math.min(1, (1 - facing) * 0.8)).toFixed(2)}`;
     });
+  }
+
+  private positionSpotlight(): void {
+    const island = this.islands[nearestStageIndex(this.targetRotation)];
+    if (!island) {
+      return;
+    }
+
+    // Anchor the Angular-owned HTML beneath the focused Three.js island.
+    // Unlike CSS2DObject this does not reparent Angular's hydrated DOM nodes.
+    this.spotlightAnchor.set(0, -1.92, 0)
+      .applyMatrix4(island.group.matrixWorld)
+      .project(this.camera);
+    const width = this.canvas.clientWidth;
+    const height = this.canvas.clientHeight;
+    const halfWidth = this.spotlight.offsetWidth / 2;
+    const maxX = Math.max(halfWidth + 12, width - halfWidth - 12);
+    const x = Math.min(maxX, Math.max(halfWidth + 12, (this.spotlightAnchor.x + 1) * width / 2));
+    const projectedY = (1 - this.spotlightAnchor.y) * height / 2 + 10;
+    const maxY = Math.max(0, height - this.spotlight.offsetHeight - 12);
+    const y = Math.max(0, Math.min(maxY, projectedY));
+    this.spotlight.style.left = `${x.toFixed(1)}px`;
+    this.spotlight.style.top = `${y.toFixed(1)}px`;
+  }
+
+  private setMoving(moving: boolean): void {
+    if (this.motionActive === moving) {
+      return;
+    }
+    this.motionActive = moving;
+    this.onMotionChange(moving);
   }
 
   private render(): void {
@@ -295,6 +344,7 @@ export class StageOrbitRenderer {
     this.placeIslands();
     this.renderer.render(this.scene, this.camera);
     this.positionLabels();
+    this.positionSpotlight();
   }
 
   private invalidate(): void {
@@ -316,31 +366,32 @@ export class StageOrbitRenderer {
     this.frameId = null;
     const dt = this.lastFrameTime ? Math.min((timestamp - this.lastFrameTime) / 1000, 0.04) : 1 / 60;
     this.lastFrameTime = timestamp;
-    let moving = false;
-
-    if (!this.reducedMotion) {
-      const blend = 1 - Math.exp(-10 * dt);
-      this.lookX += (this.targetLookX - this.lookX) * blend;
-      this.lookY += (this.targetLookY - this.lookY) * blend;
-      moving = Math.abs(this.targetLookX - this.lookX) > 0.001 ||
-        Math.abs(this.targetLookY - this.lookY) > 0.001;
-    }
-
+    let rotating = false;
     if (this.pointerId === null && !this.reducedMotion) {
       const difference = this.targetRotation - this.rotation;
       this.velocity += difference * 85 * dt;
       this.velocity *= Math.exp(-17 * dt);
       this.rotation += this.velocity * dt;
-      moving ||= Math.abs(difference) > 0.0005 || Math.abs(this.velocity) > 0.002;
-      if (!moving) {
+      rotating = Math.abs(difference) > 0.0005 || Math.abs(this.velocity) > 0.002;
+      if (!rotating) {
         this.rotation = this.targetRotation;
         this.velocity = 0;
       }
     }
 
+    // A little lag during rotation reveals the relief of the depth meshes.
+    // At rest it settles to zero and stops the frame loop entirely.
+    const angularSpeed = (this.rotation - this.lastRenderedRotation) / dt;
+    const targetTilt = this.reducedMotion ? 0 : Math.max(-0.085, Math.min(0.085, angularSpeed * 0.016));
+    this.tilt += (targetTilt - this.tilt) * (1 - Math.exp(-12 * dt));
+    const easingTilt = Math.abs(this.tilt) > 0.001 || Math.abs(targetTilt - this.tilt) > 0.001;
     this.render();
-    if (moving) {
+    this.lastRenderedRotation = this.rotation;
+    if (rotating || easingTilt) {
       this.invalidate();
+    } else if (this.pointerId === null) {
+      this.tilt = 0;
+      this.setMoving(false);
     }
   };
 
@@ -361,20 +412,17 @@ export class StageOrbitRenderer {
 
   private readonly onPointerMove = (event: PointerEvent): void => {
     if (this.pointerId === null) {
-      if (!this.reducedMotion && event.pointerType !== 'touch') {
-        const bounds = this.canvas.getBoundingClientRect();
-        this.targetLookX = Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2));
-        this.targetLookY = Math.max(-1, Math.min(1, (0.5 - (event.clientY - bounds.top) / bounds.height) * 2));
-        this.invalidate();
-      }
       return;
     }
     if (event.pointerId !== this.pointerId) {
       return;
     }
     const distance = event.clientX - this.pointerStartX;
-    if (Math.abs(distance) > 6) {
+    if (Math.abs(distance) > 6 && !this.dragged) {
       this.dragged = true;
+      if (!this.reducedMotion) {
+        this.setMoving(true);
+      }
     }
     if (!this.dragged) {
       return;
@@ -398,6 +446,9 @@ export class StageOrbitRenderer {
       const picked = this.pickWorld(event);
       if (picked) {
         this.targetRotation = nearestStageStop(this.rotation, picked);
+        if (Math.abs(this.targetRotation - this.rotation) > 0.001 && !this.reducedMotion) {
+          this.setMoving(true);
+        }
         this.onSelection(picked);
       }
     } else {
@@ -407,13 +458,8 @@ export class StageOrbitRenderer {
     }
     if (this.reducedMotion) {
       this.rotation = this.targetRotation;
+      this.setMoving(false);
     }
-    this.invalidate();
-  };
-
-  private readonly onPointerLeave = (): void => {
-    this.targetLookX = 0;
-    this.targetLookY = 0;
     this.invalidate();
   };
 

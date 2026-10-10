@@ -45,6 +45,7 @@ export class HomeStage {
   private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('stageCanvas');
   private readonly worldLabels = viewChildren<ElementRef<HTMLSpanElement>>('stageWorldLabel');
   private readonly stageScene = viewChild<ElementRef<HTMLElement>>('stageScene');
+  private readonly spotlight = viewChild<ElementRef<HTMLElement>>('stageSpotlight');
   private readonly language = this.store.selectSignal(I18nState.language);
   private renderer: StageOrbitRenderer | null = null;
   private disposeParallax: (() => void) | null = null;
@@ -52,6 +53,7 @@ export class HomeStage {
   protected readonly worlds = STAGE_WORLDS;
   protected readonly activeWorld = signal<StageWorld>('music');
   protected readonly webglReady = signal(false);
+  protected readonly spotlightVisible = signal(true);
 
   protected readonly albums = toSignal(
     toObservable(this.language).pipe(
@@ -184,13 +186,25 @@ export class HomeStage {
       if (this.destroyRef.destroyed) {
         return;
       }
+      const spotlight = this.spotlight()?.nativeElement;
+      if (!spotlight) {
+        return;
+      }
       instance = new StageOrbitRenderer(
         canvas,
         (world) => this.activeWorld.set(world),
-        () => this.webglReady.set(true),
-        () => this.webglReady.set(false),
+        () => {
+          this.webglReady.set(true);
+          this.spotlightVisible.set(true);
+        },
+        () => {
+          this.webglReady.set(false);
+          this.spotlightVisible.set(true);
+        },
         window.matchMedia('(prefers-reduced-motion: reduce)').matches,
         this.worldLabels().map((label) => label.nativeElement),
+        spotlight,
+        (moving) => this.spotlightVisible.set(!moving),
       );
       this.renderer = instance;
       await instance.init();
@@ -204,6 +218,7 @@ export class HomeStage {
       instance?.dispose();
       this.renderer = null;
       this.webglReady.set(false);
+      this.spotlightVisible.set(true);
     }
   }
 }

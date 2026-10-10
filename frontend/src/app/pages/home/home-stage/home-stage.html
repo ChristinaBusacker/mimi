@@ -81,7 +81,13 @@
     </div>
   </div>
 
-  <div class="stage__spotlight" aria-live="polite">
+  <div
+    #stageSpotlight
+    class="stage__spotlight"
+    [class.stage__spotlight--moving]="webglReady() && !spotlightVisible()"
+    [attr.inert]="webglReady() && !spotlightVisible() ? '' : null"
+    aria-live="polite"
+  >
     @switch (activeWorld()) {
       @case ('music') {
         <div class="stage__copy">

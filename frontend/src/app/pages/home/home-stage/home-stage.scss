@@ -39,7 +39,7 @@
 
 .stage__scene {
   position: relative;
-  height: clamp(33rem, 46vw, 42rem);
+  height: clamp(36rem, 51vw, 47rem);
   isolation: isolate;
 }
 
@@ -178,6 +178,7 @@
   &.is-active {
     color: var(--stage-accent);
     font-size: clamp(1.2rem, 2vw, 1.65rem);
+    opacity: 0;
   }
 }
 
@@ -254,70 +255,64 @@
 }
 
 .stage__spotlight {
-  position: relative;
+  position: absolute;
   z-index: 5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: clamp(1.2rem, 5vw, 3.5rem);
-  width: min(calc(100% - 2rem), 1040px);
-  min-height: 112px;
-  margin: -0.65rem auto 0;
-  padding: 1.5rem clamp(1.25rem, 4vw, 3.5rem) 1.1rem;
-  background:
-    radial-gradient(ellipse 65% 120% at 50% 0, var(--stage-accent-glow), transparent 74%),
-    linear-gradient(90deg, transparent, rgb(34 13 35 / 62%) 22%, rgb(34 13 35 / 77%) 50%, rgb(34 13 35 / 62%) 78%, transparent);
-  text-shadow: 0 2px 8px rgb(20 7 23 / 75%);
+  top: 71%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  width: min(calc(100% - 2rem), 34rem);
+  margin: 0;
+  padding: 0.65rem 1.1rem;
+  color: #fff3fb;
+  text-align: center;
+  text-shadow: 0 2px 9px rgb(23 8 27 / 94%), 0 0 24px rgb(23 8 27 / 65%);
+  background: radial-gradient(ellipse 72% 84% at 50% 55%, rgb(31 11 34 / 56%), transparent 100%);
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition: opacity 200ms ease, transform 250ms ease;
 
-  // A narrow glow ties the information to the active island instead of framing it as another card.
+  // The glow follows the projected anchor below the front island.
   &::before {
     position: absolute;
-    bottom: calc(100% - 0.4rem);
-    left: calc(50% - 1px);
-    width: 2px;
-    height: 76px;
+    bottom: calc(100% - 0.15rem);
+    left: 50%;
+    width: 1px;
+    height: 2.3rem;
     background: linear-gradient(to bottom, transparent, var(--stage-accent));
-    box-shadow: 0 0 20px 3px var(--stage-accent-glow);
+    box-shadow: 0 0 13px 2px var(--stage-accent-glow);
     content: '';
     pointer-events: none;
   }
 
-  &::after {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: min(85%, 710px);
-    height: 22px;
-    border-top: 1px solid var(--stage-accent);
-    border-radius: 50%;
-    box-shadow: 0 -3px 22px -12px var(--stage-accent);
-    opacity: 0.75;
-    transform: translateX(-50%);
-    mask-image: linear-gradient(to right, transparent, #000 22%, #000 78%, transparent);
-    content: '';
+  &--moving {
+    opacity: 0;
     pointer-events: none;
+    transform: translate(-50%, 0.6rem);
   }
 }
 
 .stage__copy {
   display: grid;
-  gap: 0.4rem;
+  justify-items: center;
+  gap: 0.3rem;
   min-width: 0;
 
   h3 {
     margin: 0;
     color: var(--stage-accent);
     font-family: var(--font-headline);
-    font-size: clamp(1.75rem, 3.2vw, 2.6rem);
-    line-height: 1.08;
+    font-size: clamp(1.65rem, 2.8vw, 2.25rem);
+    line-height: 1.1;
   }
 
   p {
-    max-width: 70ch;
+    max-width: 49ch;
     margin: 0;
-    opacity: 0.85;
-    font-size: 0.9rem;
-    line-height: 1.5;
+    opacity: 0.94;
+    font-size: 0.85rem;
+    line-height: 1.4;
   }
 }
 
@@ -338,7 +333,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  justify-self: start;
+  justify-self: center;
   color: var(--stage-accent);
   font-size: 0.8rem;
   text-decoration: none;
@@ -363,8 +358,8 @@
   align-items: center;
   gap: 0.55rem;
   justify-content: center;
-  min-height: 44px;
-  padding: 0.7rem 1.3rem;
+  min-height: 42px;
+  padding: 0.55rem 1.15rem;
   border-radius: var(--radius-pill);
   color: #2b1223;
   background: var(--stage-accent);
@@ -395,37 +390,31 @@
 
 @include compact-layout {
   .stage__scene {
-    height: clamp(29rem, 55vw, 37rem);
+    height: clamp(35rem, 60vw, 43rem);
   }
 }
 
 @media (max-width: 640px) {
   .stage__scene {
-    height: clamp(22rem, 90vw, 30rem);
+    height: clamp(34rem, 122vw, 45rem);
   }
 
   .stage__spotlight {
-    display: grid;
-    gap: 0.85rem;
-    width: min(calc(100% - 1.5rem), 33rem);
-    min-height: 0;
-    margin-top: -0.4rem;
-    padding: 1.6rem 1.1rem 0.8rem;
-    background:
-      radial-gradient(ellipse 95% 100% at 50% 0, var(--stage-accent-glow), transparent 80%),
-      linear-gradient(90deg, transparent, rgb(34 13 35 / 74%) 14%, rgb(34 13 35 / 83%) 50%, rgb(34 13 35 / 74%) 86%, transparent);
+    gap: 0.4rem;
+    width: min(calc(100% - 1.5rem), 28rem);
+    padding: 0.55rem 0.85rem;
 
     &::before {
-      height: 47px;
+      height: 1.4rem;
     }
   }
 
   .stage__copy h3 {
-    font-size: clamp(1.65rem, 6vw, 2.2rem);
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
   }
 
   .stage__action {
-    justify-self: start;
+    justify-self: center;
   }
 
   .stage__island-label {
@@ -467,7 +456,8 @@
 
   .stage__canvas,
   .stage__fallback,
-  .stage__fallback-island {
+  .stage__fallback-island,
+  .stage__spotlight {
     transition: none;
   }
 
