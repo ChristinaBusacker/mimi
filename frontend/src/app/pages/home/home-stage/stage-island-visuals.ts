@@ -25,16 +25,26 @@ interface LayerAsset {
 // The slight height difference in the depth files is handled by normalized UV sampling.
 const WORLD_LAYERS: Record<StageWorld, readonly LayerAsset[]> = {
   music: [
-    { image: 'music-island.png', depth: 'music-island-depth.png', relief: 0.28, z: 0 },
-    { image: 'music-character.png', depth: 'music-character-depth.png', relief: 0.01, z: 0, character: true },
+    { image: 'music-island.png', depth: 'music-island-depth.png', relief: 0.8, z: 0 },
+    {
+      image: 'music-character.png',
+      depth: 'music-character-depth.png',
+      relief: 0.4,
+      z: 0,
+      character: true,
+    },
   ],
-  community: [
-    { image: 'community.png', depth: 'community-depth.png', relief: 0.55, z: 0 },
-  ],
+  community: [{ image: 'community.png', depth: 'community-depth.png', relief: 0.8, z: 0 }],
   gaming: [
     // The uploaded filename is intentionally "gamin", not "gaming".
-    { image: 'gaming-island.png', depth: 'gamin-island-depth.png', relief: 0.3, z: 0 },
-    { image: 'gaming-character.png', depth: 'gaming-character-depth.png', relief: 0.01, z: 0, character: true },
+    { image: 'gaming-island.png', depth: 'gamin-island-depth.png', relief: 0.8, z: 0 },
+    {
+      image: 'gaming-character.png',
+      depth: 'gaming-character-depth.png',
+      relief: 0.3,
+      z: 0,
+      character: true,
+    },
   ],
 };
 
@@ -66,11 +76,7 @@ function makeShadowTexture(): CanvasTexture {
   return new CanvasTexture(canvas);
 }
 
-function makeGeometry(
-  depth: Texture | null,
-  relief: number,
-  character: boolean,
-): PlaneGeometry {
+function makeGeometry(depth: Texture | null, relief: number, character: boolean): PlaneGeometry {
   const geometry = new PlaneGeometry(4.8, 3.6, character ? 48 : 112, character ? 36 : 84);
   if (!depth) return geometry;
   try {
@@ -101,19 +107,23 @@ export async function createStageVisuals(renderer: WebGLRenderer): Promise<Stage
 
   try {
     // Load each island concurrently, preserving background-before-character ordering.
-    const assets = await Promise.all(STAGE_WORLDS.map(async (world) =>
-      Promise.all(WORLD_LAYERS[world].map(async (layer) => {
-        const color = await loader.loadAsync(`/images/island/${layer.image}`);
-        textures.push(color);
-        let depth: Texture | null = null;
-        try {
-          depth = await loader.loadAsync(`/images/island/${layer.depth}`);
-        } catch {
-          // Keep the RGB layer if only its optional depth map is missing.
-        }
-        return { layer, color, depth };
-      })),
-    ));
+    const assets = await Promise.all(
+      STAGE_WORLDS.map(async (world) =>
+        Promise.all(
+          WORLD_LAYERS[world].map(async (layer) => {
+            const color = await loader.loadAsync(`/images/island/${layer.image}`);
+            textures.push(color);
+            let depth: Texture | null = null;
+            try {
+              depth = await loader.loadAsync(`/images/island/${layer.depth}`);
+            } catch {
+              // Keep the RGB layer if only its optional depth map is missing.
+            }
+            return { layer, color, depth };
+          }),
+        ),
+      ),
+    );
 
     for (const [index, layers] of assets.entries()) {
       const group = new Group();
@@ -141,8 +151,11 @@ export async function createStageVisuals(renderer: WebGLRenderer): Promise<Stage
       }
 
       const shadowMaterial = new MeshBasicMaterial({
-        map: shadowTexture, transparent: true, opacity: 0.48,
-        depthWrite: false, side: DoubleSide,
+        map: shadowTexture,
+        transparent: true,
+        opacity: 0.48,
+        depthWrite: false,
+        side: DoubleSide,
       });
       const shadow = new Mesh(new PlaneGeometry(4.9, 2), shadowMaterial);
       shadow.position.set(0, -0.8, -0.35);

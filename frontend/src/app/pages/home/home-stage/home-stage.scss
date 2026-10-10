@@ -286,15 +286,13 @@
   padding: 0.65rem 1.1rem;
   color: #fff3fb;
   text-align: center;
-  text-shadow:
-    0 2px 9px rgb(23 8 27 / 94%),
-    0 0 24px rgb(23 8 27 / 65%);
+  text-shadow: var(--text-shadow);
   background: linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(34, 34, 34, 0.5) 25%,
-    rgba(34, 34, 34, 0.5) 75%,
-    rgba(0, 0, 0, 0) 100%
+    rgba(175, 104, 167, 0) 0%,
+    rgba(36, 17, 34, 0.5) 25%,
+    rgba(36, 17, 34, 0.5) 75%,
+    rgba(175, 104, 167, 0) 100%
   );
   opacity: 1;
   transform: translate(-50%, 0);

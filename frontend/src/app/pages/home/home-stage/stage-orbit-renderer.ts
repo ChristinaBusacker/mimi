@@ -371,7 +371,7 @@ export class StageOrbitRenderer {
     const angularSpeed = (this.rotation - this.lastRenderedRotation) / dt;
     const targetTilt = this.reducedMotion
       ? 0
-      : Math.max(-0.085, Math.min(0.085, angularSpeed * 0.016));
+      : Math.max(-0.085, Math.min(0.25, angularSpeed * 0.05));
     this.tilt += (targetTilt - this.tilt) * (1 - Math.exp(-12 * dt));
     const easingTilt = Math.abs(this.tilt) > 0.001 || Math.abs(targetTilt - this.tilt) > 0.001;
     const easingParallax =
@@ -411,15 +411,17 @@ export class StageOrbitRenderer {
   };
 
   private readonly onPointerMove = (event: PointerEvent): void => {
+    const horizontalParallaxStrength = 0.045;
+    const verticalParallaxStrength = 0.045;
     if (this.pointerId === null) {
       if (!this.reducedMotion && !this.orientationActive && event.pointerType === 'mouse') {
         const bounds = this.canvas.getBoundingClientRect();
         this.parallaxTarget.x =
           Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2)) *
-          0.045;
+          horizontalParallaxStrength;
         this.parallaxTarget.y =
           Math.max(-1, Math.min(1, (0.5 - (event.clientY - bounds.top) / bounds.height) * 2)) *
-          0.028;
+          verticalParallaxStrength;
         this.invalidate();
       }
       return;
