@@ -87,75 +87,16 @@
         </span>
       }
     </div>
-  </div>
-
-  <div
-    #stageSpotlight
-    class="stage__spotlight"
-    [class.stage__spotlight--moving]="webglReady() && !spotlightVisible()"
-    [attr.inert]="webglReady() && !spotlightVisible() ? '' : null"
-    aria-live="polite"
-  >
-    @switch (activeWorld()) {
-      @case ('music') {
-        <div class="stage__copy">
-          <span class="stage__eyebrow">{{ 'home.music.eyebrow' | i18n | async }}</span>
-          <h3>{{ 'home.music.title' | i18n | async }}</h3>
-          <p>{{ 'home.music.description' | i18n | async }}</p>
-          @if (featuredAlbum(); as album) {
-            <a class="stage__album" [routerLink]="['/music/albums', album.slug]">
-              @if (album.coverAssetId; as cover) {
-                <img [src]="coverUrl(cover)" [alt]="album.title" loading="lazy" decoding="async" />
-              }
-              <span>{{ album.title }}</span>
-              <span aria-hidden="true">↗</span>
-            </a>
-          }
-        </div>
-        <a class="stage__action" routerLink="/music"
-          >{{ 'home.music.action' | i18n | async }} <span aria-hidden="true">→</span></a
-        >
-      }
-      @case ('gaming') {
-        <div class="stage__copy">
-          <span class="stage__eyebrow">{{ 'navigation.gaming' | i18n | async }}</span>
-          <h3>{{ 'hero.gaming.title' | i18n | async }}</h3>
-          <p>{{ 'hero.gaming.description' | i18n | async }}</p>
-          @if (upcomingGame()?.game; as game) {
-            <span class="stage__meta"
-              >{{ 'gaming.next.label' | i18n | async }}: {{ game.name }}</span
-            >
-          } @else if (upcomingGame()?.stream; as stream) {
-            <span class="stage__meta"
-              >{{ 'gaming.next.label' | i18n | async }}: {{ stream.title }}</span
-            >
-          }
-        </div>
-        <a class="stage__action" routerLink="/gaming"
-          >{{ 'navigation.gaming' | i18n | async }} <span aria-hidden="true">→</span></a
-        >
-      }
-      @case ('community') {
-        <div class="stage__copy">
-          <span class="stage__eyebrow">{{ 'home.community.eyebrow' | i18n | async }}</span>
-          <h3>{{ 'home.community.title' | i18n | async }}</h3>
-          <p>{{ 'home.community.description' | i18n | async }}</p>
-          @if (community(); as discord) {
-            @if (discord.connected && discord.memberCount !== null) {
-              <span class="stage__meta">
-                {{ discord.memberCount }} {{ 'home.community.members' | i18n | async }}
-                @if (discord.onlineCount !== null) {
-                  · {{ discord.onlineCount }} {{ 'home.community.online' | i18n | async }}
-                }
-              </span>
-            }
-          }
-        </div>
-        <a class="stage__action" routerLink="/community"
-          >{{ 'home.community.action' | i18n | async }} <span aria-hidden="true">→</span></a
-        >
-      }
-    }
+    <div
+      class="stage__scene-heading"
+      [class.stage__scene-heading--moving]="webglReady() && !spotlightVisible()"
+      aria-hidden="true"
+    >
+      <div class="stage__scene-heading-content">
+        <span class="stage__eyebrow">{{ mobileHeading().eyebrow | i18n | async }}</span>
+        <span class="stage__scene-title">{{ mobileHeading().title | i18n | async }}</span>
+      </div>
+    </div>
   </div>
 
   <nav class="stage__navigation" [attr.aria-label]="'home.intro.title' | i18n | async">
@@ -190,14 +131,95 @@
     </button>
   </nav>
 
+  <div
+    #stageSpotlight
+    class="stage__spotlight"
+    [class.stage__spotlight--moving]="webglReady() && !spotlightVisible()"
+    [attr.inert]="webglReady() && !spotlightVisible() ? '' : null"
+    aria-live="polite"
+  >
+    @switch (activeWorld()) {
+      @case ('music') {
+        <div class="stage__copy">
+          <div class="stage__heading">
+            <span class="stage__eyebrow">{{ 'home.music.eyebrow' | i18n | async }}</span>
+            <h3>{{ 'home.music.title' | i18n | async }}</h3>
+          </div>
+          <p>{{ 'home.music.description' | i18n | async }}</p>
+          @if (featuredAlbum(); as album) {
+            <a class="stage__album" [routerLink]="['/music/albums', album.slug]">
+              @if (album.coverAssetId; as cover) {
+                <img [src]="coverUrl(cover)" [alt]="album.title" loading="lazy" decoding="async" />
+              }
+              <span>{{ album.title }}</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+          }
+        </div>
+        <a class="stage__action" routerLink="/music"
+          >{{ 'home.music.action' | i18n | async }} <span aria-hidden="true">→</span></a
+        >
+      }
+      @case ('gaming') {
+        <div class="stage__copy">
+          <div class="stage__heading">
+            <span class="stage__eyebrow">{{ 'navigation.gaming' | i18n | async }}</span>
+            <h3>{{ 'hero.gaming.title' | i18n | async }}</h3>
+          </div>
+          <p>{{ 'hero.gaming.description' | i18n | async }}</p>
+          @if (upcomingGame()?.game; as game) {
+            <span class="stage__meta"
+              >{{ 'gaming.next.label' | i18n | async }}: {{ game.name }}</span
+            >
+          } @else if (upcomingGame()?.stream; as stream) {
+            <span class="stage__meta"
+              >{{ 'gaming.next.label' | i18n | async }}: {{ stream.title }}</span
+            >
+          }
+        </div>
+        <a class="stage__action" routerLink="/gaming"
+          >{{ 'navigation.gaming' | i18n | async }} <span aria-hidden="true">→</span></a
+        >
+      }
+      @case ('community') {
+        <div class="stage__copy">
+          <div class="stage__heading">
+            <span class="stage__eyebrow">{{ 'home.community.eyebrow' | i18n | async }}</span>
+            <h3>{{ 'home.community.title' | i18n | async }}</h3>
+          </div>
+          <p>{{ 'home.community.description' | i18n | async }}</p>
+          @if (community(); as discord) {
+            @if (discord.connected && discord.memberCount !== null) {
+              <span class="stage__meta">
+                {{ discord.memberCount }} {{ 'home.community.members' | i18n | async }}
+                @if (discord.onlineCount !== null) {
+                  · {{ discord.onlineCount }} {{ 'home.community.online' | i18n | async }}
+                }
+              </span>
+            }
+          }
+        </div>
+        <a class="stage__action" routerLink="/community"
+          >{{ 'home.community.action' | i18n | async }} <span aria-hidden="true">→</span></a
+        >
+      }
+    }
+  </div>
+
   @if (motionSupported() && webglReady()) {
     <button
       type="button"
       class="stage__motion"
       [attr.aria-pressed]="motionEnabled()"
+      [attr.aria-label]="(motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async"
+      [attr.title]="(motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async"
       (click)="toggleMotion()"
     >
-      {{ (motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async }}
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="8" y="3" width="8" height="18" rx="2" />
+        <path d="M11 18h2M3 8l-2 3 2 3M21 8l2 3-2 3" />
+      </svg>
+      <span class="stage__motion-label">{{ (motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async }}</span>
     </button>
   }
 

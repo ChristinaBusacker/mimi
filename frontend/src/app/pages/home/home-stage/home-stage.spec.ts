@@ -36,6 +36,12 @@ describe('HomeStage', () => {
     expect(fixture.nativeElement.querySelectorAll('.stage__island-label').length).toBe(3);
     expect(fixture.nativeElement.querySelector('.stage__spotlight')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.stage__details')).toBeNull();
+    const navigation = fixture.nativeElement.querySelector('.stage__navigation') as HTMLElement;
+    expect(navigation.nextElementSibling?.classList.contains('stage__spotlight')).toBe(true);
+    expect(fixture.nativeElement.querySelectorAll('.stage__heading').length).toBe(1);
+    const preview = fixture.nativeElement.querySelector('.stage__scene-heading') as HTMLElement;
+    expect(preview.closest('.stage__scene')).not.toBeNull();
+    expect(preview.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('updates details and navigation when selecting a different world', () => {

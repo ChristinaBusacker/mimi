@@ -52,6 +52,16 @@ export class HomeStage {
 
   protected readonly worlds = STAGE_WORLDS;
   protected readonly activeWorld = signal<StageWorld>('music');
+  protected readonly mobileHeading = computed(() => {
+    switch (this.activeWorld()) {
+      case 'music':
+        return { eyebrow: 'home.music.eyebrow', title: 'home.music.title' };
+      case 'community':
+        return { eyebrow: 'home.community.eyebrow', title: 'home.community.title' };
+      case 'gaming':
+        return { eyebrow: 'navigation.gaming', title: 'hero.gaming.title' };
+    }
+  });
   protected readonly webglReady = signal(false);
   protected readonly spotlightVisible = signal(true);
   protected readonly motionSupported = signal(false);

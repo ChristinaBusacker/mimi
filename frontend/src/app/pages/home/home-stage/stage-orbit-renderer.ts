@@ -307,6 +307,14 @@ export class StageOrbitRenderer {
   }
 
   private positionSpotlight(): void {
+    // On phones the spotlight participates in the document flow, below the
+    // carousel navigation. Desktop alone projects the text onto the scene.
+    if (this.canvas.clientWidth <= 640) {
+      this.spotlight.style.removeProperty('left');
+      this.spotlight.style.removeProperty('top');
+      return;
+    }
+
     const island = this.islands[nearestStageIndex(this.targetRotation)];
     if (!island) {
       return;

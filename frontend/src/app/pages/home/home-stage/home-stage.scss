@@ -43,6 +43,10 @@
   isolation: isolate;
 }
 
+.stage__scene-heading {
+  display: none;
+}
+
 .stage__backdrop {
   position: absolute;
   z-index: 0;
@@ -454,27 +458,145 @@
 }
 
 @media (max-width: 640px) {
+  .stage {
+    overflow-anchor: none;
+    timeline-scope: --stage-mobile-details;
+  }
+
   .stage__scene {
-    height: clamp(21rem, 92vw, 25rem);
+    height: clamp(23rem, 104vw, 30rem);
     margin-block-start: -0.75rem;
   }
 
+  .stage__canvas {
+    cursor: default;
+  }
+
+  .stage__navigation {
+    z-index: 7;
+    width: min(calc(100% - 1.5rem), 29rem);
+    margin: -0.7rem auto 0;
+  }
+
+  .stage__choices {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    gap: 0.45rem;
+  }
+
+  .stage__choice {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.55rem 0.25rem;
+    font-size: clamp(0.78rem, 3.4vw, 0.95rem);
+    white-space: nowrap;
+  }
+
+  .stage__arrow {
+    display: none;
+  }
+
   .stage__spotlight {
-    gap: 0.4rem;
-    width: min(calc(100% - 1.5rem), 28rem);
-    padding: 0.55rem 0.85rem;
+    position: relative;
+    z-index: 5;
+    top: auto;
+    left: auto;
+    gap: 0.65rem;
+    width: min(calc(100% - 1.5rem), 35rem);
+    margin: 0.55rem auto 0;
+    padding: 1.1rem clamp(0.9rem, 4vw, 1.35rem) 1.35rem;
+    border: 1px solid rgb(255 216 239 / 24%);
+    border-radius: var(--radius-card);
+    background: linear-gradient(160deg, rgb(62 29 57 / 91%), rgb(39 17 43 / 93%));
+    box-shadow: 0 10px 28px rgb(29 9 32 / 25%);
+    text-align: center;
+    transform: none;
+    pointer-events: auto;
+    view-timeline-name: --stage-mobile-details;
+    view-timeline-axis: block;
 
     &::before {
-      height: 1.4rem;
+      display: none;
+    }
+
+    &--moving {
+      transform: none;
     }
   }
 
-  .stage__copy h3 {
-    font-size: clamp(1.5rem, 5.5vw, 2rem);
+  .stage__copy {
+    gap: 0.65rem;
+    width: 100%;
+
+    h3 {
+      font-size: clamp(1.55rem, 5.9vw, 2.15rem);
+      text-wrap: balance;
+    }
+
+    p {
+      max-width: 38ch;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+  }
+
+  .stage__heading {
+    display: grid;
+    justify-items: center;
+    gap: 0.3rem;
+  }
+
+  .stage__album {
+    gap: 0.6rem;
+    min-height: 44px;
+    font-size: 0.88rem;
+
+    img {
+      width: 36px;
+    }
   }
 
   .stage__action {
-    justify-self: center;
+    width: min(100%, 23rem);
+    min-height: 46px;
+    margin-top: 0.35rem;
+  }
+
+  .stage__motion {
+    position: absolute;
+    z-index: 8;
+    top: 0.4rem;
+    right: max(0.75rem, calc((100vw - 29rem) / 2));
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    background: rgb(42 18 43 / 86%);
+
+    svg {
+      width: 23px;
+      height: 23px;
+    }
+  }
+
+  .stage__motion-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .stage__about {
+    min-height: 44px;
+    margin: 0.45rem auto 0.6rem;
+    padding: 0.65rem;
+    font-size: 0.92rem;
   }
 
   .stage__island-label {
@@ -505,6 +627,40 @@
     left: 63%;
     width: 18%;
   }
+
+  // This is a visual preview, not a second semantic heading.
+  .stage__scene-heading {
+    position: absolute;
+    z-index: 5;
+    right: 1rem;
+    bottom: 4rem;
+    left: 1rem;
+    color: #fff3fb;
+    text-align: center;
+    text-shadow: 0 2px 9px rgb(24 8 28 / 95%);
+    pointer-events: none;
+  }
+
+  .stage__scene-heading-content {
+    display: grid;
+    justify-items: center;
+    gap: 0.2rem;
+    opacity: 1;
+    transition: opacity 180ms ease;
+  }
+
+  .stage__scene-heading--moving .stage__scene-heading-content {
+    opacity: 0;
+  }
+
+  .stage__scene-title {
+    max-width: 27ch;
+    color: var(--stage-accent);
+    font-family: var(--font-headline);
+    font-size: clamp(1.35rem, 5.4vw, 1.9rem);
+    line-height: 1.13;
+    text-wrap: balance;
+  }
 }
 
 @include reduced-motion {
@@ -523,5 +679,34 @@
 
   .stage__island-label {
     will-change: auto;
+  }
+}
+
+// The preview belongs to the island; the actual heading stays in the
+// reading panel. Crossfading them avoids moving text across the navigation.
+@keyframes stage-mobile-preview-out {
+  from { opacity: 1; translate: 0 0; }
+  to { opacity: 0; translate: 0 2rem; }
+}
+
+@keyframes stage-mobile-heading-in {
+  from { opacity: 0; translate: 0 -0.5rem; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .stage__scene-heading {
+      display: block;
+      animation: stage-mobile-preview-out linear both;
+      animation-timeline: --stage-mobile-details;
+      animation-range: entry 55% entry 95%;
+    }
+
+    .stage__heading {
+      animation: stage-mobile-heading-in linear both;
+      animation-timeline: --stage-mobile-details;
+      animation-range: entry 55% entry 95%;
+    }
   }
 }
