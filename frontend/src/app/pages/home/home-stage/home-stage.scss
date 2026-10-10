@@ -447,7 +447,8 @@
 
 @media (max-width: 640px) {
   .stage__scene {
-    height: clamp(34rem, 122vw, 45rem);
+    height: clamp(21rem, 92vw, 25rem);
+    margin-block-start: -0.75rem;
   }
 
   .stage__spotlight {

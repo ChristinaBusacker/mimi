@@ -222,11 +222,25 @@ export class StageOrbitRenderer {
     }
     const width = Math.max(1, this.canvas.clientWidth);
     const height = Math.max(1, this.canvas.clientHeight);
-    this.camera.aspect = width / height;
+    const aspect = width / height;
+
     const spread = Math.max(0, Math.min(1, (width - 640) / 480));
-    this.camera.fov = 51 - spread * 14;
+
+    this.camera.aspect = aspect;
+
+    if (width <= 640) {
+      const referenceAspect = 412 / 544;
+      const referenceFov = (50 * Math.PI) / 180;
+
+      this.camera.fov =
+        (2 * Math.atan((Math.tan(referenceFov / 2) * referenceAspect) / aspect) * 180) / Math.PI;
+    } else {
+      this.camera.fov = 51 - spread * 14;
+    }
+
     this.camera.position.z = 14.2 + spread * 0.8;
     this.camera.updateProjectionMatrix();
+
     this.renderer.setSize(width, height, false);
     this.invalidate();
   }

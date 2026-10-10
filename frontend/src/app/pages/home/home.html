@@ -1,72 +1,10 @@
 @let heroView = hero();
 
-<app-hero [type]="heroView.heroType" class="floating" gradientDirection="rtl">
-  <div hero-left class="intro">
-    <div class="tags">
-      @if (heroView.statusKey) {
-        <div class="tag" [class.live]="heroView.isLive" [class.upcoming]="heroView.isUpcoming">
-          <app-icon name="circle" class="white small" />
-          {{ heroView.statusKey | i18n | async }}
-        </div>
-      }
-
-      <div class="tag type">
-        <app-icon [name]="heroView.icon" class="white small" />
-        {{ heroView.typeKey | i18n | async }}
-      </div>
-    </div>
-
-    <div class="text">
-      <h1 class="more-suggar">{{ heroView.titleKey | i18n | async }}</h1>
-
-      @if (!heroView.isUpcoming) {
-        <p>{{ heroView.descriptionKey | i18n | async }}</p>
-      }
-    </div>
-  </div>
-
-  <div hero-right class="visual">
-    @if (heroView.isUpcoming) {
-      <div class="upcoming-details">
-        @if (heroView.startsAt; as startsAt) {
-          <app-countdown [startsAt]="startsAt" />
-        }
-
-        @if (heroView.streamTitle) {
-          <div class="stream-meta upcoming">
-            <strong>{{ heroView.streamTitle }}</strong>
-
-            @if (heroView.scheduledAt) {
-              <span>{{ heroView.scheduledAt }}</span>
-            }
-          </div>
-        }
-      </div>
-    } @else if (heroView.streamTitle) {
-      <div class="stream-meta">
-        <strong>{{ heroView.streamTitle }}</strong>
-      </div>
-    }
-
-    @if (heroView.channelUrl; as channelUrl) {
-      <div class="cta">
-        @if (heroView.isLive) {
-          <app-button class="primary round" [href]="channelUrl" target="_blank">
-            <app-icon name="twitch" class="" />
-            {{ heroView.actionKey | i18n | async }}
-            <app-icon name="arrow" class="" />
-          </app-button>
-        }
-
-        <app-button class="twitch round white" [href]="channelUrl" target="_blank">
-          <app-icon name="twitch" class="white" />
-          {{ 'hero.action.channel' | i18n | async }}
-          <app-icon name="arrow" class="white" />
-        </app-button>
-      </div>
-    }
-  </div>
-</app-hero>
+<div class="hero">
+  <div class="countdown"></div>
+  <div class="details"></div>
+  <div class="actions"></div>
+</div>
 
 <app-home-stage [community]="community" />
 
