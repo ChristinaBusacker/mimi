@@ -1,6 +1,5 @@
 @use 'mixins' as *;
 
-
 // Editorial home layout: the stage remains the main visual attraction.
 :host {
   .home-content {
@@ -87,6 +86,7 @@
     border: 1px solid rgb(255 209 236 / 25%);
     border-radius: calc(var(--radius-card) / 1.5);
     background: rgb(30 15 35 / 80%);
+    max-height: 200px;
 
     img {
       display: block;
@@ -287,7 +287,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
 }
 
 .home-invite {
@@ -353,7 +352,9 @@
     color: #ffbedc;
     background: rgb(46 19 47 / 54%);
     text-decoration: none;
-    transition: background-color 160ms ease, border-color 160ms ease;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease;
 
     &:hover,
     &:focus-visible {
