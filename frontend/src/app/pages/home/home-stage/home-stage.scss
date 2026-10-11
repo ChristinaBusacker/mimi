@@ -5,13 +5,15 @@
   min-width: 0;
   margin-top: 0;
   margin: calc(var(--spacing-md) * -1);
+  width: 100%;
 }
 
 .stage {
   position: relative;
   isolation: isolate;
-  width: 100%;
+  width: 100vw;
   max-width: none;
+
   margin-inline-start: calc(50% - 50vw);
   color: var(--color-text);
   --stage-accent: #ffc0db;
@@ -55,6 +57,7 @@
   overflow: hidden;
   pointer-events: none;
   z-index: -1;
+  top: 20px;
 }
 
 .stage__atmosphere,
@@ -102,7 +105,6 @@
 
   &--ready {
     opacity: 1;
-    top: -20px;
   }
 
   &:active {
@@ -114,6 +116,8 @@
   position: absolute;
   z-index: 2;
   inset: 0;
+  // Keep inactive fallback islands from enlarging the document while WebGL is active.
+  overflow: clip;
   pointer-events: none;
   opacity: 1;
   transition: opacity 230ms ease;
@@ -175,6 +179,8 @@
   position: absolute;
   z-index: 4;
   inset: 0;
+  // Projected labels must not extend the document's scrollable bounds.
+  overflow: clip;
   pointer-events: none;
   user-select: none;
 }
@@ -452,7 +458,16 @@
 }
 
 @media (max-width: 640px) {
+  :host {
+    // Keep the vertical overlap, but do not expand the stage horizontally.
+    margin-inline: 0;
+  }
+
   .stage {
+    width: calc(100% + 26px);
+    overflow-x: hidden;
+    margin-inline-start: calc(50% - 50vw);
+
     overflow-anchor: none;
     timeline-scope: --stage-mobile-details;
   }
@@ -586,12 +601,10 @@
     white-space: nowrap;
   }
 
-  .stage__island-label {
+  // The tabs already label all three worlds on phones. Hidden, transformed
+  // labels can still expand scrollWidth, so exclude the overlay entirely.
+  .stage__island-labels {
     display: none;
-
-    &.is-active {
-      display: block;
-    }
   }
 
   .stage__fallback-island {
