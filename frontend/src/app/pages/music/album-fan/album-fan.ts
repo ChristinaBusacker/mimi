@@ -4,14 +4,21 @@ import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
   computed,
+  effect,
+  inject,
   input,
   signal,
+  viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { Icon } from '../../../components/icon/icon';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
+import type { AlbumStageRenderer } from './album-stage-renderer';
 
 interface AlbumFanCard {
   album: MusicAlbumSummary;
@@ -40,6 +47,10 @@ export class AlbumFan {
   protected readonly activeIndex = signal(0);
   protected readonly dragProgress = signal(0);
   protected readonly isDragging = signal(false);
+  protected readonly webglReady = signal(false);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly stageCanvas = viewChild<ElementRef<HTMLCanvasElement>>('albumStageCanvas');
+  private renderer: AlbumStageRenderer | null = null;
 
   protected readonly normalizedActiveIndex = computed(() =>
     this.normalizeIndex(this.activeIndex(), this.albums().length),
@@ -79,12 +90,12 @@ export class AlbumFan {
         album,
         index,
         x,
-        y: `${(absoluteOffset * 13).toFixed(2)}px`,
-        depth: `${(-absoluteOffset * 108).toFixed(2)}px`,
-        rotateY: `${(-offset * 10).toFixed(2)}deg`,
+        y: `${(absoluteOffset * 18).toFixed(2)}px`,
+        depth: `${(-absoluteOffset * 155).toFixed(2)}px`,
+        rotateY: `${(-offset * 12).toFixed(2)}deg`,
         rotateZ: `${(offset * 3.25).toFixed(2)}deg`,
-        scale: Math.max(0.7, 1 - absoluteOffset * 0.09),
-        opacity: Math.max(0, 1 - absoluteOffset * 0.18),
+        scale: Math.max(0.6, 1 - absoluteOffset * 0.14),
+        opacity: Math.max(0, 1 - absoluteOffset * 0.20),
         zIndex: 100 - Math.round(absoluteOffset * 10),
         visible: absoluteOffset <= 3.2,
         active: index === activeIndex,
@@ -93,6 +104,44 @@ export class AlbumFan {
   });
 
   protected readonly showDots = computed(() => this.albums().length <= 12);
+
+  constructor() {
+    // The accessible cover carousel renders in SSR; WebGL is a progressive enhancement.
+    afterNextRender(() => {
+      if (typeof window.WebGLRenderingContext !== 'undefined') {
+        void this.initializeStage();
+      }
+    });
+    effect(() => {
+      this.renderer?.setAlbum(this.activeAlbum()?.coverAssetId ?? null);
+    });
+    this.destroyRef.onDestroy(() => {
+      this.renderer?.dispose();
+      this.renderer = null;
+    });
+  }
+
+  private async initializeStage(): Promise<void> {
+    const canvas = this.stageCanvas()?.nativeElement;
+    if (!canvas) return;
+    let stage: AlbumStageRenderer | null = null;
+    try {
+      const { AlbumStageRenderer } = await import('./album-stage-renderer');
+      if (this.destroyRef.destroyed) return;
+      stage = new AlbumStageRenderer(
+        canvas,
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        () => this.webglReady.set(false),
+      );
+      this.renderer = stage;
+      stage.setAlbum(this.activeAlbum()?.coverAssetId ?? null);
+      this.webglReady.set(true);
+    } catch {
+      stage?.dispose();
+      this.renderer = null;
+      this.webglReady.set(false);
+    }
+  }
 
   private pointerId: number | null = null;
   private pointerStartX = 0;
@@ -154,6 +203,11 @@ export class AlbumFan {
   }
 
   protected onPointerMove(event: PointerEvent): void {
+    const hoveredStage = event.currentTarget;
+    if (hoveredStage instanceof HTMLElement && event.pointerType === 'mouse') {
+      this.renderer?.setPointer(event.clientX, event.clientY, hoveredStage.getBoundingClientRect());
+    }
+
     if (event.pointerId !== this.pointerId) {
       return;
     }
@@ -174,6 +228,10 @@ export class AlbumFan {
     this.dragMoved ||= Math.abs(delta) > 7;
 
     this.dragProgress.set(this.clamp(delta / dragDistance, -1.15, 1.15));
+  }
+
+  protected onPointerLeave(): void {
+    this.renderer?.clearPointer();
   }
 
   protected onPointerUp(event: PointerEvent): void {
@@ -324,9 +382,9 @@ export class AlbumFan {
       return '0px';
     }
 
-    const minimum = 78 * absoluteOffset;
-    const preferred = 11.5 * offset;
-    const maximum = 150 * absoluteOffset;
+    const minimum = 92 * absoluteOffset;
+    const preferred = 13 * offset;
+    const maximum = 190 * absoluteOffset;
 
     if (offset > 0) {
       return `clamp(${minimum.toFixed(2)}px, ${preferred.toFixed(3)}vw, ${maximum.toFixed(2)}px)`;

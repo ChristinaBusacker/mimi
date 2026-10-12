@@ -1,4 +1,7 @@
 <section class="album-gallery" aria-labelledby="album-gallery-title">
+  <h2 id="album-gallery-title" class="album-gallery__sr-only">
+    {{ 'music.albums.carouselLabel' | i18n | async }}
+  </h2>
   @if (activeAlbum(); as activeAlbum) {
     <div class="album-fan">
       <div
@@ -10,6 +13,7 @@
       <div
         class="album-fan__stage"
         [class.is-dragging]="isDragging()"
+        [class.is-rendered]="webglReady()"
         role="group"
         aria-roledescription="carousel"
         [attr.aria-label]="('music.albums.carouselLabel' | i18n | async) ?? ''"
@@ -17,10 +21,17 @@
         (keydown)="onKeyDown($event)"
         (pointerdown)="onPointerDown($event)"
         (pointermove)="onPointerMove($event)"
+        (pointerleave)="onPointerLeave()"
         (pointerup)="onPointerUp($event)"
         (pointercancel)="onPointerCancel($event)"
         (wheel)="onWheel($event)"
       >
+        <canvas
+          #albumStageCanvas
+          class="album-fan__canvas"
+          [class.is-ready]="webglReady()"
+          aria-hidden="true"
+        ></canvas>
         <div class="album-fan__track" aria-hidden="true"></div>
 
         @for (card of cards(); track card.album.id) {
