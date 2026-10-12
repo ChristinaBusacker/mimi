@@ -25,6 +25,7 @@ import { GamingService } from '../../../core/gaming/gaming.service';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { I18nState } from '../../../core/i18n/i18n.state';
 import { MusicPublicService } from '../../../core/music/music-public.service';
+import { prepareBookletPortal } from '../../../core/navigation/booklet-transition';
 import { STAGE_WORLDS, type StageWorld } from './stage-orbit';
 import type { StageOrbitRenderer } from './stage-orbit-renderer';
 
@@ -154,6 +155,12 @@ export class HomeStage {
 
   protected coverUrl(assetId: string): string {
     return `/api/assets/${assetId}/image/thumbnail/webp`;
+  }
+
+  protected prepareAlbumOpening(event: MouseEvent): void {
+    const target = event.currentTarget;
+    const cover = target instanceof Element ? target.querySelector('img') : null;
+    prepareBookletPortal(cover ?? (target instanceof Element ? target : null));
   }
 
   private initializeParallax(scene: HTMLElement): void {

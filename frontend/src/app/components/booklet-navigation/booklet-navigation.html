@@ -3,7 +3,7 @@
     <img src="/images/logo.png" alt="Mimishow" width="108" height="40" />
   </a>
 
-  <a routerLink="/music" class="booklet-navigation__return">
+  <a routerLink="/music" class="booklet-navigation__return" (click)="prepareReturn()">
     <span aria-hidden="true">←</span>
     {{ 'music.booklet.return' | i18n | async }}
   </a>

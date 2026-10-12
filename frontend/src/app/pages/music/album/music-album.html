@@ -11,7 +11,11 @@
   <header class="booklet__hero">
     <div class="booklet__cover">
       @if (album.coverAssetId) {
-        <img [src]="assetUrl(album.coverAssetId)" [alt]="album.title" />
+        <img
+          [src]="assetUrl(album.coverAssetId)"
+          [alt]="album.title"
+          style="view-transition-name: booklet-cover"
+        />
       } @else {
         <div class="booklet__placeholder">
           <app-icon name="music" class="secondary" />

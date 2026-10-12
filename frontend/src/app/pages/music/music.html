@@ -20,7 +20,11 @@
       <article hero-right class="release">
         <div class="cover">
           @if (featuredAlbum.coverAssetId) {
-            <img [src]="assetUrl(featuredAlbum.coverAssetId)" [alt]="featuredAlbum.title" />
+            <img
+              [src]="assetUrl(featuredAlbum.coverAssetId)"
+              [alt]="featuredAlbum.title"
+              [style.view-transition-name]="musicData.albums.length === 1 ? 'booklet-cover' : null"
+            />
           } @else {
             <div class="placeholder">
               <app-icon name="music" class="secondary" />
@@ -39,7 +43,10 @@
             </small>
           }
 
-          <a [routerLink]="['/music/albums', featuredAlbum.slug]">
+          <a
+            [routerLink]="['/music/albums', featuredAlbum.slug]"
+            (click)="prepareFeaturedOpening($event, featuredAlbum.slug)"
+          >
             {{ 'music.album.more' | i18n | async }}
             →
           </a>

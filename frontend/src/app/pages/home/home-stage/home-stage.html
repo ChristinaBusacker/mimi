@@ -147,7 +147,11 @@
           </div>
           <p>{{ 'home.music.description' | i18n | async }}</p>
           @if (featuredAlbum(); as album) {
-            <a class="stage__album" [routerLink]="['/music/albums', album.slug]">
+            <a
+              class="stage__album"
+              [routerLink]="['/music/albums', album.slug]"
+              (click)="prepareAlbumOpening($event)"
+            >
               @if (album.coverAssetId; as cover) {
                 <img [src]="coverUrl(cover)" [alt]="album.title" loading="lazy" decoding="async" />
               }

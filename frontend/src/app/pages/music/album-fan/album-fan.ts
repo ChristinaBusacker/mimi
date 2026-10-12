@@ -20,6 +20,7 @@ import { RouterLink } from '@angular/router';
 import { Icon } from '../../../components/icon/icon';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { AlbumSelectionService } from '../../../core/music/album-selection.service';
+import { prepareBookletPortal } from '../../../core/navigation/booklet-transition';
 import type { AlbumStageRenderer } from './album-stage-renderer';
 
 interface AlbumFanCard {
@@ -170,6 +171,13 @@ export class AlbumFan implements OnInit {
 
   protected assetUrl(assetId: string): string {
     return `/api/assets/${assetId}`;
+  }
+
+  protected prepareOpening(event: MouseEvent): void {
+    const target = event.currentTarget;
+    const fan = target instanceof Element ? target.closest('.album-fan') : null;
+    const cover = fan?.querySelector('.album-fan__card.is-active img') ?? null;
+    prepareBookletPortal(cover ?? (target instanceof Element ? target : null));
   }
 
   protected previous(): void {

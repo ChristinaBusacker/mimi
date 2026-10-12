@@ -61,6 +61,7 @@
                 <img
                   [src]="assetUrl(card.album.coverAssetId)"
                   [alt]="card.active ? card.album.title : ''"
+                  [style.view-transition-name]="card.active ? 'booklet-cover' : null"
                   draggable="false"
                 />
               } @else {
@@ -99,7 +100,7 @@
         }
         <strong>{{ activeAlbum.title }}</strong>
 
-        <a [routerLink]="['/music/albums', activeAlbum.slug]">
+        <a [routerLink]="['/music/albums', activeAlbum.slug]" (click)="prepareOpening($event)">
           {{ 'music.albums.open' | i18n | async }}
           →
         </a>

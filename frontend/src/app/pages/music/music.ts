@@ -11,7 +11,9 @@ import { MusicLibraryPlayer } from '../../components/music-library-player/music-
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { I18nState } from '../../core/i18n/i18n.state';
 import type { Language } from '../../core/i18n/i18n.types';
+import { AlbumSelectionService } from '../../core/music/album-selection.service';
 import { type MusicLandingData, MusicPublicService } from '../../core/music/music-public.service';
+import { prepareBookletPortal } from '../../core/navigation/booklet-transition';
 import { AlbumFan } from './album-fan/album-fan';
 
 @Component({
@@ -25,6 +27,7 @@ export class Music {
   private readonly route = inject(ActivatedRoute);
   private readonly store = inject(Store);
   private readonly music = inject(MusicPublicService);
+  private readonly selection = inject(AlbumSelectionService);
 
   private readonly initialData = this.route.snapshot.data['data'] as MusicLandingData;
 
@@ -46,6 +49,13 @@ export class Music {
 
   protected assetUrl(assetId: string): string {
     return `/api/assets/${assetId}`;
+  }
+
+  protected prepareFeaturedOpening(event: MouseEvent, slug: string): void {
+    this.selection.selectedSlug = slug;
+    const target = event.currentTarget;
+    const cover = target instanceof Element ? target.closest('.release')?.querySelector('img') : null;
+    prepareBookletPortal(cover ?? (target instanceof Element ? target : null));
   }
 
   protected formatReleaseDate(value: string | null, locale: Language): string | null {
