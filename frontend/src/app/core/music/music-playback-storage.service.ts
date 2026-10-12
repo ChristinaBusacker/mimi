@@ -6,6 +6,7 @@ export interface SavedMusicPlayback {
   trackId: string;
   positionSeconds: number;
   volume: number;
+  queueTrackIds?: string[];
 }
 
 const STORAGE_KEY = 'music.playback.v1';
@@ -37,10 +38,17 @@ export class MusicPlaybackStorageService {
       return null;
     }
 
+    const queue = item['queueTrackIds'];
+    const queueTrackIds = Array.isArray(queue) && queue.length <= 1000 &&
+      queue.every((id: unknown) => typeof id === 'string' && id.length > 0)
+        ? queue as string[]
+        : undefined;
+
     return {
       trackId: item['trackId'],
       positionSeconds: item['positionSeconds'],
       volume: item['volume'],
+      ...(queueTrackIds ? { queueTrackIds } : {}),
     };
   }
 

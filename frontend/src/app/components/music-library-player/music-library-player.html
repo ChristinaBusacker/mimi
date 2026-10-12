@@ -4,17 +4,6 @@
   [attr.aria-label]="'music.player.keyboardHint' | i18n | async"
   (keydown)="onPlayerKeyDown($event)"
 >
-  <audio
-    #audio
-    preload="metadata"
-    (loadedmetadata)="onLoadedMetadata()"
-    (timeupdate)="onTimeUpdate($event)"
-    [volume]="volume()"
-    (play)="onPlay()"
-    (pause)="onPause()"
-    (ended)="onEnded()"
-  ></audio>
-
   @if (currentTrack(); as currentTrack) {
     @let coverId = coverAssetId(currentTrack);
     <header

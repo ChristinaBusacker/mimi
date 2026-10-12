@@ -15,6 +15,11 @@
     z-index: 99;
   }
 
+  // The floating transport must never obscure the final page controls.
+  &:has(app-global-music-player.is-visible:not(.is-collapsed)) {
+    padding-bottom: 110px;
+  }
+
   @include compact-layout {
     app-header {
       margin-top: 0;

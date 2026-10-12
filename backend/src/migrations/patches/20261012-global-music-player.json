@@ -1,0 +1,14 @@
+{
+  "localizations": [
+    {
+      "key": "music.player.collapse",
+      "de": "Musikplayer einklappen",
+      "en": "Collapse music player"
+    },
+    {
+      "key": "music.player.expand",
+      "de": "Musikplayer ausklappen",
+      "en": "Expand music player"
+    }
+  ]
+}

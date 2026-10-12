@@ -1,0 +1,82 @@
+@if (playback.activeTrack(); as track) {
+  @if (playback.fullPlayerCount() === 0) {
+    <aside class="mini" [class.mini--collapsed]="collapsed()">
+      @if (collapsed()) {
+        <button
+          class="mini__reopen"
+          type="button"
+          [attr.aria-label]="'music.player.expand' | i18n | async"
+          [attr.aria-expanded]="false"
+          (click)="toggleCollapsed()"
+        >
+          <app-icon name="music" />
+          @if (playback.playing()) {
+            <span class="mini__live" aria-hidden="true"></span>
+          }
+        </button>
+      } @else {
+        <div class="mini__content" id="global-music-controls">
+          <div class="mini__track">
+            @if (track.coverAssetId ?? track.album?.coverAssetId; as cover) {
+              <img class="mini__cover" [src]="assetUrl(cover)" [alt]="track.album?.title ?? track.title" />
+            } @else {
+              <app-icon name="music" class="mini__cover mini__placeholder" />
+            }
+            <div class="mini__text">
+              <span>{{ (playback.playing() ? 'music.player.nowPlaying' : 'music.library.selected') | i18n | async }}</span>
+              <strong [title]="track.title">{{ track.title }}</strong>
+              @if (track.album; as album) {
+                <a [routerLink]="['/music/albums', album.slug]">{{ album.title }}</a>
+              }
+            </div>
+          </div>
+          <div class="mini__controls">
+            <button
+              class="mini__step"
+              type="button"
+              [disabled]="!playback.previousTrack()"
+              [attr.aria-label]="'music.player.previous' | i18n | async"
+              (click)="playback.playAdjacent(-1)"
+            >‹</button>
+            <button
+              class="mini__play"
+              type="button"
+              [attr.aria-label]="(playback.playing() ? 'music.player.pause' : 'music.player.play') | i18n | async"
+              (click)="playback.toggle()"
+            >
+              <app-icon [name]="playback.playing() ? 'pause' : 'play'" />
+            </button>
+            <button
+              class="mini__step"
+              type="button"
+              [disabled]="!playback.nextTrack()"
+              [attr.aria-label]="'music.player.next' | i18n | async"
+              (click)="playback.playAdjacent(1)"
+            >›</button>
+          </div>
+          <div class="mini__seek">
+            <input
+              type="range"
+              min="0"
+              [max]="currentDuration()"
+              step="0.1"
+              [value]="playback.currentTime()"
+              [attr.aria-label]="'music.player.progress' | i18n | async"
+              [attr.aria-valuetext]="formatTime(playback.currentTime()) + ' / ' + formatTime(currentDuration())"
+              (input)="seek($event)"
+            />
+            <span>{{ formatTime(playback.currentTime()) }} / {{ formatTime(currentDuration()) }}</span>
+          </div>
+          <button
+            class="mini__collapse"
+            type="button"
+            [attr.aria-label]="'music.player.collapse' | i18n | async"
+            [attr.aria-expanded]="true"
+            aria-controls="global-music-controls"
+            (click)="toggleCollapsed()"
+          >⌄</button>
+        </div>
+      }
+    </aside>
+  }
+}

@@ -465,16 +465,20 @@
 
   .stage {
     width: calc(100% + 26px);
-    overflow-x: hidden;
+    // Unlike hidden, clip does not create a scroll container or freeze view timelines.
+    overflow-x: clip;
     margin-inline-start: calc(50% - 50vw);
 
     overflow-anchor: none;
-    timeline-scope: --stage-mobile-details;
+    timeline-scope: --stage-mobile-scene;
   }
 
   .stage__scene {
     height: clamp(23rem, 104vw, 30rem);
     margin-block-start: -0.75rem;
+    // Start the hand-off as the island leaves the viewport, not as the copy enters.
+    view-timeline-name: --stage-mobile-scene;
+    view-timeline-axis: block;
   }
 
   .stage__canvas {
@@ -522,8 +526,6 @@
     text-align: center;
     transform: none;
     pointer-events: auto;
-    view-timeline-name: --stage-mobile-details;
-    view-timeline-axis: block;
 
     &::before {
       display: none;
@@ -711,14 +713,14 @@
     .stage__scene-heading {
       display: block;
       animation: stage-mobile-preview-out linear both;
-      animation-timeline: --stage-mobile-details;
-      animation-range: entry 55% entry 95%;
+      animation-timeline: --stage-mobile-scene;
+      animation-range: exit 0% exit 50%;
     }
 
     .stage__heading {
       animation: stage-mobile-heading-in linear both;
-      animation-timeline: --stage-mobile-details;
-      animation-range: entry 55% entry 95%;
+      animation-timeline: --stage-mobile-scene;
+      animation-range: exit 0% exit 50%;
     }
   }
 }
