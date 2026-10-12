@@ -6,11 +6,12 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideStore } from '@ngxs/store';
 
 import { routes } from './app.routes';
+import { onBookletTransitionCreated } from './core/navigation/booklet-transition';
 import { GoogleAnalyticsService } from './core/analytics/google-analytics.service';
 import { AuthState } from './core/auth/auth.state';
 import { EventStreamService } from './core/events/event-stream.service';
@@ -28,6 +29,10 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({
         anchorScrolling: 'enabled',
         scrollPositionRestoration: 'enabled',
+      }),
+      withViewTransitions({
+        skipInitialTransition: true,
+        onViewTransitionCreated: onBookletTransitionCreated,
       }),
     ),
     provideClientHydration(),

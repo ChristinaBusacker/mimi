@@ -31,3 +31,15 @@
     }
   }
 }
+
+
+:host.is-booklet {
+  min-height: 100dvh;
+  background: #171321;
+
+  main {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+}

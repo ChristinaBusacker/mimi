@@ -39,6 +39,7 @@ export const routes: Routes = [
   },
   {
     path: 'music/albums/:slug',
+    data: { layout: 'booklet' },
     loadComponent: () =>
       import('./pages/music/album/music-album').then((module) => module.MusicAlbumPage),
     resolve: {

@@ -1,0 +1,14 @@
+{
+  "localizations": [
+    {
+      "key": "music.booklet.navigation",
+      "de": "Album-Navigation",
+      "en": "Album navigation"
+    },
+    {
+      "key": "music.booklet.return",
+      "de": "Zurück zur Mimishow",
+      "en": "Back to Mimishow"
+    }
+  ]
+}

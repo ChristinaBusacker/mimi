@@ -1,0 +1,10 @@
+<nav class="booklet-navigation" [attr.aria-label]="'music.booklet.navigation' | i18n | async">
+  <a routerLink="/" class="booklet-navigation__brand" aria-label="Mimishow">
+    <img src="/images/logo.png" alt="Mimishow" width="108" height="40" />
+  </a>
+
+  <a routerLink="/music" class="booklet-navigation__return">
+    <span aria-hidden="true">←</span>
+    {{ 'music.booklet.return' | i18n | async }}
+  </a>
+</nav>

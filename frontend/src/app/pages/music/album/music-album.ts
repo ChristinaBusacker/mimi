@@ -14,10 +14,7 @@ import {
   toObservable,
   toSignal,
 } from '@angular/core/rxjs-interop';
-import {
-  ActivatedRoute,
-  RouterLink,
-} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 import {
   combineLatest,
@@ -27,7 +24,6 @@ import {
   switchMap,
 } from 'rxjs';
 
-import { Hero } from '../../../components/hero/hero';
 import { Icon } from '../../../components/icon/icon';
 import { MusicLibraryPlayer } from '../../../components/music-library-player/music-library-player';
 import { RenderedContent } from '../../../components/rendered-content/rendered-content';
@@ -43,12 +39,10 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AsyncPipe,
-    Hero,
     Icon,
     I18nPipe,
     MusicLibraryPlayer,
     RenderedContent,
-    RouterLink,
   ],
   selector: 'app-music-album',
   styleUrl: './music-album.scss',

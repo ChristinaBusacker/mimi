@@ -1,12 +1,20 @@
-<app-background />
+@if (bookletMode()) {
+  <app-booklet-navigation />
+} @else {
+  <app-background />
+  <app-header />
+}
 
-<app-header></app-header>
 <main>
   <router-outlet />
 </main>
-<app-footer></app-footer>
+
+@if (!bookletMode()) {
+  <app-footer />
+}
+
+<!-- The audio engine and its transport survive both layout modes. -->
 <app-global-music-player />
 <app-consent-banner />
 <app-pwa-update-banner />
-
 <app-lightbox />

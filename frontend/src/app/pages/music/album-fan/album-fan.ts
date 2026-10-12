@@ -1,4 +1,5 @@
 import type { MusicAlbumSummary } from '@shared/music/music';
+import type { OnInit } from '@angular/core';
 
 import { AsyncPipe } from '@angular/common';
 import {
@@ -18,6 +19,7 @@ import { RouterLink } from '@angular/router';
 
 import { Icon } from '../../../components/icon/icon';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
+import { AlbumSelectionService } from '../../../core/music/album-selection.service';
 import type { AlbumStageRenderer } from './album-stage-renderer';
 
 interface AlbumFanCard {
@@ -42,13 +44,14 @@ interface AlbumFanCard {
   styleUrl: './album-fan.scss',
   templateUrl: './album-fan.html',
 })
-export class AlbumFan {
+export class AlbumFan implements OnInit {
   readonly albums = input.required<readonly MusicAlbumSummary[]>();
   protected readonly activeIndex = signal(0);
   protected readonly dragProgress = signal(0);
   protected readonly isDragging = signal(false);
   protected readonly webglReady = signal(false);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly selection = inject(AlbumSelectionService);
   private readonly stageCanvas = viewChild<ElementRef<HTMLCanvasElement>>('albumStageCanvas');
   private renderer: AlbumStageRenderer | null = null;
 
@@ -121,6 +124,19 @@ export class AlbumFan {
     });
   }
 
+  ngOnInit(): void {
+    const index = this.albums().findIndex((album) => album.slug === this.selection.selectedSlug);
+    if (index >= 0) this.activeIndex.set(index);
+  }
+
+  private setSelection(index: number): void {
+    const normalized = this.normalizeIndex(index, this.albums().length);
+    this.activeIndex.set(normalized);
+    this.dragProgress.set(0);
+    const album = this.albums()[normalized];
+    if (album) this.selection.selectedSlug = album.slug;
+  }
+
   private async initializeStage(): Promise<void> {
     const canvas = this.stageCanvas()?.nativeElement;
     if (!canvas) return;
@@ -171,8 +187,7 @@ export class AlbumFan {
       return;
     }
 
-    this.activeIndex.set(this.normalizeIndex(index, this.albums().length));
-    this.dragProgress.set(0);
+    this.setSelection(index);
   }
 
   protected onPointerDown(event: PointerEvent): void {
@@ -293,16 +308,14 @@ export class AlbumFan {
 
     if (event.key === 'Home') {
       event.preventDefault();
-      this.activeIndex.set(0);
-      this.dragProgress.set(0);
+      this.setSelection(0);
 
       return;
     }
 
     if (event.key === 'End') {
       event.preventDefault();
-      this.activeIndex.set(Math.max(0, this.albums().length - 1));
-      this.dragProgress.set(0);
+      this.setSelection(Math.max(0, this.albums().length - 1));
     }
   }
 
@@ -313,8 +326,7 @@ export class AlbumFan {
       return;
     }
 
-    this.activeIndex.set(this.normalizeIndex(this.normalizedActiveIndex() + direction, count));
-    this.dragProgress.set(0);
+    this.setSelection(this.normalizedActiveIndex() + direction);
   }
 
   private releasePointer(event: PointerEvent): void {
@@ -341,9 +353,7 @@ export class AlbumFan {
     this.isDragging.set(false);
 
     if (direction !== 0) {
-      this.activeIndex.set(
-        this.normalizeIndex(this.normalizedActiveIndex() + direction, this.albums().length),
-      );
+      this.setSelection(this.normalizedActiveIndex() + direction);
     }
 
     this.dragProgress.set(0);
