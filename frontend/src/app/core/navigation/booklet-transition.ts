@@ -73,6 +73,7 @@ export function onBookletTransitionCreated(info: ViewTransitionInfo): void {
 
   if (
     fromBooklet === toBooklet ||
+    toBooklet ||
     (fromBooklet && routePath(info.to) !== 'music') ||
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
   ) {
@@ -80,7 +81,9 @@ export function onBookletTransitionCreated(info: ViewTransitionInfo): void {
     return;
   }
 
-  const direction = toBooklet ? 'enter' : 'leave';
+  // Entry is managed by AlbumDiveService after the cover fills the viewport.
+  // The native transition is retained solely for the return journey.
+  const direction = 'leave';
   const root = document.documentElement;
   root.dataset['bookletTransition'] = direction;
 

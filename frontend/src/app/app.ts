@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, afterNextRender, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
@@ -12,6 +12,7 @@ import { Header } from './components/header/header';
 import { Lightbox } from './components/lightbox/lightbox';
 import { PwaUpdateBanner } from './components/pwa-update-banner/pwa-update-banner';
 import { isBookletRoute } from './core/navigation/booklet-transition';
+import { AlbumDiveService } from './core/navigation/album-dive.service';
 
 @Component({
   imports: [
@@ -32,6 +33,12 @@ import { isBookletRoute } from './core/navigation/booklet-transition';
 })
 export class App {
   private readonly router = inject(Router);
+  private readonly albumDive = inject(AlbumDiveService);
+
+  constructor() {
+    // Capture only album-entry links, without changing the site's other navigation.
+    afterNextRender(() => this.albumDive.listen());
+  }
 
   protected readonly bookletMode = toSignal(
     this.router.events.pipe(
