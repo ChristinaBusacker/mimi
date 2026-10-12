@@ -93,8 +93,8 @@ export class Home {
   );
 
   private readonly selectedPostId = signal<string | null>(null);
-  protected readonly selectedPost = computed(() =>
-    this.posts().find((post) => post.id === this.selectedPostId()) ?? this.posts()[0] ?? null,
+  protected readonly selectedPost = computed(
+    () => this.posts().find((post) => post.id === this.selectedPostId()) ?? this.posts()[0] ?? null,
   );
 
   protected selectPost(postId: string): void {

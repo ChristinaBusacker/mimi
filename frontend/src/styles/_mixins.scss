@@ -22,3 +22,9 @@ $layout-breakpoint: 900px;
     @content;
   }
 }
+
+@mixin maxWidthContent {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  width: 95%;
+}

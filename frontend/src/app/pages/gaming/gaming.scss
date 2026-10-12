@@ -7,7 +7,7 @@
   --page-surface-strong: rgb(27 21 43 / 94%);
   --color-secondary: var(--page-accent);
   --color-primary: var(--page-accent);
-
+  @include maxWidthContent;
   display: block;
 }
 

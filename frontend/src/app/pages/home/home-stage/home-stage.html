@@ -11,23 +11,6 @@
   </h2>
 
   <div #stageScene class="stage__scene">
-    <div class="stage__backdrop" aria-hidden="true">
-      <img
-        class="stage__atmosphere"
-        src="/images/stage/background-fantasy.webp"
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
-      <img
-        class="stage__light"
-        src="/images/stage/background-light.webp"
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-
     <div
       class="stage__fallback"
       [class.stage__fallback--hidden]="webglReady()"
@@ -215,15 +198,29 @@
       type="button"
       class="stage__motion"
       [attr.aria-pressed]="motionEnabled()"
-      [attr.aria-label]="(motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async"
-      [attr.title]="(motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async"
+      [attr.aria-label]="
+        (motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async
+      "
+      [attr.title]="
+        (motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async
+      "
       (click)="toggleMotion()"
     >
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <rect x="8" y="3" width="8" height="18" rx="2" />
         <path d="M11 18h2M3 8l-2 3 2 3M21 8l2 3-2 3" />
       </svg>
-      <span class="stage__motion-label">{{ (motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async }}</span>
+      <span class="stage__motion-label">{{
+        (motionEnabled() ? 'home.stage.motionOff' : 'home.stage.motionOn') | i18n | async
+      }}</span>
     </button>
   }
 </section>

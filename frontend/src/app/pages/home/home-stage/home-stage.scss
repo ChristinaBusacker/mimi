@@ -4,17 +4,15 @@
   display: block;
   min-width: 0;
   margin-top: 0;
-  margin: calc(var(--spacing-md) * -1);
   width: 100%;
 }
 
 .stage {
   position: relative;
   isolation: isolate;
-  width: 100vw;
+  width: 100%;
   max-width: none;
 
-  margin-inline-start: calc(50% - 50vw);
   color: var(--color-text);
   --stage-accent: #ffc0db;
   --stage-accent-glow: rgb(255 158 203 / 30%);
@@ -44,51 +42,11 @@
   position: relative;
   height: clamp(36rem, 51vw, 47rem);
   isolation: isolate;
+  margin-top: -20px;
 }
 
 .stage__scene-heading {
   display: none;
-}
-
-.stage__backdrop {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -1;
-  top: 20px;
-}
-
-.stage__atmosphere,
-.stage__light {
-  position: absolute;
-  inset: -14% 0;
-  display: block;
-  width: 100%;
-  height: 128%;
-  object-fit: cover;
-  pointer-events: none;
-  user-select: none;
-  transform: translate3d(0, var(--stage-parallax-y, 0px), 0);
-  will-change: transform;
-  top: -25%;
-
-  @include compact-layout {
-    top: 8px;
-  }
-}
-
-.stage__atmosphere {
-  opacity: 0.74;
-
-  mask-image: radial-gradient(ellipse 62% 68% at 50% 48%, #000 23%, transparent 100%);
-}
-
-.stage__light {
-  opacity: 0.35;
-  mix-blend-mode: screen;
-  mask-image: radial-gradient(ellipse 65% 60% at 50% 52%, #000 12%, transparent 100%);
 }
 
 .stage__canvas {

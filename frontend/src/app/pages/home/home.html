@@ -1,5 +1,22 @@
 @let heroView = hero();
 
+<div class="stage-backdrop" aria-hidden="true">
+  <img
+    class="stage-atmosphere"
+    src="/images/stage/background-fantasy.webp"
+    alt=""
+    loading="lazy"
+    decoding="async"
+  />
+  <img
+    class="stage-light"
+    src="/images/stage/background-light.webp"
+    alt=""
+    loading="lazy"
+    decoding="async"
+  />
+</div>
+
 <app-home-hero [hero]="heroView" />
 
 <app-home-stage [community]="community" />

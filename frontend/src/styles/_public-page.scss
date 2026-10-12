@@ -9,7 +9,7 @@
     --page-muted: rgb(255 236 247 / 78%);
     --color-primary: var(--page-accent);
     --color-secondary: var(--page-accent);
-
+    @include maxWidthContent;
     display: block;
   }
 

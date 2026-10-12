@@ -3,6 +3,51 @@
 :host {
   display: block;
 
+  & app-home-hero {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+  }
+
+  .stage-backdrop {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    top: 30vh;
+    height: 400px;
+
+    & .stage-atmosphere,
+    & .stage-light {
+      position: absolute;
+      inset: -14% 0;
+      display: block;
+      width: 100%;
+      height: 128%;
+      object-fit: cover;
+      pointer-events: none;
+      user-select: none;
+      transform: translate3d(0, var(--stage-parallax-y, 0px), 0);
+      will-change: transform;
+      top: -25%;
+
+      @include compact-layout {
+        top: 8px;
+      }
+    }
+
+    & .stage-atmosphere {
+      opacity: 0.74;
+      mask-image: radial-gradient(ellipse 62% 68% at 50% 48%, #000 23%, transparent 100%);
+    }
+
+    & .stage-light {
+      opacity: 0.35;
+      mix-blend-mode: screen;
+      mask-image: radial-gradient(ellipse 65% 60% at 50% 52%, #000 12%, transparent 100%);
+    }
+  }
+
   .intro {
     .tags {
       display: flex;

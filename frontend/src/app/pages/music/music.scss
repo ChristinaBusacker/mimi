@@ -9,6 +9,7 @@
   --color-primary: var(--page-accent);
 
   display: block;
+  @include maxWidthContent;
 }
 
 .page {

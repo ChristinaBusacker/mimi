@@ -85,6 +85,7 @@
 :host {
   .home-content {
     gap: clamp(0.65rem, 1.5vw, 1.15rem);
+    @include maxWidthContent;
   }
 
   .home-section {
