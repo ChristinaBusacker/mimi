@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 
 import { AlbumSelectionService } from '../music/album-selection.service';
 
+// Keep in sync with --booklet-world-size in frontend/src/styles.scss.
+export const ALBUM_WORLD_OVERSCAN = 1.7;
+
 interface ArtworkBounds {
   readonly left: number;
   readonly top: number;
@@ -19,7 +22,8 @@ export function albumDiveTransform(
 ): { x: number; y: number; scale: number } {
   const x = viewportWidth / 2 - (bounds.left + bounds.width / 2);
   const y = viewportHeight / 2 - (bounds.top + bounds.height / 2);
-  const scale = Math.max(viewportWidth / bounds.width, viewportHeight / bounds.height) * 1.18;
+  const scale =
+    Math.max(viewportWidth / bounds.width, viewportHeight / bounds.height) * ALBUM_WORLD_OVERSCAN;
   return { x, y, scale };
 }
 
@@ -109,41 +113,95 @@ export class AlbumDiveService {
     artwork.style.top = `${bounds.top}px`;
     artwork.style.width = `${bounds.width}px`;
     artwork.style.height = `${bounds.height}px`;
-    overlay.append(shade, artwork);
+
+    // This is the very same image treatment as the permanent booklet backdrop.
+    // It takes over only once the moving artwork has escaped the viewport.
+    const world = this.document.createElement('div');
+    world.className = 'booklet-world booklet-dive__world';
+    const worldArtwork = this.document.createElement('img');
+    worldArtwork.className = 'booklet-world__artwork';
+    worldArtwork.alt = '';
+    worldArtwork.draggable = false;
+    worldArtwork.src = artwork.src;
+    world.append(worldArtwork);
+    overlay.append(shade, artwork, world);
+
+    // Homepage previews are thumbnails. Upgrade the atmospheric image in the
+    // background without delaying the initial camera movement.
+    const fullAsset = new URL(artwork.src, window.location.href);
+    if (
+      fullAsset.origin === window.location.origin &&
+      fullAsset.pathname.endsWith('/image/thumbnail/webp')
+    ) {
+      fullAsset.pathname = fullAsset.pathname.slice(0, -'/image/thumbnail/webp'.length);
+      const preload = new Image();
+      preload.src = fullAsset.href;
+      void preload.decode().then(
+        () => { worldArtwork.src = preload.src; },
+        () => { /* Keep the already loaded preview if upgrading fails. */ },
+      );
+    }
     this.document.body.append(overlay);
 
     let navigationStarted = false;
     try {
       const move = albumDiveTransform(bounds, window.innerWidth, window.innerHeight);
+      const duration = 1160;
       const zoom = artwork.animate(
         [
-          { offset: 0, transform: 'translate3d(0, 0, 0) scale(1)', filter: 'saturate(1)' },
-          { offset: 0.14, transform: 'translate3d(0, -8px, 0) scale(1.07)', filter: 'saturate(1.08)' },
+          {
+            offset: 0,
+            transform: 'translate3d(0, 0, 0) scale(1)',
+            filter: 'blur(0px) saturate(1) brightness(1)',
+          },
+          {
+            offset: 0.15,
+            transform: 'translate3d(0, -7px, 0) scale(1.08)',
+            filter: 'blur(0px) saturate(1.04) brightness(1.03)',
+          },
+          {
+            offset: 0.55,
+            filter: 'blur(0.3px) saturate(1.04) brightness(1)',
+          },
+          {
+            offset: 0.8,
+            filter: 'blur(2px) saturate(0.97) brightness(0.88)',
+          },
           {
             offset: 1,
             transform: `translate3d(${move.x}px, ${move.y}px, 0) scale(${move.scale})`,
-            filter: 'saturate(1.1)',
+            filter: 'blur(5px) saturate(0.91) brightness(0.72)',
           },
         ],
-        { duration: 920, easing: 'cubic-bezier(0.24, 0.7, 0.24, 1)', fill: 'forwards' },
+        { duration, easing: 'cubic-bezier(0.25, 0.66, 0.22, 1)', fill: 'forwards' },
       );
-      shade.animate([{ opacity: 0 }, { opacity: 1 }], {
-        duration: 700,
+      const atmosphere = world.animate(
+        [
+          { offset: 0, opacity: 0 },
+          { offset: 0.63, opacity: 0 },
+          { offset: 0.83, opacity: 0.6 },
+          { offset: 1, opacity: 1 },
+        ],
+        { duration, easing: 'linear', fill: 'forwards' },
+      );
+      shade.animate([{ opacity: 0 }, { opacity: 0.9 }], {
+        duration: 660,
         easing: 'ease-out',
         fill: 'forwards',
       });
 
       // There is no page reveal here. Angular navigates behind an artwork
       // which has already expanded beyond every edge of the visible screen.
-      await zoom.finished;
+      await Promise.all([zoom.finished, atmosphere.finished]);
       navigationStarted = true;
       const navigated = await this.router.navigateByUrl(url);
       if (!navigated) return;
 
-      // Let Angular render the book's shell before dissolving the cover.
+      // Identical backdrop image, crop and filters on both sides of the route:
+      // the final fade reveals content, not a different background.
       await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
       await overlay.animate([{ opacity: 1 }, { opacity: 0 }], {
-        duration: 420,
+        duration: 490,
         easing: 'cubic-bezier(0.35, 0, 0.3, 1)',
         fill: 'forwards',
       }).finished;

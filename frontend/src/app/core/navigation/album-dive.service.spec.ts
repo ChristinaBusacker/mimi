@@ -1,4 +1,4 @@
-import { albumDiveTransform } from './album-dive.service';
+import { ALBUM_WORLD_OVERSCAN, albumDiveTransform } from './album-dive.service';
 
 describe('Album artwork dive', () => {
   it('moves the center of the clicked cover to the viewport center', () => {
@@ -13,5 +13,6 @@ describe('Album artwork dive', () => {
     const target = albumDiveTransform(bounds, 390, 844);
     expect(bounds.width * target.scale).toBeGreaterThan(390);
     expect(bounds.height * target.scale).toBeGreaterThan(844);
+    expect(bounds.height * target.scale).toBeCloseTo(844 * ALBUM_WORLD_OVERSCAN);
   });
 });

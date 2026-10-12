@@ -14,31 +14,11 @@
   overflow: hidden;
   min-height: 100dvh;
   padding: clamp(96px, 12vw, 154px) max(20px, calc((100vw - 1200px) / 2)) 100px;
-  background:
-    radial-gradient(ellipse at 85% 30%, rgb(174 106 151 / 20%), transparent 55%),
-    linear-gradient(145deg, #231a30, #10111e 70%);
-
-  &::before {
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    background: linear-gradient(180deg, rgb(19 14 29 / 30%), #11111e 60%);
-    content: '';
-    pointer-events: none;
-  }
+  background: #171321;
 }
 
 .booklet__backdrop {
-  position: absolute;
-  z-index: -2;
-  inset: -100px 0 auto;
-  height: min(100vh, 1000px);
-  background-position: center top;
-  background-size: cover;
-  filter: blur(70px) saturate(0.92);
-  opacity: 0.5;
-  transform: scale(1.12);
-  pointer-events: none;
+  z-index: -1;
 }
 
 .booklet__hero {
@@ -154,8 +134,4 @@
   .booklet__cover { width: min(100%, 270px); }
   .booklet__intro h1 { font-size: clamp(2.5rem, 10vw, 3.5rem); }
   .booklet__tracks { padding: 10px; }
-}
-
-@include reduced-motion {
-  .booklet__backdrop { filter: blur(55px); }
 }

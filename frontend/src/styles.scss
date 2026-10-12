@@ -17,8 +17,41 @@ img {
   max-width: 100%;
 }
 
-/* The selected album artwork temporarily becomes the entire viewport.
-   The route changes only after the image has covered every edge. */
+/* The album cover becomes a permanent atmospheric world. The same layer is
+   used by the zoom overlay and the booklet itself, including on SSR/refresh. */
+.booklet-world {
+  --booklet-world-size: 170vmax; // Mirrors ALBUM_WORLD_OVERSCAN = 1.7.
+
+  position: fixed;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  background: #171321;
+}
+
+.booklet-world__artwork {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: var(--booklet-world-size);
+  height: var(--booklet-world-size);
+  max-width: none;
+  object-fit: cover;
+  transform: translate3d(-50%, -50%, 0);
+  filter: blur(76px) saturate(0.91) brightness(0.62);
+}
+
+.booklet-world::after {
+  position: absolute;
+  inset: 0;
+
+  content: '';
+}
+
+/* The moving cover remains recognisable for the first half of the flight.
+   Only near the end does the final, heavily blurred cover world take over. */
 .booklet-dive {
   position: fixed;
   z-index: 2147483000;
@@ -31,6 +64,7 @@ img {
 
 .booklet-dive__shade {
   position: absolute;
+  z-index: 0;
   inset: 0;
   background: rgb(12 8 23 / 72%);
   opacity: 0;
@@ -38,6 +72,7 @@ img {
 
 .booklet-dive__artwork {
   position: absolute;
+  z-index: 1;
   display: block;
   max-width: none;
   object-fit: cover;
@@ -46,6 +81,12 @@ img {
   border: 1px solid rgb(255 255 255 / 25%);
   border-radius: 10px;
   box-shadow: 0 22px 65px rgb(8 4 19 / 42%);
+}
+
+.booklet-dive__world {
+  z-index: 2;
+  opacity: 0;
+  will-change: opacity;
 }
 
 /* The backward journey is deliberately quieter; no radial masks or page iris. */
@@ -72,13 +113,28 @@ html[data-booklet-transition='leave']::view-transition-group(booklet-cover) {
 }
 
 @keyframes booklet-retreat {
-  0%, 23% { opacity: 1; transform: scale(1); filter: brightness(1); }
-  100% { opacity: 0; transform: scale(0.94); filter: brightness(0.8); }
+  0%,
+  23% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.94);
+    filter: brightness(0.8);
+  }
 }
 
 @keyframes booklet-arrive {
-  from { opacity: 0.6; transform: scale(1.025); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0.6;
+    transform: scale(1.025);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

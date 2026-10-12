@@ -2,11 +2,11 @@
 @let album = albumData.album;
 
 <article class="booklet">
-  <div
-    class="booklet__backdrop"
-    aria-hidden="true"
-    [style.background-image]="album.coverAssetId ? 'url(' + assetUrl(album.coverAssetId) + ')' : null"
-  ></div>
+  <div class="booklet__backdrop booklet-world" aria-hidden="true">
+    @if (album.coverAssetId) {
+      <img class="booklet-world__artwork" [src]="assetUrl(album.coverAssetId)" alt="" />
+    }
+  </div>
 
   <header class="booklet__hero">
     <div class="booklet__cover">
