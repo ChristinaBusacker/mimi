@@ -68,7 +68,15 @@ const makeBlock = (kind: BlockKind): PageBlock => {
   selector: 'app-page-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, I18nPipe, Icon, MarkdownEditor, PageRenderer, ReactiveFormsModule, AssetLibrary],
+  imports: [
+    AsyncPipe,
+    I18nPipe,
+    Icon,
+    MarkdownEditor,
+    PageRenderer,
+    ReactiveFormsModule,
+    AssetLibrary,
+  ],
   templateUrl: './page-editor.html',
   styleUrl: './page-editor.scss',
 })
@@ -114,10 +122,14 @@ export class PageEditor {
   protected pathLabel(selection: Selection): string {
     const page = this.document();
     switch (selection.kind) {
-      case 'page': return 'page.editor.title';
-      case 'section': return 'page.editor.section';
-      case 'row': return 'page.editor.row';
-      case 'column': return 'page.editor.column';
+      case 'page':
+        return 'page.editor.title';
+      case 'section':
+        return 'page.editor.section';
+      case 'row':
+        return 'page.editor.row';
+      case 'column':
+        return 'page.editor.column';
       case 'block': {
         const block = this.find(page, selection);
         return block && 'type' in block ? this.blockName(block) : 'page.editor.content';
@@ -128,7 +140,8 @@ export class PageEditor {
   protected pathIndex(selection: Selection): number | null {
     if (selection.kind === 'page' || selection.kind === 'block') return null;
     const page = this.document();
-    if (selection.kind === 'section') return page.sections.findIndex((item) => item.id === selection.id) + 1;
+    if (selection.kind === 'section')
+      return page.sections.findIndex((item) => item.id === selection.id) + 1;
     for (const section of page.sections) {
       if (selection.kind === 'row') {
         const index = section.rows.findIndex((item) => item.id === selection.id);
@@ -170,11 +183,20 @@ export class PageEditor {
   protected resizeKeyboard(event: KeyboardEvent): void {
     const delta = event.shiftKey ? 40 : 16;
     switch (event.key) {
-      case 'ArrowLeft': this.inspectorWidth.set(this.clampInspector(this.inspectorWidth() + delta)); break;
-      case 'ArrowRight': this.inspectorWidth.set(this.clampInspector(this.inspectorWidth() - delta)); break;
-      case 'Home': this.inspectorWidth.set(300); break;
-      case 'End': this.inspectorWidth.set(this.clampInspector(800)); break;
-      default: return;
+      case 'ArrowLeft':
+        this.inspectorWidth.set(this.clampInspector(this.inspectorWidth() + delta));
+        break;
+      case 'ArrowRight':
+        this.inspectorWidth.set(this.clampInspector(this.inspectorWidth() - delta));
+        break;
+      case 'Home':
+        this.inspectorWidth.set(300);
+        break;
+      case 'End':
+        this.inspectorWidth.set(this.clampInspector(800));
+        break;
+      default:
+        return;
     }
     event.preventDefault();
     this.persistInspector();
@@ -192,8 +214,11 @@ export class PageEditor {
   }
 
   private persistInspector(): void {
-    try { localStorage.setItem('mimi.pageComposer.inspectorWidth', String(this.inspectorWidth())); }
-    catch { /* Storage is optional. */ }
+    try {
+      localStorage.setItem('mimi.pageComposer.inspectorWidth', String(this.inspectorWidth()));
+    } catch {
+      /* Storage is optional. */
+    }
   }
 
   protected selectedImageId(): string | null {
@@ -221,7 +246,6 @@ export class PageEditor {
       }
     });
   }
-
 
   protected readonly layouts = PAGE_ROW_OPTIONS;
   protected readonly locale = signal<'de' | 'en'>('de');
@@ -262,13 +286,14 @@ export class PageEditor {
         const stored = Number(localStorage.getItem('mimi.pageComposer.inspectorWidth'));
         if (Number.isFinite(stored) && stored >= 300)
           this.inspectorWidth.set(this.clampInspector(stored));
-      } catch { /* Browser storage may be unavailable. */ }
+      } catch {
+        /* Browser storage may be unavailable. */
+      }
     });
     effect(() => {
       const value = this.active();
-      const markdown = value && 'type' in value && value.type === 'text'
-        ? value.markdown[this.locale()]
-        : '';
+      const markdown =
+        value && 'type' in value && value.type === 'text' ? value.markdown[this.locale()] : '';
       if (this.markdownControl.value !== markdown) {
         this.markdownControl.setValue(markdown, { emitEvent: false });
       }
@@ -329,7 +354,11 @@ export class PageEditor {
     this.addTarget.set(target);
   }
 
-  protected canvasAction(action: { kind: 'section' | 'row' | 'block'; id: string; action: 'duplicate' | 'remove' }): void {
+  protected canvasAction(action: {
+    kind: 'section' | 'row' | 'block';
+    id: string;
+    action: 'duplicate' | 'remove';
+  }): void {
     if (action.action === 'duplicate') this.duplicate(action.kind, action.id);
     else this.remove(action.kind, action.id);
   }
@@ -363,10 +392,14 @@ export class PageEditor {
 
   protected blockIcon(kind: BlockKind): string {
     switch (kind) {
-      case 'text': return 'type';
-      case 'image': return 'image';
-      case 'gallery': return 'images';
-      case 'spacer': return 'move-vertical';
+      case 'text':
+        return 'text';
+      case 'image':
+        return 'image';
+      case 'gallery':
+        return 'gallery';
+      case 'spacer':
+        return 'gallery';
     }
   }
 
@@ -387,11 +420,23 @@ export class PageEditor {
     this.documentChange.emit(next);
   }
   protected keyboard(event: KeyboardEvent): void {
-    if (event.altKey && !event.ctrlKey && !event.metaKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+    if (
+      event.altKey &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      (event.key === 'ArrowUp' || event.key === 'ArrowDown')
+    ) {
       const selected = this.selected();
       const target = event.target;
-      if (selected && selected.kind !== 'page' && selected.kind !== 'column' &&
-          !(target instanceof HTMLElement && target.closest('input, textarea, select, [contenteditable="true"]'))) {
+      if (
+        selected &&
+        selected.kind !== 'page' &&
+        selected.kind !== 'column' &&
+        !(
+          target instanceof HTMLElement &&
+          target.closest('input, textarea, select, [contenteditable="true"]')
+        )
+      ) {
         event.preventDefault();
         this.shift(selected.kind, selected.id, event.key === 'ArrowUp' ? -1 : 1);
       }
@@ -399,10 +444,15 @@ export class PageEditor {
     }
     if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
     const element = event.target;
-    if (element instanceof HTMLElement && element.closest('input, textarea, [contenteditable="true"], .markdown-editor')) return;
+    if (
+      element instanceof HTMLElement &&
+      element.closest('input, textarea, [contenteditable="true"], .markdown-editor')
+    )
+      return;
     if (event.key.toLowerCase() === 'z') {
       event.preventDefault();
-      if (event.shiftKey) this.redo(); else this.undo();
+      if (event.shiftKey) this.redo();
+      else this.undo();
     } else if (event.key.toLowerCase() === 'y') {
       event.preventDefault();
       this.redo();
@@ -412,9 +462,10 @@ export class PageEditor {
     const raw = this.value(event);
     const breakpoint = this.breakpoint();
     this.changeSelected((node) => {
-      const destination: PageStyleValues = breakpoint === 'desktop'
-        ? node.styles
-        : (node.styles.responsive ??= {})[breakpoint] ??= {};
+      const destination: PageStyleValues =
+        breakpoint === 'desktop'
+          ? node.styles
+          : ((node.styles.responsive ??= {})[breakpoint] ??= {});
       if (raw === '' && breakpoint !== 'desktop') {
         delete destination[key];
         return;
@@ -425,12 +476,14 @@ export class PageEditor {
         destination.align = raw as PageStyleValues['align'];
       if ((key === 'backgroundColor' || key === 'textColor') && /^#[0-9a-f]{6}$/i.test(raw))
         destination[key] = raw.toLowerCase();
-      if ((key === 'backgroundColor' || key === 'textColor') && raw === '')
-        delete destination[key];
+      if ((key === 'backgroundColor' || key === 'textColor') && raw === '') delete destination[key];
       if (key === 'padding' || key === 'radius' || key === 'gap') {
         const parsed = Number(raw);
         if (raw !== '' && Number.isFinite(parsed))
-          destination[key] = Math.min(key === 'radius' ? 48 : key === 'gap' ? 64 : 96, Math.max(0, parsed));
+          destination[key] = Math.min(
+            key === 'radius' ? 48 : key === 'gap' ? 64 : 96,
+            Math.max(0, parsed),
+          );
       }
     });
   }
@@ -452,7 +505,13 @@ export class PageEditor {
     const block = makeBlock(type);
     const column = this.find(this.document(), { kind: 'column', id: columnId });
     if (!column || !('blocks' in column)) return;
-    const next = insertPageItem(this.document(), 'block', columnId, block, index ?? column.blocks.length);
+    const next = insertPageItem(
+      this.document(),
+      'block',
+      columnId,
+      block,
+      index ?? column.blocks.length,
+    );
     if (!next) return;
     this.commit(next);
     this.inspect('block', block.id);
@@ -612,8 +671,10 @@ export class PageEditor {
     if (JSON.stringify(current) === JSON.stringify(next)) return;
     const selection = this.selected();
     const selected = selection ? this.find(next, selection) : null;
-    const historyKey = selection?.kind === 'block' && selected && 'type' in selected && selected.type === 'text'
-      ? `${selection.id}:${this.locale()}` : null;
+    const historyKey =
+      selection?.kind === 'block' && selected && 'type' in selected && selected.type === 'text'
+        ? `${selection.id}:${this.locale()}`
+        : null;
     const now = Date.now();
     if (!(historyKey && historyKey === this.lastHistoryKey && now - this.lastHistoryTime < 600)) {
       this.past.push(structuredClone(current));

@@ -1,60 +1,183 @@
 <section class="composer" (keydown)="keyboard($event)">
   <header class="composer__toolbar">
     <div class="composer__toolbar-group">
-      <button type="button" class="composer__tool" [class.is-active]="outlineOpen()" (click)="outlineOpen.set(!outlineOpen())"
-        [attr.aria-label]="'page.editor.outline' | i18n | async" [attr.aria-pressed]="outlineOpen()">
+      <button
+        type="button"
+        class="composer__tool"
+        [class.is-active]="outlineOpen()"
+        (click)="outlineOpen.set(!outlineOpen())"
+        [attr.aria-label]="'page.editor.outline' | i18n | async"
+        [attr.aria-pressed]="outlineOpen()"
+      >
         <app-icon name="panel-left" />
       </button>
-      <button type="button" class="composer__page-settings" (click)="inspect('page', document().id)">
+      <button
+        type="button"
+        class="composer__page-settings"
+        (click)="inspect('page', document().id)"
+      >
         <app-icon name="layout-template" /> {{ 'page.editor.title' | i18n | async }}
       </button>
       <span class="composer__toolbar-divider"></span>
-      <button type="button" class="composer__tool" [disabled]="!undoAvailable()" [attr.aria-label]="'page.editor.undo' | i18n | async" (click)="undo()"><app-icon name="undo-2" /></button>
-      <button type="button" class="composer__tool" [disabled]="!redoAvailable()" [attr.aria-label]="'page.editor.redo' | i18n | async" (click)="redo()"><app-icon name="redo-2" /></button>
+      <button
+        type="button"
+        class="composer__tool"
+        [disabled]="!undoAvailable()"
+        [attr.aria-label]="'page.editor.undo' | i18n | async"
+        (click)="undo()"
+      >
+        <app-icon name="undo-2" />
+      </button>
+      <button
+        type="button"
+        class="composer__tool"
+        [disabled]="!redoAvailable()"
+        [attr.aria-label]="'page.editor.redo' | i18n | async"
+        (click)="redo()"
+      >
+        <app-icon name="redo-2" />
+      </button>
     </div>
     <div class="composer__toolbar-group">
-      <button type="button" class="composer__tool" [class.is-active]="device() === 'desktop'" [attr.aria-label]="'page.editor.desktop' | i18n | async" (click)="selectDevice('desktop')"><app-icon name="monitor" /></button>
-      <button type="button" class="composer__tool" [class.is-active]="device() === 'tablet'" [attr.aria-label]="'page.editor.tablet' | i18n | async" (click)="selectDevice('tablet')"><app-icon name="tablet" /></button>
-      <button type="button" class="composer__tool" [class.is-active]="device() === 'mobile'" [attr.aria-label]="'page.editor.mobile' | i18n | async" (click)="selectDevice('mobile')"><app-icon name="smartphone" /></button>
+      <button
+        type="button"
+        class="composer__tool"
+        [class.is-active]="device() === 'desktop'"
+        [attr.aria-label]="'page.editor.desktop' | i18n | async"
+        (click)="selectDevice('desktop')"
+      >
+        <app-icon name="monitor" />
+      </button>
+      <button
+        type="button"
+        class="composer__tool"
+        [class.is-active]="device() === 'tablet'"
+        [attr.aria-label]="'page.editor.tablet' | i18n | async"
+        (click)="selectDevice('tablet')"
+      >
+        <app-icon name="tablet" />
+      </button>
+      <button
+        type="button"
+        class="composer__tool"
+        [class.is-active]="device() === 'mobile'"
+        [attr.aria-label]="'page.editor.mobile' | i18n | async"
+        (click)="selectDevice('mobile')"
+      >
+        <app-icon name="smartphone" />
+      </button>
       <span class="composer__toolbar-divider"></span>
-      <button type="button" class="composer__tool composer__locale" [class.is-active]="locale() === 'de'" (click)="locale.set('de')">DE</button>
-      <button type="button" class="composer__tool composer__locale" [class.is-active]="locale() === 'en'" (click)="locale.set('en')">EN</button>
-      <button type="button" class="composer__tool" [class.is-active]="inspectorOpen()"
-        [attr.aria-pressed]="inspectorOpen()" [attr.aria-label]="'page.editor.toggleInspector' | i18n | async"
-        (click)="inspectorOpen.set(!inspectorOpen())"><app-icon name="panel-right" /></button>
-      <button type="button" class="composer__tool composer__preview-toggle" [class.is-active]="preview()" [attr.aria-pressed]="preview()" (click)="togglePreview()">
-        <app-icon [name]="preview() ? 'pencil' : 'eye'" /> {{ 'page.editor.preview' | i18n | async }}
+      <button
+        type="button"
+        class="composer__tool composer__locale"
+        [class.is-active]="locale() === 'de'"
+        (click)="locale.set('de')"
+      >
+        DE
+      </button>
+      <button
+        type="button"
+        class="composer__tool composer__locale"
+        [class.is-active]="locale() === 'en'"
+        (click)="locale.set('en')"
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        class="composer__tool"
+        [class.is-active]="inspectorOpen()"
+        [attr.aria-pressed]="inspectorOpen()"
+        [attr.aria-label]="'page.editor.toggleInspector' | i18n | async"
+        (click)="inspectorOpen.set(!inspectorOpen())"
+      >
+        <app-icon name="panel-right" />
+      </button>
+      <button
+        type="button"
+        class="composer__tool composer__preview-toggle"
+        [class.is-active]="preview()"
+        [attr.aria-pressed]="preview()"
+        (click)="togglePreview()"
+      >
+        <app-icon [name]="preview() ? 'pencil' : 'eye'" />
+        {{ 'page.editor.preview' | i18n | async }}
       </button>
     </div>
   </header>
   @if (!preview()) {
     <nav class="composer__breadcrumbs" [attr.aria-label]="'page.editor.breadcrumbs' | i18n | async">
       @for (entry of breadcrumbs(); track entry.id; let last = $last) {
-        @if (!$first) { <app-icon name="chevron-right" /> }
-        <button type="button" [attr.aria-current]="last ? 'location' : null"
-          (click)="inspect(entry.kind, entry.id)">
+        @if (!$first) {
+          <app-icon name="chevron-right" />
+        }
+        <button
+          type="button"
+          [attr.aria-current]="last ? 'location' : null"
+          (click)="inspect(entry.kind, entry.id)"
+        >
           {{ pathLabel(entry) | i18n | async }}
-          @if (pathIndex(entry); as index) { {{ index }} }
+          @if (pathIndex(entry); as index) {
+            {{ index }}
+          }
         </button>
       }
     </nav>
   }
-  <div #workspace class="composer__workspace" [style.--composer-inspector-width.px]="inspectorWidth()"
+  <div
+    #workspace
+    class="composer__workspace"
+    [style.--composer-inspector-width.px]="inspectorWidth()"
     [class.composer__workspace--preview]="preview()"
     [class.composer__workspace--inspector-hidden]="!inspectorOpen() && !preview()"
-    [class.composer__workspace--outline]="outlineOpen() && !preview()">
+    [class.composer__workspace--outline]="outlineOpen() && !preview()"
+  >
     @if (outlineOpen() && !preview()) {
       <nav class="composer__outline" [attr.aria-label]="'page.editor.outline' | i18n | async">
         <header><app-icon name="list-tree" /> {{ 'page.editor.outline' | i18n | async }}</header>
-        <button type="button" (click)="inspect('page', document().id)" [class.is-active]="isSelected(document().id)">{{ 'page.editor.title' | i18n | async }}</button>
+        <button
+          type="button"
+          (click)="inspect('page', document().id)"
+          [class.is-active]="isSelected(document().id)"
+        >
+          {{ 'page.editor.title' | i18n | async }}
+        </button>
         @for (section of document().sections; track section.id; let s = $index) {
-          <button type="button" class="composer__tree-section" (click)="inspect('section', section.id)" [class.is-active]="isSelected(section.id)">{{ 'page.editor.section' | i18n | async }} {{ s + 1 }}</button>
+          <button
+            type="button"
+            class="composer__tree-section"
+            (click)="inspect('section', section.id)"
+            [class.is-active]="isSelected(section.id)"
+          >
+            {{ 'page.editor.section' | i18n | async }} {{ s + 1 }}
+          </button>
           @for (row of section.rows; track row.id; let r = $index) {
-            <button type="button" class="composer__tree-row" (click)="inspect('row', row.id)" [class.is-active]="isSelected(row.id)">{{ 'page.editor.row' | i18n | async }} {{ r + 1 }} · {{ grid(row.layout) }}</button>
+            <button
+              type="button"
+              class="composer__tree-row"
+              (click)="inspect('row', row.id)"
+              [class.is-active]="isSelected(row.id)"
+            >
+              {{ 'page.editor.row' | i18n | async }} {{ r + 1 }} · {{ grid(row.layout) }}
+            </button>
             @for (column of row.columns; track column.id; let c = $index) {
-              <button type="button" class="composer__tree-column" (click)="inspect('column', column.id)" [class.is-active]="isSelected(column.id)">{{ 'page.editor.column' | i18n | async }} {{ c + 1 }}</button>
+              <button
+                type="button"
+                class="composer__tree-column"
+                (click)="inspect('column', column.id)"
+                [class.is-active]="isSelected(column.id)"
+              >
+                {{ 'page.editor.column' | i18n | async }} {{ c + 1 }}
+              </button>
               @for (block of column.blocks; track block.id) {
-                <button type="button" class="composer__tree-block" (click)="inspect('block', block.id)" [class.is-active]="isSelected(block.id)">{{ blockName(block) | i18n | async }}</button>
+                <button
+                  type="button"
+                  class="composer__tree-block"
+                  (click)="inspect('block', block.id)"
+                  [class.is-active]="isSelected(block.id)"
+                >
+                  {{ blockName(block) | i18n | async }}
+                </button>
               }
             }
           }
@@ -62,27 +185,67 @@
       </nav>
     }
     <div class="composer__canvas-shell">
-      <div class="composer__canvas" [class.composer__canvas--preview]="preview()" [style.--composer-cover]="coverUrl()">
-        <div class="composer__device" [class.composer__device--tablet]="device() === 'tablet'" [class.composer__device--mobile]="device() === 'mobile'">
-          <app-page-renderer [document]="document()" [locale]="locale()" [assets]="assets()" [editable]="!preview()"
-            [selectedId]="selected()?.id ?? null" [inlineTextId]="inlineTextId()"
-            (nodeSelect)="canvasSelect($event)" (itemMove)="canvasMove($event)" (insert)="canvasInsert($event)"
-            (nodeAction)="canvasAction($event)" (textEdit)="openInline($event)" (imageEdit)="openImageLibrary($event)"
-            (inlineTextChange)="updateInline($event)" />
+      <div
+        class="composer__canvas"
+        [class.composer__canvas--preview]="preview()"
+        [style.--composer-cover]="coverUrl()"
+      >
+        <div
+          class="composer__device"
+          [class.composer__device--tablet]="device() === 'tablet'"
+          [class.composer__device--mobile]="device() === 'mobile'"
+        >
+          <app-page-renderer
+            [document]="document()"
+            [locale]="locale()"
+            [assets]="assets()"
+            [editable]="!preview()"
+            [selectedId]="selected()?.id ?? null"
+            [inlineTextId]="inlineTextId()"
+            (nodeSelect)="canvasSelect($event)"
+            (itemMove)="canvasMove($event)"
+            (insert)="canvasInsert($event)"
+            (nodeAction)="canvasAction($event)"
+            (textEdit)="openInline($event)"
+            (imageEdit)="openImageLibrary($event)"
+            (inlineTextChange)="updateInline($event)"
+          />
         </div>
       </div>
       @if (addTarget(); as target) {
         <div class="composer__insert-scrim" (click)="addTarget.set(null)">
-          <div class="composer__insert-menu" (click)="$event.stopPropagation()" role="dialog" [attr.aria-label]="'page.editor.insert' | i18n | async">
+          <div
+            class="composer__insert-menu"
+            (click)="$event.stopPropagation()"
+            role="dialog"
+            [attr.aria-label]="'page.editor.insert' | i18n | async"
+          >
             <header>
-              <strong>{{ target.kind === 'row' ? ('page.editor.layouts' | i18n | async) : ('page.editor.addBlock' | i18n | async) }}</strong>
-              <button type="button" (click)="addTarget.set(null)" [attr.aria-label]="'page.editor.close' | i18n | async"><app-icon name="x" /></button>
+              <strong>{{
+                target.kind === 'row'
+                  ? ('page.editor.layouts' | i18n | async)
+                  : ('page.editor.addBlock' | i18n | async)
+              }}</strong>
+              <button
+                type="button"
+                (click)="addTarget.set(null)"
+                [attr.aria-label]="'page.editor.close' | i18n | async"
+              >
+                <app-icon name="x" />
+              </button>
             </header>
             @if (target.kind === 'row') {
               <div class="composer__layouts composer__layouts--insert">
                 @for (layout of layouts; track layout.id) {
-                  <button type="button" class="composer__layout" [attr.aria-label]="layout.label" (click)="insertLayout(target.parentId, layout.id, target.index)">
-                    @for (weight of layout.weights; track $index) { <span [style.flex]="weight"></span> }
+                  <button
+                    type="button"
+                    class="composer__layout"
+                    [attr.aria-label]="layout.label"
+                    (click)="insertLayout(target.parentId, layout.id, target.index)"
+                  >
+                    @for (weight of layout.weights; track $index) {
+                      <span [style.flex]="weight"></span>
+                    }
                     <small>{{ layout.label }}</small>
                   </button>
                 }
@@ -90,7 +253,10 @@
             } @else {
               <div class="composer__block-palette">
                 @for (kind of blockKinds; track kind) {
-                  <button type="button" (click)="insertBlock(target.parentId, kind, target.index)"><app-icon [name]="blockIcon(kind)" /> {{ ('page.editor.block.' + kind) | i18n | async }}</button>
+                  <button type="button" (click)="insertBlock(target.parentId, kind, target.index)">
+                    <app-icon [name]="kind" />
+                    {{ 'page.editor.block.' + kind | i18n | async }}
+                  </button>
                 }
               </div>
             }
@@ -98,127 +264,284 @@
         </div>
       }
     </div>
-      @if (!preview() && inspectorOpen()) {
-      <div class="composer__splitter" role="separator" tabindex="0"
-        aria-orientation="vertical" [attr.aria-label]="'page.editor.resizeInspector' | i18n | async"
-        [attr.aria-valuenow]="inspectorWidth()" aria-valuemin="300" aria-valuemax="800"
-        (pointerdown)="beginResize($event)" (pointermove)="resize($event)"
-        (pointerup)="finishResize($event)" (pointercancel)="finishResize($event)"
-        (keydown)="resizeKeyboard($event)" (dblclick)="resetInspector()">
+    @if (!preview() && inspectorOpen()) {
+      <div
+        class="composer__splitter"
+        role="separator"
+        tabindex="0"
+        aria-orientation="vertical"
+        [attr.aria-label]="'page.editor.resizeInspector' | i18n | async"
+        [attr.aria-valuenow]="inspectorWidth()"
+        aria-valuemin="300"
+        aria-valuemax="800"
+        (pointerdown)="beginResize($event)"
+        (pointermove)="resize($event)"
+        (pointerup)="finishResize($event)"
+        (pointercancel)="finishResize($event)"
+        (keydown)="resizeKeyboard($event)"
+        (dblclick)="resetInspector()"
+      >
         <span aria-hidden="true"></span>
       </div>
       <aside class="composer__inspector">
         @if (active(); as node) {
           <header>
             <strong>{{ 'page.editor.settings' | i18n | async }}</strong>
-            <button type="button" class="composer__reset-width" (click)="resetInspector()"
-              [attr.aria-label]="'page.editor.resetWidth' | i18n | async"><app-icon name="panel-right" /></button>
+            <button
+              type="button"
+              class="composer__reset-width"
+              (click)="resetInspector()"
+              [attr.aria-label]="'page.editor.resetWidth' | i18n | async"
+            >
+              <app-icon name="panel-right" />
+            </button>
             <div class="composer__inspector-actions">
               @if (selected(); as selection) {
-                @if (selection.kind === 'section' || selection.kind === 'row' || selection.kind === 'block') {
-                  <button type="button" (click)="shift(selection.kind, selection.id, -1)" [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
-                  <button type="button" (click)="shift(selection.kind, selection.id, 1)" [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
+                @if (
+                  selection.kind === 'section' ||
+                  selection.kind === 'row' ||
+                  selection.kind === 'block'
+                ) {
+                  <button
+                    type="button"
+                    (click)="shift(selection.kind, selection.id, -1)"
+                    [attr.aria-label]="'page.editor.up' | i18n | async"
+                  >
+                    <app-icon name="arrow-up" />
+                  </button>
+                  <button
+                    type="button"
+                    (click)="shift(selection.kind, selection.id, 1)"
+                    [attr.aria-label]="'page.editor.down' | i18n | async"
+                  >
+                    <app-icon name="arrow-down" />
+                  </button>
                 }
               }
-              <button type="button" (click)="selected.set(null)" [attr.aria-label]="'page.editor.close' | i18n | async"><app-icon name="x" /></button>
+              <button
+                type="button"
+                (click)="selected.set(null)"
+                [attr.aria-label]="'page.editor.close' | i18n | async"
+              >
+                <app-icon name="x" />
+              </button>
             </div>
           </header>
-          <div class="composer__tabs" role="group" [attr.aria-label]="'page.editor.settings' | i18n | async">
-            <button type="button" [class.is-active]="inspectorTab() === 'content'" (click)="inspectorTab.set('content')">{{ 'page.editor.content' | i18n | async }}</button>
-            <button type="button" [class.is-active]="inspectorTab() === 'design'" (click)="inspectorTab.set('design')">{{ 'page.editor.design' | i18n | async }}</button>
-            <button type="button" [class.is-active]="inspectorTab() === 'advanced'" (click)="inspectorTab.set('advanced')">{{ 'page.editor.advanced' | i18n | async }}</button>
+          <div
+            class="composer__tabs"
+            role="group"
+            [attr.aria-label]="'page.editor.settings' | i18n | async"
+          >
+            <button
+              type="button"
+              [class.is-active]="inspectorTab() === 'content'"
+              (click)="inspectorTab.set('content')"
+            >
+              {{ 'page.editor.content' | i18n | async }}
+            </button>
+            <button
+              type="button"
+              [class.is-active]="inspectorTab() === 'design'"
+              (click)="inspectorTab.set('design')"
+            >
+              {{ 'page.editor.design' | i18n | async }}
+            </button>
+            <button
+              type="button"
+              [class.is-active]="inspectorTab() === 'advanced'"
+              (click)="inspectorTab.set('advanced')"
+            >
+              {{ 'page.editor.advanced' | i18n | async }}
+            </button>
           </div>
           @if (inspectorTab() === 'content') {
-          @if (selectedRow(); as row) {
-            <h3>{{ 'page.editor.layouts' | i18n | async }}</h3>
-            <div class="composer__layouts">
-              @for (layout of layouts; track layout.id) {
-                <button type="button" class="composer__layout" [class.is-active]="layout.id === row.layout"
-                  [attr.aria-label]="layout.label" [attr.aria-pressed]="layout.id === row.layout" (click)="chooseLayout(row.id, layout.id)">
-                  @for (weight of layout.weights; track $index) { <span [style.flex]="weight"></span> }
-                  <small>{{ layout.label }}</small>
-                </button>
-              }
-            </div>
-          }
-          @if (selectedBlock(); as block) {
-            @switch (block.type) {
-              @case ('text') {
-                <h3>{{ 'page.editor.block.text' | i18n | async }}</h3>
-                <app-markdown-editor [formControl]="markdownControl" [assets]="assets()" [label]="('page.editor.content' | i18n | async) ?? ''" />
-              }
-              @case ('image') {
-                <h3>{{ 'page.editor.block.image' | i18n | async }}</h3>
-                <button type="button" class="composer__asset-preview" (click)="openImageLibrary(block.id)">
-                  @if (block.assetId) {
-                    <img [src]="imageUrl(block.assetId)" alt="" />
-                  } @else {
-                    <app-icon name="image" />
-                  }
-                  <span>{{ 'page.editor.chooseImage' | i18n | async }}</span>
-                </button>
-                <label>{{ 'page.editor.alt' | i18n | async }}</label>
-                <input [value]="block.alt[locale()]" (change)="updateAlt($event)" />
-              }
-              @case ('gallery') {
-                <h3>{{ 'page.editor.block.gallery' | i18n | async }}</h3>
-                @for (image of block.items; track image.id) {
-                  <div class="composer__gallery-item">
-                    <img [src]="imageUrl(image.assetId)" alt="" />
-                    <input [value]="image.alt[locale()]" [attr.aria-label]="'page.editor.alt' | i18n | async" (change)="updateGalleryAlt(image.id, $event)" />
-                    <button type="button" (click)="deleteGalleryImage(image.id)">×</button>
-                  </div>
+            @if (selectedRow(); as row) {
+              <h3>{{ 'page.editor.layouts' | i18n | async }}</h3>
+              <div class="composer__layouts">
+                @for (layout of layouts; track layout.id) {
+                  <button
+                    type="button"
+                    class="composer__layout"
+                    [class.is-active]="layout.id === row.layout"
+                    [attr.aria-label]="layout.label"
+                    [attr.aria-pressed]="layout.id === row.layout"
+                    (click)="chooseLayout(row.id, layout.id)"
+                  >
+                    @for (weight of layout.weights; track $index) {
+                      <span [style.flex]="weight"></span>
+                    }
+                    <small>{{ layout.label }}</small>
+                  </button>
                 }
-                <label>{{ 'page.editor.chooseImage' | i18n | async }}</label>
-                <select (change)="addGalleryImage($event)">
-                  <option value="">{{ 'page.editor.chooseImage' | i18n | async }}</option>
-                  @for (image of assets(); track image.id) { <option [value]="image.id">{{ image.originalFilename }}</option> }
-                </select>
-              }
-              @case ('spacer') {
-                <h3>{{ 'page.editor.block.spacer' | i18n | async }}</h3>
-                <label>{{ 'page.editor.height' | i18n | async }}</label>
-                <input type="number" min="0" max="240" [value]="block.height" (change)="updateSpacer($event)" />
+              </div>
+            }
+            @if (selectedBlock(); as block) {
+              @switch (block.type) {
+                @case ('text') {
+                  <h3>{{ 'page.editor.block.text' | i18n | async }}</h3>
+                  <app-markdown-editor
+                    [formControl]="markdownControl"
+                    [assets]="assets()"
+                    [label]="('page.editor.content' | i18n | async) ?? ''"
+                  />
+                }
+                @case ('image') {
+                  <h3>{{ 'page.editor.block.image' | i18n | async }}</h3>
+                  <button
+                    type="button"
+                    class="composer__asset-preview"
+                    (click)="openImageLibrary(block.id)"
+                  >
+                    @if (block.assetId) {
+                      <img [src]="imageUrl(block.assetId)" alt="" />
+                    } @else {
+                      <app-icon name="image" />
+                    }
+                    <span>{{ 'page.editor.chooseImage' | i18n | async }}</span>
+                  </button>
+                  <label>{{ 'page.editor.alt' | i18n | async }}</label>
+                  <input [value]="block.alt[locale()]" (change)="updateAlt($event)" />
+                }
+                @case ('gallery') {
+                  <h3>{{ 'page.editor.block.gallery' | i18n | async }}</h3>
+                  @for (image of block.items; track image.id) {
+                    <div class="composer__gallery-item">
+                      <img [src]="imageUrl(image.assetId)" alt="" />
+                      <input
+                        [value]="image.alt[locale()]"
+                        [attr.aria-label]="'page.editor.alt' | i18n | async"
+                        (change)="updateGalleryAlt(image.id, $event)"
+                      />
+                      <button type="button" (click)="deleteGalleryImage(image.id)">×</button>
+                    </div>
+                  }
+                  <label>{{ 'page.editor.chooseImage' | i18n | async }}</label>
+                  <select (change)="addGalleryImage($event)">
+                    <option value="">{{ 'page.editor.chooseImage' | i18n | async }}</option>
+                    @for (image of assets(); track image.id) {
+                      <option [value]="image.id">{{ image.originalFilename }}</option>
+                    }
+                  </select>
+                }
+                @case ('spacer') {
+                  <h3>{{ 'page.editor.block.spacer' | i18n | async }}</h3>
+                  <label>{{ 'page.editor.height' | i18n | async }}</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="240"
+                    [value]="block.height"
+                    (change)="updateSpacer($event)"
+                  />
+                }
               }
             }
           }
-          }
           @if (inspectorTab() === 'design') {
-          <h3>{{ 'page.editor.design' | i18n | async }}</h3>
-          <label>{{ 'page.editor.breakpoint' | i18n | async }}</label>
-          <div class="composer__breakpoints">
-            <button type="button" [class.is-active]="breakpoint() === 'desktop'" (click)="selectDevice('desktop')">{{ 'page.editor.desktop' | i18n | async }}</button>
-            <button type="button" [class.is-active]="breakpoint() === 'tablet'" (click)="selectDevice('tablet')">{{ 'page.editor.tablet' | i18n | async }}</button>
-            <button type="button" [class.is-active]="breakpoint() === 'mobile'" (click)="selectDevice('mobile')">{{ 'page.editor.mobile' | i18n | async }}</button>
-          </div>
-          <label>{{ 'page.editor.background' | i18n | async }}</label>
-          <select [value]="styleValue(node.styles, 'background')" (change)="responsiveStyle('background', $event)">
-            @if (breakpoint() !== 'desktop') { <option value="">{{ 'page.editor.inherit' | i18n | async }}</option> }
-            <option value="none">{{ 'page.editor.surface.none' | i18n | async }}</option>
-            <option value="glass">{{ 'page.editor.surface.glass' | i18n | async }}</option>
-            <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
-            <option value="accent">{{ 'page.editor.surface.accent' | i18n | async }}</option>
-          </select>
-          <label>{{ 'page.editor.padding' | i18n | async }}</label>
-          <input type="number" min="0" max="96" [value]="styleValue(node.styles, 'padding')" [placeholder]="breakpoint() !== 'desktop' ? ('page.editor.inherit' | i18n | async) ?? '' : ''" (change)="responsiveStyle('padding', $event)" />
-          <label>{{ 'page.editor.gap' | i18n | async }}</label>
-          <input type="number" min="0" max="64" [value]="styleValue(node.styles, 'gap')" [placeholder]="breakpoint() !== 'desktop' ? ('page.editor.inherit' | i18n | async) ?? '' : ''" (change)="responsiveStyle('gap', $event)" />
-          <label>{{ 'page.editor.radius' | i18n | async }}</label>
-          <input type="number" min="0" max="48" [value]="styleValue(node.styles, 'radius')" [placeholder]="breakpoint() !== 'desktop' ? ('page.editor.inherit' | i18n | async) ?? '' : ''" (change)="responsiveStyle('radius', $event)" />
-          <label>{{ 'page.editor.align' | i18n | async }}</label>
-          <select [value]="styleValue(node.styles, 'align')" (change)="responsiveStyle('align', $event)">
-            @if (breakpoint() !== 'desktop') { <option value="">{{ 'page.editor.inherit' | i18n | async }}</option> }
-            <option value="left">{{ 'page.editor.align.left' | i18n | async }}</option>
-            <option value="center">{{ 'page.editor.align.center' | i18n | async }}</option>
-            <option value="right">{{ 'page.editor.align.right' | i18n | async }}</option>
-          </select>
-          <label>{{ 'page.editor.backgroundColor' | i18n | async }}</label>
-          <input type="text" pattern="#[0-9a-fA-F]{6}" placeholder="#aabbcc" [value]="styleValue(node.styles, 'backgroundColor')" (change)="responsiveStyle('backgroundColor', $event)" />
-          <label>{{ 'page.editor.textColor' | i18n | async }}</label>
-          <input type="text" pattern="#[0-9a-fA-F]{6}" placeholder="#ffffff" [value]="styleValue(node.styles, 'textColor')" (change)="responsiveStyle('textColor', $event)" />
-          @if (breakpoint() !== 'desktop') {
-            <button type="button" class="composer__reset" (click)="clearBreakpoint()">{{ 'page.editor.resetBreakpoint' | i18n | async }}</button>
-          }
+            <h3>{{ 'page.editor.design' | i18n | async }}</h3>
+            <label>{{ 'page.editor.breakpoint' | i18n | async }}</label>
+            <div class="composer__breakpoints">
+              <button
+                type="button"
+                [class.is-active]="breakpoint() === 'desktop'"
+                (click)="selectDevice('desktop')"
+              >
+                {{ 'page.editor.desktop' | i18n | async }}
+              </button>
+              <button
+                type="button"
+                [class.is-active]="breakpoint() === 'tablet'"
+                (click)="selectDevice('tablet')"
+              >
+                {{ 'page.editor.tablet' | i18n | async }}
+              </button>
+              <button
+                type="button"
+                [class.is-active]="breakpoint() === 'mobile'"
+                (click)="selectDevice('mobile')"
+              >
+                {{ 'page.editor.mobile' | i18n | async }}
+              </button>
+            </div>
+            <label>{{ 'page.editor.background' | i18n | async }}</label>
+            <select
+              [value]="styleValue(node.styles, 'background')"
+              (change)="responsiveStyle('background', $event)"
+            >
+              @if (breakpoint() !== 'desktop') {
+                <option value="">{{ 'page.editor.inherit' | i18n | async }}</option>
+              }
+              <option value="none">{{ 'page.editor.surface.none' | i18n | async }}</option>
+              <option value="glass">{{ 'page.editor.surface.glass' | i18n | async }}</option>
+              <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
+              <option value="accent">{{ 'page.editor.surface.accent' | i18n | async }}</option>
+            </select>
+            <label>{{ 'page.editor.padding' | i18n | async }}</label>
+            <input
+              type="number"
+              min="0"
+              max="96"
+              [value]="styleValue(node.styles, 'padding')"
+              [placeholder]="
+                breakpoint() !== 'desktop' ? (('page.editor.inherit' | i18n | async) ?? '') : ''
+              "
+              (change)="responsiveStyle('padding', $event)"
+            />
+            <label>{{ 'page.editor.gap' | i18n | async }}</label>
+            <input
+              type="number"
+              min="0"
+              max="64"
+              [value]="styleValue(node.styles, 'gap')"
+              [placeholder]="
+                breakpoint() !== 'desktop' ? (('page.editor.inherit' | i18n | async) ?? '') : ''
+              "
+              (change)="responsiveStyle('gap', $event)"
+            />
+            <label>{{ 'page.editor.radius' | i18n | async }}</label>
+            <input
+              type="number"
+              min="0"
+              max="48"
+              [value]="styleValue(node.styles, 'radius')"
+              [placeholder]="
+                breakpoint() !== 'desktop' ? (('page.editor.inherit' | i18n | async) ?? '') : ''
+              "
+              (change)="responsiveStyle('radius', $event)"
+            />
+            <label>{{ 'page.editor.align' | i18n | async }}</label>
+            <select
+              [value]="styleValue(node.styles, 'align')"
+              (change)="responsiveStyle('align', $event)"
+            >
+              @if (breakpoint() !== 'desktop') {
+                <option value="">{{ 'page.editor.inherit' | i18n | async }}</option>
+              }
+              <option value="left">{{ 'page.editor.align.left' | i18n | async }}</option>
+              <option value="center">{{ 'page.editor.align.center' | i18n | async }}</option>
+              <option value="right">{{ 'page.editor.align.right' | i18n | async }}</option>
+            </select>
+            <label>{{ 'page.editor.backgroundColor' | i18n | async }}</label>
+            <input
+              type="text"
+              pattern="#[0-9a-fA-F]{6}"
+              placeholder="#aabbcc"
+              [value]="styleValue(node.styles, 'backgroundColor')"
+              (change)="responsiveStyle('backgroundColor', $event)"
+            />
+            <label>{{ 'page.editor.textColor' | i18n | async }}</label>
+            <input
+              type="text"
+              pattern="#[0-9a-fA-F]{6}"
+              placeholder="#ffffff"
+              [value]="styleValue(node.styles, 'textColor')"
+              (change)="responsiveStyle('textColor', $event)"
+            />
+            @if (breakpoint() !== 'desktop') {
+              <button type="button" class="composer__reset" (click)="clearBreakpoint()">
+                {{ 'page.editor.resetBreakpoint' | i18n | async }}
+              </button>
+            }
           }
           @if (inspectorTab() === 'advanced') {
             <label>{{ 'page.editor.nodeId' | i18n | async }}</label>
@@ -232,9 +555,13 @@
           </div>
         }
       </aside>
-      }
-
+    }
   </div>
-  <app-asset-library type="image" [assets]="assets()" [selectedId]="selectedImageId()"
-    (assetSelected)="chooseAsset($event)" (closed)="mediaTarget.set(null)" />
+  <app-asset-library
+    type="image"
+    [assets]="assets()"
+    [selectedId]="selectedImageId()"
+    (assetSelected)="chooseAsset($event)"
+    (closed)="mediaTarget.set(null)"
+  />
 </section>
