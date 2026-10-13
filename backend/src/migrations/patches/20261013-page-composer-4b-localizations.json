@@ -1,0 +1,18 @@
+{
+  "localizations": [
+    { "key": "page.editor.undo", "de": "Rückgängig", "en": "Undo" },
+    { "key": "page.editor.redo", "de": "Wiederherstellen", "en": "Redo" },
+    { "key": "page.editor.drag", "de": "Element verschieben (ziehen)", "en": "Drag to move element" },
+    { "key": "page.editor.desktop", "de": "Desktop", "en": "Desktop" },
+    { "key": "page.editor.tablet", "de": "Tablet", "en": "Tablet" },
+    { "key": "page.editor.mobile", "de": "Smartphone", "en": "Mobile" },
+    { "key": "page.editor.advanced", "de": "Erweitert", "en": "Advanced" },
+    { "key": "page.editor.breakpoint", "de": "Geräteansicht für Styles", "en": "Device styles" },
+    { "key": "page.editor.inherit", "de": "Vom größeren Bildschirm übernehmen", "en": "Inherit from larger screen" },
+    { "key": "page.editor.backgroundColor", "de": "Hintergrundfarbe (#RRGGBB)", "en": "Background color (#RRGGBB)" },
+    { "key": "page.editor.textColor", "de": "Textfarbe (#RRGGBB)", "en": "Text color (#RRGGBB)" },
+    { "key": "page.editor.resetBreakpoint", "de": "Geräte-Anpassungen zurücksetzen", "en": "Reset device overrides" },
+    { "key": "page.editor.nodeId", "de": "Element-ID", "en": "Element ID" },
+    { "key": "page.editor.advancedHint", "de": "Diese ID bleibt auch nach dem Verschieben bestehen. Individuelles CSS oder JavaScript ist bewusst nicht erlaubt.", "en": "This ID stays stable when you move the element. Custom CSS or JavaScript is intentionally disabled." }
+  ]
+}

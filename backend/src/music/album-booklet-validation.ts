@@ -63,22 +63,53 @@ function localized(value: unknown): LocalizedText {
   return { de: string(data['de']), en: string(data['en']) };
 }
 
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+
+function styleValues(data: Record<string, unknown>, defaults: boolean): PageStyles {
+  const result: PageStyles = {};
+  if (defaults || data['background'] !== undefined) {
+    const value = data['background'] ?? 'none';
+    if (!['none', 'glass', 'solid', 'accent'].includes(String(value))) invalid('invalid background preset');
+    result.background = value as PageStyles['background'];
+  }
+  if (defaults || data['align'] !== undefined) {
+    const value = data['align'] ?? 'left';
+    if (!['left', 'center', 'right'].includes(String(value))) invalid('invalid alignment');
+    result.align = value as PageStyles['align'];
+  }
+  for (const [key, max, fallback] of [
+    ['padding', 96, 0], ['gap', 64, 16], ['radius', 48, 0],
+  ] as const) {
+    if (defaults || data[key] !== undefined) result[key] = number(data[key], max, fallback);
+  }
+  for (const key of ['backgroundColor', 'textColor'] as const) {
+    if (data[key] !== undefined) {
+      const value = string(data[key], 7);
+      if (!HEX_COLOR.test(value)) invalid('invalid hex color');
+      result[key] = value.toLowerCase();
+    }
+  }
+  return result;
+}
+
 function styles(value: unknown): PageStyles {
   const data = value === undefined ? {} : record(value);
-  const background = data['background'] ?? 'none';
-  const align = data['align'] ?? 'left';
-  if (
-    !['none', 'glass', 'solid', 'accent'].includes(String(background)) ||
-    !['left', 'center', 'right'].includes(String(align))
-  )
-    invalid('invalid design preset');
-  return {
-    background: background as PageStyles['background'],
-    padding: number(data['padding'], 96, 0),
-    gap: number(data['gap'], 64, 16),
-    radius: number(data['radius'], 48, 0),
-    align: align as PageStyles['align'],
-  };
+  const result = styleValues(data, true);
+  if (data['responsive'] !== undefined) {
+    const responsive = record(data['responsive']);
+    for (const key of Object.keys(responsive)) {
+      if (key !== 'tablet' && key !== 'mobile') invalid('invalid breakpoint');
+    }
+    result.responsive = {};
+    for (const key of ['tablet', 'mobile'] as const) {
+      if (responsive[key] !== undefined) {
+        const values = record(responsive[key]);
+        if ('responsive' in values) invalid('nested responsive style');
+        result.responsive[key] = styleValues(values, false);
+      }
+    }
+  }
+  return result;
 }
 function node(value: Record<string, unknown>): PageNode {
   return { id: id(value['id']), styles: styles(value['styles']) };

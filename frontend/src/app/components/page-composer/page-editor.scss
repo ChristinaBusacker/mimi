@@ -59,3 +59,49 @@
 
 .composer__page-settings { display: inline-flex; align-items: center; gap: 8px; border: none; background: transparent; color: inherit; font-weight: 800; padding: 6px; }
 .composer__page-settings app-icon { width: 16px; }
+
+/* 4B: accessible structural drag targets, restrained Divi-like inspector. */
+.composer__handle { cursor: grab !important; touch-action: none; }
+.composer__handle:active { cursor: grabbing !important; }
+.composer__drop-target { min-height: 9px; border-radius: 6px; transition: background 120ms ease, box-shadow 120ms ease; }
+.composer__drop-target.is-over { background: #e9b2d6; box-shadow: 0 0 0 2px rgb(233 178 214 / 38%); }
+.composer__drop-target--end { min-height: 16px; }
+.composer__toolbar button:disabled { opacity: .35; cursor: not-allowed; }
+.composer__device { width: 100%; max-width: 100%; margin: 0 auto; transition: max-width .18s ease; }
+.composer__device--tablet { max-width: 768px; }
+.composer__device--mobile { max-width: 390px; }
+.composer__preview { min-height: 550px; overflow-x: auto; background: radial-gradient(ellipse at center top, #342238 0%, #1d1928 74%); }
+.composer__device app-page-renderer { display: block; }
+.composer__tabs, .composer__breakpoints { display: flex; gap: 4px; flex-wrap: wrap; }
+.composer__tabs button, .composer__breakpoints button, .composer__reset {
+  padding: 8px 10px; color: inherit; border: 1px solid #6b536e; border-radius: 8px;
+  background: rgb(255 255 255 / 4%); font-size: .76rem;
+}
+.composer__tabs button.is-active, .composer__breakpoints button.is-active {
+  background: rgb(218 141 187 / 25%); border-color: #f0b4d8;
+}
+.composer__hint { font-size: .8rem; opacity: .72; line-height: 1.5; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .composer__device, .composer__drop-target { transition: none; } }
+
+/* Structural drop targets remain visible while a node is being dragged. */
+.composer__handle { cursor: grab !important; touch-action: none; }
+.composer__handle:active { cursor: grabbing !important; }
+.composer__drop-target { min-height: 9px; border-radius: 6px; transition: background 120ms ease, box-shadow 120ms ease; }
+.composer__drop-target.is-over { background: #e9b2d6; box-shadow: 0 0 0 2px rgb(233 178 214 / 38%); }
+.composer__drop-target--end { min-height: 16px; }
+.composer__toolbar button:disabled { opacity: .35; cursor: not-allowed; }
+.composer__device { width: 100%; max-width: 100%; margin: 0 auto; transition: max-width .18s ease; }
+.composer__device--tablet { max-width: 768px; }
+.composer__device--mobile { max-width: 390px; }
+.composer__preview { min-height: 550px; overflow-x: auto; background: radial-gradient(ellipse at center top, #342238 0%, #1d1928 74%); }
+.composer__device app-page-renderer { display: block; }
+.composer__tabs, .composer__breakpoints { display: flex; gap: 4px; flex-wrap: wrap; }
+.composer__tabs button, .composer__breakpoints button, .composer__reset {
+  padding: 8px 10px; color: inherit; border: 1px solid #6b536e; border-radius: 8px;
+  background: rgb(255 255 255 / 4%); font-size: .76rem;
+}
+.composer__tabs button.is-active, .composer__breakpoints button.is-active {
+  background: rgb(218 141 187 / 25%); border-color: #f0b4d8;
+}
+.composer__hint { font-size: .8rem; opacity: .72; line-height: 1.5; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .composer__device, .composer__drop-target { transition: none; } }

@@ -1,29 +1,14 @@
-<div class="page-document" [class]="surface(document().styles)"
-  [style.padding.px]="document().styles.padding ?? 0"
-  [style.border-radius.px]="document().styles.radius ?? 0"
-  [style.text-align]="document().styles.align ?? 'left'">
+<div class="page-document page-document__node" [class]="surface(document().styles)" [ngStyle]="styleVars(document().styles)">
   @for (section of document().sections; track section.id) {
-    <section class="page-document__section" [class]="surface(section.styles)"
-      [style.padding.px]="section.styles.padding ?? 0"
-      [style.border-radius.px]="section.styles.radius ?? 0">
-      <div class="page-document__rows" [style.gap.px]="section.styles.gap ?? 16">
+    <section class="page-document__section page-document__node" [class]="surface(section.styles)" [ngStyle]="styleVars(section.styles)">
+      <div class="page-document__rows">
         @for (row of section.rows; track row.id) {
-          <div class="page-document__row" [class]="surface(row.styles)"
-            [style.grid-template-columns]="grid(row.layout)"
-            [style.gap.px]="row.styles.gap ?? 16"
-            [style.padding.px]="row.styles.padding ?? 0"
-            [style.border-radius.px]="row.styles.radius ?? 0">
+          <div class="page-document__row page-document__node" [class]="surface(row.styles)" [ngStyle]="styleVars(row.styles)"
+            [style.grid-template-columns]="grid(row.layout)">
             @for (column of row.columns; track column.id) {
-              <div class="page-document__column" [class]="surface(column.styles)"
-                [style.gap.px]="column.styles.gap ?? 16"
-                [style.padding.px]="column.styles.padding ?? 0"
-                [style.border-radius.px]="column.styles.radius ?? 0"
-                [style.text-align]="column.styles.align ?? 'left'">
+              <div class="page-document__column page-document__node" [class]="surface(column.styles)" [ngStyle]="styleVars(column.styles)">
                 @for (block of column.blocks; track block.id) {
-                  <div class="page-document__block" [class]="surface(block.styles)"
-                    [style.padding.px]="block.styles.padding ?? 0"
-                    [style.border-radius.px]="block.styles.radius ?? 0"
-                    [style.text-align]="block.styles.align ?? 'left'">
+                  <div class="page-document__block page-document__node" [class]="surface(block.styles)" [ngStyle]="styleVars(block.styles)">
                     @switch (block.type) {
                       @case ('text') {
                         <div class="page-document__markdown" [innerHTML]="html(block.markdown[locale()] || block.markdown.de)"></div>

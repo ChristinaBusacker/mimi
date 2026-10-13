@@ -27,6 +27,8 @@ import { MarkdownEditor } from '../markdown-editor/markdown-editor';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { PageRenderer } from './page-renderer';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
+import type { PageStyleValues } from '@shared/content/page-document';
+import { movePageItem, type MoveKind } from './page-editor-operations';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
@@ -75,6 +77,17 @@ export class PageEditor {
   protected readonly layouts = PAGE_ROW_OPTIONS;
   protected readonly locale = signal<'de' | 'en'>('de');
   protected readonly preview = signal(false);
+  protected readonly device = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
+  protected readonly inspectorTab = signal<'content' | 'design' | 'advanced'>('content');
+  protected readonly breakpoint = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
+  protected readonly dragging = signal<{ kind: MoveKind; id: string } | null>(null);
+  protected readonly dropTarget = signal<string | null>(null);
+  protected readonly undoAvailable = signal(false);
+  protected readonly redoAvailable = signal(false);
+  private readonly past: PageDocument[] = [];
+  private readonly future: PageDocument[] = [];
+  private lastHistoryKey: string | null = null;
+  private lastHistoryTime = 0;
   protected readonly selected = signal<Selection | null>(null);
   protected readonly markdownControl = new FormControl('', { nonNullable: true });
 
@@ -118,11 +131,112 @@ export class PageEditor {
   protected isSelected(id: string): boolean {
     return this.selected()?.id === id;
   }
+  protected inspect(kind: Selection['kind'], id: string): void {
+    this.selected.set({ kind, id });
+    this.inspectorTab.set(kind === 'block' ? 'content' : 'design');
+  }
+  protected styleValue(styles: PageStyles, key: keyof PageStyleValues): string | number {
+    const view = this.breakpoint();
+    const values = view === 'desktop' ? styles : styles.responsive?.[view];
+    return values?.[key] ?? '';
+  }
+  protected startDrag(event: DragEvent, kind: MoveKind, id: string): void {
+    if (!event.dataTransfer) return;
+    this.dragging.set({ kind, id });
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', id);
+  }
+  protected over(event: DragEvent, kind: MoveKind, parentId: string, index: number): void {
+    if (this.dragging()?.kind !== kind) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    this.dropTarget.set(`${kind}:${parentId}:${index}`);
+  }
+  protected isDrop(kind: MoveKind, parentId: string, index: number): boolean {
+    return this.dropTarget() === `${kind}:${parentId}:${index}`;
+  }
+  protected drop(event: DragEvent, kind: MoveKind, parentId: string, index: number): void {
+    if (this.dragging()?.kind !== kind) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const dragged = this.dragging();
+    if (dragged) {
+      const next = movePageItem(this.document(), kind, dragged.id, parentId, index);
+      if (next) this.commit(next);
+    }
+    this.endDrag();
+  }
+  protected endDrag(): void {
+    this.dragging.set(null);
+    this.dropTarget.set(null);
+  }
+  protected undo(): void {
+    const previous = this.past.pop();
+    if (!previous) return;
+    this.future.push(structuredClone(this.document()));
+    this.lastHistoryKey = null;
+    this.refreshHistory();
+    this.documentChange.emit(previous);
+  }
+  protected redo(): void {
+    const next = this.future.pop();
+    if (!next) return;
+    this.past.push(structuredClone(this.document()));
+    this.lastHistoryKey = null;
+    this.refreshHistory();
+    this.documentChange.emit(next);
+  }
+  protected keyboard(event: KeyboardEvent): void {
+    if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+    const element = event.target;
+    if (element instanceof HTMLElement && element.closest('input, textarea, [contenteditable="true"], .markdown-editor')) return;
+    if (event.key.toLowerCase() === 'z') {
+      event.preventDefault();
+      if (event.shiftKey) this.redo(); else this.undo();
+    } else if (event.key.toLowerCase() === 'y') {
+      event.preventDefault();
+      this.redo();
+    }
+  }
+  protected responsiveStyle(key: keyof PageStyleValues, event: Event): void {
+    const raw = this.value(event);
+    const breakpoint = this.breakpoint();
+    this.changeSelected((node) => {
+      const destination: PageStyleValues = breakpoint === 'desktop'
+        ? node.styles
+        : (node.styles.responsive ??= {})[breakpoint] ??= {};
+      if (raw === '' && breakpoint !== 'desktop') {
+        delete destination[key];
+        return;
+      }
+      if (key === 'background' && ['none', 'glass', 'solid', 'accent'].includes(raw))
+        destination.background = raw as PageStyleValues['background'];
+      if (key === 'align' && ['left', 'center', 'right'].includes(raw))
+        destination.align = raw as PageStyleValues['align'];
+      if ((key === 'backgroundColor' || key === 'textColor') && /^#[0-9a-f]{6}$/i.test(raw))
+        destination[key] = raw.toLowerCase();
+      if ((key === 'backgroundColor' || key === 'textColor') && raw === '')
+        delete destination[key];
+      if (key === 'padding' || key === 'radius' || key === 'gap') {
+        const parsed = Number(raw);
+        if (raw !== '' && Number.isFinite(parsed))
+          destination[key] = Math.min(key === 'radius' ? 48 : key === 'gap' ? 64 : 96, Math.max(0, parsed));
+      }
+    });
+  }
+  protected clearBreakpoint(): void {
+    const breakpoint = this.breakpoint();
+    if (breakpoint === 'desktop') return;
+    this.changeSelected((node) => {
+      if (node.styles.responsive) delete node.styles.responsive[breakpoint];
+    });
+  }
   protected addSection(): void {
     const next = structuredClone(this.document());
     const section = makeSection();
     next.sections.push(section);
-    this.documentChange.emit(next);
+    this.commit(next);
     this.select('section', section.id);
   }
   protected addRow(sectionId: string, layout: RowLayout = '1'): void {
@@ -303,8 +417,31 @@ export class PageEditor {
   private change(update: (next: PageDocument) => void): void {
     const next = structuredClone(this.document());
     update(next);
+    this.commit(next);
+  }
+  private commit(next: PageDocument): void {
+    const current = this.document();
+    if (JSON.stringify(current) === JSON.stringify(next)) return;
+    const selection = this.selected();
+    const selected = selection ? this.find(next, selection) : null;
+    const historyKey = selection?.kind === 'block' && selected && 'type' in selected && selected.type === 'text'
+      ? `${selection.id}:${this.locale()}` : null;
+    const now = Date.now();
+    if (!(historyKey && historyKey === this.lastHistoryKey && now - this.lastHistoryTime < 600)) {
+      this.past.push(structuredClone(current));
+      if (this.past.length > 50) this.past.shift();
+    }
+    this.lastHistoryKey = historyKey;
+    this.lastHistoryTime = now;
+    this.future.length = 0;
+    this.refreshHistory();
     this.documentChange.emit(next);
   }
+  private refreshHistory(): void {
+    this.undoAvailable.set(this.past.length > 0);
+    this.redoAvailable.set(this.future.length > 0);
+  }
+
   private find(
     document: PageDocument,
     selection: Selection,

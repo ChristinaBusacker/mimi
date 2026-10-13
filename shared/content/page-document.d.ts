@@ -7,12 +7,20 @@ export interface LocalizedText {
 export type RowLayout =
   '1' | '1-1' | '1-2' | '2-1' | '1-3' | '3-1' | '1-1-1' | '1-1-1-1' | '2-1-1' | '1-2-1' | '1-1-2';
 export type PageSurface = 'none' | 'glass' | 'solid' | 'accent';
-export interface PageStyles {
+export interface PageStyleValues {
   background?: PageSurface;
+  backgroundColor?: string;
+  textColor?: string;
   padding?: number;
   gap?: number;
   radius?: number;
   align?: 'left' | 'center' | 'right';
+}
+export interface PageStyles extends PageStyleValues {
+  responsive?: {
+    tablet?: PageStyleValues;
+    mobile?: PageStyleValues;
+  };
 }
 export interface PageNode {
   id: string;

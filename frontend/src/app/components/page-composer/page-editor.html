@@ -1,9 +1,14 @@
-<section class="composer">
+<section class="composer" (keydown)="keyboard($event)">
   <header class="composer__toolbar">
-    <button type="button" class="composer__page-settings" (click)="select('page', document().id)">
+    <button type="button" class="composer__page-settings" (click)="inspect('page', document().id)">
       <app-icon name="settings-2" /> {{ 'page.editor.title' | i18n | async }}
     </button>
     <div class="composer__toolbar-actions">
+      <button type="button" [disabled]="!undoAvailable()" [attr.aria-label]="'page.editor.undo' | i18n | async" (click)="undo()"><app-icon name="undo-2" /></button>
+      <button type="button" [disabled]="!redoAvailable()" [attr.aria-label]="'page.editor.redo' | i18n | async" (click)="redo()"><app-icon name="redo-2" /></button>
+      <button type="button" [class.is-active]="device() === 'desktop'" [attr.aria-label]="'page.editor.desktop' | i18n | async" (click)="device.set('desktop')"><app-icon name="monitor" /></button>
+      <button type="button" [class.is-active]="device() === 'tablet'" [attr.aria-label]="'page.editor.tablet' | i18n | async" (click)="device.set('tablet')"><app-icon name="tablet" /></button>
+      <button type="button" [class.is-active]="device() === 'mobile'" [attr.aria-label]="'page.editor.mobile' | i18n | async" (click)="device.set('mobile')"><app-icon name="smartphone" /></button>
       <button type="button" [class.is-active]="locale() === 'de'" (click)="locale.set('de')">DE</button>
       <button type="button" [class.is-active]="locale() === 'en'" (click)="locale.set('en')">EN</button>
       <button type="button" [class.is-active]="preview()" (click)="preview.set(!preview())">
@@ -14,16 +19,20 @@
 
   @if (preview()) {
     <div class="composer__preview">
-      <app-page-renderer [document]="document()" [locale]="locale()" />
+      <div class="composer__device" [class.composer__device--tablet]="device() === 'tablet'" [class.composer__device--mobile]="device() === 'mobile'">
+        <app-page-renderer [document]="document()" [locale]="locale()" />
+      </div>
     </div>
   } @else {
     <div class="composer__workspace">
       <div class="composer__canvas">
-        @for (section of document().sections; track section.id) {
+        @for (section of document().sections; track section.id; let sectionIndex = $index) {
+          <div class="composer__drop-target" [class.is-over]="isDrop('section', document().id, sectionIndex)" (dragover)="over($event, 'section', document().id, sectionIndex)" (drop)="drop($event, 'section', document().id, sectionIndex)"></div>
           <section class="composer__section" [class.is-selected]="isSelected(section.id)">
             <div class="composer__nodebar">
-              <button type="button" (click)="select('section', section.id)">{{ 'page.editor.section' | i18n | async }}</button>
+              <button type="button" (click)="inspect('section', section.id)">{{ 'page.editor.section' | i18n | async }}</button>
               <div class="composer__actions">
+                <button type="button" class="composer__handle" draggable="true" (dragstart)="startDrag($event, 'section', section.id)" (dragend)="endDrag()" [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
                 <button type="button" [attr.aria-label]="'page.editor.up' | i18n | async" (click)="shift('section', section.id, -1)">↑</button>
                 <button type="button" [attr.aria-label]="'page.editor.down' | i18n | async" (click)="shift('section', section.id, 1)">↓</button>
                 <button type="button" [attr.aria-label]="'page.editor.duplicate' | i18n | async" (click)="duplicate('section', section.id)"><app-icon name="copy" /></button>
@@ -31,11 +40,13 @@
               </div>
             </div>
             <div class="composer__rows">
-              @for (row of section.rows; track row.id) {
+              @for (row of section.rows; track row.id; let rowIndex = $index) {
+                <div class="composer__drop-target" [class.is-over]="isDrop('row', section.id, rowIndex)" (dragover)="over($event, 'row', section.id, rowIndex)" (drop)="drop($event, 'row', section.id, rowIndex)"></div>
                 <div class="composer__rowwrap" [class.is-selected]="isSelected(row.id)">
                   <div class="composer__nodebar composer__nodebar--row">
-                    <button type="button" (click)="select('row', row.id)">{{ 'page.editor.row' | i18n | async }} · {{ grid(row.layout) }}</button>
+                    <button type="button" (click)="inspect('row', row.id)">{{ 'page.editor.row' | i18n | async }} · {{ grid(row.layout) }}</button>
                     <div class="composer__actions">
+                      <button type="button" class="composer__handle" draggable="true" (dragstart)="startDrag($event, 'row', row.id)" (dragend)="endDrag()" [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
                       <button type="button" (click)="shift('row', row.id, -1)" [attr.aria-label]="'page.editor.up' | i18n | async">↑</button>
                       <button type="button" (click)="shift('row', row.id, 1)" [attr.aria-label]="'page.editor.down' | i18n | async">↓</button>
                       <button type="button" (click)="duplicate('row', row.id)" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
@@ -45,10 +56,11 @@
                   <div class="composer__row" [style.grid-template-columns]="grid(row.layout)">
                     @for (column of row.columns; track column.id) {
                       <div class="composer__column" [class.is-selected]="isSelected(column.id)">
-                        <button type="button" class="composer__columnbar" (click)="select('column', column.id)">{{ 'page.editor.column' | i18n | async }}</button>
-                        @for (block of column.blocks; track block.id) {
+                        <button type="button" class="composer__columnbar" (click)="inspect('column', column.id)">{{ 'page.editor.column' | i18n | async }}</button>
+                        @for (block of column.blocks; track block.id; let blockIndex = $index) {
+                          <div class="composer__drop-target" [class.is-over]="isDrop('block', column.id, blockIndex)" (dragover)="over($event, 'block', column.id, blockIndex)" (drop)="drop($event, 'block', column.id, blockIndex)"></div>
                           <div class="composer__block" [class.is-selected]="isSelected(block.id)">
-                            <button class="composer__block-label" type="button" (click)="select('block', block.id)">
+                            <button class="composer__block-label" type="button" (click)="inspect('block', block.id)">
                               <app-icon name="settings-2" />{{ blockName(block) | i18n | async }}
                             </button>
                             @switch (block.type) {
@@ -66,6 +78,7 @@
                               @case ('spacer') { <div class="composer__spacer" [style.height.px]="block.height"></div> }
                             }
                             <div class="composer__block-actions">
+                              <button type="button" class="composer__handle" draggable="true" (dragstart)="startDrag($event, 'block', block.id)" (dragend)="endDrag()" [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
                               <button type="button" (click)="shift('block', block.id, -1)" [attr.aria-label]="'page.editor.up' | i18n | async">↑</button>
                               <button type="button" (click)="shift('block', block.id, 1)" [attr.aria-label]="'page.editor.down' | i18n | async">↓</button>
                               <button type="button" (click)="duplicate('block', block.id)" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
@@ -73,6 +86,7 @@
                             </div>
                           </div>
                         }
+                        <div class="composer__drop-target composer__drop-target--end" [class.is-over]="isDrop('block', column.id, column.blocks.length)" (dragover)="over($event, 'block', column.id, column.blocks.length)" (drop)="drop($event, 'block', column.id, column.blocks.length)"></div>
                         <div class="composer__add-block">
                           <label [attr.for]="'add-block-' + column.id">{{ 'page.editor.addBlock' | i18n | async }}</label>
                           <select [id]="'add-block-' + column.id" #blockType>
@@ -88,10 +102,12 @@
                   </div>
                 </div>
               }
+              <div class="composer__drop-target composer__drop-target--end" [class.is-over]="isDrop('row', section.id, section.rows.length)" (dragover)="over($event, 'row', section.id, section.rows.length)" (drop)="drop($event, 'row', section.id, section.rows.length)"></div>
               <button type="button" class="composer__add-row" (click)="addRow(section.id)">+ {{ 'page.editor.addRow' | i18n | async }}</button>
             </div>
           </section>
         }
+        <div class="composer__drop-target composer__drop-target--end" [class.is-over]="isDrop('section', document().id, document().sections.length)" (dragover)="over($event, 'section', document().id, document().sections.length)" (drop)="drop($event, 'section', document().id, document().sections.length)"></div>
         <button type="button" class="composer__add-section" (click)="addSection()">+ {{ 'page.editor.addSection' | i18n | async }}</button>
       </div>
 
@@ -101,6 +117,12 @@
             <strong>{{ 'page.editor.settings' | i18n | async }}</strong>
             <button type="button" (click)="selected.set(null)" [attr.aria-label]="'page.editor.close' | i18n | async"><app-icon name="x" /></button>
           </header>
+          <div class="composer__tabs" role="group" [attr.aria-label]="'page.editor.settings' | i18n | async">
+            <button type="button" [class.is-active]="inspectorTab() === 'content'" (click)="inspectorTab.set('content')">{{ 'page.editor.content' | i18n | async }}</button>
+            <button type="button" [class.is-active]="inspectorTab() === 'design'" (click)="inspectorTab.set('design')">{{ 'page.editor.design' | i18n | async }}</button>
+            <button type="button" [class.is-active]="inspectorTab() === 'advanced'" (click)="inspectorTab.set('advanced')">{{ 'page.editor.advanced' | i18n | async }}</button>
+          </div>
+          @if (inspectorTab() === 'content') {
           @if (selectedRow(); as row) {
             <h3>{{ 'page.editor.layouts' | i18n | async }}</h3>
             <div class="composer__layouts">
@@ -151,26 +173,49 @@
               }
             }
           }
+          }
+          @if (inspectorTab() === 'design') {
           <h3>{{ 'page.editor.design' | i18n | async }}</h3>
+          <label>{{ 'page.editor.breakpoint' | i18n | async }}</label>
+          <div class="composer__breakpoints">
+            <button type="button" [class.is-active]="breakpoint() === 'desktop'" (click)="breakpoint.set('desktop'); device.set('desktop')">{{ 'page.editor.desktop' | i18n | async }}</button>
+            <button type="button" [class.is-active]="breakpoint() === 'tablet'" (click)="breakpoint.set('tablet'); device.set('tablet')">{{ 'page.editor.tablet' | i18n | async }}</button>
+            <button type="button" [class.is-active]="breakpoint() === 'mobile'" (click)="breakpoint.set('mobile'); device.set('mobile')">{{ 'page.editor.mobile' | i18n | async }}</button>
+          </div>
           <label>{{ 'page.editor.background' | i18n | async }}</label>
-          <select [value]="node.styles.background ?? 'none'" (change)="changeStyle('background', $event)">
+          <select [value]="styleValue(node.styles, 'background')" (change)="responsiveStyle('background', $event)">
+            @if (breakpoint() !== 'desktop') { <option value="">{{ 'page.editor.inherit' | i18n | async }}</option> }
             <option value="none">{{ 'page.editor.surface.none' | i18n | async }}</option>
             <option value="glass">{{ 'page.editor.surface.glass' | i18n | async }}</option>
             <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
             <option value="accent">{{ 'page.editor.surface.accent' | i18n | async }}</option>
           </select>
           <label>{{ 'page.editor.padding' | i18n | async }}</label>
-          <input type="number" min="0" max="96" [value]="node.styles.padding ?? 0" (change)="changeStyle('padding', $event)" />
+          <input type="number" min="0" max="96" [value]="styleValue(node.styles, 'padding')" [placeholder]="breakpoint() !== 'desktop' ? ('page.editor.inherit' | i18n | async) ?? '' : ''" (change)="responsiveStyle('padding', $event)" />
           <label>{{ 'page.editor.gap' | i18n | async }}</label>
-          <input type="number" min="0" max="64" [value]="node.styles.gap ?? 16" (change)="changeStyle('gap', $event)" />
+          <input type="number" min="0" max="64" [value]="styleValue(node.styles, 'gap')" [placeholder]="breakpoint() !== 'desktop' ? ('page.editor.inherit' | i18n | async) ?? '' : ''" (change)="responsiveStyle('gap', $event)" />
           <label>{{ 'page.editor.radius' | i18n | async }}</label>
-          <input type="number" min="0" max="48" [value]="node.styles.radius ?? 0" (change)="changeStyle('radius', $event)" />
+          <input type="number" min="0" max="48" [value]="styleValue(node.styles, 'radius')" [placeholder]="breakpoint() !== 'desktop' ? ('page.editor.inherit' | i18n | async) ?? '' : ''" (change)="responsiveStyle('radius', $event)" />
           <label>{{ 'page.editor.align' | i18n | async }}</label>
-          <select [value]="node.styles.align ?? 'left'" (change)="changeStyle('align', $event)">
+          <select [value]="styleValue(node.styles, 'align')" (change)="responsiveStyle('align', $event)">
+            @if (breakpoint() !== 'desktop') { <option value="">{{ 'page.editor.inherit' | i18n | async }}</option> }
             <option value="left">{{ 'page.editor.align.left' | i18n | async }}</option>
             <option value="center">{{ 'page.editor.align.center' | i18n | async }}</option>
             <option value="right">{{ 'page.editor.align.right' | i18n | async }}</option>
           </select>
+          <label>{{ 'page.editor.backgroundColor' | i18n | async }}</label>
+          <input type="text" pattern="#[0-9a-fA-F]{6}" placeholder="#aabbcc" [value]="styleValue(node.styles, 'backgroundColor')" (change)="responsiveStyle('backgroundColor', $event)" />
+          <label>{{ 'page.editor.textColor' | i18n | async }}</label>
+          <input type="text" pattern="#[0-9a-fA-F]{6}" placeholder="#ffffff" [value]="styleValue(node.styles, 'textColor')" (change)="responsiveStyle('textColor', $event)" />
+          @if (breakpoint() !== 'desktop') {
+            <button type="button" class="composer__reset" (click)="clearBreakpoint()">{{ 'page.editor.resetBreakpoint' | i18n | async }}</button>
+          }
+          }
+          @if (inspectorTab() === 'advanced') {
+            <label>{{ 'page.editor.nodeId' | i18n | async }}</label>
+            <input readonly [value]="node.id" />
+            <p class="composer__hint">{{ 'page.editor.advancedHint' | i18n | async }}</p>
+          }
         } @else {
           <div class="composer__empty-inspector">
             <app-icon name="mouse-pointer-click" />
