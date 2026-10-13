@@ -26,9 +26,10 @@ import { Icon } from '../icon/icon';
 import { MarkdownEditor } from '../markdown-editor/markdown-editor';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { PageRenderer } from './page-renderer';
+import type { CanvasInsert, CanvasMove, CanvasSelection } from './page-renderer';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import type { PageStyleValues } from '@shared/content/page-document';
-import { movePageItem, type MoveKind } from './page-editor-operations';
+import { movePageItem } from './page-editor-operations';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
@@ -72,16 +73,23 @@ const makeBlock = (kind: BlockKind): PageBlock => {
 export class PageEditor {
   readonly document = input.required<PageDocument>();
   readonly assets = input<readonly Asset[]>([]);
+  readonly coverAssetId = input<string | null>(null);
+  protected readonly coverUrl = computed(() => {
+    const id = this.coverAssetId();
+    return id ? `url("/api/assets/${encodeURIComponent(id)}/image/large/fallback")` : 'none';
+  });
   readonly documentChange = output<PageDocument>();
 
   protected readonly layouts = PAGE_ROW_OPTIONS;
   protected readonly locale = signal<'de' | 'en'>('de');
   protected readonly preview = signal(false);
+  protected readonly outlineOpen = signal(false);
+  protected readonly addTarget = signal<CanvasInsert | null>(null);
+  protected readonly inlineTextId = signal<string | null>(null);
+  protected readonly blockKinds: readonly BlockKind[] = ['text', 'image', 'gallery', 'spacer'];
   protected readonly device = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
   protected readonly inspectorTab = signal<'content' | 'design' | 'advanced'>('content');
   protected readonly breakpoint = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
-  protected readonly dragging = signal<{ kind: MoveKind; id: string } | null>(null);
-  protected readonly dropTarget = signal<string | null>(null);
   protected readonly undoAvailable = signal(false);
   protected readonly redoAvailable = signal(false);
   private readonly past: PageDocument[] = [];
@@ -108,10 +116,12 @@ export class PageEditor {
   constructor() {
     effect(() => {
       const value = this.active();
-      this.markdownControl.setValue(
-        value && 'type' in value && value.type === 'text' ? value.markdown[this.locale()] : '',
-        { emitEvent: false },
-      );
+      const markdown = value && 'type' in value && value.type === 'text'
+        ? value.markdown[this.locale()]
+        : '';
+      if (this.markdownControl.value !== markdown) {
+        this.markdownControl.setValue(markdown, { emitEvent: false });
+      }
     });
     this.markdownControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((markdown) => {
       const selection = this.selected();
@@ -125,9 +135,6 @@ export class PageEditor {
   protected grid(layout: RowLayout): string {
     return pageGridColumns(layout);
   }
-  protected select(kind: Selection['kind'], id: string): void {
-    this.selected.set({ kind, id });
-  }
   protected isSelected(id: string): boolean {
     return this.selected()?.id === id;
   }
@@ -140,37 +147,80 @@ export class PageEditor {
     const values = view === 'desktop' ? styles : styles.responsive?.[view];
     return values?.[key] ?? '';
   }
-  protected startDrag(event: DragEvent, kind: MoveKind, id: string): void {
-    if (!event.dataTransfer) return;
-    this.dragging.set({ kind, id });
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', id);
+  protected selectDevice(device: 'desktop' | 'tablet' | 'mobile'): void {
+    this.device.set(device);
+    this.breakpoint.set(device);
   }
-  protected over(event: DragEvent, kind: MoveKind, parentId: string, index: number): void {
-    if (this.dragging()?.kind !== kind) return;
-    event.preventDefault();
-    event.stopPropagation();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-    this.dropTarget.set(`${kind}:${parentId}:${index}`);
+
+  protected togglePreview(): void {
+    this.inlineTextId.set(null);
+    this.addTarget.set(null);
+    this.preview.set(!this.preview());
   }
-  protected isDrop(kind: MoveKind, parentId: string, index: number): boolean {
-    return this.dropTarget() === `${kind}:${parentId}:${index}`;
+
+  protected canvasSelect(selection: CanvasSelection): void {
+    if (this.inlineTextId() !== selection.id) this.inlineTextId.set(null);
+    this.inspect(selection.kind, selection.id);
   }
-  protected drop(event: DragEvent, kind: MoveKind, parentId: string, index: number): void {
-    if (this.dragging()?.kind !== kind) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const dragged = this.dragging();
-    if (dragged) {
-      const next = movePageItem(this.document(), kind, dragged.id, parentId, index);
-      if (next) this.commit(next);
+
+  protected canvasMove(move: CanvasMove): void {
+    const next = movePageItem(this.document(), move.kind, move.id, move.parentId, move.index);
+    if (next) {
+      this.commit(next);
+      this.inspect(move.kind, move.id);
     }
-    this.endDrag();
   }
-  protected endDrag(): void {
-    this.dragging.set(null);
-    this.dropTarget.set(null);
+
+  protected canvasInsert(target: CanvasInsert): void {
+    if (target.kind === 'section') {
+      this.addSection();
+      return;
+    }
+    this.addTarget.set(target);
   }
+
+  protected canvasAction(action: { kind: 'section' | 'row' | 'block'; id: string; action: 'duplicate' | 'remove' }): void {
+    if (action.action === 'duplicate') this.duplicate(action.kind, action.id);
+    else this.remove(action.kind, action.id);
+  }
+
+  protected openInline(id: string): void {
+    const next = this.inlineTextId() === id ? null : id;
+    this.inspect('block', id);
+    this.inlineTextId.set(next);
+  }
+
+  protected updateInline(value: { id: string; markdown: string }): void {
+    this.changeNode({ kind: 'block', id: value.id }, (node) => {
+      if ('type' in node && node.type === 'text') node.markdown[this.locale()] = value.markdown;
+    });
+  }
+
+  protected insertLayout(parentId: string, layout: RowLayout): void {
+    const row = makeRow(layout);
+    this.change((next) => {
+      const section = next.sections.find((item) => item.id === parentId);
+      if (section) section.rows.push(row);
+    });
+    this.addTarget.set(null);
+    this.inspect('row', row.id);
+  }
+
+  protected insertBlock(parentId: string, kind: BlockKind): void {
+    this.addBlock(parentId, kind);
+    this.addTarget.set(null);
+    this.inlineTextId.set(null);
+  }
+
+  protected blockIcon(kind: BlockKind): string {
+    switch (kind) {
+      case 'text': return 'type';
+      case 'image': return 'image';
+      case 'gallery': return 'images';
+      case 'spacer': return 'move-vertical';
+    }
+  }
+
   protected undo(): void {
     const previous = this.past.pop();
     if (!previous) return;
@@ -188,6 +238,16 @@ export class PageEditor {
     this.documentChange.emit(next);
   }
   protected keyboard(event: KeyboardEvent): void {
+    if (event.altKey && !event.ctrlKey && !event.metaKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+      const selected = this.selected();
+      const target = event.target;
+      if (selected && selected.kind !== 'page' && selected.kind !== 'column' &&
+          !(target instanceof HTMLElement && target.closest('input, textarea, select, [contenteditable="true"]'))) {
+        event.preventDefault();
+        this.shift(selected.kind, selected.id, event.key === 'ArrowUp' ? -1 : 1);
+      }
+      return;
+    }
     if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
     const element = event.target;
     if (element instanceof HTMLElement && element.closest('input, textarea, [contenteditable="true"], .markdown-editor')) return;
@@ -237,20 +297,14 @@ export class PageEditor {
     const section = makeSection();
     next.sections.push(section);
     this.commit(next);
-    this.select('section', section.id);
-  }
-  protected addRow(sectionId: string, layout: RowLayout = '1'): void {
-    this.change((next) => {
-      const section = next.sections.find((item) => item.id === sectionId);
-      if (section) section.rows.push(makeRow(layout));
-    });
+    this.inspect('section', section.id);
   }
   protected addBlock(columnId: string, type: BlockKind): void {
     const block = makeBlock(type);
     this.changeNode({ kind: 'column', id: columnId }, (value) => {
       if ('blocks' in value) value.blocks.push(block);
     });
-    this.select('block', block.id);
+    this.inspect('block', block.id);
   }
   protected addGalleryImage(event: Event): void {
     const value = this.value(event);
@@ -294,23 +348,6 @@ export class PageEditor {
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'spacer')
         node.height = Math.max(0, Math.min(240, height));
-    });
-  }
-  protected changeStyle(key: keyof PageStyles, event: Event): void {
-    const raw = this.value(event);
-    this.changeSelected((node) => {
-      if (key === 'background' && ['none', 'glass', 'solid', 'accent'].includes(raw))
-        node.styles.background = raw as PageStyles['background'];
-      if (key === 'align' && ['left', 'center', 'right'].includes(raw))
-        node.styles.align = raw as PageStyles['align'];
-      if (key === 'padding' || key === 'radius' || key === 'gap') {
-        const number = Number(raw);
-        if (Number.isFinite(number))
-          node.styles[key] = Math.min(
-            key === 'radius' ? 48 : key === 'gap' ? 64 : 96,
-            Math.max(0, number),
-          );
-      }
     });
   }
   protected chooseLayout(rowId: string, layout: RowLayout): void {

@@ -47,3 +47,69 @@
   .page-document__row { grid-template-columns: minmax(0,1fr) !important; }
 }
 @media (prefers-reduced-transparency: reduce) { .page-surface--glass { background: #282034; backdrop-filter: none; } }
+
+/* Editorial canvas: these rules are inert for the public renderer. */
+.page-document__node--editable { position: relative; min-height: 28px; }
+.page-document__node--editable:hover { outline: 1px solid rgb(233 174 215 / 46%); outline-offset: 2px; }
+.page-document__node--editable.is-selected { outline: 2px solid #f1b5da; outline-offset: 3px; }
+.page-document__controls {
+  position: absolute; z-index: 8; top: 0; right: 8px; display: flex; align-items: center;
+  gap: 3px; padding: 3px 5px; border: 1px solid rgb(255 255 255 / 19%);
+  border-radius: 8px; background: #49334f; color: #fff0f9;
+  box-shadow: 0 7px 24px rgb(14 4 22 / 29%);
+  transform: translateY(-70%); opacity: 0; pointer-events: none;
+}
+.page-document__controls span { padding: 0 6px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
+.page-document__controls button {
+  display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 27px;
+  padding: 4px; border: 0; border-radius: 5px; background: transparent; color: inherit; cursor: pointer;
+}
+.page-document__controls button:hover, .page-document__controls button:focus-visible { background: rgb(255 255 255 / 16%); }
+.page-document__controls app-icon { width: 15px; height: 15px; }
+.page-document__node--editable:hover > .page-document__controls,
+.page-document__node--editable.is-selected > .page-document__controls { opacity: 1; pointer-events: auto; }
+.page-document__node--editable:hover:has(.page-document__node--editable:hover) > .page-document__controls:not(:focus-within) { opacity: 0; pointer-events: none; }
+.page-document__handle { touch-action: none; cursor: grab !important; user-select: none; }
+.page-document__handle:active { cursor: grabbing !important; }
+.page-document__node--editable.is-drop-before::before,
+.page-document__node--editable.is-drop-after::after {
+  content: ''; position: absolute; z-index: 20; left: 0; right: 0; height: 4px;
+  background: #ffc4e5; border-radius: 5px; box-shadow: 0 0 0 3px rgb(249 178 221 / 28%);
+  pointer-events: none;
+}
+.page-document__node--editable.is-drop-before::before { top: -4px; }
+.page-document__node--editable.is-drop-after::after { bottom: -4px; }
+.page-document__node--editable.is-drop-end { box-shadow: inset 0 -4px #ffc4e5; }
+.page-document__drag-pill {
+  position: fixed; z-index: 10000; display: flex; align-items: center; gap: 5px;
+  padding: 9px 13px; pointer-events: none; background: #f7c6df; color: #321b33;
+  font-size: .78rem; font-weight: 750; border-radius: 9px; box-shadow: 0 9px 26px rgb(20 6 27 / 30%);
+}
+.page-document__drag-pill app-icon { width: 17px; height: 17px; }
+.page-document__add { display: flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px dashed rgb(241 183 217 / 40%); border-radius: 8px; padding: 8px;
+  background: rgb(255 255 255 / 3%); color: #ffd5ec; cursor: pointer; font-size: .76rem; }
+.page-document__add:hover { background: rgb(251 189 225 / 14%); border-color: #efafd2; }
+.page-document__add app-icon { width: 16px; height: 16px; }
+.page-document__add--block { min-height: 33px; opacity: .45; }
+.page-document__column:hover > .page-document__add--block, .page-document__add--block:focus-visible { opacity: 1; }
+.page-document__add--row { min-height: 37px; }
+.page-document__add--section { min-height: 54px; }
+.page-document__inline-text {
+  display: block; width: 100%; min-height: 165px; padding: 13px; resize: vertical;
+  color: inherit; background: rgb(20 13 28 / 69%); border: 1px solid #eeafcf;
+  border-radius: 9px; font: inherit; line-height: 1.65; outline-offset: 2px;
+}
+@media (hover: none) {
+  .page-document__node--editable.is-selected > .page-document__controls { opacity: 1; pointer-events: auto; }
+  .page-document__add--block { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-document__controls, .page-document__add { transition: none; }
+}
+
+.page-document__empty { display: flex; align-items: center; justify-content: center; gap: 9px;
+  min-height: 90px; padding: 12px; border: 1px dashed rgb(236 193 223 / 42%);
+  border-radius: 9px; color: #edcbe1; font-size: .81rem; background: rgb(255 255 255 / 3%); }
+.page-document__empty app-icon { width: 20px; height: 20px; }
+@media (pointer: coarse) { .page-document__controls button { width: 35px; height: 35px; } }

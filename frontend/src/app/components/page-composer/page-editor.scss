@@ -105,3 +105,82 @@
 }
 .composer__hint { font-size: .8rem; opacity: .72; line-height: 1.5; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { .composer__device, .composer__drop-target { transition: none; } }
+
+/* 4C: The canvas is the page. Structural outlines and forms no longer occupy it. */
+.composer { background: #201725; border: 1px solid rgb(233 170 213 / 23%); overflow: visible; }
+.composer__toolbar { position: relative; z-index: 6; padding: 9px 13px; background: #302239; border-radius: 17px 17px 0 0; }
+.composer__toolbar-group { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.composer__toolbar-divider { width: 1px; height: 22px; margin: 0 5px; background: rgb(255 255 255 / 17%); }
+.composer__toolbar .composer__tool { border: 0; min-width: 35px; height: 35px; padding: 7px; }
+.composer__toolbar .composer__locale { font-size: .76rem; font-weight: 800; }
+.composer__toolbar .composer__preview-toggle { padding: 7px 11px; font-size: .79rem; }
+.composer__workspace { display: grid; grid-template-columns: minmax(0, 1fr) 310px; align-items: stretch; }
+.composer__workspace--outline { grid-template-columns: 215px minmax(0, 1fr) 310px; }
+.composer__workspace--preview { grid-template-columns: minmax(0, 1fr); }
+.composer__outline { display: flex; flex-direction: column; align-items: stretch; overflow-y: auto;
+  min-width: 0; max-height: 85vh; padding: 13px 7px; background: #2a2031; border-right: 1px solid rgb(255 255 255 / 10%); }
+.composer__outline header { display: flex; align-items: center; gap: 7px; padding: 8px 10px 14px;
+  font-size: .83rem; font-weight: 750; }
+.composer__outline header app-icon { width: 16px; height: 16px; }
+.composer__outline button { border: 0; border-radius: 7px; padding: 8px; text-align: left;
+  background: transparent; color: #ead7ec; font-size: .75rem; cursor: pointer;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.composer__outline button:hover, .composer__outline button.is-active { background: rgb(229 167 211 / 19%); }
+.composer__tree-section { padding-left: 15px !important; }
+.composer__tree-row { padding-left: 25px !important; }
+.composer__tree-column { padding-left: 36px !important; }
+.composer__tree-block { padding-left: 49px !important; opacity: .88; }
+.composer__canvas-shell { position: relative; min-width: 0; background: #251b2e; }
+.composer__canvas { position: relative; display: block; padding: clamp(22px, 3vw, 46px);
+  min-height: 500px; min-width: 0; overflow: auto; isolation: isolate;
+  background: linear-gradient(145deg, #31223d, #211c30 72%); }
+.composer__canvas::before { content: ''; position: absolute; inset: -12px;
+  z-index: -2; background-image: var(--composer-cover, none); background-position: center;
+  background-size: cover; filter: blur(65px) brightness(.62) saturate(1.2); opacity: .8; pointer-events: none; }
+.composer__canvas::after { content: ''; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(150deg, rgb(32 17 44 / 44%), rgb(30 24 39 / 71%)); pointer-events: none; }
+.composer__device { width: 100%; max-width: 100%; margin: 0 auto;
+  background: transparent; min-height: 300px; transition: max-width .18s ease; }
+.composer__device--tablet { max-width: 768px; }
+.composer__device--mobile { max-width: 390px; }
+.composer__device app-page-renderer { display: block; width: 100%; }
+.composer__inspector { position: sticky; top: 0; border-left: 1px solid rgb(255 255 255 / 9%);
+  max-height: min(90vh, 1100px); background: #30243a; padding: 20px; }
+.composer__inspector h3 { font-size: .82rem; letter-spacing: .01em; }
+.composer__inspector label { margin-top: 9px; }
+.composer__inspector input, .composer__inspector select { padding: 11px; }
+.composer__tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.composer__tabs button { min-width: 0; padding: 9px 3px; font-size: .72rem; }
+.composer__insert-scrim { position: fixed; inset: 0; z-index: 1500; display: grid; place-items: center;
+  padding: 22px 12px; background: rgb(18 10 24 / 62%); overflow-y: auto; }
+.composer__insert-menu { width: min(460px, 100%); padding: 18px; border: 1px solid #a679a8;
+  border-radius: 15px; background: #33243b; box-shadow: 0 15px 70px rgb(0 0 0 / 36%); }
+.composer__insert-menu header { display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 15px; gap: 8px; }
+.composer__insert-menu header button { background: transparent; border: 0; color: inherit; cursor: pointer; }
+.composer__insert-menu header app-icon { width: 19px; height: 19px; }
+.composer__layouts--insert { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.composer__block-palette { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.composer__block-palette button { display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 9px; min-height: 95px; border: 1px solid #775d7c; border-radius: 10px;
+  color: #f9e3f3; background: rgb(255 255 255 / 4%); cursor: pointer; }
+.composer__block-palette button:hover, .composer__block-palette button:focus-visible { background: rgb(236 160 213 / 15%); border-color: #e7b0d1; }
+.composer__block-palette app-icon { width: 27px; height: 27px; }
+@media (max-width: 1190px) {
+  .composer__workspace { grid-template-columns: minmax(0,1fr) 290px; }
+  .composer__workspace--outline { grid-template-columns: 165px minmax(0,1fr) 290px; }
+  .composer__workspace--preview { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .composer__workspace, .composer__workspace--outline { grid-template-columns: minmax(0,1fr); }
+  .composer__outline { max-height: 250px; border-right: 0; border-bottom: 1px solid rgb(255 255 255 / 12%); }
+  .composer__inspector { position: static; max-height: none; border-left: 0; border-top: 1px solid rgb(255 255 255 / 13%); }
+}
+@media (max-width: 740px) {
+  .composer__toolbar { flex-direction: row; justify-content: space-between; }
+  .composer__toolbar-group { gap: 2px; }
+  .composer__canvas { padding: 30px 12px; }
+  .composer__toolbar .composer__tool { min-width: 31px; height: 33px; }
+  .composer__toolbar .composer__preview-toggle { font-size: 0; gap: 0; }
+}
+.composer__inspector-actions { display: flex; gap: 4px; align-items: center; }

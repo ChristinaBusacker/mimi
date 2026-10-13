@@ -6,10 +6,46 @@ import type {
   RowLayout,
 } from '@shared/content/page-document';
 
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { NgStyle } from '@angular/common';
+import { AsyncPipe, NgStyle } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import MarkdownIt from 'markdown-it';
+import { Icon } from '../icon/icon';
+import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
+
+export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
+export type CanvasMoveKind = 'section' | 'row' | 'block';
+export type CanvasInsertKind = 'section' | 'row' | 'block';
+export interface CanvasSelection { kind: CanvasKind; id: string; }
+export interface CanvasInsert { kind: CanvasInsertKind; parentId: string; }
+export interface CanvasMove {
+  kind: CanvasMoveKind;
+  id: string;
+  parentId: string;
+  index: number;
+}
+interface DropPosition {
+  parentId: string;
+  index: number;
+  nodeId: string;
+  placement: 'before' | 'after' | 'end';
+}
+interface PointerDrag {
+  kind: CanvasMoveKind;
+  id: string;
+  x: number;
+  y: number;
+  pointerId: number;
+  active: boolean;
+}
 
 const markdown = new MarkdownIt({ html: false, linkify: false, breaks: false });
 const ASSET = /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
@@ -20,18 +56,147 @@ markdown.renderer.rules['image'] = (tokens, index): string => {
   return `<img src="/api/assets/${match[1]}/image/large/fallback" alt="${markdown.utils.escapeHtml(token.content)}" loading="lazy">`;
 };
 
-/** Browser/SSR shared presentation. Angular sanitizes markdown output at innerHTML. */
+/** Identical public and editor canvas. Editor controls never affect the saved document. */
 @Component({
   selector: 'app-page-renderer',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgStyle],
+  imports: [NgStyle, AsyncPipe, I18nPipe, Icon],
   templateUrl: './page-renderer.html',
   styleUrl: './page-renderer.scss',
 })
 export class PageRenderer {
+  private readonly host = inject(ElementRef<HTMLElement>);
+
   readonly document = input.required<PageDocument>();
   readonly locale = input.required<PageLocale>();
+  readonly editable = input(false);
+  readonly selectedId = input<string | null>(null);
+  readonly nodeSelect = output<CanvasSelection>();
+  readonly itemMove = output<CanvasMove>();
+  readonly insert = output<CanvasInsert>();
+  readonly textEdit = output<string>();
+  readonly inlineTextId = input<string | null>(null);
+  readonly inlineTextChange = output<{ id: string; markdown: string }>();
+  readonly nodeAction = output<{ kind: 'section' | 'row' | 'block'; id: string; action: 'duplicate' | 'remove' }>();
+
+  protected readonly dragging = signal<PointerDrag | null>(null);
+  protected readonly pointerX = signal(0);
+  protected readonly pointerY = signal(0);
+  private readonly target = signal<DropPosition | null>(null);
+  private pending: PointerDrag | null = null;
+
+  protected choose(event: Event, kind: CanvasKind, id: string): void {
+    if (!this.editable()) return;
+    event.stopPropagation();
+    this.nodeSelect.emit({ kind, id });
+  }
+
+  protected editText(event: Event, id: string): void {
+    if (!this.editable()) return;
+    event.stopPropagation();
+    this.textEdit.emit(id);
+  }
+
+  protected act(event: Event, kind: 'section' | 'row' | 'block', id: string, action: 'duplicate' | 'remove'): void {
+    event.stopPropagation();
+    this.nodeAction.emit({ kind, id, action });
+  }
+
+  protected changeInline(event: Event, id: string): void {
+    const target = event.target;
+    if (target instanceof HTMLTextAreaElement) this.inlineTextChange.emit({ id, markdown: target.value });
+  }
+
+  protected requestInsert(event: Event, kind: CanvasInsertKind, parentId: string): void {
+    event.stopPropagation();
+    this.insert.emit({ kind, parentId });
+  }
+
+  protected startPointer(event: PointerEvent, kind: CanvasMoveKind, id: string): void {
+    if (!this.editable() || !event.isPrimary || event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const handle = event.currentTarget;
+    if (!(handle instanceof HTMLElement)) return;
+    handle.setPointerCapture(event.pointerId);
+    this.pending = { kind, id, x: event.clientX, y: event.clientY, pointerId: event.pointerId, active: false };
+  }
+
+  protected pointerMove(event: PointerEvent): void {
+    const drag = this.pending;
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    if (!drag.active && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 5) return;
+    if (!drag.active) {
+      drag.active = true;
+      this.dragging.set({ ...drag });
+    }
+    this.pointerX.set(event.clientX + 18);
+    this.pointerY.set(event.clientY + 15);
+    this.target.set(this.findDrop(event, drag.kind));
+  }
+
+  protected pointerUp(event: PointerEvent): void {
+    if (this.pending?.pointerId !== event.pointerId) return;
+    const drag = this.pending;
+    const target = this.target();
+    if (drag.active && target) {
+      this.itemMove.emit({ kind: drag.kind, id: drag.id, parentId: target.parentId, index: target.index });
+    }
+    this.cancelPointer();
+  }
+
+  protected cancelPointer(): void {
+    this.pending = null;
+    this.dragging.set(null);
+    this.target.set(null);
+  }
+
+  protected dropAt(nodeId: string, placement: DropPosition['placement']): boolean {
+    const target = this.target();
+    return target?.nodeId === nodeId && target.placement === placement;
+  }
+
+  private findDrop(event: PointerEvent, kind: CanvasMoveKind): DropPosition | null {
+    const element = this.host.nativeElement.ownerDocument.elementFromPoint(event.clientX, event.clientY);
+    if (!(element instanceof Element) || !this.host.nativeElement.contains(element)) return null;
+    const targetType = kind === 'block' ? 'block' : kind;
+    const target = element.closest<HTMLElement>(`[data-editor-kind="${targetType}"]`);
+    if (target) {
+      const parentId = target.dataset['editorParent'];
+      const index = Number(target.dataset['editorIndex']);
+      if (!parentId || !Number.isInteger(index)) return null;
+      const after = event.clientY > target.getBoundingClientRect().top + target.getBoundingClientRect().height / 2;
+      return { parentId, index: index + Number(after), nodeId: target.dataset['editorId'] ?? '', placement: after ? 'after' : 'before' };
+    }
+    const containerType = kind === 'block' ? 'column' : kind === 'row' ? 'section' : 'page';
+    const container = element.closest<HTMLElement>(`[data-editor-kind="${containerType}"]`);
+    if (!container) return null;
+    const parentId = container.dataset['editorId'];
+    if (!parentId) return null;
+    const length = this.collectionLength(kind, parentId);
+    if (length === null) return null;
+    return { parentId, index: length, nodeId: parentId, placement: 'end' };
+  }
+
+  private collectionLength(kind: CanvasMoveKind, id: string): number | null {
+    const page = this.document();
+    if (kind === 'section') return id === page.id ? page.sections.length : null;
+    for (const section of page.sections) {
+      if (kind === 'row' && section.id === id) return section.rows.length;
+      if (kind === 'block') {
+        for (const row of section.rows) {
+          const column = row.columns.find((item) => item.id === id);
+          if (column) return column.blocks.length;
+        }
+      }
+    }
+    return null;
+  }
+
+  protected grid(layout: RowLayout): string { return pageGridColumns(layout); }
+  protected surface(styles: PageStyles): string { return `page-surface--${styles.background ?? 'none'}`; }
+  protected html(content: string): string { return markdown.render(content); }
+  protected image(assetId: string): string { return `/api/assets/${encodeURIComponent(assetId)}/image/large/fallback`; }
 
   protected styleVars(styles: PageStyles): Record<string, string> {
     const result: Record<string, string> = {};
@@ -45,13 +210,9 @@ export class PageRenderer {
       }
     };
     const base: PageStyleValues = {
-      background: styles.background ?? 'none',
-      backgroundColor: styles.backgroundColor,
-      textColor: styles.textColor,
-      padding: styles.padding ?? 0,
-      gap: styles.gap ?? 16,
-      radius: styles.radius ?? 0,
-      align: styles.align ?? 'left',
+      background: styles.background ?? 'none', backgroundColor: styles.backgroundColor,
+      textColor: styles.textColor, padding: styles.padding ?? 0, gap: styles.gap ?? 16,
+      radius: styles.radius ?? 0, align: styles.align ?? 'left',
     };
     const keys = ['padding', 'gap', 'radius', 'align', 'text-color', 'background-color'] as const;
     const css = (values: PageStyleValues, key: typeof keys[number]): string | undefined => {
@@ -61,8 +222,7 @@ export class PageRenderer {
         case 'radius': return values.radius === undefined ? undefined : `${values.radius}px`;
         case 'align': return values.align;
         case 'text-color': return values.textColor;
-        case 'background-color': return values.background !== undefined || values.backgroundColor
-          ? bg(values) : undefined;
+        case 'background-color': return values.background !== undefined || values.backgroundColor ? bg(values) : undefined;
       }
     };
     for (const key of keys) {
@@ -71,18 +231,5 @@ export class PageRenderer {
       result[`--pc-mobile-${key}`] = css(styles.responsive?.mobile ?? {}, key) ?? `var(--pc-tablet-${key})`;
     }
     return result;
-  }
-
-  protected grid(layout: RowLayout): string {
-    return pageGridColumns(layout);
-  }
-  protected surface(styles: PageStyles): string {
-    return `page-surface--${styles.background ?? 'none'}`;
-  }
-  protected html(content: string): string {
-    return markdown.render(content);
-  }
-  protected image(assetId: string): string {
-    return `/api/assets/${encodeURIComponent(assetId)}/image/large/fallback`;
   }
 }

@@ -1,24 +1,105 @@
-<div class="page-document page-document__node" [class]="surface(document().styles)" [ngStyle]="styleVars(document().styles)">
-  @for (section of document().sections; track section.id) {
-    <section class="page-document__section page-document__node" [class]="surface(section.styles)" [ngStyle]="styleVars(section.styles)">
+<div class="page-document page-document__node" [class]="surface(document().styles)"
+  [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === document().id"
+  [ngStyle]="styleVars(document().styles)" [attr.data-editor-kind]="editable() ? 'page' : null"
+  [attr.data-editor-id]="editable() ? document().id : null"
+  (click)="choose($event, 'page', document().id)">
+  @for (section of document().sections; track section.id; let sectionIndex = $index) {
+    <section class="page-document__section page-document__node" [class]="surface(section.styles)"
+      [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === section.id"
+      [class.is-drop-before]="dropAt(section.id, 'before')" [class.is-drop-after]="dropAt(section.id, 'after')"
+      [ngStyle]="styleVars(section.styles)" [attr.data-editor-kind]="editable() ? 'section' : null"
+      [attr.data-editor-id]="editable() ? section.id : null" [attr.data-editor-parent]="editable() ? document().id : null"
+      [attr.data-editor-index]="editable() ? sectionIndex : null" (click)="choose($event, 'section', section.id)">
+      @if (editable()) {
+        <div class="page-document__controls" (click)="$event.stopPropagation()">
+          <span>{{ 'page.editor.section' | i18n | async }}</span>
+          <button type="button" (click)="choose($event, 'section', section.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
+          <button type="button" class="page-document__handle" (pointerdown)="startPointer($event, 'section', section.id)"
+            (pointermove)="pointerMove($event)" (pointerup)="pointerUp($event)" (pointercancel)="cancelPointer()"
+            [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
+          <button type="button" (click)="act($event, 'section', section.id, 'duplicate')" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
+          <button type="button" (click)="act($event, 'section', section.id, 'remove')" [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+        </div>
+      }
       <div class="page-document__rows">
-        @for (row of section.rows; track row.id) {
-          <div class="page-document__row page-document__node" [class]="surface(row.styles)" [ngStyle]="styleVars(row.styles)"
-            [style.grid-template-columns]="grid(row.layout)">
+        @for (row of section.rows; track row.id; let rowIndex = $index) {
+          <div class="page-document__row page-document__node" [class]="surface(row.styles)"
+            [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === row.id"
+            [class.is-drop-before]="dropAt(row.id, 'before')" [class.is-drop-after]="dropAt(row.id, 'after')"
+            [ngStyle]="styleVars(row.styles)" [style.grid-template-columns]="grid(row.layout)"
+            [attr.data-editor-kind]="editable() ? 'row' : null" [attr.data-editor-id]="editable() ? row.id : null"
+            [attr.data-editor-parent]="editable() ? section.id : null" [attr.data-editor-index]="editable() ? rowIndex : null"
+            (click)="choose($event, 'row', row.id)">
+            @if (editable()) {
+              <div class="page-document__controls" (click)="$event.stopPropagation()">
+                <span>{{ 'page.editor.row' | i18n | async }}</span>
+                <button type="button" (click)="choose($event, 'row', row.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
+                <button type="button" class="page-document__handle" (pointerdown)="startPointer($event, 'row', row.id)"
+                  (pointermove)="pointerMove($event)" (pointerup)="pointerUp($event)" (pointercancel)="cancelPointer()"
+                  [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
+                <button type="button" (click)="act($event, 'row', row.id, 'duplicate')" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
+                <button type="button" (click)="act($event, 'row', row.id, 'remove')" [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+              </div>
+            }
             @for (column of row.columns; track column.id) {
-              <div class="page-document__column page-document__node" [class]="surface(column.styles)" [ngStyle]="styleVars(column.styles)">
-                @for (block of column.blocks; track block.id) {
-                  <div class="page-document__block page-document__node" [class]="surface(block.styles)" [ngStyle]="styleVars(block.styles)">
+              <div class="page-document__column page-document__node" [class]="surface(column.styles)"
+                [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === column.id"
+                [class.is-drop-end]="dropAt(column.id, 'end')" [ngStyle]="styleVars(column.styles)"
+                [attr.data-editor-kind]="editable() ? 'column' : null" [attr.data-editor-id]="editable() ? column.id : null"
+                (click)="choose($event, 'column', column.id)">
+                @if (editable()) {
+                  <div class="page-document__controls page-document__controls--column" (click)="$event.stopPropagation()">
+                    <span>{{ 'page.editor.column' | i18n | async }}</span>
+                    <button type="button" (click)="choose($event, 'column', column.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
+                  </div>
+                }
+                @for (block of column.blocks; track block.id; let blockIndex = $index) {
+                  <div class="page-document__block page-document__node" [class]="surface(block.styles)"
+                    [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === block.id"
+                    [class.is-drop-before]="dropAt(block.id, 'before')" [class.is-drop-after]="dropAt(block.id, 'after')"
+                    [ngStyle]="styleVars(block.styles)" [attr.data-editor-kind]="editable() ? 'block' : null"
+                    [attr.data-editor-id]="editable() ? block.id : null" [attr.data-editor-parent]="editable() ? column.id : null"
+                    [attr.data-editor-index]="editable() ? blockIndex : null" (click)="choose($event, 'block', block.id)">
+                    @if (editable()) {
+                      <div class="page-document__controls page-document__controls--block" (click)="$event.stopPropagation()">
+                        <span>{{ ('page.editor.block.' + block.type) | i18n | async }}</span>
+                        <button type="button" (click)="choose($event, 'block', block.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
+                        <button type="button" class="page-document__handle" (pointerdown)="startPointer($event, 'block', block.id)"
+                          (pointermove)="pointerMove($event)" (pointerup)="pointerUp($event)" (pointercancel)="cancelPointer()"
+                          [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
+                        @if (block.type === 'text') {
+                          <button type="button" (click)="editText($event, block.id)" [attr.aria-label]="'page.editor.editInline' | i18n | async"><app-icon name="pencil" /></button>
+                        }
+                        <button type="button" (click)="act($event, 'block', block.id, 'duplicate')" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
+                        <button type="button" (click)="act($event, 'block', block.id, 'remove')" [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                      </div>
+                    }
                     @switch (block.type) {
                       @case ('text') {
-                        <div class="page-document__markdown" [innerHTML]="html(block.markdown[locale()] || block.markdown.de)"></div>
+                        @if (editable() && inlineTextId() === block.id) {
+                          <textarea class="page-document__inline-text" [value]="block.markdown[locale()]"
+                            (click)="$event.stopPropagation()" (keydown.escape)="editText($event, block.id)" (input)="changeInline($event, block.id)"
+                            [attr.aria-label]="'page.editor.content' | i18n | async"></textarea>
+                        } @else {
+                          @if (editable() && !block.markdown[locale()] && !block.markdown.de) {
+                            <p class="page-document__empty" (dblclick)="editText($event, block.id)">{{ 'page.editor.empty' | i18n | async }}</p>
+                          } @else {
+                            <div class="page-document__markdown" [innerHTML]="html(block.markdown[locale()] || block.markdown.de)"
+                              (dblclick)="editText($event, block.id)"></div>
+                          }
+                        }
                       }
                       @case ('image') {
                         @if (block.assetId) {
                           <img class="page-document__image" [src]="image(block.assetId)" [alt]="block.alt[locale()] || block.alt.de" loading="lazy" />
+                        } @else if (editable()) {
+                          <div class="page-document__empty"><app-icon name="image" /> {{ 'page.editor.chooseImage' | i18n | async }}</div>
                         }
                       }
                       @case ('gallery') {
+                        @if (editable() && !block.items.length) {
+                          <div class="page-document__empty"><app-icon name="images" /> {{ 'page.editor.block.gallery' | i18n | async }}</div>
+                        }
                         <div class="page-document__gallery">
                           @for (item of block.items; track item.id) {
                             <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
@@ -31,11 +112,33 @@
                     }
                   </div>
                 }
+                @if (editable()) {
+                  <button type="button" class="page-document__add page-document__add--block"
+                    (click)="requestInsert($event, 'block', column.id)"
+                    [attr.aria-label]="'page.editor.addBlock' | i18n | async"><app-icon name="plus" /></button>
+                }
               </div>
             }
           </div>
         }
+        @if (editable()) {
+          <button type="button" class="page-document__add page-document__add--row"
+            (click)="requestInsert($event, 'row', section.id)">
+            <app-icon name="plus" /> {{ 'page.editor.addRow' | i18n | async }}
+          </button>
+        }
       </div>
     </section>
   }
+  @if (editable()) {
+    <button type="button" class="page-document__add page-document__add--section"
+      (click)="requestInsert($event, 'section', document().id)">
+      <app-icon name="plus" /> {{ 'page.editor.addSection' | i18n | async }}
+    </button>
+  }
 </div>
+@if (dragging()) {
+  <div class="page-document__drag-pill" [style.left.px]="pointerX()" [style.top.px]="pointerY()" aria-hidden="true">
+    <app-icon name="grip-vertical" /> {{ 'page.editor.drag' | i18n | async }}
+  </div>
+}

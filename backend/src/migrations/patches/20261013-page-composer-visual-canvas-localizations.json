@@ -1,0 +1,19 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.outline",
+      "de": "Seitenstruktur",
+      "en": "Page structure"
+    },
+    {
+      "key": "page.editor.insert",
+      "de": "Element einfügen",
+      "en": "Insert element"
+    },
+    {
+      "key": "page.editor.editInline",
+      "de": "Text direkt bearbeiten",
+      "en": "Edit text on page"
+    }
+  ]
+}

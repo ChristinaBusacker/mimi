@@ -39,4 +39,17 @@ describe('Page composer moves', () => {
     expect(movePageItem(document(), 'block', 'b1', 'r1', 0)).toBeNull();
     expect(movePageItem(document(), 'block', 'b1', 'c1', 1)).toBeNull();
   });
+  it('moves a complete row into another section without losing its columns', () => {
+    const original = document();
+    const updated = movePageItem(original, 'row', 'r1', 's2', 0);
+    expect(updated?.sections[0].rows).toHaveLength(0);
+    expect(updated?.sections[1].rows[0].columns[0].blocks.map((block) => block.id)).toEqual(['b1', 'b2']);
+    expect(original.sections[0].rows).toHaveLength(1);
+  });
+
+  it('does not create a new document for dropping in the same position', () => {
+    expect(movePageItem(document(), 'section', 's1', 'page', 1)).toBeNull();
+    expect(movePageItem(document(), 'block', 'b2', 'c1', 2)).toBeNull();
+  });
+
 });
