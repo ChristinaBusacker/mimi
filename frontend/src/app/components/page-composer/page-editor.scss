@@ -1,0 +1,61 @@
+:host { display: block; min-width: 0; }
+.composer { --composer-accent: #da8dbb; color: var(--color-text); border: 1px solid rgb(218 141 187 / 36%); border-radius: 18px; overflow: hidden; background: #211929; }
+.composer button, .composer select, .composer input { font: inherit; }
+.composer button { cursor: pointer; }
+.composer button:focus-visible, .composer input:focus-visible, .composer select:focus-visible { outline: 2px solid #f4badd; outline-offset: 2px; }
+.composer__toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; background: #35243a; }
+.composer__toolbar-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.composer__toolbar button, .composer__actions button, .composer__block-actions button, .composer__inspector header button { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; gap: 5px; padding: 5px 9px; border-radius: 8px; border: 1px solid rgb(255 255 255 / 18%); background: transparent; color: inherit; }
+.composer button.is-active, .composer button:hover { background: rgb(218 141 187 / 21%); }
+.composer__toolbar app-icon, .composer__actions app-icon, .composer__block-actions app-icon, .composer__inspector app-icon { width: 17px; height: 17px; }
+.composer__workspace { display: grid; grid-template-columns: minmax(0, 1fr) 290px; align-items: start; }
+.composer__canvas { display: grid; gap: 18px; padding: clamp(12px, 2vw, 26px); min-width: 0; background: linear-gradient(160deg, #271b33, #1b1828); }
+.composer__section { padding: 10px; border: 1px solid #a778b7; border-radius: 13px; background: rgb(129 83 142 / 9%); min-width: 0; }
+.composer__section.is-selected { box-shadow: inset 0 0 0 1px #d7a2e5; }
+.composer__rows { display: grid; gap: 14px; }
+.composer__rowwrap { padding: 8px; border: 1px solid rgb(109 167 217 / 55%); border-radius: 10px; min-width: 0; }
+.composer__rowwrap.is-selected { border-color: #80c0f5; }
+.composer__row { display: grid; gap: 8px; min-width: 0; }
+.composer__column { min-width: 0; min-height: 100px; border: 1px dashed rgb(171 201 227 / 47%); background: rgb(255 255 255 / 3%); border-radius: 9px; padding: 8px; display: grid; align-content: start; gap: 9px; }
+.composer__column.is-selected { border-color: #e4c9ff; background: rgb(255 255 255 / 7%); }
+.composer__nodebar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 5px; }
+.composer__nodebar > button, .composer__columnbar, .composer__block-label { border: 0; background: transparent; color: inherit; font-size: 0.8rem; font-weight: 700; text-align: left; padding: 5px; }
+.composer__nodebar--row > button { font-size: 0.73rem; }
+.composer__actions, .composer__block-actions { display: flex; gap: 3px; }
+.composer__columnbar { color: #bbd6f7; font-size: 0.68rem; }
+.composer__block { padding: 8px; border-radius: 7px; background: rgb(255 255 255 / 7%); border: 1px solid rgb(255 255 255 / 10%); overflow: hidden; }
+.composer__block.is-selected { border-color: #f0b8d5; }
+.composer__block-label { display: flex; align-items: center; gap: 5px; color: #f5bede; }
+.composer__block-excerpt { white-space: pre-line; max-height: 110px; overflow: hidden; font-size: 0.76rem; opacity: 0.8; overflow-wrap: anywhere; }
+.composer__thumbnail { display: block; max-width: 100%; max-height: 150px; object-fit: contain; }
+.composer__mini-gallery { display: flex; gap: 4px; overflow: hidden; }
+.composer__mini-gallery img { max-width: 70px; max-height: 70px; }
+.composer__spacer { border: 1px dashed rgb(255 255 255 / 22%); }
+.composer__block-actions { justify-content: end; margin-top: 6px; }
+.composer__block-actions button { min-width: 27px; height: 27px; font-size: 0.8rem; }
+.composer__add-block { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.composer__add-block label { font-size: 0.68rem; }
+.composer__add-block select { min-width: 0; flex: 1; font-size: 0.75rem; }
+.composer__add-block button, .composer__add-row, .composer__add-section { border: 1px dashed #b58bc6; color: inherit; background: rgb(191 138 205 / 8%); border-radius: 9px; padding: 9px; }
+.composer__add-section { min-height: 56px; }
+.composer__inspector { display: grid; align-content: start; gap: 9px; padding: 15px; min-width: 0; position: sticky; top: 0; max-height: 83vh; overflow-y: auto; border-left: 1px solid rgb(255 255 255 / 12%); background: #2c2134; }
+.composer__inspector header { display: flex; align-items: center; justify-content: space-between; }
+.composer__inspector label { font-size: 0.76rem; font-weight: 650; }
+.composer__inspector input, .composer__inspector select { width: 100%; min-width: 0; padding: 8px; border-radius: 7px; background: #211928; border: 1px solid #634c6e; color: inherit; }
+.composer__inspector h3 { font-size: 0.91rem; margin: 14px 0 4px; }
+.composer__inspector app-markdown-editor { display: block; min-width: 0; }
+.composer__layouts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+.composer__layout { display: flex; gap: 3px; height: 60px; position: relative; padding: 8px 5px 22px; border: 1px solid #6f5975; background: #211928; border-radius: 7px; color: inherit; }
+.composer__layout span { background: #9472a4; border-radius: 3px; min-width: 0; }
+.composer__layout.is-active { border-color: #f3b6d9; }
+.composer__layout small { position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font-size: 0.57rem; }
+.composer__gallery-item { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 5px; }
+.composer__gallery-item img { width: 44px; height: 42px; object-fit: cover; }
+.composer__gallery-item button { color: inherit; border: 0; background: transparent; }
+.composer__empty-inspector { text-align: center; padding: 55px 8px; opacity: 0.75; font-size: 0.85rem; }
+.composer__preview { padding: 24px; min-height: 320px; background: #211929; }
+@media (max-width: 1000px) { .composer__workspace { grid-template-columns: minmax(0,1fr); } .composer__inspector { position: static; border: 0; border-top: 1px solid #654c72; max-height: none; } }
+@media (max-width: 740px) { .composer__row { grid-template-columns: minmax(0,1fr) !important; } .composer__toolbar { align-items: start; flex-direction: column; } .composer__canvas { padding: 8px; } .composer__actions button { min-width: 29px; } }
+
+.composer__page-settings { display: inline-flex; align-items: center; gap: 8px; border: none; background: transparent; color: inherit; font-weight: 800; padding: 6px; }
+.composer__page-settings app-icon { width: 16px; }

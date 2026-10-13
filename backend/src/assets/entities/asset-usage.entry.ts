@@ -12,6 +12,7 @@ export type AssetUsageOwnerType =
   | 'blogAuthor'
   | 'blogPost'
   | 'musicAlbum'
+  | 'musicAlbumBooklet'
   | 'musicTrack';
 
 @Index(

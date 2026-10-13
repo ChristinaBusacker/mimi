@@ -1,0 +1,56 @@
+<div class="page-document" [class]="surface(document().styles)"
+  [style.padding.px]="document().styles.padding ?? 0"
+  [style.border-radius.px]="document().styles.radius ?? 0"
+  [style.text-align]="document().styles.align ?? 'left'">
+  @for (section of document().sections; track section.id) {
+    <section class="page-document__section" [class]="surface(section.styles)"
+      [style.padding.px]="section.styles.padding ?? 0"
+      [style.border-radius.px]="section.styles.radius ?? 0">
+      <div class="page-document__rows" [style.gap.px]="section.styles.gap ?? 16">
+        @for (row of section.rows; track row.id) {
+          <div class="page-document__row" [class]="surface(row.styles)"
+            [style.grid-template-columns]="grid(row.layout)"
+            [style.gap.px]="row.styles.gap ?? 16"
+            [style.padding.px]="row.styles.padding ?? 0"
+            [style.border-radius.px]="row.styles.radius ?? 0">
+            @for (column of row.columns; track column.id) {
+              <div class="page-document__column" [class]="surface(column.styles)"
+                [style.gap.px]="column.styles.gap ?? 16"
+                [style.padding.px]="column.styles.padding ?? 0"
+                [style.border-radius.px]="column.styles.radius ?? 0"
+                [style.text-align]="column.styles.align ?? 'left'">
+                @for (block of column.blocks; track block.id) {
+                  <div class="page-document__block" [class]="surface(block.styles)"
+                    [style.padding.px]="block.styles.padding ?? 0"
+                    [style.border-radius.px]="block.styles.radius ?? 0"
+                    [style.text-align]="block.styles.align ?? 'left'">
+                    @switch (block.type) {
+                      @case ('text') {
+                        <div class="page-document__markdown" [innerHTML]="html(block.markdown[locale()] || block.markdown.de)"></div>
+                      }
+                      @case ('image') {
+                        @if (block.assetId) {
+                          <img class="page-document__image" [src]="image(block.assetId)" [alt]="block.alt[locale()] || block.alt.de" loading="lazy" />
+                        }
+                      }
+                      @case ('gallery') {
+                        <div class="page-document__gallery">
+                          @for (item of block.items; track item.id) {
+                            <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                          }
+                        </div>
+                      }
+                      @case ('spacer') {
+                        <div aria-hidden="true" [style.height.px]="block.height"></div>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>

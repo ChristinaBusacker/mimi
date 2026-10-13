@@ -1,4 +1,5 @@
 import type { MusicPublicationStatus } from '@shared/music/music';
+import type { PageDocument } from '@shared/content/page-document';
 
 import {
   Column,
@@ -56,6 +57,12 @@ export class MusicAlbumEntry {
     nullable: true,
   })
   publishedAt!: Date | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  bookletDraft!: PageDocument | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  bookletPublished!: PageDocument | null;
 
   @CreateDateColumn({
     type: 'timestamptz',

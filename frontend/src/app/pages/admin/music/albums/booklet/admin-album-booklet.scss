@@ -1,0 +1,13 @@
+:host { display: block; min-width: 0; }
+.booklet-admin { display: grid; gap: 18px; padding: clamp(16px, 3vw, 38px) 0; }
+.booklet-admin__header { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; }
+.booklet-admin__header a { color: var(--color-secondary); }
+.booklet-admin__header h1 { margin: 7px 0 0; font-family: var(--font-headline); font-size: clamp(2rem, 3vw, 3.5rem); }
+.booklet-admin__header p { margin: 7px 0 0; max-width: 65ch; opacity: 0.75; }
+.booklet-admin__actions { display: flex; gap: 10px; }
+.booklet-admin__actions button { padding: 12px 18px; border: 1px solid #bd90ba; border-radius: 12px; background: #33253a; color: white; cursor: pointer; }
+.booklet-admin__actions button:disabled { cursor: wait; opacity: 0.45; }
+.booklet-admin__actions .booklet-admin__publish { background: #a85b8a; }
+.booklet-admin__unsaved { color: #f2c4dd; font-weight: 600; }
+.is-error { color: #ff9fac; }
+@media (max-width: 680px) { .booklet-admin__actions { width: 100%; } .booklet-admin__actions button { flex: 1; } }

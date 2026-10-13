@@ -1,3 +1,4 @@
+import type { PageDocument, PagePublication } from '@shared/content/page-document';
 import type {
   MusicAdminAlbum,
   MusicAdminTrack,
@@ -31,6 +32,22 @@ export class AdminMusicService {
     return this.request.get<MusicAdminAlbum>(
       `/admin/music/albums/${id}`,
       this.privateGetOptions(),
+    );
+  }
+
+  getBooklet(id: string): Observable<PagePublication> {
+    return this.request.get<PagePublication>(`/admin/music/albums/${id}/booklet`, this.privateGetOptions());
+  }
+
+  saveBookletDraft(id: string, document: PageDocument): Observable<PagePublication> {
+    return this.request.patch<PagePublication, { document: PageDocument }>(
+      `/admin/music/albums/${id}/booklet`, { document },
+    );
+  }
+
+  publishBooklet(id: string): Observable<PagePublication> {
+    return this.request.post<PagePublication, Record<string, never>>(
+      `/admin/music/albums/${id}/booklet/publish`, {},
     );
   }
 

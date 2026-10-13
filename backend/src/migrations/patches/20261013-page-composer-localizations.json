@@ -1,0 +1,239 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.title",
+      "de": "Page Composer",
+      "en": "Page Composer"
+    },
+    {
+      "key": "page.editor.preview",
+      "de": "Vorschau",
+      "en": "Preview"
+    },
+    {
+      "key": "page.editor.section",
+      "de": "Section",
+      "en": "Section"
+    },
+    {
+      "key": "page.editor.row",
+      "de": "Row",
+      "en": "Row"
+    },
+    {
+      "key": "page.editor.column",
+      "de": "Column",
+      "en": "Column"
+    },
+    {
+      "key": "page.editor.up",
+      "de": "Nach oben",
+      "en": "Move up"
+    },
+    {
+      "key": "page.editor.down",
+      "de": "Nach unten",
+      "en": "Move down"
+    },
+    {
+      "key": "page.editor.duplicate",
+      "de": "Duplizieren",
+      "en": "Duplicate"
+    },
+    {
+      "key": "page.editor.remove",
+      "de": "Löschen",
+      "en": "Remove"
+    },
+    {
+      "key": "page.editor.addBlock",
+      "de": "Block hinzufügen",
+      "en": "Add block"
+    },
+    {
+      "key": "page.editor.addRow",
+      "de": "Row hinzufügen",
+      "en": "Add row"
+    },
+    {
+      "key": "page.editor.addSection",
+      "de": "Section hinzufügen",
+      "en": "Add section"
+    },
+    {
+      "key": "page.editor.settings",
+      "de": "Einstellungen",
+      "en": "Settings"
+    },
+    {
+      "key": "page.editor.close",
+      "de": "Schließen",
+      "en": "Close"
+    },
+    {
+      "key": "page.editor.layouts",
+      "de": "Spaltenlayout",
+      "en": "Column layout"
+    },
+    {
+      "key": "page.editor.block.text",
+      "de": "Text",
+      "en": "Text"
+    },
+    {
+      "key": "page.editor.block.image",
+      "de": "Bild",
+      "en": "Image"
+    },
+    {
+      "key": "page.editor.block.gallery",
+      "de": "Galerie",
+      "en": "Gallery"
+    },
+    {
+      "key": "page.editor.block.spacer",
+      "de": "Abstand",
+      "en": "Spacer"
+    },
+    {
+      "key": "page.editor.content",
+      "de": "Inhalt",
+      "en": "Content"
+    },
+    {
+      "key": "page.editor.chooseImage",
+      "de": "Bild auswählen",
+      "en": "Choose image"
+    },
+    {
+      "key": "page.editor.empty",
+      "de": "Noch kein Inhalt",
+      "en": "No content yet"
+    },
+    {
+      "key": "page.editor.alt",
+      "de": "Alternativtext",
+      "en": "Alternative text"
+    },
+    {
+      "key": "page.editor.height",
+      "de": "Höhe (px)",
+      "en": "Height (px)"
+    },
+    {
+      "key": "page.editor.design",
+      "de": "Design",
+      "en": "Design"
+    },
+    {
+      "key": "page.editor.background",
+      "de": "Hintergrund",
+      "en": "Background"
+    },
+    {
+      "key": "page.editor.surface.none",
+      "de": "Transparent",
+      "en": "Transparent"
+    },
+    {
+      "key": "page.editor.surface.glass",
+      "de": "Glas",
+      "en": "Glass"
+    },
+    {
+      "key": "page.editor.surface.solid",
+      "de": "Deckend",
+      "en": "Solid"
+    },
+    {
+      "key": "page.editor.surface.accent",
+      "de": "Akzent",
+      "en": "Accent"
+    },
+    {
+      "key": "page.editor.padding",
+      "de": "Innenabstand (px)",
+      "en": "Padding (px)"
+    },
+    {
+      "key": "page.editor.gap",
+      "de": "Abstand (px)",
+      "en": "Gap (px)"
+    },
+    {
+      "key": "page.editor.radius",
+      "de": "Eckenradius (px)",
+      "en": "Corner radius (px)"
+    },
+    {
+      "key": "page.editor.align",
+      "de": "Textausrichtung",
+      "en": "Text alignment"
+    },
+    {
+      "key": "page.editor.align.left",
+      "de": "Links",
+      "en": "Left"
+    },
+    {
+      "key": "page.editor.align.center",
+      "de": "Mitte",
+      "en": "Center"
+    },
+    {
+      "key": "page.editor.align.right",
+      "de": "Rechts",
+      "en": "Right"
+    },
+    {
+      "key": "page.editor.selectHint",
+      "de": "Wähle links eine Section, Row, Column oder einen Block zum Bearbeiten.",
+      "en": "Select a section, row, column or block to edit."
+    },
+    {
+      "key": "page.editor.back",
+      "de": "Zurück zum Album",
+      "en": "Back to album"
+    },
+    {
+      "key": "page.editor.explanation",
+      "de": "Hier gestaltest du den Seiteninhalt. Album-Metadaten und Musikstücke bleiben separat.",
+      "en": "Design the page content here. Album metadata and tracks remain separate."
+    },
+    {
+      "key": "page.editor.saveDraft",
+      "de": "Entwurf speichern",
+      "en": "Save draft"
+    },
+    {
+      "key": "page.editor.publish",
+      "de": "Booklet veröffentlichen",
+      "en": "Publish booklet"
+    },
+    {
+      "key": "page.editor.notice.saved",
+      "de": "Entwurf gespeichert. Die öffentliche Seite bleibt unverändert.",
+      "en": "Draft saved. The public page remains unchanged."
+    },
+    {
+      "key": "page.editor.notice.published",
+      "de": "Booklet veröffentlicht.",
+      "en": "Booklet published."
+    },
+    {
+      "key": "page.editor.notice.error",
+      "de": "Änderungen konnten nicht gespeichert oder geladen werden.",
+      "en": "Could not save or load changes."
+    },
+    {
+      "key": "page.editor.unsaved",
+      "de": "Nicht gespeicherte Änderungen",
+      "en": "Unsaved changes"
+    },
+    {
+      "key": "page.editor.editBooklet",
+      "de": "Booklet gestalten",
+      "en": "Design booklet"
+    }
+  ]
+}

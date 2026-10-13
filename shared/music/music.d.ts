@@ -1,3 +1,5 @@
+import type { PageDocument } from '../content/page-document';
+
 export type MusicPublicationStatus = 'draft' | 'published';
 
 export interface MusicAlbumSummary {
@@ -9,6 +11,7 @@ export interface MusicAlbumSummary {
 }
 
 export interface MusicAlbum extends MusicAlbumSummary {
+  booklet: PageDocument | null;
   contentHtml: string;
   tracks: MusicTrackSummary[];
 }

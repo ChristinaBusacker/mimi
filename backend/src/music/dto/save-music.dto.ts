@@ -13,6 +13,7 @@ import {
   IsArray,
   IsIn,
   IsInt,
+  IsObject,
   IsOptional,
   IsString,
   IsUrl,
@@ -47,6 +48,11 @@ export class MusicAdminTranslationsInputDto
   @ValidateNested()
   @Type(() => MusicAdminTranslationInputDto)
   en!: MusicAdminTranslationInputDto | null;
+}
+
+export class SaveAlbumBookletDto {
+  @IsObject()
+  document!: unknown;
 }
 
 export class SaveMusicAdminAlbumDto

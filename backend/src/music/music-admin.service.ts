@@ -1,4 +1,5 @@
 import type { AssetType } from '@shared/assets/asset';
+import type { PageDocument, PagePublication } from '@shared/content/page-document';
 import type {
   MusicAdminAlbum,
   MusicAdminTrack,
@@ -19,6 +20,7 @@ import {
   AssetUsageService,
   type AssetUsageInput,
 } from '../assets/asset-usage.service';
+import { validateAlbumBooklet } from './album-booklet-validation';
 import { AssetsService } from '../assets/assets.service';
 import { NotificationEventsService } from '../notifications/notification-events.service';
 import {
@@ -218,6 +220,49 @@ export class MusicAdminService {
     return this.getAlbum(uuid);
   }
 
+  async getAlbumBooklet(uuid: string): Promise<PagePublication> {
+    const album = await this.findAlbum(uuid);
+    return { draft: album.bookletDraft, published: album.bookletPublished };
+  }
+
+  async saveAlbumBooklet(uuid: string, input: unknown): Promise<PagePublication> {
+    const album = await this.findAlbum(uuid);
+    const document = validateAlbumBooklet(input);
+    const usages = this.bookletAssetUsages(document, album.bookletPublished);
+    await Promise.all(usages.map((usage) => this.assertAssetType(usage.assetUuid, 'image')));
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.getRepository(MusicAlbumEntry).update({ uuid }, { bookletDraft: document });
+      await this.assetUsageService.syncOwner(manager, 'musicAlbumBooklet', uuid, usages);
+    });
+    return this.getAlbumBooklet(uuid);
+  }
+
+  async publishAlbumBooklet(uuid: string): Promise<PagePublication> {
+    const album = await this.findAlbum(uuid);
+    if (!album.bookletDraft) throw new BadRequestException('No booklet draft to publish.');
+    await this.albumRepository.update({ uuid }, { bookletPublished: album.bookletDraft });
+    return this.getAlbumBooklet(uuid);
+  }
+
+  private bookletAssetUsages(...documents: Array<PageDocument | null>): AssetUsageInput[] {
+    const assets = new Set<string>();
+    for (const document of documents) {
+      if (!document) continue;
+      for (const section of document.sections) for (const row of section.rows)
+        for (const column of row.columns) for (const block of column.blocks) {
+          if (block.type === 'image' && block.assetId) assets.add(block.assetId);
+          if (block.type === 'gallery') for (const item of block.items) assets.add(item.assetId);
+          if (block.type === 'text') {
+            for (const text of [block.markdown.de, block.markdown.en]) {
+              for (const id of this.assetUsageService.extractMarkdownAssetIds(text)) assets.add(id);
+            }
+          }
+        }
+    }
+    return [...assets].map((assetUuid) => ({ assetUuid, scope: 'booklet' }));
+  }
+
   async deleteAlbum(uuid: string): Promise<void> {
     await this.findAlbum(uuid);
 
@@ -228,6 +273,7 @@ export class MusicAdminService {
           'musicAlbum',
           uuid,
         );
+        await this.assetUsageService.clearOwner(manager, 'musicAlbumBooklet', uuid);
 
         await manager
           .getRepository(MusicAlbumEntry)

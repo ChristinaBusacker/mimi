@@ -1,3 +1,5 @@
+import type { PagePublication } from '@shared/content/page-document';
+
 import {
   Body,
   Controller,
@@ -30,6 +32,7 @@ import {
 } from './dto/music-admin-response.dto';
 import {
   ReorderMusicAdminTracksDto,
+  SaveAlbumBookletDto,
   SaveMusicAdminAlbumDto,
   SaveMusicAdminTrackDto,
 } from './dto/save-music.dto';
@@ -70,6 +73,27 @@ export class MusicAdminController {
     @Param('uuid') uuid: string,
   ): Promise<MusicAdminAlbumDto> {
     return this.musicAdminService.getAlbum(uuid);
+  }
+
+  @Get('albums/:uuid/booklet')
+  @ApiOperation({ summary: 'Read an album booklet draft and its published version' })
+  getAlbumBooklet(@Param('uuid') uuid: string): Promise<PagePublication> {
+    return this.musicAdminService.getAlbumBooklet(uuid);
+  }
+
+  @Patch('albums/:uuid/booklet')
+  @ApiOperation({ summary: 'Save an album booklet draft' })
+  saveAlbumBooklet(
+    @Param('uuid') uuid: string,
+    @Body() dto: SaveAlbumBookletDto,
+  ): Promise<PagePublication> {
+    return this.musicAdminService.saveAlbumBooklet(uuid, dto.document);
+  }
+
+  @Post('albums/:uuid/booklet/publish')
+  @ApiOperation({ summary: 'Publish a saved album booklet draft' })
+  publishAlbumBooklet(@Param('uuid') uuid: string): Promise<PagePublication> {
+    return this.musicAdminService.publishAlbumBooklet(uuid);
   }
 
   @Post('albums')

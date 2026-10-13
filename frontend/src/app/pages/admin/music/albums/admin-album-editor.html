@@ -39,6 +39,11 @@
         {{ 'admin.music.save' | i18n | async }}
       </app-button>
 
+      @if (albumId) {
+        <a [routerLink]="['/admin/music/albums', albumId, 'booklet']">
+          {{ 'page.editor.editBooklet' | i18n | async }}
+        </a>
+      }
       <a routerLink="/admin/music">
         {{ 'admin.music.back' | i18n | async }}
       </a>

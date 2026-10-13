@@ -1,3 +1,4 @@
+import type { PageDocument } from '@shared/content/page-document';
 import type {
   MusicAlbum,
   MusicAlbumReference,
@@ -100,6 +101,9 @@ export class MusicAlbumDto
   extends MusicAlbumSummaryDto
   implements MusicAlbum
 {
+  @ApiProperty({ type: Object, nullable: true })
+  booklet!: PageDocument | null;
+
   @ApiProperty()
   contentHtml!: string;
 

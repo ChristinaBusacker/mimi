@@ -25,6 +25,7 @@ import {
 } from 'rxjs';
 
 import { Icon } from '../../../components/icon/icon';
+import { PageRenderer } from '../../../components/page-composer/page-renderer';
 import { MusicLibraryPlayer } from '../../../components/music-library-player/music-library-player';
 import { RenderedContent } from '../../../components/rendered-content/rendered-content';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
@@ -42,6 +43,7 @@ import {
     Icon,
     I18nPipe,
     MusicLibraryPlayer,
+    PageRenderer,
     RenderedContent,
   ],
   selector: 'app-music-album',

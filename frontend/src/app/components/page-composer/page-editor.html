@@ -1,0 +1,183 @@
+<section class="composer">
+  <header class="composer__toolbar">
+    <button type="button" class="composer__page-settings" (click)="select('page', document().id)">
+      <app-icon name="settings-2" /> {{ 'page.editor.title' | i18n | async }}
+    </button>
+    <div class="composer__toolbar-actions">
+      <button type="button" [class.is-active]="locale() === 'de'" (click)="locale.set('de')">DE</button>
+      <button type="button" [class.is-active]="locale() === 'en'" (click)="locale.set('en')">EN</button>
+      <button type="button" [class.is-active]="preview()" (click)="preview.set(!preview())">
+        <app-icon name="eye" />{{ 'page.editor.preview' | i18n | async }}
+      </button>
+    </div>
+  </header>
+
+  @if (preview()) {
+    <div class="composer__preview">
+      <app-page-renderer [document]="document()" [locale]="locale()" />
+    </div>
+  } @else {
+    <div class="composer__workspace">
+      <div class="composer__canvas">
+        @for (section of document().sections; track section.id) {
+          <section class="composer__section" [class.is-selected]="isSelected(section.id)">
+            <div class="composer__nodebar">
+              <button type="button" (click)="select('section', section.id)">{{ 'page.editor.section' | i18n | async }}</button>
+              <div class="composer__actions">
+                <button type="button" [attr.aria-label]="'page.editor.up' | i18n | async" (click)="shift('section', section.id, -1)">↑</button>
+                <button type="button" [attr.aria-label]="'page.editor.down' | i18n | async" (click)="shift('section', section.id, 1)">↓</button>
+                <button type="button" [attr.aria-label]="'page.editor.duplicate' | i18n | async" (click)="duplicate('section', section.id)"><app-icon name="copy" /></button>
+                <button type="button" [attr.aria-label]="'page.editor.remove' | i18n | async" (click)="remove('section', section.id)"><app-icon name="trash-2" /></button>
+              </div>
+            </div>
+            <div class="composer__rows">
+              @for (row of section.rows; track row.id) {
+                <div class="composer__rowwrap" [class.is-selected]="isSelected(row.id)">
+                  <div class="composer__nodebar composer__nodebar--row">
+                    <button type="button" (click)="select('row', row.id)">{{ 'page.editor.row' | i18n | async }} · {{ grid(row.layout) }}</button>
+                    <div class="composer__actions">
+                      <button type="button" (click)="shift('row', row.id, -1)" [attr.aria-label]="'page.editor.up' | i18n | async">↑</button>
+                      <button type="button" (click)="shift('row', row.id, 1)" [attr.aria-label]="'page.editor.down' | i18n | async">↓</button>
+                      <button type="button" (click)="duplicate('row', row.id)" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
+                      <button type="button" (click)="remove('row', row.id)" [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                    </div>
+                  </div>
+                  <div class="composer__row" [style.grid-template-columns]="grid(row.layout)">
+                    @for (column of row.columns; track column.id) {
+                      <div class="composer__column" [class.is-selected]="isSelected(column.id)">
+                        <button type="button" class="composer__columnbar" (click)="select('column', column.id)">{{ 'page.editor.column' | i18n | async }}</button>
+                        @for (block of column.blocks; track block.id) {
+                          <div class="composer__block" [class.is-selected]="isSelected(block.id)">
+                            <button class="composer__block-label" type="button" (click)="select('block', block.id)">
+                              <app-icon name="settings-2" />{{ blockName(block) | i18n | async }}
+                            </button>
+                            @switch (block.type) {
+                              @case ('text') {
+                                <p class="composer__block-excerpt">{{ block.markdown[locale()] || ('page.editor.empty' | i18n | async) }}</p>
+                              }
+                              @case ('image') {
+                                @if (block.assetId) { <img class="composer__thumbnail" [src]="imageUrl(block.assetId)" alt="" /> }
+                              }
+                              @case ('gallery') {
+                                <div class="composer__mini-gallery">
+                                  @for (image of block.items; track image.id) { <img [src]="imageUrl(image.assetId)" alt="" /> }
+                                </div>
+                              }
+                              @case ('spacer') { <div class="composer__spacer" [style.height.px]="block.height"></div> }
+                            }
+                            <div class="composer__block-actions">
+                              <button type="button" (click)="shift('block', block.id, -1)" [attr.aria-label]="'page.editor.up' | i18n | async">↑</button>
+                              <button type="button" (click)="shift('block', block.id, 1)" [attr.aria-label]="'page.editor.down' | i18n | async">↓</button>
+                              <button type="button" (click)="duplicate('block', block.id)" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
+                              <button type="button" (click)="remove('block', block.id)" [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                            </div>
+                          </div>
+                        }
+                        <div class="composer__add-block">
+                          <label [attr.for]="'add-block-' + column.id">{{ 'page.editor.addBlock' | i18n | async }}</label>
+                          <select [id]="'add-block-' + column.id" #blockType>
+                            <option value="text">{{ 'page.editor.block.text' | i18n | async }}</option>
+                            <option value="image">{{ 'page.editor.block.image' | i18n | async }}</option>
+                            <option value="gallery">{{ 'page.editor.block.gallery' | i18n | async }}</option>
+                            <option value="spacer">{{ 'page.editor.block.spacer' | i18n | async }}</option>
+                          </select>
+                          <button type="button" (click)="addBlock(column.id, blockType.value === 'image' ? 'image' : blockType.value === 'gallery' ? 'gallery' : blockType.value === 'spacer' ? 'spacer' : 'text')">+</button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+              <button type="button" class="composer__add-row" (click)="addRow(section.id)">+ {{ 'page.editor.addRow' | i18n | async }}</button>
+            </div>
+          </section>
+        }
+        <button type="button" class="composer__add-section" (click)="addSection()">+ {{ 'page.editor.addSection' | i18n | async }}</button>
+      </div>
+
+      <aside class="composer__inspector">
+        @if (active(); as node) {
+          <header>
+            <strong>{{ 'page.editor.settings' | i18n | async }}</strong>
+            <button type="button" (click)="selected.set(null)" [attr.aria-label]="'page.editor.close' | i18n | async"><app-icon name="x" /></button>
+          </header>
+          @if (selectedRow(); as row) {
+            <h3>{{ 'page.editor.layouts' | i18n | async }}</h3>
+            <div class="composer__layouts">
+              @for (layout of layouts; track layout.id) {
+                <button type="button" class="composer__layout" [class.is-active]="layout.id === row.layout"
+                  [attr.aria-label]="layout.label" [attr.aria-pressed]="layout.id === row.layout" (click)="chooseLayout(row.id, layout.id)">
+                  @for (weight of layout.weights; track $index) { <span [style.flex]="weight"></span> }
+                  <small>{{ layout.label }}</small>
+                </button>
+              }
+            </div>
+          }
+          @if (selectedBlock(); as block) {
+            @switch (block.type) {
+              @case ('text') {
+                <h3>{{ 'page.editor.block.text' | i18n | async }}</h3>
+                <app-markdown-editor [formControl]="markdownControl" [assets]="assets()" [label]="('page.editor.content' | i18n | async) ?? ''" />
+              }
+              @case ('image') {
+                <h3>{{ 'page.editor.block.image' | i18n | async }}</h3>
+                <label>{{ 'page.editor.chooseImage' | i18n | async }}</label>
+                <select [value]="block.assetId ?? ''" (change)="updateImage($event)">
+                  <option value="">{{ 'page.editor.empty' | i18n | async }}</option>
+                  @for (image of assets(); track image.id) { <option [value]="image.id">{{ image.originalFilename }}</option> }
+                </select>
+                <label>{{ 'page.editor.alt' | i18n | async }}</label>
+                <input [value]="block.alt[locale()]" (change)="updateAlt($event)" />
+              }
+              @case ('gallery') {
+                <h3>{{ 'page.editor.block.gallery' | i18n | async }}</h3>
+                @for (image of block.items; track image.id) {
+                  <div class="composer__gallery-item">
+                    <img [src]="imageUrl(image.assetId)" alt="" />
+                    <input [value]="image.alt[locale()]" [attr.aria-label]="'page.editor.alt' | i18n | async" (change)="updateGalleryAlt(image.id, $event)" />
+                    <button type="button" (click)="deleteGalleryImage(image.id)">×</button>
+                  </div>
+                }
+                <label>{{ 'page.editor.chooseImage' | i18n | async }}</label>
+                <select (change)="addGalleryImage($event)">
+                  <option value="">{{ 'page.editor.chooseImage' | i18n | async }}</option>
+                  @for (image of assets(); track image.id) { <option [value]="image.id">{{ image.originalFilename }}</option> }
+                </select>
+              }
+              @case ('spacer') {
+                <h3>{{ 'page.editor.block.spacer' | i18n | async }}</h3>
+                <label>{{ 'page.editor.height' | i18n | async }}</label>
+                <input type="number" min="0" max="240" [value]="block.height" (change)="updateSpacer($event)" />
+              }
+            }
+          }
+          <h3>{{ 'page.editor.design' | i18n | async }}</h3>
+          <label>{{ 'page.editor.background' | i18n | async }}</label>
+          <select [value]="node.styles.background ?? 'none'" (change)="changeStyle('background', $event)">
+            <option value="none">{{ 'page.editor.surface.none' | i18n | async }}</option>
+            <option value="glass">{{ 'page.editor.surface.glass' | i18n | async }}</option>
+            <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
+            <option value="accent">{{ 'page.editor.surface.accent' | i18n | async }}</option>
+          </select>
+          <label>{{ 'page.editor.padding' | i18n | async }}</label>
+          <input type="number" min="0" max="96" [value]="node.styles.padding ?? 0" (change)="changeStyle('padding', $event)" />
+          <label>{{ 'page.editor.gap' | i18n | async }}</label>
+          <input type="number" min="0" max="64" [value]="node.styles.gap ?? 16" (change)="changeStyle('gap', $event)" />
+          <label>{{ 'page.editor.radius' | i18n | async }}</label>
+          <input type="number" min="0" max="48" [value]="node.styles.radius ?? 0" (change)="changeStyle('radius', $event)" />
+          <label>{{ 'page.editor.align' | i18n | async }}</label>
+          <select [value]="node.styles.align ?? 'left'" (change)="changeStyle('align', $event)">
+            <option value="left">{{ 'page.editor.align.left' | i18n | async }}</option>
+            <option value="center">{{ 'page.editor.align.center' | i18n | async }}</option>
+            <option value="right">{{ 'page.editor.align.right' | i18n | async }}</option>
+          </select>
+        } @else {
+          <div class="composer__empty-inspector">
+            <app-icon name="mouse-pointer-click" />
+            <p>{{ 'page.editor.selectHint' | i18n | async }}</p>
+          </div>
+        }
+      </aside>
+    </div>
+  }
+</section>

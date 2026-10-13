@@ -231,6 +231,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'music/albums/:id/booklet',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/music/albums/booklet/admin-album-booklet').then(
+            (module) => module.AdminAlbumBooklet,
+          ),
+      },
+      {
         path: 'music/albums/:id',
         canActivate: [adminGuard],
         loadComponent: () =>

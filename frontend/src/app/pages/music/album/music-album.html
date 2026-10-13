@@ -35,7 +35,15 @@
     </div>
   </header>
 
-  @if (album.contentHtml) {
+  @if (album.booklet; as customBooklet) {
+    @if (customBooklet.sections.length > 0) {
+      <app-page-renderer [document]="customBooklet" [locale]="albumData.locale" />
+    } @else if (album.contentHtml) {
+      <section class="booklet__story" [attr.aria-label]="'music.album.label' | i18n | async">
+        <app-rendered-content [sanitizedHtml]="album.contentHtml" />
+      </section>
+    }
+  } @else if (album.contentHtml) {
     <section class="booklet__story" [attr.aria-label]="'music.album.label' | i18n | async">
       <app-rendered-content [sanitizedHtml]="album.contentHtml" />
     </section>
