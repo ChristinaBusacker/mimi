@@ -10,11 +10,26 @@ import type {
   LocalizedText,
   RowLayout,
 } from '@shared/content/page-document';
-import { PAGE_ROW_LAYOUTS } from '@shared/content/page-layouts';
 import { BadRequestException } from '@nestjs/common';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MAX_DOCUMENT_BYTES = 350_000;
+
+// Nest compiles CommonJS with a src-only rootDir. The public editor's
+// shared TypeScript module cannot be imported here at runtime.
+const ROW_LAYOUT_COLUMN_COUNTS: Readonly<Record<RowLayout, number>> = {
+  '1': 1,
+  '1-1': 2,
+  '1-2': 2,
+  '2-1': 2,
+  '1-3': 2,
+  '3-1': 2,
+  '1-1-1': 3,
+  '1-1-1-1': 4,
+  '2-1-1': 3,
+  '1-2-1': 3,
+  '1-1-2': 3,
+};
 
 function invalid(message: string): never {
   throw new BadRequestException(`Invalid page document: ${message}`);
@@ -105,11 +120,11 @@ function column(value: unknown): PageColumn {
 function row(value: unknown): PageRow {
   const data = record(value);
   const layout = data['layout'];
-  if (typeof layout !== 'string' || !Object.hasOwn(PAGE_ROW_LAYOUTS, layout))
+  if (typeof layout !== 'string' || !Object.hasOwn(ROW_LAYOUT_COLUMN_COUNTS, layout))
     invalid('unknown row layout');
   const typed = layout as RowLayout;
   const columns = list(data['columns'], 4).map(column);
-  if (columns.length !== PAGE_ROW_LAYOUTS[typed].length)
+  if (columns.length !== ROW_LAYOUT_COLUMN_COUNTS[typed])
     invalid('column count does not match layout');
   return { ...node(data), layout: typed, columns };
 }
