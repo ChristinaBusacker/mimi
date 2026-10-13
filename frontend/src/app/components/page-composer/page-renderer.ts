@@ -18,6 +18,8 @@ import {
 } from '@angular/core';
 import MarkdownIt from 'markdown-it';
 import { Icon } from '../icon/icon';
+import type { Asset } from '@shared/assets/asset';
+import { PageInlineMarkdown } from './page-inline-markdown';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 
@@ -25,7 +27,7 @@ export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
 export type CanvasMoveKind = 'section' | 'row' | 'block';
 export type CanvasInsertKind = 'section' | 'row' | 'block';
 export interface CanvasSelection { kind: CanvasKind; id: string; }
-export interface CanvasInsert { kind: CanvasInsertKind; parentId: string; }
+export interface CanvasInsert { kind: CanvasInsertKind; parentId: string; index: number; }
 export interface CanvasMove {
   kind: CanvasMoveKind;
   id: string;
@@ -60,7 +62,7 @@ markdown.renderer.rules['image'] = (tokens, index): string => {
 @Component({
   selector: 'app-page-renderer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgStyle, AsyncPipe, I18nPipe, Icon],
+  imports: [NgStyle, AsyncPipe, I18nPipe, Icon, PageInlineMarkdown],
   templateUrl: './page-renderer.html',
   styleUrl: './page-renderer.scss',
 })
@@ -68,6 +70,7 @@ export class PageRenderer {
   private readonly host = inject(ElementRef<HTMLElement>);
 
   readonly document = input.required<PageDocument>();
+  readonly assets = input<readonly Asset[]>([]);
   readonly locale = input.required<PageLocale>();
   readonly editable = input(false);
   readonly selectedId = input<string | null>(null);
@@ -75,6 +78,7 @@ export class PageRenderer {
   readonly itemMove = output<CanvasMove>();
   readonly insert = output<CanvasInsert>();
   readonly textEdit = output<string>();
+  readonly imageEdit = output<string>();
   readonly inlineTextId = input<string | null>(null);
   readonly inlineTextChange = output<{ id: string; markdown: string }>();
   readonly nodeAction = output<{ kind: 'section' | 'row' | 'block'; id: string; action: 'duplicate' | 'remove' }>();
@@ -102,14 +106,23 @@ export class PageRenderer {
     this.nodeAction.emit({ kind, id, action });
   }
 
-  protected changeInline(event: Event, id: string): void {
-    const target = event.target;
-    if (target instanceof HTMLTextAreaElement) this.inlineTextChange.emit({ id, markdown: target.value });
+  protected closeInline(id: string): void {
+    this.textEdit.emit(id);
   }
 
-  protected requestInsert(event: Event, kind: CanvasInsertKind, parentId: string): void {
+  protected changeInline(id: string, markdown: string): void {
+    this.inlineTextChange.emit({ id, markdown });
+  }
+
+  protected editImage(event: Event, id: string): void {
+    if (!this.editable()) return;
     event.stopPropagation();
-    this.insert.emit({ kind, parentId });
+    this.imageEdit.emit(id);
+  }
+
+  protected requestInsert(event: Event, kind: CanvasInsertKind, parentId: string, index: number): void {
+    event.stopPropagation();
+    this.insert.emit({ kind, parentId, index });
   }
 
   protected startPointer(event: PointerEvent, kind: CanvasMoveKind, id: string): void {

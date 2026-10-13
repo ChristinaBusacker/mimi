@@ -11,6 +11,8 @@ import type {
 } from '@shared/content/page-document';
 import { PAGE_ROW_LAYOUTS, PAGE_ROW_OPTIONS } from '@shared/content/page-layouts';
 import { AsyncPipe } from '@angular/common';
+import { ElementRef, afterNextRender, viewChild } from '@angular/core';
+import { AssetLibrary } from '../asset-library/asset-library';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -29,7 +31,7 @@ import { PageRenderer } from './page-renderer';
 import type { CanvasInsert, CanvasMove, CanvasSelection } from './page-renderer';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import type { PageStyleValues } from '@shared/content/page-document';
-import { movePageItem } from './page-editor-operations';
+import { insertPageItem, movePageItem } from './page-editor-operations';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
@@ -66,7 +68,7 @@ const makeBlock = (kind: BlockKind): PageBlock => {
   selector: 'app-page-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, I18nPipe, Icon, MarkdownEditor, PageRenderer, ReactiveFormsModule],
+  imports: [AsyncPipe, I18nPipe, Icon, MarkdownEditor, PageRenderer, ReactiveFormsModule, AssetLibrary],
   templateUrl: './page-editor.html',
   styleUrl: './page-editor.scss',
 })
@@ -79,6 +81,147 @@ export class PageEditor {
     return id ? `url("/api/assets/${encodeURIComponent(id)}/image/large/fallback")` : 'none';
   });
   readonly documentChange = output<PageDocument>();
+
+  private readonly workspace = viewChild<ElementRef<HTMLElement>>('workspace');
+  private readonly imageLibrary = viewChild(AssetLibrary);
+  private readonly defaultInspectorWidth = 380;
+  private resizing: number | null = null;
+  protected readonly inspectorWidth = signal(this.defaultInspectorWidth);
+  protected readonly inspectorOpen = signal(true);
+  protected readonly mediaTarget = signal<string | null>(null);
+  protected readonly breadcrumbs = computed((): Selection[] => {
+    const selected = this.selected();
+    const page = this.document();
+    const path: Selection[] = [{ kind: 'page', id: page.id }];
+    if (!selected || selected.kind === 'page') return path;
+    for (const section of page.sections) {
+      const sectionPath: Selection[] = [...path, { kind: 'section', id: section.id }];
+      if (selected.kind === 'section' && selected.id === section.id) return sectionPath;
+      for (const row of section.rows) {
+        const rowPath: Selection[] = [...sectionPath, { kind: 'row', id: row.id }];
+        if (selected.kind === 'row' && selected.id === row.id) return rowPath;
+        for (const column of row.columns) {
+          const columnPath: Selection[] = [...rowPath, { kind: 'column', id: column.id }];
+          if (selected.kind === 'column' && selected.id === column.id) return columnPath;
+          if (selected.kind === 'block' && column.blocks.some((block) => block.id === selected.id))
+            return [...columnPath, selected];
+        }
+      }
+    }
+    return path;
+  });
+
+  protected pathLabel(selection: Selection): string {
+    const page = this.document();
+    switch (selection.kind) {
+      case 'page': return 'page.editor.title';
+      case 'section': return 'page.editor.section';
+      case 'row': return 'page.editor.row';
+      case 'column': return 'page.editor.column';
+      case 'block': {
+        const block = this.find(page, selection);
+        return block && 'type' in block ? this.blockName(block) : 'page.editor.content';
+      }
+    }
+  }
+
+  protected pathIndex(selection: Selection): number | null {
+    if (selection.kind === 'page' || selection.kind === 'block') return null;
+    const page = this.document();
+    if (selection.kind === 'section') return page.sections.findIndex((item) => item.id === selection.id) + 1;
+    for (const section of page.sections) {
+      if (selection.kind === 'row') {
+        const index = section.rows.findIndex((item) => item.id === selection.id);
+        if (index >= 0) return index + 1;
+      }
+      for (const row of section.rows) {
+        const index = row.columns.findIndex((item) => item.id === selection.id);
+        if (selection.kind === 'column' && index >= 0) return index + 1;
+      }
+    }
+    return null;
+  }
+
+  protected beginResize(event: PointerEvent): void {
+    if (!event.isPrimary || event.button !== 0) return;
+    const handle = event.currentTarget;
+    if (!(handle instanceof HTMLElement)) return;
+    event.preventDefault();
+    handle.setPointerCapture(event.pointerId);
+    this.resizing = event.pointerId;
+  }
+
+  protected resize(event: PointerEvent): void {
+    if (this.resizing !== event.pointerId) return;
+    const bounds = this.workspace()?.nativeElement.getBoundingClientRect();
+    if (!bounds) return;
+    this.inspectorWidth.set(this.clampInspector(bounds.right - event.clientX));
+  }
+
+  protected finishResize(event: PointerEvent): void {
+    if (this.resizing !== event.pointerId) return;
+    this.resizing = null;
+    const handle = event.currentTarget;
+    if (handle instanceof HTMLElement && handle.hasPointerCapture(event.pointerId))
+      handle.releasePointerCapture(event.pointerId);
+    this.persistInspector();
+  }
+
+  protected resizeKeyboard(event: KeyboardEvent): void {
+    const delta = event.shiftKey ? 40 : 16;
+    switch (event.key) {
+      case 'ArrowLeft': this.inspectorWidth.set(this.clampInspector(this.inspectorWidth() + delta)); break;
+      case 'ArrowRight': this.inspectorWidth.set(this.clampInspector(this.inspectorWidth() - delta)); break;
+      case 'Home': this.inspectorWidth.set(300); break;
+      case 'End': this.inspectorWidth.set(this.clampInspector(800)); break;
+      default: return;
+    }
+    event.preventDefault();
+    this.persistInspector();
+  }
+
+  protected resetInspector(): void {
+    this.inspectorWidth.set(this.clampInspector(this.defaultInspectorWidth));
+    this.persistInspector();
+  }
+
+  private clampInspector(width: number): number {
+    const available = this.workspace()?.nativeElement.getBoundingClientRect().width ?? 1400;
+    const outline = this.outlineOpen() ? 215 : 0;
+    return Math.round(Math.max(300, Math.min(800, available - outline - 320, width)));
+  }
+
+  private persistInspector(): void {
+    try { localStorage.setItem('mimi.pageComposer.inspectorWidth', String(this.inspectorWidth())); }
+    catch { /* Storage is optional. */ }
+  }
+
+  protected selectedImageId(): string | null {
+    const block = this.selectedBlock();
+    return block?.type === 'image' ? block.assetId : null;
+  }
+
+  protected async openImageLibrary(id: string): Promise<void> {
+    const node = this.find(this.document(), { kind: 'block', id });
+    if (!node || !('type' in node) || node.type !== 'image') return;
+    this.mediaTarget.set(id);
+    this.inspect('block', id);
+    await this.imageLibrary()?.open();
+  }
+
+  protected chooseAsset(asset: Asset): void {
+    const id = this.mediaTarget();
+    this.mediaTarget.set(null);
+    if (!id) return;
+    this.changeNode({ kind: 'block', id }, (node) => {
+      if ('type' in node && node.type === 'image') {
+        node.assetId = asset.id;
+        if (!node.alt.de) node.alt.de = asset.descriptionDe ?? '';
+        if (!node.alt.en) node.alt.en = asset.descriptionEn ?? '';
+      }
+    });
+  }
+
 
   protected readonly layouts = PAGE_ROW_OPTIONS;
   protected readonly locale = signal<'de' | 'en'>('de');
@@ -114,6 +257,13 @@ export class PageEditor {
   });
 
   constructor() {
+    afterNextRender(() => {
+      try {
+        const stored = Number(localStorage.getItem('mimi.pageComposer.inspectorWidth'));
+        if (Number.isFinite(stored) && stored >= 300)
+          this.inspectorWidth.set(this.clampInspector(stored));
+      } catch { /* Browser storage may be unavailable. */ }
+    });
     effect(() => {
       const value = this.active();
       const markdown = value && 'type' in value && value.type === 'text'
@@ -173,7 +323,7 @@ export class PageEditor {
 
   protected canvasInsert(target: CanvasInsert): void {
     if (target.kind === 'section') {
-      this.addSection();
+      this.addSection(target.index);
       return;
     }
     this.addTarget.set(target);
@@ -196,18 +346,17 @@ export class PageEditor {
     });
   }
 
-  protected insertLayout(parentId: string, layout: RowLayout): void {
+  protected insertLayout(parentId: string, layout: RowLayout, index: number): void {
     const row = makeRow(layout);
-    this.change((next) => {
-      const section = next.sections.find((item) => item.id === parentId);
-      if (section) section.rows.push(row);
-    });
+    const next = insertPageItem(this.document(), 'row', parentId, row, index);
+    if (!next) return;
+    this.commit(next);
     this.addTarget.set(null);
     this.inspect('row', row.id);
   }
 
-  protected insertBlock(parentId: string, kind: BlockKind): void {
-    this.addBlock(parentId, kind);
+  protected insertBlock(parentId: string, kind: BlockKind, index: number): void {
+    this.addBlock(parentId, kind, index);
     this.addTarget.set(null);
     this.inlineTextId.set(null);
   }
@@ -292,18 +441,20 @@ export class PageEditor {
       if (node.styles.responsive) delete node.styles.responsive[breakpoint];
     });
   }
-  protected addSection(): void {
-    const next = structuredClone(this.document());
+  protected addSection(index = this.document().sections.length): void {
     const section = makeSection();
-    next.sections.push(section);
+    const next = insertPageItem(this.document(), 'section', this.document().id, section, index);
+    if (!next) return;
     this.commit(next);
     this.inspect('section', section.id);
   }
-  protected addBlock(columnId: string, type: BlockKind): void {
+  protected addBlock(columnId: string, type: BlockKind, index?: number): void {
     const block = makeBlock(type);
-    this.changeNode({ kind: 'column', id: columnId }, (value) => {
-      if ('blocks' in value) value.blocks.push(block);
-    });
+    const column = this.find(this.document(), { kind: 'column', id: columnId });
+    if (!column || !('blocks' in column)) return;
+    const next = insertPageItem(this.document(), 'block', columnId, block, index ?? column.blocks.length);
+    if (!next) return;
+    this.commit(next);
     this.inspect('block', block.id);
   }
   protected addGalleryImage(event: Event): void {

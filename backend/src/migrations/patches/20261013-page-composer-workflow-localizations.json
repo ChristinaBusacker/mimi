@@ -1,0 +1,24 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.breadcrumbs",
+      "de": "Ausgewähltes Element",
+      "en": "Selected element"
+    },
+    {
+      "key": "page.editor.resizeInspector",
+      "de": "Breite des Einstellungsbereichs ändern",
+      "en": "Resize settings panel"
+    },
+    {
+      "key": "page.editor.resetWidth",
+      "de": "Standardbreite wiederherstellen",
+      "en": "Restore default width"
+    },
+    {
+      "key": "page.editor.toggleInspector",
+      "de": "Einstellungsbereich ein- oder ausblenden",
+      "en": "Show or hide settings panel"
+    }
+  ]
+}

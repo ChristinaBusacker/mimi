@@ -113,3 +113,23 @@
   border-radius: 9px; color: #edcbe1; font-size: .81rem; background: rgb(255 255 255 / 3%); }
 .page-document__empty app-icon { width: 20px; height: 20px; }
 @media (pointer: coarse) { .page-document__controls button { width: 35px; height: 35px; } }
+
+
+/* Contextual insertion without permanently expanding the public page layout. */
+.page-document__insert-between {
+  position: relative; isolation: isolate; z-index: 6; display: flex;
+  align-items: center; justify-content: center; width: 100%; height: 24px;
+  margin-block: -12px; padding: 0; background: transparent;
+  border: 0; color: #fff3fc; cursor: pointer; opacity: 0;
+}
+.page-document__insert-between::before { content: ''; position: absolute; z-index: -1;
+  height: 2px; inset-inline: 0; top: 11px; background: #efb6d5; }
+.page-document__insert-between app-icon { box-sizing: content-box; width: 17px; height: 17px;
+  padding: 5px; border-radius: 50%; background: #825477; }
+.page-document__insert-between:hover,
+.page-document__insert-between:focus-visible { opacity: 1; outline: none; }
+.page-document__empty--action { cursor: pointer; width: 100%; font: inherit; }
+.page-document__empty--action:hover { background: rgb(251 189 225 / 14%); }
+.page-document__node--editable .page-document__image { cursor: pointer; }
+.page-document__inline-placeholder { min-height: 120px; border: 1px dashed #dfadd1; }
+@media (pointer: coarse) { .page-document__insert-between { opacity: .55; } }

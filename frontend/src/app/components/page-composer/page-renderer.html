@@ -4,6 +4,10 @@
   [attr.data-editor-id]="editable() ? document().id : null"
   (click)="choose($event, 'page', document().id)">
   @for (section of document().sections; track section.id; let sectionIndex = $index) {
+    @if (editable()) {
+      <button type="button" class="page-document__insert-between" (click)="requestInsert($event, 'section', document().id, sectionIndex)"
+        [attr.aria-label]="'page.editor.addSection' | i18n | async"><app-icon name="plus" /></button>
+    }
     <section class="page-document__section page-document__node" [class]="surface(section.styles)"
       [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === section.id"
       [class.is-drop-before]="dropAt(section.id, 'before')" [class.is-drop-after]="dropAt(section.id, 'after')"
@@ -23,6 +27,10 @@
       }
       <div class="page-document__rows">
         @for (row of section.rows; track row.id; let rowIndex = $index) {
+          @if (editable()) {
+            <button type="button" class="page-document__insert-between" (click)="requestInsert($event, 'row', section.id, rowIndex)"
+              [attr.aria-label]="'page.editor.addRow' | i18n | async"><app-icon name="plus" /></button>
+          }
           <div class="page-document__row page-document__node" [class]="surface(row.styles)"
             [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === row.id"
             [class.is-drop-before]="dropAt(row.id, 'before')" [class.is-drop-after]="dropAt(row.id, 'after')"
@@ -54,6 +62,10 @@
                   </div>
                 }
                 @for (block of column.blocks; track block.id; let blockIndex = $index) {
+                  @if (editable()) {
+                    <button type="button" class="page-document__insert-between" (click)="requestInsert($event, 'block', column.id, blockIndex)"
+                      [attr.aria-label]="'page.editor.addBlock' | i18n | async"><app-icon name="plus" /></button>
+                  }
                   <div class="page-document__block page-document__node" [class]="surface(block.styles)"
                     [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === block.id"
                     [class.is-drop-before]="dropAt(block.id, 'before')" [class.is-drop-after]="dropAt(block.id, 'after')"
@@ -77,9 +89,13 @@
                     @switch (block.type) {
                       @case ('text') {
                         @if (editable() && inlineTextId() === block.id) {
-                          <textarea class="page-document__inline-text" [value]="block.markdown[locale()]"
-                            (click)="$event.stopPropagation()" (keydown.escape)="editText($event, block.id)" (input)="changeInline($event, block.id)"
-                            [attr.aria-label]="'page.editor.content' | i18n | async"></textarea>
+                          @defer (on immediate) {
+                            <app-page-inline-markdown [markdown]="block.markdown[locale()]" [assets]="assets()"
+                              (markdownChange)="changeInline(block.id, $event)"
+                              (closeEditor)="closeInline(block.id)" />
+                          } @placeholder {
+                            <div class="page-document__inline-placeholder"></div>
+                          }
                         } @else {
                           @if (editable() && !block.markdown[locale()] && !block.markdown.de) {
                             <p class="page-document__empty" (dblclick)="editText($event, block.id)">{{ 'page.editor.empty' | i18n | async }}</p>
@@ -91,9 +107,10 @@
                       }
                       @case ('image') {
                         @if (block.assetId) {
-                          <img class="page-document__image" [src]="image(block.assetId)" [alt]="block.alt[locale()] || block.alt.de" loading="lazy" />
+                          <img class="page-document__image" [src]="image(block.assetId)" [alt]="block.alt[locale()] || block.alt.de" loading="lazy"
+                            (click)="editImage($event, block.id)" />
                         } @else if (editable()) {
-                          <div class="page-document__empty"><app-icon name="image" /> {{ 'page.editor.chooseImage' | i18n | async }}</div>
+                          <button type="button" class="page-document__empty page-document__empty--action" (click)="editImage($event, block.id)"><app-icon name="image" /> {{ 'page.editor.chooseImage' | i18n | async }}</button>
                         }
                       }
                       @case ('gallery') {
@@ -114,7 +131,7 @@
                 }
                 @if (editable()) {
                   <button type="button" class="page-document__add page-document__add--block"
-                    (click)="requestInsert($event, 'block', column.id)"
+                    (click)="requestInsert($event, 'block', column.id, column.blocks.length)"
                     [attr.aria-label]="'page.editor.addBlock' | i18n | async"><app-icon name="plus" /></button>
                 }
               </div>
@@ -123,7 +140,7 @@
         }
         @if (editable()) {
           <button type="button" class="page-document__add page-document__add--row"
-            (click)="requestInsert($event, 'row', section.id)">
+            (click)="requestInsert($event, 'row', section.id, section.rows.length)">
             <app-icon name="plus" /> {{ 'page.editor.addRow' | i18n | async }}
           </button>
         }
@@ -132,7 +149,7 @@
   }
   @if (editable()) {
     <button type="button" class="page-document__add page-document__add--section"
-      (click)="requestInsert($event, 'section', document().id)">
+      (click)="requestInsert($event, 'section', document().id, document().sections.length)">
       <app-icon name="plus" /> {{ 'page.editor.addSection' | i18n | async }}
     </button>
   }

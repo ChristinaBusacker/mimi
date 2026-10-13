@@ -1,5 +1,5 @@
 import type { PageDocument } from '@shared/content/page-document';
-import { movePageItem } from './page-editor-operations';
+import { insertPageItem, movePageItem } from './page-editor-operations';
 
 function document(): PageDocument {
   return {
@@ -52,4 +52,29 @@ describe('Page composer moves', () => {
     expect(movePageItem(document(), 'block', 'b2', 'c1', 2)).toBeNull();
   });
 
+});
+
+
+describe('Page composer positions', () => {
+  it('inserts a new section before an existing section', () => {
+    const source = document();
+    const updated = insertPageItem(source, 'section', 'page', { id: 'new', styles: {}, rows: [] }, 1);
+    expect(updated?.sections.map((item) => item.id)).toEqual(['s1', 'new', 's2']);
+    expect(source.sections).toHaveLength(2);
+  });
+  it('inserts a row in the requested section at the requested index', () => {
+    const updated = insertPageItem(document(), 'row', 's1', { id: 'r2', styles: {}, layout: '1', columns: [] }, 0);
+    expect(updated?.sections[0].rows.map((item) => item.id)).toEqual(['r2', 'r1']);
+  });
+  it('inserts a block between existing blocks and preserves content', () => {
+    const updated = insertPageItem(document(), 'block', 'c1',
+      { id: 'middle', type: 'spacer', height: 16, styles: {} }, 1);
+    expect(updated?.sections[0].rows[0].columns[0].blocks.map((item) => item.id))
+      .toEqual(['b1', 'middle', 'b2']);
+  });
+  it('rejects misplaced insertions instead of appending', () => {
+    const block = { id: 'new', type: 'spacer' as const, height: 16, styles: {} };
+    expect(insertPageItem(document(), 'block', 'c1', block, 100)).toBeNull();
+    expect(insertPageItem(document(), 'block', 'unknown', block, 0)).toBeNull();
+  });
 });

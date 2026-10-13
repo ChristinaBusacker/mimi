@@ -184,3 +184,58 @@
   .composer__toolbar .composer__preview-toggle { font-size: 0; gap: 0; }
 }
 .composer__inspector-actions { display: flex; gap: 4px; align-items: center; }
+
+
+/* Editor workspace controls. These values are UI state, never document content. */
+.composer__workspace:not(.composer__workspace--preview):not(.composer__workspace--inspector-hidden) {
+  grid-template-columns: minmax(0, 1fr) 10px minmax(0, var(--composer-inspector-width, 380px));
+}
+.composer__workspace--outline:not(.composer__workspace--preview):not(.composer__workspace--inspector-hidden) {
+  grid-template-columns: 215px minmax(0, 1fr) 10px minmax(0, var(--composer-inspector-width, 380px));
+}
+.composer__workspace--inspector-hidden:not(.composer__workspace--preview) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.composer__workspace--outline.composer__workspace--inspector-hidden:not(.composer__workspace--preview) {
+  grid-template-columns: 215px minmax(0, 1fr);
+}
+.composer__splitter {
+  display: grid; place-items: center; position: relative; z-index: 5;
+  cursor: col-resize; touch-action: none; background: #38283f;
+  border-inline: 1px solid rgb(255 255 255 / 9%);
+}
+.composer__splitter span { width: 4px; height: 46px; border-radius: 5px; background: #957097; }
+.composer__splitter:hover, .composer__splitter:focus-visible { background: #72496e; outline: none; }
+.composer__splitter:hover span, .composer__splitter:focus-visible span { background: #ffd4eb; }
+.composer__canvas-shell { overflow-x: auto; }
+.composer__device:not(.composer__device--tablet):not(.composer__device--mobile) { min-width: 980px; }
+.composer__device--tablet { width: 768px; max-width: none; }
+.composer__device--mobile { width: 390px; max-width: none; }
+.composer__breadcrumbs {
+  display: flex; gap: 3px; align-items: center; overflow-x: auto; padding: 9px 16px;
+  border-block: 1px solid rgb(255 255 255 / 10%); background: #2b2032;
+  white-space: nowrap;
+}
+.composer__breadcrumbs button { border: 0; padding: 5px 9px; border-radius: 7px;
+  background: transparent; color: #eac9df; font-size: .78rem; }
+.composer__breadcrumbs button:hover, .composer__breadcrumbs button[aria-current] { background: #65405e; }
+.composer__breadcrumbs app-icon { width: 13px; color: #ad86a6; }
+.composer__inspector { min-width: 0; }
+.composer__reset-width { border: 0; background: transparent; color: #f0c2db; cursor: pointer; }
+.composer__asset-preview {
+  display: grid; justify-items: center; gap: 10px; min-height: 120px;
+  padding: 14px; border: 1px dashed #ae80a9; border-radius: 9px;
+  background: #372b3f; color: #f4cde2; cursor: pointer; width: 100%;
+}
+.composer__asset-preview img { width: min(100%, 220px); max-height: 140px; object-fit: contain; }
+.composer__asset-preview app-icon { width: 25px; height: 25px; }
+@media (max-width: 900px) {
+  .composer__workspace:not(.composer__workspace--preview):not(.composer__workspace--inspector-hidden),
+  .composer__workspace--outline:not(.composer__workspace--preview):not(.composer__workspace--inspector-hidden),
+  .composer__workspace--inspector-hidden:not(.composer__workspace--preview),
+  .composer__workspace--outline.composer__workspace--inspector-hidden:not(.composer__workspace--preview) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .composer__splitter { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .composer__splitter, .composer__device { transition: none; } }

@@ -42,3 +42,55 @@ export function movePageItem(
   destination.children.splice(insertAt, 0, item);
   return next;
 }
+
+
+/** Insert at the selected visual position; never silently append elsewhere. */
+export function insertPageItem(
+  document: PageDocument,
+  kind: 'section',
+  parentId: string,
+  item: PageSection,
+  position: number,
+): PageDocument | null;
+export function insertPageItem(
+  document: PageDocument,
+  kind: 'row',
+  parentId: string,
+  item: PageRow,
+  position: number,
+): PageDocument | null;
+export function insertPageItem(
+  document: PageDocument,
+  kind: 'block',
+  parentId: string,
+  item: PageBlock,
+  position: number,
+): PageDocument | null;
+export function insertPageItem(
+  document: PageDocument,
+  kind: MoveKind,
+  parentId: string,
+  item: PageSection | PageRow | PageBlock,
+  position: number,
+): PageDocument | null {
+  if (!Number.isInteger(position) || position < 0) return null;
+  const next = structuredClone(document);
+  const insert = <T extends { id: string }>(list: T[], value: T, limit: number): boolean => {
+    if (position > list.length || list.length >= limit) return false;
+    list.splice(position, 0, value);
+    return true;
+  };
+  if (kind === 'section' && parentId === next.id)
+    return insert(next.sections, item as PageSection, 30) ? next : null;
+  for (const section of next.sections) {
+    if (kind === 'row' && section.id === parentId)
+      return insert(section.rows, item as PageRow, 30) ? next : null;
+    if (kind === 'block') {
+      for (const row of section.rows) {
+        const column = row.columns.find((candidate) => candidate.id === parentId);
+        if (column) return insert(column.blocks, item as PageBlock, 36) ? next : null;
+      }
+    }
+  }
+  return null;
+}
