@@ -1,19 +1,23 @@
+@use './composer-variables';
 :host { display: block; min-width: 0; container: page-composer / inline-size; }
 .page-document { display: grid; gap: clamp(26px, 4vw, 64px); min-width: 0; color: inherit; }
 .page-document__rows, .page-document__column { display: grid; align-content: start; min-width: 0; gap: var(--pc-gap, 16px); }
 .page-document__node {
+  background-image: var(--pc-design-image, none);
+  background-position: var(--pc-design-position, center);
+  background-size: cover;
   padding: var(--pc-padding, 0px);
   border-radius: var(--pc-radius, 0px);
   text-align: var(--pc-align, left);
   color: var(--pc-text-color, inherit);
-  background-color: var(--pc-background-color);
+  background-color: var(--pc-design-color, var(--pc-background-color));
 }
 .page-document__row { display: grid; min-width: 0; align-items: start; gap: var(--pc-gap, 16px); }
 .page-document__section, .page-document__block { min-width: 0; }
 .page-surface--glass { background: rgb(24 16 34 / 52%); border: 1px solid rgb(255 255 255 / 15%); backdrop-filter: blur(14px); }
 .page-surface--solid { background: #282034; }
 .page-surface--accent { background: rgb(218 139 185 / 16%); border: 1px solid rgb(236 172 209 / 30%); }
-.page-document__node { background-color: var(--pc-background-color); }
+.page-document__node { background-color: var(--pc-design-color, var(--pc-background-color)); }
 .page-document__markdown { overflow-wrap: anywhere; line-height: 1.75; }
 .page-document__markdown :first-child { margin-top: 0; }
 .page-document__markdown :last-child { margin-bottom: 0; }

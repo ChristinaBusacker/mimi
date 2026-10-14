@@ -188,8 +188,12 @@
       <div
         class="composer__canvas"
         [class.composer__canvas--preview]="preview()"
-        [style.--composer-cover]="coverUrl()"
       >
+        <div class="booklet-world composer__booklet-world" aria-hidden="true">
+          @if (coverAssetId(); as cover) {
+            <img class="booklet-world__artwork" [src]="'/api/assets/' + cover + '/image/large/fallback'" alt="" />
+          }
+        </div>
         <div
           class="composer__device"
           [class.composer__device--tablet]="device() === 'tablet'"
@@ -463,80 +467,71 @@
                 {{ 'page.editor.mobile' | i18n | async }}
               </button>
             </div>
-            <label>{{ 'page.editor.background' | i18n | async }}</label>
-            <select
-              [value]="styleValue(node.styles, 'background')"
-              (change)="responsiveStyle('background', $event)"
-            >
-              @if (breakpoint() !== 'desktop') {
-                <option value="">{{ 'page.editor.inherit' | i18n | async }}</option>
-              }
-              <option value="none">{{ 'page.editor.surface.none' | i18n | async }}</option>
-              <option value="glass">{{ 'page.editor.surface.glass' | i18n | async }}</option>
-              <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
-              <option value="accent">{{ 'page.editor.surface.accent' | i18n | async }}</option>
-            </select>
-            <label>{{ 'page.editor.padding' | i18n | async }}</label>
-            <input
-              type="number"
-              min="0"
-              max="96"
-              [value]="styleValue(node.styles, 'padding')"
-              [placeholder]="
-                breakpoint() !== 'desktop' ? (('page.editor.inherit' | i18n | async) ?? '') : ''
-              "
-              (change)="responsiveStyle('padding', $event)"
-            />
-            <label>{{ 'page.editor.gap' | i18n | async }}</label>
-            <input
-              type="number"
-              min="0"
-              max="64"
-              [value]="styleValue(node.styles, 'gap')"
-              [placeholder]="
-                breakpoint() !== 'desktop' ? (('page.editor.inherit' | i18n | async) ?? '') : ''
-              "
-              (change)="responsiveStyle('gap', $event)"
-            />
-            <label>{{ 'page.editor.radius' | i18n | async }}</label>
-            <input
-              type="number"
-              min="0"
-              max="48"
-              [value]="styleValue(node.styles, 'radius')"
-              [placeholder]="
-                breakpoint() !== 'desktop' ? (('page.editor.inherit' | i18n | async) ?? '') : ''
-              "
-              (change)="responsiveStyle('radius', $event)"
-            />
-            <label>{{ 'page.editor.align' | i18n | async }}</label>
-            <select
-              [value]="styleValue(node.styles, 'align')"
-              (change)="responsiveStyle('align', $event)"
-            >
-              @if (breakpoint() !== 'desktop') {
-                <option value="">{{ 'page.editor.inherit' | i18n | async }}</option>
-              }
-              <option value="left">{{ 'page.editor.align.left' | i18n | async }}</option>
-              <option value="center">{{ 'page.editor.align.center' | i18n | async }}</option>
-              <option value="right">{{ 'page.editor.align.right' | i18n | async }}</option>
-            </select>
-            <label>{{ 'page.editor.backgroundColor' | i18n | async }}</label>
-            <input
-              type="text"
-              pattern="#[0-9a-fA-F]{6}"
-              placeholder="#aabbcc"
-              [value]="styleValue(node.styles, 'backgroundColor')"
-              (change)="responsiveStyle('backgroundColor', $event)"
-            />
-            <label>{{ 'page.editor.textColor' | i18n | async }}</label>
-            <input
-              type="text"
-              pattern="#[0-9a-fA-F]{6}"
-              placeholder="#ffffff"
-              [value]="styleValue(node.styles, 'textColor')"
-              (change)="responsiveStyle('textColor', $event)"
-            />
+            @if (selected()?.kind === 'section' || selected()?.kind === 'column') {
+              <p class="composer__hint">{{ 'page.editor.design.global' | i18n | async }}</p>
+              <div class="composer__design-group">
+                <label>{{ 'page.editor.design.spacing' | i18n | async }}</label>
+                <select [value]="node.styles.spacing ?? ''" (change)="setSpacing($event)">
+                  @if (!node.styles.spacing) { <option value="">{{ 'page.editor.design.existing' | i18n | async }}</option> }
+                  <option value="small">{{ 'page.editor.design.small' | i18n | async }}</option>
+                  <option value="standard">{{ 'page.editor.design.standard' | i18n | async }}</option>
+                  <option value="large">{{ 'page.editor.design.large' | i18n | async }}</option>
+                </select>
+              </div>
+              <div class="composer__design-group">
+                <label>{{ 'page.editor.design.backgroundType' | i18n | async }}</label>
+                <select [value]="node.styles.designBackground?.kind ?? (node.styles.background !== 'none' && node.styles.background ? 'legacy' : 'none')" (change)="setBackgroundMode($event)">
+                  <option value="none">{{ 'page.editor.design.none' | i18n | async }}</option>
+                  @if (!node.styles.designBackground && node.styles.background && node.styles.background !== 'none') {
+                    <option value="legacy">{{ 'page.editor.design.existing' | i18n | async }}</option>
+                  }
+                  <option value="color">{{ 'page.editor.design.color' | i18n | async }}</option>
+                  <option value="gradient">{{ 'page.editor.design.gradient' | i18n | async }}</option>
+                  <option value="image">{{ 'page.editor.design.image' | i18n | async }}</option>
+                </select>
+                @switch (node.styles.designBackground?.kind) {
+                  @case ('color') {
+                    <label>{{ 'page.editor.design.color' | i18n | async }}</label>
+                    <input type="color" [value]="backgroundValue('color')" (input)="changeBackgroundColor('color', $event)" />
+                  }
+                  @case ('gradient') {
+                    <div class="composer__design-colors">
+                      <label>{{ 'page.editor.design.from' | i18n | async }}
+                        <input type="color" [value]="backgroundValue('from')" (input)="changeBackgroundColor('from', $event)" />
+                      </label>
+                      <label>{{ 'page.editor.design.to' | i18n | async }}
+                        <input type="color" [value]="backgroundValue('to')" (input)="changeBackgroundColor('to', $event)" />
+                      </label>
+                    </div>
+                    <label>{{ 'page.editor.design.angle' | i18n | async }}</label>
+                    <select [value]="backgroundValue('angle')" (change)="setGradientAngle($event)">
+                      <option value="0">0°</option><option value="45">45°</option>
+                      <option value="90">90°</option><option value="135">135°</option><option value="180">180°</option>
+                    </select>
+                  }
+                  @case ('image') {
+                    <button class="composer__background-image" type="button" (click)="openBackgroundLibrary()">
+                      @if (backgroundAssetId(); as id) { <img [src]="imageUrl(id)" alt="" /> }
+                      <span>{{ 'page.editor.chooseImage' | i18n | async }}</span>
+                    </button>
+                    <label>{{ 'page.editor.design.position' | i18n | async }}</label>
+                    <select [value]="backgroundValue('position')" (change)="changeBackgroundImage('position', $event)">
+                      <option value="center">{{ 'page.editor.design.position.middle' | i18n | async }}</option>
+                      <option value="top">{{ 'page.editor.design.position.top' | i18n | async }}</option>
+                      <option value="bottom">{{ 'page.editor.design.position.bottom' | i18n | async }}</option>
+                    </select>
+                    <label>{{ 'page.editor.design.overlay' | i18n | async }}</label>
+                    <select [value]="backgroundValue('overlay')" (change)="changeBackgroundImage('overlay', $event)">
+                      <option value="none">{{ 'page.editor.design.none' | i18n | async }}</option>
+                      <option value="soft">{{ 'page.editor.design.soft' | i18n | async }}</option>
+                      <option value="strong">{{ 'page.editor.design.strong' | i18n | async }}</option>
+                    </select>
+                  }
+                }
+              </div>
+            } @else {
+              <p class="composer__hint">{{ 'page.editor.design.managed' | i18n | async }}</p>
+            }
             @if (breakpoint() !== 'desktop') {
               <button type="button" class="composer__reset" (click)="clearBreakpoint()">
                 {{ 'page.editor.resetBreakpoint' | i18n | async }}
@@ -559,9 +554,10 @@
   </div>
   <app-asset-library
     type="image"
+    [decorative]="backgroundTarget() !== null"
     [assets]="assets()"
-    [selectedId]="selectedImageId()"
+    [selectedId]="backgroundTarget() ? backgroundAssetId() : selectedImageId()"
     (assetSelected)="chooseAsset($event)"
-    (closed)="mediaTarget.set(null)"
+    (closed)="mediaTarget.set(null); backgroundTarget.set(null)"
   />
 </section>

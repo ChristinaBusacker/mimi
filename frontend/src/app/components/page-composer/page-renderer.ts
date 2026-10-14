@@ -1,4 +1,5 @@
 import type {
+  ComposerBackground,
   PageDocument,
   PageLocale,
   PageStyles,
@@ -213,6 +214,12 @@ export class PageRenderer {
 
   protected styleVars(styles: PageStyles): Record<string, string> {
     const result: Record<string, string> = {};
+    if (styles.spacing) result['--pc-padding'] = `var(--composer-section-${styles.spacing})`;
+    // Always reset these per node: CSS variables otherwise leak into descendants.
+    result['--pc-design-image'] = styles.designBackground
+      ? this.backgroundImage(styles.designBackground) : 'none';
+    result['--pc-design-position'] = styles.designBackground?.kind === 'image'
+      ? styles.designBackground.position : 'center';
     const bg = (value: PageStyleValues): string => {
       if (value.backgroundColor) return value.backgroundColor;
       switch (value.background) {
@@ -243,6 +250,21 @@ export class PageRenderer {
       result[`--pc-tablet-${key}`] = css(styles.responsive?.tablet ?? {}, key) ?? `var(--pc-${key})`;
       result[`--pc-mobile-${key}`] = css(styles.responsive?.mobile ?? {}, key) ?? `var(--pc-tablet-${key})`;
     }
+    if (styles.spacing) {
+      // A semantic spacing preset overrides old numeric values at every breakpoint.
+      for (const key of ['--pc-padding', '--pc-tablet-padding', '--pc-mobile-padding'])
+        result[key] = `var(--composer-section-${styles.spacing})`;
+    }
     return result;
+  }
+
+  private backgroundImage(value: ComposerBackground): string {
+    if (value.kind === 'color') return 'none';
+    if (value.kind === 'gradient')
+      return `linear-gradient(${value.angle}deg, ${value.from}, ${value.to})`;
+    const shade = value.overlay === 'strong' ? 'rgb(15 10 25 / 62%)'
+      : value.overlay === 'soft' ? 'rgb(15 10 25 / 30%)' : 'transparent';
+    const asset = `/api/assets/${encodeURIComponent(value.assetId)}/image/large/fallback`;
+    return `linear-gradient(${shade}, ${shade}), url("${asset}")`;
   }
 }

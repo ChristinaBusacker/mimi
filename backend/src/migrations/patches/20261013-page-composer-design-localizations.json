@@ -1,0 +1,28 @@
+{
+  "localizations": [
+    { "key": "page.editor.design.spacing", "de": "Innenabstand", "en": "Inner spacing" },
+    { "key": "page.editor.design.small", "de": "Klein", "en": "Small" },
+    { "key": "page.editor.design.standard", "de": "Standard", "en": "Standard" },
+    { "key": "page.editor.design.large", "de": "Groß", "en": "Large" },
+    { "key": "page.editor.design.backgroundType", "de": "Hintergrund gestalten", "en": "Design background" },
+    { "key": "page.editor.design.none", "de": "Keiner", "en": "None" },
+    { "key": "page.editor.design.color", "de": "Farbe", "en": "Color" },
+    { "key": "page.editor.design.gradient", "de": "Farbverlauf", "en": "Gradient" },
+    { "key": "page.editor.design.image", "de": "Hintergrundbild", "en": "Background image" },
+    { "key": "page.editor.design.from", "de": "Von", "en": "From" },
+    { "key": "page.editor.design.to", "de": "Bis", "en": "To" },
+    { "key": "page.editor.design.angle", "de": "Richtung", "en": "Direction" },
+    { "key": "page.editor.design.position", "de": "Bildausschnitt", "en": "Image position" },
+    { "key": "page.editor.design.overlay", "de": "Abdunklung", "en": "Darkening" },
+    { "key": "page.editor.design.soft", "de": "Leicht", "en": "Soft" },
+    { "key": "page.editor.design.strong", "de": "Stark", "en": "Strong" },
+    { "key": "page.editor.design.existing", "de": "Bisheriges Design", "en": "Existing design" },
+    { "key": "page.editor.design.global", "de": "Diese Einstellung gilt für alle Bildschirmgrößen.", "en": "This setting applies to all screen sizes." },
+    { "key": "page.editor.design.position.top", "de": "Oben", "en": "Top" },
+    { "key": "page.editor.design.position.middle", "de": "Mitte", "en": "Center" },
+    { "key": "page.editor.design.position.bottom", "de": "Unten", "en": "Bottom" },
+    { "key": "page.editor.design.managed", "de": "Diese Gestaltung ist zentral vorgegeben.", "en": "This styling is defined centrally." },
+    { "key": "page.editor.media.details", "de": "Bilddetails", "en": "Image details" },
+    { "key": "page.editor.media.incomplete", "de": "Nur ohne Beschreibung", "en": "Only missing descriptions" }
+  ]
+}

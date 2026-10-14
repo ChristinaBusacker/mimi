@@ -1,0 +1,15 @@
+/* The editorial interface only exposes size names; concrete design values live here. */
+:host {
+  --composer-section-small: clamp(16px, 2vw, 30px);
+  --composer-section-standard: clamp(28px, 4vw, 56px);
+  --composer-section-large: clamp(46px, 7vw, 96px);
+  --composer-content-width: 1200px;
+  --composer-reading-width: 70ch;
+}
+@container page-composer (max-width: 580px) {
+  :host {
+    --composer-section-small: 12px;
+    --composer-section-standard: 24px;
+    --composer-section-large: 40px;
+  }
+}

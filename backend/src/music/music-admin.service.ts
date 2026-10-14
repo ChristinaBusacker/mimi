@@ -249,8 +249,13 @@ export class MusicAdminService {
     const assets = new Set<string>();
     for (const document of documents) {
       if (!document) continue;
-      for (const section of document.sections) for (const row of section.rows)
-        for (const column of row.columns) for (const block of column.blocks) {
+      for (const section of document.sections) {
+        if (section.styles.designBackground?.kind === 'image')
+          assets.add(section.styles.designBackground.assetId);
+        for (const row of section.rows) for (const column of row.columns) {
+          if (column.styles.designBackground?.kind === 'image')
+            assets.add(column.styles.designBackground.assetId);
+          for (const block of column.blocks) {
           if (block.type === 'image' && block.assetId) assets.add(block.assetId);
           if (block.type === 'gallery') for (const item of block.items) assets.add(item.assetId);
           if (block.type === 'text') {
@@ -259,6 +264,8 @@ export class MusicAdminService {
             }
           }
         }
+        }
+      }
     }
     return [...assets].map((assetUuid) => ({ assetUuid, scope: 'booklet' }));
   }

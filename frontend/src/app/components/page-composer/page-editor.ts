@@ -1,6 +1,7 @@
 import type { Asset } from '@shared/assets/asset';
 import type {
   PageBlock,
+  ComposerSpacing,
   PageColumn,
   PageDocument,
   PageNode,
@@ -43,13 +44,13 @@ const initialStyles = (): PageStyles => ({
   align: 'left',
 });
 const node = (): PageNode => ({ id: crypto.randomUUID(), styles: initialStyles() });
-const makeColumn = (): PageColumn => ({ ...node(), blocks: [] });
+const makeColumn = (): PageColumn => ({ ...node(), styles: { ...initialStyles(), spacing: 'small' }, blocks: [] });
 const makeRow = (layout: RowLayout): PageRow => ({
   ...node(),
   layout,
   columns: PAGE_ROW_LAYOUTS[layout].map(() => makeColumn()),
 });
-const makeSection = (): PageSection => ({ ...node(), rows: [makeRow('1')] });
+const makeSection = (): PageSection => ({ ...node(), styles: { ...initialStyles(), spacing: 'standard' }, rows: [makeRow('1')] });
 const makeBlock = (kind: BlockKind): PageBlock => {
   const base = node();
   switch (kind) {
@@ -97,6 +98,7 @@ export class PageEditor {
   protected readonly inspectorWidth = signal(this.defaultInspectorWidth);
   protected readonly inspectorOpen = signal(true);
   protected readonly mediaTarget = signal<string | null>(null);
+  protected readonly backgroundTarget = signal<string | null>(null);
   protected readonly breadcrumbs = computed((): Selection[] => {
     const selected = this.selected();
     const page = this.document();
@@ -229,12 +231,36 @@ export class PageEditor {
   protected async openImageLibrary(id: string): Promise<void> {
     const node = this.find(this.document(), { kind: 'block', id });
     if (!node || !('type' in node) || node.type !== 'image') return;
+    this.backgroundTarget.set(null);
     this.mediaTarget.set(id);
     this.inspect('block', id);
     await this.imageLibrary()?.open();
   }
 
+  protected async openBackgroundLibrary(): Promise<void> {
+    const selection = this.selected();
+    if (selection?.kind !== 'section' && selection?.kind !== 'column') return;
+    this.mediaTarget.set(null);
+    this.backgroundTarget.set(selection.id);
+    await this.imageLibrary()?.open();
+  }
+
   protected chooseAsset(asset: Asset): void {
+    const background = this.backgroundTarget();
+    this.backgroundTarget.set(null);
+    if (background) {
+      const selection = this.selected();
+      if (!selection || selection.id !== background ||
+          (selection.kind !== 'section' && selection.kind !== 'column')) return;
+      this.changeSelected((node) => {
+        node.styles.background = 'none';
+        delete node.styles.backgroundColor;
+        node.styles.designBackground = {
+          kind: 'image', assetId: asset.id, position: 'center', overlay: 'soft',
+        };
+      });
+      return;
+    }
     const id = this.mediaTarget();
     this.mediaTarget.set(null);
     if (!id) return;
@@ -244,6 +270,84 @@ export class PageEditor {
         if (!node.alt.de) node.alt.de = asset.descriptionDe ?? '';
         if (!node.alt.en) node.alt.en = asset.descriptionEn ?? '';
       }
+    });
+  }
+
+  protected backgroundAssetId(): string | null {
+    const design = this.active()?.styles.designBackground;
+    return design?.kind === 'image' ? design.assetId : null;
+  }
+
+  protected backgroundValue(field: 'color' | 'from' | 'to' | 'angle' | 'position' | 'overlay'): string {
+    const design = this.active()?.styles.designBackground;
+    if (!design) return '';
+    if (design.kind === 'color') return field === 'color' ? design.color : '';
+    if (design.kind === 'gradient') {
+      if (field === 'from') return design.from;
+      if (field === 'to') return design.to;
+      return field === 'angle' ? String(design.angle) : '';
+    }
+    return field === 'position' ? design.position : field === 'overlay' ? design.overlay : '';
+  }
+
+  protected setSpacing(event: Event): void {
+    const value = this.value(event);
+    if (value !== '' && !['small', 'standard', 'large'].includes(value)) return;
+    const selection = this.selected();
+    if (selection?.kind !== 'section' && selection?.kind !== 'column') return;
+    this.changeSelected((node) => {
+      if (!value) delete node.styles.spacing;
+      else node.styles.spacing = value as ComposerSpacing;
+    });
+  }
+
+  protected setBackgroundMode(event: Event): void {
+    const kind = this.value(event);
+    if (kind === 'image') {
+      void this.openBackgroundLibrary();
+      return;
+    }
+    if (!['none', 'color', 'gradient'].includes(kind)) return;
+    const selection = this.selected();
+    if (selection?.kind !== 'section' && selection?.kind !== 'column') return;
+    this.changeSelected((node) => {
+      node.styles.background = 'none';
+      delete node.styles.backgroundColor;
+      if (kind === 'none') delete node.styles.designBackground;
+      else if (kind === 'color') node.styles.designBackground = { kind, color: '#35273f' };
+      else node.styles.designBackground = { kind: 'gradient', from: '#875772', to: '#30243e', angle: 135 };
+    });
+  }
+
+  protected changeBackgroundColor(field: 'color' | 'from' | 'to', event: Event): void {
+    const color = this.value(event);
+    if (!/^#[0-9a-f]{6}$/i.test(color)) return;
+    this.changeSelected((node) => {
+      const design = node.styles.designBackground;
+      if (design?.kind === 'color' && field === 'color') design.color = color.toLowerCase();
+      if (design?.kind === 'gradient' && field === 'from') design.from = color.toLowerCase();
+      if (design?.kind === 'gradient' && field === 'to') design.to = color.toLowerCase();
+    });
+  }
+
+  protected setGradientAngle(event: Event): void {
+    const angle = Number(this.value(event));
+    if (![0, 45, 90, 135, 180].includes(angle)) return;
+    this.changeSelected((node) => {
+      const design = node.styles.designBackground;
+      if (design?.kind === 'gradient') design.angle = angle as 0 | 45 | 90 | 135 | 180;
+    });
+  }
+
+  protected changeBackgroundImage(field: 'position' | 'overlay', event: Event): void {
+    const value = this.value(event);
+    this.changeSelected((node) => {
+      const design = node.styles.designBackground;
+      if (design?.kind !== 'image') return;
+      if (field === 'position' && ['top', 'center', 'bottom'].includes(value))
+        design.position = value as 'top' | 'center' | 'bottom';
+      if (field === 'overlay' && ['none', 'soft', 'strong'].includes(value))
+        design.overlay = value as 'none' | 'soft' | 'strong';
     });
   }
 

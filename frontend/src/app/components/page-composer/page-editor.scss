@@ -133,13 +133,11 @@
 .composer__canvas-shell { position: relative; min-width: 0; background: #251b2e; }
 .composer__canvas { position: relative; display: block; padding: clamp(22px, 3vw, 46px);
   min-height: 500px; min-width: 0; overflow: auto; isolation: isolate;
-  background: linear-gradient(145deg, #31223d, #211c30 72%); }
-.composer__canvas::before { content: ''; position: absolute; inset: -12px;
-  z-index: -2; background-image: var(--composer-cover, none); background-position: center;
-  background-size: cover; filter: blur(65px) brightness(.62) saturate(1.2); opacity: .8; pointer-events: none; }
-.composer__canvas::after { content: ''; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(150deg, rgb(32 17 44 / 44%), rgb(30 24 39 / 71%)); pointer-events: none; }
-.composer__device { width: 100%; max-width: 100%; margin: 0 auto;
+  background: #171321; }
+/* Match the public booklet-world treatment without applying it to the entire admin page. */
+.composer__booklet-world { position: absolute; z-index: 0; inset: 0; --booklet-world-size: 170%; }
+.composer__booklet-world .booklet-world__artwork { filter: blur(76px) saturate(.91) brightness(.62); }
+.composer__device { position: relative; z-index: 1; width: 100%; max-width: 100%; margin: 0 auto;
   background: transparent; min-height: 300px; transition: max-width .18s ease; }
 .composer__device--tablet { max-width: 768px; }
 .composer__device--mobile { max-width: 390px; }
@@ -239,3 +237,11 @@
   .composer__splitter { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .composer__splitter, .composer__device { transition: none; } }
+.composer__design-group { display: grid; gap: 9px; padding: 12px 0; border-bottom: 1px solid rgb(255 255 255 / 10%); }
+.composer__design-colors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.composer__design-colors label { display: grid; gap: 6px; }
+.composer__inspector input[type='color'] { min-height: 44px; cursor: pointer; padding: 4px; }
+.composer__background-image { display: flex; flex-direction: column; align-items: center; gap: 8px;
+  width: 100%; padding: 10px; border: 1px dashed #b08bb3; border-radius: 10px;
+  background: rgb(255 255 255 / 5%); color: inherit; cursor: pointer; }
+.composer__background-image img { width: 100%; max-height: 135px; object-fit: contain; }

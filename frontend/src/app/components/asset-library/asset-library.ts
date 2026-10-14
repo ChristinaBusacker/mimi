@@ -46,6 +46,9 @@ export class AssetLibrary {
   private dragDepth = 0;
 
   protected readonly search = signal('');
+  protected readonly focusedId = signal<string | null>(null);
+  readonly decorative = input(false);
+  protected readonly incompleteOnly = signal(false);
   protected readonly sort = signal<AssetSort>('newest');
   protected readonly loading = signal(false);
   protected readonly uploading = signal(false);
@@ -73,7 +76,9 @@ export class AssetLibrary {
     const query = this.search().trim().toLocaleLowerCase();
 
     const assets = this.availableAssets()
-      .filter((asset) => !query || asset.originalFilename.toLocaleLowerCase().includes(query))
+      .filter((asset) => !this.incompleteOnly() || !this.hasCompleteDescriptions(asset))
+      .filter((asset) => !query || [asset.originalFilename, asset.descriptionDe ?? '', asset.descriptionEn ?? '']
+        .some((value) => value.toLocaleLowerCase().includes(query)))
       .slice();
 
     switch (this.sort()) {
@@ -96,6 +101,8 @@ export class AssetLibrary {
   async open(): Promise<void> {
     this.errorKey.set(null);
     this.confirmingDeleteId.set(null);
+    this.focusedId.set(null);
+    this.incompleteOnly.set(false);
     this.dialog()?.nativeElement.showModal();
 
     await this.reload();
@@ -126,13 +133,21 @@ export class AssetLibrary {
   }
 
   protected select(asset: Asset): void {
-    if (asset.type === 'image' && !this.hasCompleteDescriptions(asset)) {
+    if (asset.type === 'image' && !this.decorative() && !this.hasCompleteDescriptions(asset)) {
       this.errorKey.set('admin.assetPicker.descriptionsRequired');
       return;
     }
 
     this.assetSelected.emit(asset);
     this.close();
+  }
+
+  protected toggleDetails(id: string): void {
+    this.focusedId.update((current) => current === id ? null : id);
+  }
+
+  protected toggleIncomplete(): void {
+    this.incompleteOnly.update((value) => !value);
   }
 
   protected descriptionValue(asset: Asset, locale: 'de' | 'en'): string {

@@ -78,6 +78,11 @@
       </label>
     </div>
 
+    @if (type() === 'image') {
+      <button type="button" class="library-filter" [attr.aria-pressed]="incompleteOnly()" (click)="toggleIncomplete()">
+        {{ 'page.editor.media.incomplete' | i18n | async }}
+      </button>
+    }
     @if (errorKey(); as error) {
       <p class="error" role="alert">{{ error | i18n | async }}</p>
     }
@@ -92,12 +97,12 @@
     } @else {
       <div class="library" [class.images]="type() === 'image'">
         @for (asset of filteredAssets(); track asset.id) {
-          <article class="asset" [class.selected]="selectedId() === asset.id">
+          <article class="asset" [class.selected]="selectedId() === asset.id" [class.is-expanded]="focusedId() === asset.id">
             @if (asset.type === 'image') {
               <button
                 type="button"
                 class="preview"
-                [disabled]="!hasCompleteDescriptions(asset)"
+                [disabled]="!decorative() && !hasCompleteDescriptions(asset)"
                 (click)="select(asset)"
               >
                 <img
@@ -118,6 +123,10 @@
             </div>
 
             @if (asset.type === 'image') {
+              <button type="button" class="library-detail-toggle" [attr.aria-expanded]="focusedId() === asset.id"
+                (click)="toggleDetails(asset.id)">{{ 'page.editor.media.details' | i18n | async }}</button>
+            }
+            @if (focusedId() === asset.id && asset.type === 'image') {
               <div class="descriptions">
                 <label>
                   <span>{{ 'admin.assetPicker.descriptionDe' | i18n | async }}</span>
@@ -162,6 +171,7 @@
               </div>
             }
 
+            @if (focusedId() === asset.id || asset.type === 'audio') {
             <div class="actions">
               @if (asset.type === 'audio') {
                 <button type="button" class="select" (click)="select(asset)">
@@ -190,6 +200,7 @@
                 </button>
               }
             </div>
+            }
           </article>
         }
       </div>

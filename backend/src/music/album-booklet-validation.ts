@@ -1,5 +1,6 @@
 import type {
   PageBlock,
+  ComposerBackground,
   PageColumn,
   PageDocument,
   PageGalleryItem,
@@ -92,9 +93,44 @@ function styleValues(data: Record<string, unknown>, defaults: boolean): PageStyl
   return result;
 }
 
-function styles(value: unknown): PageStyles {
+function backgroundDesign(value: unknown): ComposerBackground {
+  const data = record(value);
+  const kind = data['kind'];
+  const color = (value: unknown): string => {
+    const result = string(value, 7);
+    if (!HEX_COLOR.test(result)) invalid('invalid background color');
+    return result.toLowerCase();
+  };
+  if (kind === 'color') return { kind, color: color(data['color']) };
+  if (kind === 'gradient') {
+    const angle = data['angle'];
+    if (![0, 45, 90, 135, 180].includes(angle as number)) invalid('invalid gradient angle');
+    return { kind, from: color(data['from']), to: color(data['to']), angle: angle as 0 | 45 | 90 | 135 | 180 };
+  }
+  if (kind === 'image') {
+    const position = data['position'];
+    const overlay = data['overlay'];
+    if (!['center', 'top', 'bottom'].includes(String(position)) ||
+        !['none', 'soft', 'strong'].includes(String(overlay))) invalid('invalid image background');
+    return { kind, assetId: assetId(data['assetId']), position: position as 'center' | 'top' | 'bottom',
+      overlay: overlay as 'none' | 'soft' | 'strong' };
+  }
+  return invalid('unsupported background kind');
+}
+
+function styles(value: unknown, allowDesign = false): PageStyles {
   const data = value === undefined ? {} : record(value);
   const result = styleValues(data, true);
+  if (data['spacing'] !== undefined || data['designBackground'] !== undefined) {
+    if (!allowDesign) invalid('design controls are only valid on sections and columns');
+    if (data['spacing'] !== undefined) {
+      const spacing = data['spacing'];
+      if (!['small', 'standard', 'large'].includes(String(spacing))) invalid('invalid spacing preset');
+      result.spacing = spacing as PageStyles['spacing'];
+    }
+    if (data['designBackground'] !== undefined)
+      result.designBackground = backgroundDesign(data['designBackground']);
+  }
   if (data['responsive'] !== undefined) {
     const responsive = record(data['responsive']);
     for (const key of Object.keys(responsive)) {
@@ -111,8 +147,8 @@ function styles(value: unknown): PageStyles {
   }
   return result;
 }
-function node(value: Record<string, unknown>): PageNode {
-  return { id: id(value['id']), styles: styles(value['styles']) };
+function node(value: Record<string, unknown>, allowDesign = false): PageNode {
+  return { id: id(value['id']), styles: styles(value['styles'], allowDesign) };
 }
 function assetId(value: unknown): string {
   const valueString = string(value, 36);
@@ -146,7 +182,7 @@ function block(value: unknown): PageBlock {
 }
 function column(value: unknown): PageColumn {
   const data = record(value);
-  return { ...node(data), blocks: list(data['blocks'], 36).map(block) };
+  return { ...node(data, true), blocks: list(data['blocks'], 36).map(block) };
 }
 function row(value: unknown): PageRow {
   const data = record(value);
@@ -161,7 +197,7 @@ function row(value: unknown): PageRow {
 }
 function section(value: unknown): PageSection {
   const data = record(value);
-  return { ...node(data), rows: list(data['rows'], 30).map(row) };
+  return { ...node(data, true), rows: list(data['rows'], 30).map(row) };
 }
 
 /** Canonicalize all input. No arbitrary CSS, URLs or HTML reach the public renderer. */

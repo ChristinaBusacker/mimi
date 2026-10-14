@@ -7,6 +7,11 @@ export interface LocalizedText {
 export type RowLayout =
   '1' | '1-1' | '1-2' | '2-1' | '1-3' | '3-1' | '1-1-1' | '1-1-1-1' | '2-1-1' | '1-2-1' | '1-1-2';
 export type PageSurface = 'none' | 'glass' | 'solid' | 'accent';
+export type ComposerSpacing = 'small' | 'standard' | 'large';
+export type ComposerBackground =
+  | { kind: 'color'; color: string }
+  | { kind: 'gradient'; from: string; to: string; angle: 0 | 45 | 90 | 135 | 180 }
+  | { kind: 'image'; assetId: string; position: 'center' | 'top' | 'bottom'; overlay: 'none' | 'soft' | 'strong' };
 export interface PageStyleValues {
   background?: PageSurface;
   backgroundColor?: string;
@@ -17,6 +22,9 @@ export interface PageStyleValues {
   align?: 'left' | 'center' | 'right';
 }
 export interface PageStyles extends PageStyleValues {
+  /** Only sections and columns may define an editorial background or spacing. */
+  spacing?: ComposerSpacing;
+  designBackground?: ComposerBackground;
   responsive?: {
     tablet?: PageStyleValues;
     mobile?: PageStyleValues;
