@@ -1,0 +1,18 @@
+{
+  "localizations": [
+    { "key": "page.editor.block.albumDetails", "de": "Album-Details", "en": "Album details" },
+    { "key": "page.editor.block.albumTracks", "de": "Album-Trackliste", "en": "Album tracks" },
+    { "key": "page.editor.block.albumCredits", "de": "Credits", "en": "Credits" },
+    { "key": "page.editor.album.autoDetails", "de": "Titel, Cover, Veröffentlichungsdatum und Trackanzahl kommen automatisch aus dem Album.", "en": "Title, cover, release date and track count come directly from the album." },
+    { "key": "page.editor.album.autoTracks", "de": "Die Trackliste verwendet die veröffentlichten Titel und den bestehenden Musikplayer. Im Editor wird nur eine Vorschau angezeigt.", "en": "The track list uses published tracks and the existing music player. The editor shows a preview only." },
+    { "key": "page.editor.album.heading", "de": "Überschrift", "en": "Heading" },
+    { "key": "page.editor.album.creditName", "de": "Name", "en": "Name" },
+    { "key": "page.editor.album.creditRole", "de": "Aufgabe / Beitrag", "en": "Role / contribution" },
+    { "key": "page.editor.album.addCredit", "de": "Mitwirkende hinzufügen", "en": "Add contributor" },
+    { "key": "page.editor.album.releaseLabel", "de": "Veröffentlicht", "en": "Released" },
+    { "key": "page.editor.album.trackCountLabel", "de": "Album", "en": "Album" },
+    { "key": "page.editor.album.tracklist", "de": "Titelliste", "en": "Track list" },
+    { "key": "page.editor.album.noContext", "de": "Albumdaten sind noch nicht geladen.", "en": "Album data is not loaded yet." },
+    { "key": "page.editor.album.emptyCredits", "de": "Noch keine Mitwirkenden eingetragen.", "en": "No contributors added yet." }
+  ]
+}

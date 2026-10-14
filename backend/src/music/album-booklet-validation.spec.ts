@@ -47,4 +47,26 @@ describe('Album booklet document validation', () => {
     const input = { ...document('1'), unexpected: 'ignored' };
     expect('unexpected' in validateAlbumBooklet(input)).toBe(false);
   });
+
+  it('accepts album details and track blocks without persisting duplicate album data', () => {
+    const input = document('1');
+    input.sections[0].rows[0].columns[0].blocks = [
+      { id: 'details', styles, type: 'albumDetails' },
+      { id: 'tracks', styles, type: 'albumTracks' },
+    ];
+    expect(validateAlbumBooklet(input)).toEqual(input);
+  });
+
+  it('canonicalizes editorial credits and rejects malformed ones', () => {
+    const input = document('1');
+    input.sections[0].rows[0].columns[0].blocks = [{
+      id: 'credits', styles, type: 'albumCredits', heading: { de: 'Mitwirkende', en: 'Credits' },
+      entries: [{ name: 'Mimi', role: { de: 'Musik', en: 'Music' } }],
+    }];
+    expect(validateAlbumBooklet(input)).toEqual(input);
+    const invalidCredit = structuredClone(input);
+    const block = invalidCredit.sections[0].rows[0].columns[0].blocks[0];
+    if (block.type === 'albumCredits') block.entries[0].name = 'x'.repeat(121);
+    expect(() => validateAlbumBooklet(invalidCredit)).toThrow(BadRequestException);
+  });
 });

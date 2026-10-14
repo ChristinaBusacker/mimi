@@ -201,6 +201,8 @@
         >
           <app-page-renderer
             [document]="document()"
+            [album]="album()"
+            [studio]="true"
             [locale]="locale()"
             [assets]="assets()"
             [editable]="!preview()"
@@ -258,7 +260,7 @@
               <div class="composer__block-palette">
                 @for (kind of blockKinds; track kind) {
                   <button type="button" (click)="insertBlock(target.parentId, kind, target.index)">
-                    <app-icon [name]="kind" />
+                    <app-icon [name]="blockIcon(kind)" />
                     {{ 'page.editor.block.' + kind | i18n | async }}
                   </button>
                 }
@@ -426,6 +428,26 @@
                       <option [value]="image.id">{{ image.originalFilename }}</option>
                     }
                   </select>
+                }
+                @case ('albumDetails') {
+                  <p class="composer__hint">{{ 'page.editor.album.autoDetails' | i18n | async }}</p>
+                }
+                @case ('albumTracks') {
+                  <p class="composer__hint">{{ 'page.editor.album.autoTracks' | i18n | async }}</p>
+                }
+                @case ('albumCredits') {
+                  <label>{{ 'page.editor.album.heading' | i18n | async }}</label>
+                  <input maxlength="200" [value]="block.heading[locale()]" (change)="editCreditsHeading($event)" />
+                  @for (credit of block.entries; track $index; let creditIndex = $index) {
+                    <div class="composer__credit-editor">
+                      <label>{{ 'page.editor.album.creditName' | i18n | async }}</label>
+                      <input maxlength="120" [value]="credit.name" (change)="editCredit(creditIndex, 'name', $event)" />
+                      <label>{{ 'page.editor.album.creditRole' | i18n | async }}</label>
+                      <input maxlength="200" [value]="credit.role[locale()]" (change)="editCredit(creditIndex, 'role', $event)" />
+                      <button type="button" (click)="removeCredit(creditIndex)">{{ 'page.editor.remove' | i18n | async }}</button>
+                    </div>
+                  }
+                  <button type="button" [disabled]="block.entries.length >= 40" (click)="addCredit()">{{ 'page.editor.album.addCredit' | i18n | async }}</button>
                 }
                 @case ('spacer') {
                   <h3>{{ 'page.editor.block.spacer' | i18n | async }}</h3>

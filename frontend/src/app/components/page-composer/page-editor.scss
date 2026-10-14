@@ -1,3 +1,5 @@
+@use './page-editor-album';
+
 :host { display: block; min-width: 0; }
 .composer { --composer-accent: #da8dbb; color: var(--color-text); border: 1px solid rgb(218 141 187 / 36%); border-radius: 18px; overflow: hidden; background: #211929; }
 .composer button, .composer select, .composer input { font: inherit; }

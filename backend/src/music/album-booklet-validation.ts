@@ -176,6 +176,20 @@ function block(value: unknown): PageBlock {
       return { ...base, type: 'gallery', items: list(data['items'], 36).map(galleryItem) };
     case 'spacer':
       return { ...base, type: 'spacer', height: number(data['height'], 240, 32) };
+    case 'albumDetails':
+      return { ...base, type: 'albumDetails' };
+    case 'albumTracks':
+      return { ...base, type: 'albumTracks' };
+    case 'albumCredits':
+      return {
+        ...base,
+        type: 'albumCredits',
+        heading: localized(data['heading']),
+        entries: list(data['entries'], 40).map((entry) => {
+          const credit = record(entry);
+          return { name: string(credit['name'], 120), role: localized(credit['role']) };
+        }),
+      };
     default:
       return invalid('unsupported block');
   }
@@ -216,6 +230,7 @@ export function validateAlbumBooklet(value: unknown): PageDocument {
     ids.add(identifier);
   };
   add(result.id);
+  let albumPlayers = 0;
   for (const s of result.sections) {
     add(s.id);
     for (const r of s.rows) {
@@ -225,6 +240,8 @@ export function validateAlbumBooklet(value: unknown): PageDocument {
         for (const b of c.blocks) {
           add(b.id);
           if (b.type === 'gallery') for (const item of b.items) add(item.id);
+          if (b.type === 'albumTracks' && ++albumPlayers > 1)
+            invalid('only one album track player is allowed');
         }
       }
     }

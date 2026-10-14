@@ -1,4 +1,7 @@
 import type { Asset } from '@shared/assets/asset';
+import type { AlbumBookletContext } from '@shared/content/album-booklet-context';
+import type { MusicAdminTrack } from '@shared/music/music-admin';
+import type { MusicTrackListItem } from '@shared/music/music';
 import type { PageDocument } from '@shared/content/page-document';
 import type { MusicAdminAlbum } from '@shared/music/music-admin';
 import { AsyncPipe } from '@angular/common';
@@ -31,7 +34,39 @@ export class AdminAlbumBooklet implements OnInit {
   private readonly assetsService = inject(AdminAssetsService);
   protected readonly albumId = this.route.snapshot.paramMap.get('id') ?? '';
   protected readonly album = signal<MusicAdminAlbum | null>(null);
+  protected readonly albumTracks = signal<MusicAdminTrack[]>([]);
   protected readonly images = signal<Asset[]>([]);
+  protected albumContext(): AlbumBookletContext | null {
+    const album = this.album();
+    if (!album) return null;
+    const reference = {
+      id: album.id, slug: album.slug, title: album.translations.de.title,
+      coverAssetId: album.coverAssetId,
+    };
+    const tracks: MusicTrackListItem[] = this.albumTracks()
+      .filter((track) => track.albumId === album.id && track.status === 'published')
+      .sort((left, right) => (left.trackNumber ?? 99999) - (right.trackNumber ?? 99999))
+      .map((track) => ({
+        id: track.id, slug: track.slug,
+        title: track.translations.de.title,
+        trackNumber: track.trackNumber,
+        durationSeconds: track.durationSeconds,
+        previewDurationSeconds: track.previewDurationSeconds,
+        previewAssetId: track.previewAssetId,
+        coverAssetId: track.coverAssetId,
+        spotifyUrl: track.spotifyUrl,
+        deezerUrl: track.deezerUrl,
+        supportUrl: track.supportUrl,
+        hasContent: Boolean(track.translations.de.contentMarkdown.trim()),
+        album: reference,
+      }));
+    return {
+      title: album.translations.de.title,
+      coverAssetId: album.coverAssetId,
+      releasedAt: album.releasedAt,
+      tracks,
+    };
+  }
   protected readonly document = signal<PageDocument>(emptyPage());
   protected readonly loading = signal(true);
   protected readonly working = signal(false);
@@ -45,9 +80,11 @@ export class AdminAlbumBooklet implements OnInit {
           album: this.music.getAlbum(this.albumId),
           booklet: this.music.getBooklet(this.albumId),
           images: this.assetsService.getAll('image'),
+          tracks: this.music.getTracks(),
         }),
       );
       this.album.set(result.album);
+      this.albumTracks.set(result.tracks);
       this.images.set(result.images);
       this.document.set(result.booklet.draft ?? result.booklet.published ?? emptyPage());
     } catch {

@@ -1,4 +1,5 @@
 import type { Asset } from '@shared/assets/asset';
+import type { AlbumBookletContext } from '@shared/content/album-booklet-context';
 import type {
   PageBlock,
   ComposerSpacing,
@@ -62,6 +63,12 @@ const makeBlock = (kind: BlockKind): PageBlock => {
       return { ...base, type: kind, items: [] };
     case 'spacer':
       return { ...base, type: kind, height: 48 };
+    case 'albumDetails':
+      return { ...base, type: kind };
+    case 'albumTracks':
+      return { ...base, type: kind };
+    case 'albumCredits':
+      return { ...base, type: kind, heading: { de: 'Mitwirkende', en: 'Credits' }, entries: [] };
   }
 };
 
@@ -82,6 +89,7 @@ const makeBlock = (kind: BlockKind): PageBlock => {
   styleUrl: './page-editor.scss',
 })
 export class PageEditor {
+  readonly album = input<AlbumBookletContext | null>(null);
   readonly document = input.required<PageDocument>();
   readonly assets = input<readonly Asset[]>([]);
   readonly coverAssetId = input<string | null>(null);
@@ -357,7 +365,7 @@ export class PageEditor {
   protected readonly outlineOpen = signal(false);
   protected readonly addTarget = signal<CanvasInsert | null>(null);
   protected readonly inlineTextId = signal<string | null>(null);
-  protected readonly blockKinds: readonly BlockKind[] = ['text', 'image', 'gallery', 'spacer'];
+  protected readonly blockKinds: readonly BlockKind[] = ['text', 'image', 'gallery', 'spacer', 'albumDetails', 'albumTracks', 'albumCredits'];
   protected readonly device = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
   protected readonly inspectorTab = signal<'content' | 'design' | 'advanced'>('content');
   protected readonly breakpoint = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -503,7 +511,13 @@ export class PageEditor {
       case 'gallery':
         return 'gallery';
       case 'spacer':
-        return 'gallery';
+        return 'spacer';
+      case 'albumDetails':
+        return 'music';
+      case 'albumTracks':
+        return 'list-numbered';
+      case 'albumCredits':
+        return 'community';
     }
   }
 
@@ -606,6 +620,9 @@ export class PageEditor {
     this.inspect('section', section.id);
   }
   protected addBlock(columnId: string, type: BlockKind, index?: number): void {
+    if (type === 'albumTracks' && this.document().sections.some((section) =>
+      section.rows.some((row) => row.columns.some((column) =>
+        column.blocks.some((block) => block.type === 'albumTracks'))))) return;
     const block = makeBlock(type);
     const column = this.find(this.document(), { kind: 'column', id: columnId });
     if (!column || !('blocks' in column)) return;
@@ -737,6 +754,33 @@ export class PageEditor {
   }
   protected blockName(block: PageBlock): string {
     return `page.editor.block.${block.type}`;
+  }
+  protected addCredit(): void {
+    this.changeSelected((value) => {
+      if ('type' in value && value.type === 'albumCredits' && value.entries.length < 40)
+        value.entries.push({ name: '', role: { de: '', en: '' } });
+    });
+  }
+  protected removeCredit(index: number): void {
+    this.changeSelected((value) => {
+      if ('type' in value && value.type === 'albumCredits') value.entries.splice(index, 1);
+    });
+  }
+  protected editCredit(index: number, field: 'name' | 'role', event: Event): void {
+    const text = this.value(event);
+    this.changeSelected((value) => {
+      if (!('type' in value) || value.type !== 'albumCredits') return;
+      const credit = value.entries[index];
+      if (!credit) return;
+      if (field === 'name') credit.name = text.slice(0, 120);
+      else credit.role[this.locale()] = text;
+    });
+  }
+  protected editCreditsHeading(event: Event): void {
+    const text = this.value(event);
+    this.changeSelected((value) => {
+      if ('type' in value && value.type === 'albumCredits') value.heading[this.locale()] = text;
+    });
   }
   protected imageUrl(id: string): string {
     return `/api/assets/${encodeURIComponent(id)}/image/thumbnail/webp`;

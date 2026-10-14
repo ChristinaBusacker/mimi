@@ -1,3 +1,4 @@
+import type { AlbumBookletContext } from '@shared/content/album-booklet-context';
 import type {
   ComposerBackground,
   PageDocument,
@@ -22,6 +23,7 @@ import { Icon } from '../icon/icon';
 import type { Asset } from '@shared/assets/asset';
 import { PageInlineMarkdown } from './page-inline-markdown';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
+import { MusicLibraryPlayer } from '../music-library-player/music-library-player';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 
 export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
@@ -63,13 +65,16 @@ markdown.renderer.rules['image'] = (tokens, index): string => {
 @Component({
   selector: 'app-page-renderer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgStyle, AsyncPipe, I18nPipe, Icon, PageInlineMarkdown],
+  imports: [NgStyle, AsyncPipe, I18nPipe, Icon, PageInlineMarkdown, MusicLibraryPlayer],
   templateUrl: './page-renderer.html',
   styleUrl: './page-renderer.scss',
 })
 export class PageRenderer {
   private readonly host = inject(ElementRef<HTMLElement>);
 
+  readonly album = input<AlbumBookletContext | null>(null);
+  /** Studio rendering must never instantiate an interactive audio player. */
+  readonly studio = input(false);
   readonly document = input.required<PageDocument>();
   readonly assets = input<readonly Asset[]>([]);
   readonly locale = input.required<PageLocale>();
@@ -208,6 +213,18 @@ export class PageRenderer {
   }
 
   protected grid(layout: RowLayout): string { return pageGridColumns(layout); }
+  protected albumDate(value: string | null): string | null {
+    if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+    const date = new Date(`${value}T00:00:00Z`);
+    if (Number.isNaN(date.getTime())) return null;
+    return new Intl.DateTimeFormat(this.locale() === 'de' ? 'de-DE' : 'en-US', {
+      year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC',
+    }).format(date);
+  }
+  protected albumDuration(seconds: number): string {
+    const total = Math.max(0, Math.round(seconds));
+    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+  }
   protected surface(styles: PageStyles): string { return `page-surface--${styles.background ?? 'none'}`; }
   protected html(content: string): string { return markdown.render(content); }
   protected image(assetId: string): string { return `/api/assets/${encodeURIComponent(assetId)}/image/large/fallback`; }

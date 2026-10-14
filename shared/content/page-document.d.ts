@@ -56,7 +56,26 @@ export interface PageSpacerBlock extends PageNode {
   type: 'spacer';
   height: number;
 }
-export type PageBlock = PageTextBlock | PageImageBlock | PageGalleryBlock | PageSpacerBlock;
+/** Uses the album context, not a second copy of the album metadata. */
+export interface PageAlbumDetailsBlock extends PageNode {
+  type: 'albumDetails';
+}
+/** Renders the existing music player on published album pages. */
+export interface PageAlbumTracksBlock extends PageNode {
+  type: 'albumTracks';
+}
+export interface PageAlbumCredit {
+  name: string;
+  role: LocalizedText;
+}
+/** Editorial credits until the album administration has a dedicated credit model. */
+export interface PageAlbumCreditsBlock extends PageNode {
+  type: 'albumCredits';
+  heading: LocalizedText;
+  entries: PageAlbumCredit[];
+}
+export type PageBlock = PageTextBlock | PageImageBlock | PageGalleryBlock | PageSpacerBlock
+  | PageAlbumDetailsBlock | PageAlbumTracksBlock | PageAlbumCreditsBlock;
 export interface PageColumn extends PageNode {
   blocks: PageBlock[];
 }

@@ -1,3 +1,4 @@
+import type { AlbumBookletContext } from '@shared/content/album-booklet-context';
 import type {
   MusicAlbumReference,
   MusicTrackListItem,
@@ -134,6 +135,21 @@ export class MusicAlbumPage {
         }),
       );
     });
+
+  protected readonly bookletContext = computed<AlbumBookletContext>(() => ({
+    title: this.data().album.title,
+    coverAssetId: this.data().album.coverAssetId,
+    releasedAt: this.data().album.releasedAt,
+    tracks: this.tracks(),
+  }));
+
+  protected readonly hasEmbeddedPlayer = computed(() =>
+    this.data().album.booklet?.sections.some((section) =>
+      section.rows.some((row) => row.columns.some((column) =>
+        column.blocks.some((block) => block.type === 'albumTracks'),
+      )),
+    ) ?? false,
+  );
 
   protected assetUrl(
     assetId: string,

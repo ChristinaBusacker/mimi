@@ -37,7 +37,7 @@
 
   @if (album.booklet; as customBooklet) {
     @if (customBooklet.sections.length > 0) {
-      <app-page-renderer [document]="customBooklet" [locale]="albumData.locale" />
+      <app-page-renderer [document]="customBooklet" [locale]="albumData.locale" [album]="bookletContext()" />
     } @else if (album.contentHtml) {
       <section class="booklet__story" [attr.aria-label]="'music.album.label' | i18n | async">
         <app-rendered-content [sanitizedHtml]="album.contentHtml" />
@@ -49,6 +49,7 @@
     </section>
   }
 
+  @if (!hasEmbeddedPlayer()) {
   <section class="booklet__tracks" [attr.aria-label]="'music.library.title' | i18n | async">
     @if (tracks().length) {
       <app-music-library-player [tracks]="tracks()" [locale]="albumData.locale" />
@@ -56,4 +57,5 @@
       <p>{{ 'music.page.noTracks' | i18n | async }}</p>
     }
   </section>
+  }
 </article>

@@ -126,6 +126,65 @@
                       @case ('spacer') {
                         <div aria-hidden="true" [style.height.px]="block.height"></div>
                       }
+                      @case ('albumDetails') {
+                        @if (album(); as entry) {
+                          <div class="page-document__album-details">
+                            @if (albumDate(entry.releasedAt); as date) {
+                              <div class="page-document__album-fact">
+                                <app-icon name="music" />
+                                <span><strong>{{ date }}</strong><small>{{ 'page.editor.album.releaseLabel' | i18n | async }}</small></span>
+                              </div>
+                            }
+                            <div class="page-document__album-fact">
+                              <app-icon name="list-numbered" />
+                              <span><strong>{{ entry.tracks.length }} {{ 'music.album.tracks' | i18n | async }}</strong><small>{{ 'page.editor.album.trackCountLabel' | i18n | async }}</small></span>
+                            </div>
+                          </div>
+                        } @else if (studio()) {
+                          <p class="page-document__empty">{{ 'page.editor.album.noContext' | i18n | async }}</p>
+                        }
+                      }
+                      @case ('albumTracks') {
+                        @if (album(); as entry) {
+                          @if (studio()) {
+                            <div class="page-document__album-tracklist">
+                              <h3>{{ 'page.editor.album.tracklist' | i18n | async }}</h3>
+                              @for (track of entry.tracks; track track.id) {
+                                <div class="page-document__album-track">
+                                  <span>{{ track.trackNumber ?? $index + 1 }}</span>
+                                  <strong>{{ track.title }}</strong>
+                                  <span>{{ albumDuration(track.durationSeconds) }}</span>
+                                </div>
+                              } @empty {
+                                <p>{{ 'music.page.noTracks' | i18n | async }}</p>
+                              }
+                            </div>
+                          } @else if (entry.tracks.length) {
+                            <app-music-library-player [tracks]="entry.tracks" [locale]="locale()" />
+                          } @else {
+                            <p>{{ 'music.page.noTracks' | i18n | async }}</p>
+                          }
+                        } @else if (studio()) {
+                          <p class="page-document__empty">{{ 'page.editor.album.noContext' | i18n | async }}</p>
+                        }
+                      }
+                      @case ('albumCredits') {
+                        @if (block.entries.length || studio()) {
+                          <section class="page-document__album-credits">
+                            <h3>{{ block.heading[locale()] || block.heading.de }}</h3>
+                            <dl>
+                              @for (credit of block.entries; track $index) {
+                                <div>
+                                  <dt>{{ credit.role[locale()] || credit.role.de }}</dt>
+                                  <dd>{{ credit.name }}</dd>
+                                </div>
+                              } @empty {
+                                <div>{{ 'page.editor.album.emptyCredits' | i18n | async }}</div>
+                              }
+                            </dl>
+                          </section>
+                        }
+                      }
                     }
                   </div>
                 }
