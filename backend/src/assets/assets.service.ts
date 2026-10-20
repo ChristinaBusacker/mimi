@@ -32,6 +32,7 @@ import { isAbsolute, join, resolve } from 'node:path';
 import sharp, { type Metadata } from 'sharp';
 import {
   DataSource,
+  In,
   IsNull,
   Repository,
 } from 'typeorm';
@@ -272,6 +273,23 @@ export class AssetsService {
     const asset = await this.findAsset(uuid);
     asset.folderId = folderId;
     return this.mapAsset(await this.repository.save(asset));
+  }
+
+  async moveAssets(ids: readonly string[], folderId: string | null): Promise<Asset[]> {
+    await this.assertFolder(folderId);
+
+    return this.dataSource.transaction(async (manager) => {
+      const repository = manager.getRepository(AssetEntry);
+      const assets = await repository.findBy({ uuid: In([...ids]) });
+
+      if (assets.length !== ids.length) {
+        throw new NotFoundException('One or more assets no longer exist.');
+      }
+
+      await repository.update({ uuid: In([...ids]) }, { folderId });
+
+      return assets.map((asset) => this.mapAsset({ ...asset, folderId }));
+    });
   }
 
   private async assertFolder(id: string | null): Promise<void> {

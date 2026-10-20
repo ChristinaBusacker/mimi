@@ -302,6 +302,44 @@
   }
 }
 
+.library-dialog .search-scope {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 600;
+}
+.library-dialog .bulk-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-card);
+}
+.library-dialog .bulk-toolbar label {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+.library-dialog .bulk-toolbar select,
+.library-dialog .bulk-toolbar button {
+  min-height: 36px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: inherit;
+  font: inherit;
+}
+.library-dialog .bulk-toolbar button { cursor: pointer; }
+.library-dialog .bulk-toolbar button:disabled { cursor: not-allowed; opacity: .5; }
+.library-dialog .bulk-toolbar .bulk-move { background: var(--color-primary); font-weight: 700; }
+.library-dialog .asset.bulk-selected { outline: 2px solid var(--color-secondary); outline-offset: -2px; }
+.library-dialog .bulk-select { display: flex; align-items: start; gap: 7px; font-size: .75rem; cursor: pointer; }
+.library-dialog .bulk-select input { flex: 0 0 auto; margin-top: 3px; }
+.library-dialog .asset-location { overflow-wrap: anywhere; font-size: .75rem; opacity: .8; }
 .library-dialog .folder-navigation,
 .library-dialog .folder-toolbar {
   display: flex;

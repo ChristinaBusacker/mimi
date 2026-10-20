@@ -49,6 +49,7 @@ export class AssetLibrary implements OnInit {
   private dragDepth = 0;
 
   protected readonly search = signal('');
+  protected readonly searchAllFolders = signal(false);
   protected readonly folders = signal<AssetFolder[]>([]);
   protected readonly folderId = signal<string | null>(null);
   protected readonly folderName = signal('');
@@ -72,6 +73,10 @@ export class AssetLibrary implements OnInit {
   protected readonly confirmingDeleteId = signal<string | null>(null);
   protected readonly descriptionDrafts = signal<Record<string, { de: string; en: string }>>({});
   protected readonly errorKey = signal<string | null>(null);
+  protected readonly bulkMode = signal(false);
+  protected readonly bulkBusy = signal(false);
+  protected readonly selectedIds = signal<ReadonlySet<string>>(new Set<string>());
+  protected readonly bulkTargetId = signal<string | null>(null);
 
   protected readonly availableAssets = computed(() => {
     const byId = new Map<string, Asset>();
@@ -86,12 +91,42 @@ export class AssetLibrary implements OnInit {
     return [...byId.values()];
   });
 
+  protected readonly folderPaths = computed(() => {
+    const byId = new Map(this.folders().map((folder) => [folder.id, folder] as const));
+    const paths: Record<string, string> = {};
+
+    for (const folder of this.folders()) {
+      const segments: string[] = [];
+      const visited = new Set<string>();
+      let cursor: string | null = folder.id;
+
+      while (cursor && !visited.has(cursor)) {
+        visited.add(cursor);
+        const current = byId.get(cursor);
+        if (!current) break;
+        segments.unshift(current.name);
+        cursor = current.parentId;
+      }
+      paths[folder.id] = segments.join(' / ');
+    }
+
+    return paths;
+  });
+
+  protected readonly selectedAssets = computed(() =>
+    this.availableAssets().filter((asset) => this.selectedIds().has(asset.id)),
+  );
+
+  protected readonly movableAssets = computed(() =>
+    this.selectedAssets().filter((asset) => asset.folderId !== this.bulkTargetId()),
+  );
+
   protected readonly filteredAssets = computed(() => {
     const query = this.search().trim().toLocaleLowerCase();
 
     const assets = this.availableAssets()
-      .filter((asset) => asset.folderId === this.folderId())
-      .filter((asset) => !this.incompleteOnly())
+      .filter((asset) => (query.length > 0 && this.searchAllFolders()) || asset.folderId === this.folderId())
+      .filter((asset) => !this.incompleteOnly() || !this.hasCompleteDescriptions(asset))
       .filter(
         (asset) =>
           !query ||
@@ -159,6 +194,87 @@ export class AssetLibrary implements OnInit {
 
     if (value === 'newest' || value === 'oldest' || value === 'nameAsc' || value === 'nameDesc') {
       this.sort.set(value);
+    }
+  }
+
+  protected setSearchAllFolders(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLInputElement) this.searchAllFolders.set(target.checked);
+  }
+
+  protected startBulkMode(): void {
+    if (!this.embedded()) return;
+    this.selectedIds.set(new Set<string>());
+    this.bulkTargetId.set(this.folderId());
+    this.bulkMode.set(true);
+    this.errorKey.set(null);
+  }
+
+  protected stopBulkMode(): void {
+    if (this.bulkBusy()) return;
+    this.selectedIds.set(new Set<string>());
+    this.bulkMode.set(false);
+    this.errorKey.set(null);
+  }
+
+  protected toggleBulkAsset(id: string, event: Event): void {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || this.bulkBusy()) return;
+
+    const next = new Set(this.selectedIds());
+    if (target.checked) next.add(id);
+    else next.delete(id);
+
+    if (next.size > 1000) {
+      target.checked = false;
+      this.errorKey.set('admin.media.bulkLimit');
+      return;
+    }
+    this.selectedIds.set(next);
+  }
+
+  protected selectVisibleAssets(): void {
+    const next = new Set(this.selectedIds());
+    for (const asset of this.filteredAssets()) next.add(asset.id);
+    if (next.size > 1000) {
+      this.errorKey.set('admin.media.bulkLimit');
+      return;
+    }
+    this.selectedIds.set(next);
+  }
+
+  protected clearBulkSelection(): void {
+    this.selectedIds.set(new Set<string>());
+  }
+
+  protected setBulkTarget(event: Event): void {
+    this.bulkTargetId.set(this.readControlValue(event) || null);
+  }
+
+  protected async moveSelectedAssets(): Promise<void> {
+    if (!this.embedded() || this.bulkBusy()) return;
+    const assets = this.movableAssets();
+    if (!assets.length) return;
+
+    this.bulkBusy.set(true);
+    this.errorKey.set(null);
+    try {
+      const updated = await firstValueFrom(this.assetsService.moveAssets({
+        ids: assets.map((asset) => asset.id),
+        folderId: this.bulkTargetId(),
+      }));
+      const moved = new Set(updated.map((asset) => asset.id));
+      this.loadedAssets.update((current) => [
+        ...updated,
+        ...current.filter((asset) => !moved.has(asset.id)),
+      ]);
+      for (const asset of updated) this.assetUpdated.emit(asset);
+      this.selectedIds.set(new Set<string>());
+      this.bulkMode.set(false);
+    } catch {
+      this.errorKey.set('admin.media.bulkMoveFailed');
+    } finally {
+      this.bulkBusy.set(false);
     }
   }
 

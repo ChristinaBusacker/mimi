@@ -36,6 +36,7 @@ import { AUTH_SESSION_COOKIE } from '../auth/session-cookie';
 import { AssetDto } from './dto/asset.dto';
 import { AssetFolderDto } from './dto/asset-folder.dto';
 import { UpdateAssetDescriptionsDto } from './dto/update-asset-descriptions.dto';
+import { MoveAssetsDto } from './dto/move-assets.dto';
 import type { UploadedAssetFile } from './asset-file';
 import { AssetsService } from './assets.service';
 
@@ -114,6 +115,13 @@ export class AdminAssetsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteFolder(@Param('uuid') uuid: string): Promise<void> {
     return this.assetsService.deleteFolder(uuid);
+  }
+
+  @Patch('bulk/folder')
+  @ApiOperation({ summary: 'Move multiple assets to the same folder' })
+  @ApiOkResponse({ type: AssetDto, isArray: true })
+  moveAssets(@Body() input: MoveAssetsDto): Promise<AssetDto[]> {
+    return this.assetsService.moveAssets(input.ids, input.folderId);
   }
 
   @Patch(':uuid/folder')

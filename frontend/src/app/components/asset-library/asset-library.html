@@ -82,6 +82,13 @@
       </label>
     </div>
 
+    @if (search().trim()) {
+      <label class="search-scope">
+        <input type="checkbox" [checked]="searchAllFolders()" (change)="setSearchAllFolders($event)" />
+        {{ 'admin.media.searchAllFolders' | i18n | async }}
+      </label>
+    }
+
     <nav class="folder-navigation" [attr.aria-label]="'admin.media.folders' | i18n | async">
       <button type="button" [class.active]="folderId() === null" (click)="changeFolder(null)">
         {{ 'admin.media.root' | i18n | async }}
@@ -117,6 +124,37 @@
         {{ 'page.editor.media.incomplete' | i18n | async }}
       </button>
     }
+    @if (embedded()) {
+      <div class="bulk-toolbar">
+        @if (!bulkMode()) {
+          <button type="button" (click)="startBulkMode()">
+            {{ 'admin.media.bulkStart' | i18n | async }}
+          </button>
+        } @else {
+          <strong aria-live="polite">{{ 'admin.media.bulkSelected' | i18n | async }}: {{ selectedAssets().length }}</strong>
+          <button type="button" [disabled]="bulkBusy() || filteredAssets().length === 0"
+            (click)="selectVisibleAssets()">{{ 'admin.media.bulkSelectVisible' | i18n | async }}</button>
+          <button type="button" [disabled]="bulkBusy() || !selectedAssets().length"
+            (click)="clearBulkSelection()">{{ 'admin.media.bulkClear' | i18n | async }}</button>
+          <label>
+            <span>{{ 'admin.media.bulkTarget' | i18n | async }}</span>
+            <select [value]="bulkTargetId() ?? ''" [disabled]="bulkBusy()" (change)="setBulkTarget($event)">
+              <option value="">{{ 'admin.media.root' | i18n | async }}</option>
+              @for (folder of folders(); track folder.id) {
+                <option [value]="folder.id">{{ folderPaths()[folder.id] }}</option>
+              }
+            </select>
+          </label>
+          <button type="button" class="bulk-move" [disabled]="bulkBusy() || !movableAssets().length"
+            (click)="moveSelectedAssets()">
+            {{ (bulkBusy() ? 'admin.media.bulkWorking' : 'admin.media.bulkMove') | i18n | async }}
+          </button>
+          <button type="button" [disabled]="bulkBusy()" (click)="stopBulkMode()">
+            {{ 'admin.media.bulkCancel' | i18n | async }}
+          </button>
+        }
+      </div>
+    }
     @if (errorKey(); as error) {
       <p class="error" role="alert">{{ error | i18n | async }}</p>
     }
@@ -131,7 +169,15 @@
     } @else {
       <div class="library" [class.images]="type() === 'image'">
         @for (asset of filteredAssets(); track asset.id) {
-          <article class="asset" [class.selected]="selectedId() === asset.id" [class.is-expanded]="focusedId() === asset.id">
+          <article class="asset" [class.selected]="selectedId() === asset.id" [class.bulk-selected]="selectedIds().has(asset.id)" [class.is-expanded]="focusedId() === asset.id">
+            @if (embedded() && bulkMode()) {
+              <label class="bulk-select">
+                <input type="checkbox" [checked]="selectedIds().has(asset.id)"
+                  [disabled]="bulkBusy() || (selectedIds().size >= 1000 && !selectedIds().has(asset.id))"
+                  (change)="toggleBulkAsset(asset.id, $event)" />
+                {{ 'admin.media.bulkSelectItem' | i18n | async }}: {{ asset.originalFilename }}
+              </label>
+            }
             @if (asset.type === 'image') {
               <button
                 type="button"
@@ -154,6 +200,11 @@
               <span>
                 {{ asset.createdAt | date: 'mediumDate' }} · {{ formatSize(asset.sizeBytes) }}
               </span>
+              @if (search().trim() && searchAllFolders()) {
+                <span class="asset-location">
+                  {{ asset.folderId ? folderPaths()[asset.folderId] : ('admin.media.root' | i18n | async) }}
+                </span>
+              }
             </div>
 
             @if (asset.type === 'image') {

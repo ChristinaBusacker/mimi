@@ -39,6 +39,11 @@ export interface AssetFolder {
   name: string;
 }
 
+export interface MoveAssetsInput {
+  ids: string[];
+  folderId: string | null;
+}
+
 export interface UpdateAssetDescriptions {
   descriptionDe: string;
   descriptionEn: string;

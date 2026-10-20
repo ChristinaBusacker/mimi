@@ -4,6 +4,7 @@ import type {
   AssetType,
   AssetImageEdits,
   UpdateAssetDescriptions,
+  MoveAssetsInput,
 } from '@shared/assets/asset';
 
 import {
@@ -51,6 +52,10 @@ export class AdminAssetsService {
     return this.request.patch<Asset, { folderId: string | null }>(
       `/admin/assets/${id}/folder`, { folderId },
     );
+  }
+
+  moveAssets(input: MoveAssetsInput): Observable<Asset[]> {
+    return this.request.patch<Asset[], MoveAssetsInput>('/admin/assets/bulk/folder', input);
   }
 
   upload(file: File, folderId: string | null = null): Observable<Asset> {

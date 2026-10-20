@@ -1,0 +1,64 @@
+{
+  "localizations": [
+    {
+      "key": "admin.media.searchAllFolders",
+      "de": "Alle Ordner durchsuchen",
+      "en": "Search all folders"
+    },
+    {
+      "key": "admin.media.bulkStart",
+      "de": "Mehrere auswählen",
+      "en": "Select multiple"
+    },
+    {
+      "key": "admin.media.bulkSelected",
+      "de": "Ausgewählt",
+      "en": "Selected"
+    },
+    {
+      "key": "admin.media.bulkSelectVisible",
+      "de": "Sichtbare auswählen",
+      "en": "Select visible"
+    },
+    {
+      "key": "admin.media.bulkClear",
+      "de": "Auswahl aufheben",
+      "en": "Clear selection"
+    },
+    {
+      "key": "admin.media.bulkTarget",
+      "de": "Zielordner",
+      "en": "Destination folder"
+    },
+    {
+      "key": "admin.media.bulkMove",
+      "de": "Auswahl verschieben",
+      "en": "Move selected"
+    },
+    {
+      "key": "admin.media.bulkWorking",
+      "de": "Verschiebe Medien …",
+      "en": "Moving assets…"
+    },
+    {
+      "key": "admin.media.bulkCancel",
+      "de": "Mehrfachauswahl beenden",
+      "en": "Exit multi-select"
+    },
+    {
+      "key": "admin.media.bulkSelectItem",
+      "de": "Auswählen",
+      "en": "Select"
+    },
+    {
+      "key": "admin.media.bulkMoveFailed",
+      "de": "Die ausgewählten Medien konnten nicht verschoben werden. Es wurde nichts verändert.",
+      "en": "Could not move the selected assets. No changes were made."
+    },
+    {
+      "key": "admin.media.bulkLimit",
+      "de": "Es können höchstens 1.000 Medien gleichzeitig ausgewählt werden.",
+      "en": "You can select at most 1,000 assets at a time."
+    }
+  ]
+}
