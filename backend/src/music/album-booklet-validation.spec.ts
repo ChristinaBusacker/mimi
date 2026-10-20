@@ -56,6 +56,22 @@ describe('Album booklet document validation', () => {
     expect(validateAlbumBooklet(input)).toEqual(input);
   });
 
+  it('supports all gallery presets while retaining older galleries', () => {
+    for (const layout of ['grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'] as const) {
+      const input = document('1');
+      input.sections[0].rows[0].columns[0].blocks = [
+        { id: 'gallery', type: 'gallery', styles, layout, items: [] },
+      ];
+      expect(validateAlbumBooklet(input)).toEqual(input);
+    }
+
+    const legacy = document('1');
+    legacy.sections[0].rows[0].columns[0].blocks = [
+      { id: 'gallery', type: 'gallery', styles, items: [] },
+    ];
+    expect(validateAlbumBooklet(legacy)).toEqual(legacy);
+  });
+
   it('rejects arbitrary column alignment and gallery layouts', () => {
     const input = document('1');
     const column = input.sections[0].rows[0].columns[0];

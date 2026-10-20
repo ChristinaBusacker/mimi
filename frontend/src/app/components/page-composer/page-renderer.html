@@ -125,7 +125,12 @@
                         @if (editable() && !block.items.length) {
                           <div class="page-document__empty"><app-icon name="gallery" /> {{ 'page.editor.block.gallery' | i18n | async }}</div>
                         }
-                        <div class="page-document__gallery" [class.page-document__gallery--featured]="block.layout === 'featured'">
+                        <div class="page-document__gallery"
+                          [class.page-document__gallery--featured]="block.layout === 'featured' && block.items.length >= 3"
+                          [class.page-document__gallery--featured-right]="block.layout === 'featuredRight' && block.items.length >= 3"
+                          [class.page-document__gallery--panorama]="block.layout === 'panorama' && block.items.length >= 2"
+                          [class.page-document__gallery--mosaic]="block.layout === 'mosaic' && block.items.length >= 4"
+                          [class.page-document__gallery--filmstrip]="block.layout === 'filmstrip' && block.items.length >= 2">
                           @for (item of block.items; track item.id) {
                             <button type="button" class="page-document__gallery-item"
                               [attr.aria-label]="item.alt[locale()] || item.alt.de || ('page.editor.gallery.openImage' | i18n | async)"

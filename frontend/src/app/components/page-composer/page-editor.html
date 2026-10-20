@@ -420,6 +420,10 @@
                   <select [value]="block.layout ?? 'grid'" (change)="setGalleryLayout($event)">
                     <option value="grid">{{ 'page.editor.gallery.grid' | i18n | async }}</option>
                     <option value="featured">{{ 'page.editor.gallery.featured' | i18n | async }}</option>
+                    <option value="featuredRight">{{ 'page.editor.gallery.featuredRight' | i18n | async }}</option>
+                    <option value="panorama">{{ 'page.editor.gallery.panorama' | i18n | async }}</option>
+                    <option value="mosaic">{{ 'page.editor.gallery.mosaic' | i18n | async }}</option>
+                    <option value="filmstrip">{{ 'page.editor.gallery.filmstrip' | i18n | async }}</option>
                   </select>
                   @for (image of block.items; track image.id) {
                     <div class="composer__gallery-item">

@@ -51,7 +51,7 @@ export interface PageGalleryItem {
 export interface PageGalleryBlock extends PageNode {
   type: 'gallery';
   /** Existing galleries default to the regular grid. */
-  layout?: 'grid' | 'featured';
+  layout?: 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic' | 'filmstrip';
   items: PageGalleryItem[];
 }
 export interface PageSpacerBlock extends PageNode {

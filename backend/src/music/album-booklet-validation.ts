@@ -174,11 +174,14 @@ function block(value: unknown): PageBlock {
       };
     case 'gallery': {
       const layout = data['layout'];
-      if (layout !== undefined && layout !== 'grid' && layout !== 'featured')
-        invalid('invalid gallery layout');
+      if (
+        layout !== undefined &&
+        (typeof layout !== 'string' ||
+          !['grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'].includes(layout))
+      ) invalid('invalid gallery layout');
       return {
         ...base, type: 'gallery',
-        ...(layout === undefined ? {} : { layout: layout as 'grid' | 'featured' }),
+        ...(layout === undefined ? {} : { layout: layout as 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic' | 'filmstrip' }),
         items: list(data['items'], 36).map(galleryItem),
       };
     }

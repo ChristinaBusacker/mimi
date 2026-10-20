@@ -390,8 +390,9 @@ export class PageEditor {
     return value && 'type' in value ? value : null;
   });
   protected readonly selectedRow = computed(() => {
+    const selection = this.selected();
     const value = this.active();
-    return value && 'layout' in value ? value : null;
+    return selection?.kind === 'row' && value && 'columns' in value ? value : null;
   });
   protected readonly selectedColumn = computed(() => {
     const value = this.active();
@@ -652,7 +653,10 @@ export class PageEditor {
   }
   protected setGalleryLayout(event: Event): void {
     const layout = this.value(event);
-    if (layout !== 'grid' && layout !== 'featured') return;
+    if (
+      layout !== 'grid' && layout !== 'featured' && layout !== 'featuredRight' &&
+      layout !== 'panorama' && layout !== 'mosaic' && layout !== 'filmstrip'
+    ) return;
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'gallery') node.layout = layout;
     });

@@ -1,0 +1,29 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.gallery.featured",
+      "de": "Links hervorgehoben",
+      "en": "Featured on the left"
+    },
+    {
+      "key": "page.editor.gallery.featuredRight",
+      "de": "Rechts hervorgehoben",
+      "en": "Featured on the right"
+    },
+    {
+      "key": "page.editor.gallery.panorama",
+      "de": "Panorama",
+      "en": "Panorama"
+    },
+    {
+      "key": "page.editor.gallery.mosaic",
+      "de": "Mosaik",
+      "en": "Mosaic"
+    },
+    {
+      "key": "page.editor.gallery.filmstrip",
+      "de": "Filmstreifen",
+      "en": "Filmstrip"
+    }
+  ]
+}
