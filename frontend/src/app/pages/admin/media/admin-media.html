@@ -1,0 +1,19 @@
+<section class="admin-media">
+  <header>
+    <h1>{{ 'admin.media.title' | i18n | async }}</h1>
+    <p>{{ 'admin.media.description' | i18n | async }}</p>
+  </header>
+  <nav class="media-types" [attr.aria-label]="'admin.media.types' | i18n | async">
+    <button type="button" [attr.aria-pressed]="type() === 'image'" (click)="setType('image')">
+      {{ 'admin.media.images' | i18n | async }}
+    </button>
+    <button type="button" [attr.aria-pressed]="type() === 'audio'" (click)="setType('audio')">
+      {{ 'admin.media.audio' | i18n | async }}
+    </button>
+  </nav>
+  @if (type() === 'image') {
+    <app-asset-library type="image" [embedded]="true" />
+  } @else {
+    <app-asset-library type="audio" [embedded]="true" />
+  }
+</section>

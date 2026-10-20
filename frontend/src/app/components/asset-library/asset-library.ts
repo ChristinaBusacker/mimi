@@ -1,10 +1,11 @@
-import type { Asset, AssetType } from '@shared/assets/asset';
+import type { Asset, AssetFolder, AssetType } from '@shared/assets/asset';
 
 import { AsyncPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  OnInit,
   computed,
   inject,
   input,
@@ -27,11 +28,12 @@ type AssetSort = 'newest' | 'oldest' | 'nameAsc' | 'nameDesc';
   styleUrl: './asset-library.scss',
   templateUrl: './asset-library.html',
 })
-export class AssetLibrary {
+export class AssetLibrary implements OnInit {
   private readonly assetsService = inject(AdminAssetsService);
   private readonly dialog = viewChild<ElementRef<HTMLDialogElement>>('dialog');
 
   readonly type = input.required<AssetType>();
+  readonly embedded = input(false);
   readonly assets = input<readonly Asset[]>([]);
   readonly selectedId = input<string | null>('');
 
@@ -46,6 +48,16 @@ export class AssetLibrary {
   private dragDepth = 0;
 
   protected readonly search = signal('');
+  protected readonly folders = signal<AssetFolder[]>([]);
+  protected readonly folderId = signal<string | null>(null);
+  protected readonly folderName = signal('');
+  protected readonly folderBusy = signal(false);
+  protected readonly childFolders = computed(() =>
+    this.folders().filter((folder) => folder.parentId === this.folderId()),
+  );
+  protected readonly currentFolder = computed(
+    () => this.folders().find((folder) => folder.id === this.folderId()) ?? null,
+  );
   protected readonly focusedId = signal<string | null>(null);
   readonly decorative = input(false);
   protected readonly incompleteOnly = signal(false);
@@ -76,9 +88,15 @@ export class AssetLibrary {
     const query = this.search().trim().toLocaleLowerCase();
 
     const assets = this.availableAssets()
-      .filter((asset) => !this.incompleteOnly() || !this.hasCompleteDescriptions(asset))
-      .filter((asset) => !query || [asset.originalFilename, asset.descriptionDe ?? '', asset.descriptionEn ?? '']
-        .some((value) => value.toLocaleLowerCase().includes(query)))
+      .filter((asset) => asset.folderId === this.folderId())
+      .filter((asset) => !this.incompleteOnly())
+      .filter(
+        (asset) =>
+          !query ||
+          [asset.originalFilename, asset.descriptionDe ?? '', asset.descriptionEn ?? ''].some(
+            (value) => value.toLocaleLowerCase().includes(query),
+          ),
+      )
       .slice();
 
     switch (this.sort()) {
@@ -98,18 +116,28 @@ export class AssetLibrary {
     }
   });
 
+  ngOnInit(): void {
+    if (this.embedded()) {
+      void this.reload();
+    }
+  }
+
   async open(): Promise<void> {
     this.errorKey.set(null);
     this.confirmingDeleteId.set(null);
     this.focusedId.set(null);
     this.incompleteOnly.set(false);
-    this.dialog()?.nativeElement.showModal();
+    if (!this.embedded()) {
+      this.dialog()?.nativeElement.showModal();
+    }
 
     await this.reload();
   }
 
   protected close(): void {
-    this.dialog()?.nativeElement.close();
+    if (!this.embedded()) {
+      this.dialog()?.nativeElement.close();
+    }
   }
 
   protected onClosed(): void {
@@ -132,6 +160,75 @@ export class AssetLibrary {
     }
   }
 
+  protected changeFolder(id: string | null): void {
+    this.folderId.set(id);
+    this.focusedId.set(null);
+    this.confirmingDeleteId.set(null);
+    this.errorKey.set(null);
+  }
+
+  protected goToParent(): void {
+    this.changeFolder(this.currentFolder()?.parentId ?? null);
+  }
+
+  protected setFolderName(event: Event): void {
+    this.folderName.set(this.readControlValue(event));
+  }
+
+  protected async createFolder(): Promise<void> {
+    const name = this.folderName().trim();
+    if (!name || this.folderBusy()) {
+      return;
+    }
+    this.folderBusy.set(true);
+    this.errorKey.set(null);
+    try {
+      const folder = await firstValueFrom(this.assetsService.createFolder(name, this.folderId()));
+      this.folders.update((folders) => [...folders, folder]);
+      this.folderName.set('');
+    } catch {
+      this.errorKey.set('admin.media.folderCreateFailed');
+    } finally {
+      this.folderBusy.set(false);
+    }
+  }
+
+  protected async deleteCurrentFolder(): Promise<void> {
+    const folder = this.currentFolder();
+    if (!folder || this.folderBusy()) {
+      return;
+    }
+    this.folderBusy.set(true);
+    this.errorKey.set(null);
+    try {
+      await firstValueFrom(this.assetsService.deleteFolder(folder.id));
+      this.folders.update((folders) => folders.filter((item) => item.id !== folder.id));
+      this.changeFolder(folder.parentId);
+    } catch {
+      this.errorKey.set('admin.media.folderDeleteFailed');
+    } finally {
+      this.folderBusy.set(false);
+    }
+  }
+
+  protected async moveAsset(asset: Asset, event: Event): Promise<void> {
+    const id = this.readControlValue(event) || null;
+    if (id === asset.folderId) {
+      return;
+    }
+    this.errorKey.set(null);
+    try {
+      const updated = await firstValueFrom(this.assetsService.moveAsset(asset.id, id));
+      this.loadedAssets.update((assets) => [
+        updated,
+        ...assets.filter((item) => item.id !== updated.id),
+      ]);
+      this.assetUpdated.emit(updated);
+    } catch {
+      this.errorKey.set('admin.media.moveFailed');
+    }
+  }
+
   protected select(asset: Asset): void {
     if (asset.type === 'image' && !this.decorative() && !this.hasCompleteDescriptions(asset)) {
       this.errorKey.set('admin.assetPicker.descriptionsRequired');
@@ -143,7 +240,7 @@ export class AssetLibrary {
   }
 
   protected toggleDetails(id: string): void {
-    this.focusedId.update((current) => current === id ? null : id);
+    this.focusedId.update((current) => (current === id ? null : id));
   }
 
   protected toggleIncomplete(): void {
@@ -237,8 +334,11 @@ export class AssetLibrary {
       return;
     }
 
-    await this.uploadFile(target.files[0]);
+    const files = Array.from(target.files);
     target.value = '';
+    for (const file of files) {
+      await this.uploadFile(file);
+    }
   }
 
   protected onDragEnter(event: DragEvent): void {
@@ -291,12 +391,9 @@ export class AssetLibrary {
       return;
     }
 
-    if (files.length > 1) {
-      this.errorKey.set('admin.assetPicker.singleFileOnly');
-      return;
+    for (const file of Array.from(files)) {
+      await this.uploadFile(file);
     }
-
-    await this.uploadFile(files[0]);
   }
 
   protected requestDelete(asset: Asset): void {
@@ -359,7 +456,12 @@ export class AssetLibrary {
     this.loading.set(true);
 
     try {
-      this.loadedAssets.set(await firstValueFrom(this.assetsService.getAll(this.type())));
+      const [assets, folders] = await Promise.all([
+        firstValueFrom(this.assetsService.getAll(this.type())),
+        firstValueFrom(this.assetsService.getFolders()),
+      ]);
+      this.loadedAssets.set(assets);
+      this.folders.set(folders);
     } catch {
       this.errorKey.set('admin.assetPicker.loadFailed');
     } finally {
@@ -376,13 +478,16 @@ export class AssetLibrary {
     this.errorKey.set(null);
 
     try {
-      const asset = await firstValueFrom(this.assetsService.upload(file));
+      const asset = await firstValueFrom(this.assetsService.upload(file, this.folderId()));
 
       if (asset.type !== this.type()) {
         this.errorKey.set('admin.assetPicker.wrongType');
         return;
       }
 
+      if (asset.folderId !== this.folderId()) {
+        this.errorKey.set('admin.media.duplicateOtherFolder');
+      }
       this.loadedAssets.update((assets) => [
         asset,
         ...assets.filter((candidate) => candidate.id !== asset.id),
@@ -390,7 +495,7 @@ export class AssetLibrary {
 
       this.assetUploaded.emit(asset);
 
-      if (asset.type === 'audio') {
+      if (asset.type === 'audio' && !this.embedded()) {
         this.select(asset);
       } else {
         this.descriptionDrafts.update((drafts) => ({

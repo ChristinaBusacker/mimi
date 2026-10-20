@@ -65,10 +65,12 @@ export class AssetsController {
         format,
       );
 
+    const revisioned = request.query['v'] === this.assetsService.getImagePresetRevision(variant);
     return this.sendFile(
       resolved,
       request,
       response,
+      revisioned,
     );
   }
 
@@ -114,11 +116,12 @@ export class AssetsController {
     resolved: ResolvedAssetFile,
     request: Request,
     response: Response,
+    revisioned = false,
   ): StreamableFile | void {
     response.setHeader('Accept-Ranges', 'bytes');
     response.setHeader(
       'Cache-Control',
-      'public, max-age=31536000, immutable',
+      revisioned ? 'public, max-age=31536000, immutable' : 'public, max-age=300',
     );
     response.setHeader(
       'Content-Type',

@@ -75,6 +75,9 @@ export class AssetEntry {
   })
   storageKey!: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  folderId!: string | null;
+
   @CreateDateColumn({
     type: 'timestamptz',
   })

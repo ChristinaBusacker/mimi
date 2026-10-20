@@ -10,9 +10,16 @@ export interface Asset {
   height: number | null;
   descriptionDe: string | null;
   descriptionEn: string | null;
+  folderId: string | null;
   url: string;
   thumbnailUrl: string | null;
   createdAt: string;
+}
+
+export interface AssetFolder {
+  id: string;
+  parentId: string | null;
+  name: string;
 }
 
 export interface UpdateAssetDescriptions {

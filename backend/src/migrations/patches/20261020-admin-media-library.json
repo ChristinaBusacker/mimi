@@ -1,0 +1,94 @@
+{
+  "localizations": [
+    {
+      "key": "admin.nav.media",
+      "de": "Medien",
+      "en": "Media"
+    },
+    {
+      "key": "admin.media.title",
+      "de": "Medienbibliothek",
+      "en": "Media library"
+    },
+    {
+      "key": "admin.media.description",
+      "de": "Bilder und Audiodateien verwalten, ordnen und für Inhalte verwenden.",
+      "en": "Manage, organize and reuse images and audio files."
+    },
+    {
+      "key": "admin.media.types",
+      "de": "Medientypen",
+      "en": "Media types"
+    },
+    {
+      "key": "admin.media.images",
+      "de": "Bilder",
+      "en": "Images"
+    },
+    {
+      "key": "admin.media.audio",
+      "de": "Audio",
+      "en": "Audio"
+    },
+    {
+      "key": "admin.media.folders",
+      "de": "Medienordner",
+      "en": "Media folders"
+    },
+    {
+      "key": "admin.media.root",
+      "de": "Alle Medien",
+      "en": "All media"
+    },
+    {
+      "key": "admin.media.parent",
+      "de": "Eine Ebene höher",
+      "en": "Up one level"
+    },
+    {
+      "key": "admin.media.newFolder",
+      "de": "Ordner anlegen",
+      "en": "Create folder"
+    },
+    {
+      "key": "admin.media.folderPlaceholder",
+      "de": "Ordnername",
+      "en": "Folder name"
+    },
+    {
+      "key": "admin.media.create",
+      "de": "Erstellen",
+      "en": "Create"
+    },
+    {
+      "key": "admin.media.deleteFolder",
+      "de": "Ordner löschen",
+      "en": "Delete folder"
+    },
+    {
+      "key": "admin.media.moveTo",
+      "de": "Verschieben nach",
+      "en": "Move to"
+    },
+    {
+      "key": "admin.media.folderCreateFailed",
+      "de": "Der Ordner konnte nicht erstellt werden. Name und vorhandene Ordner prüfen.",
+      "en": "Could not create folder. Check the name and existing folders."
+    },
+    {
+      "key": "admin.media.folderDeleteFailed",
+      "de": "Der Ordner konnte nicht gelöscht werden. Nur leere Ordner lassen sich löschen.",
+      "en": "Could not delete folder. Only empty folders can be deleted."
+    },
+    {
+      "key": "admin.media.moveFailed",
+      "de": "Die Datei konnte nicht verschoben werden.",
+      "en": "Could not move the file."
+    },
+    {
+      "key": "admin.media.duplicateOtherFolder",
+      "de": "Diese Datei existiert bereits in einem anderen Ordner.",
+      "en": "This file already exists in another folder."
+    }
+  ]
+}

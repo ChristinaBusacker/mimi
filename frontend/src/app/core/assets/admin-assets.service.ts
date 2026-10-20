@@ -1,5 +1,6 @@
 import type {
   Asset,
+  AssetFolder,
   AssetType,
   UpdateAssetDescriptions,
 } from '@shared/assets/asset';
@@ -28,13 +29,36 @@ export class AdminAssetsService {
     );
   }
 
-  upload(file: File): Observable<Asset> {
+  getFolders(): Observable<AssetFolder[]> {
+    return this.request.get<AssetFolder[]>('/admin/assets/folders', {
+      deduplicateAcrossTabs: false,
+      transferCache: false,
+    });
+  }
+
+  createFolder(name: string, parentId: string | null): Observable<AssetFolder> {
+    return this.request.post<AssetFolder, { name: string; parentId: string | null }>(
+      '/admin/assets/folders', { name, parentId },
+    );
+  }
+
+  deleteFolder(id: string): Observable<void> {
+    return this.request.delete<void>(`/admin/assets/folders/${id}`);
+  }
+
+  moveAsset(id: string, folderId: string | null): Observable<Asset> {
+    return this.request.patch<Asset, { folderId: string | null }>(
+      `/admin/assets/${id}/folder`, { folderId },
+    );
+  }
+
+  upload(file: File, folderId: string | null = null): Observable<Asset> {
     const body = new FormData();
 
     body.append('file', file);
 
     return this.request.post<Asset, FormData>(
-      '/admin/assets',
+      folderId ? `/admin/assets?folderId=${encodeURIComponent(folderId)}` : '/admin/assets',
       body,
     );
   }

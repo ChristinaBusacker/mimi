@@ -6,6 +6,7 @@ import type {
 
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
@@ -36,6 +37,9 @@ import {
 
 import {
   ASSET_IMAGE_VARIANTS,
+  ASSET_IMAGE_FORMATS,
+  ASSET_IMAGE_REVISIONS,
+  imageVariantStorageName,
   type AssetImageVariantDefinition,
   type AssetImageVariantFormat,
   type AssetImageVariantName,
@@ -50,6 +54,8 @@ import {
   type UploadedAssetFile,
 } from './asset-file';
 import { AssetEntry } from './entities/asset.entry';
+import { AssetFolderEntry } from './entities/asset-folder.entry';
+import type { AssetFolder } from '@shared/assets/asset';
 import { AssetVariantEntry } from './entities/asset-variant.entry';
 
 export interface ResolvedAssetFile {
@@ -90,6 +96,8 @@ export class AssetsService {
   constructor(
     @InjectRepository(AssetEntry)
     private readonly repository: Repository<AssetEntry>,
+    @InjectRepository(AssetFolderEntry)
+    private readonly folderRepository: Repository<AssetFolderEntry>,
     @InjectRepository(AssetVariantEntry)
     private readonly variantRepository: Repository<AssetVariantEntry>,
     @InjectDataSource()
@@ -107,8 +115,9 @@ export class AssetsService {
     this.maxUploadBytes = getAssetMaxUploadBytes(configService);
   }
 
-  async create(file: UploadedAssetFile): Promise<Asset> {
+  async create(file: UploadedAssetFile, folderId: string | null = null): Promise<Asset> {
     this.validateUpload(file);
+    await this.assertFolder(folderId);
 
     const configuredMimeType =
       SUPPORTED_ASSET_MIME_TYPES[file.mimetype];
@@ -131,7 +140,7 @@ export class AssetsService {
 
     const preparedImage =
       configuredMimeType.type === 'image'
-        ? await this.prepareImage(file.buffer)
+        ? await this.prepareImage(file.buffer, ['thumbnail'])
         : null;
     const uuid = randomUUID();
     const mimeType = preparedImage?.mimeType ?? file.mimetype;
@@ -173,6 +182,7 @@ export class AssetsService {
               ),
               mimeType,
               sizeBytes: file.size,
+              folderId,
               contentHash,
               width: preparedImage?.width ?? null,
               height: preparedImage?.height ?? null,
@@ -205,6 +215,67 @@ export class AssetsService {
 
       throw error;
     }
+  }
+
+  async getFolders(): Promise<AssetFolder[]> {
+    const entries = await this.folderRepository.find({ order: { name: 'ASC' } });
+    return entries.map(({ uuid, name, parentId }) => ({ id: uuid, name, parentId }));
+  }
+
+  async createFolder(name: string, parentId: string | null): Promise<AssetFolder> {
+    const normalized = typeof name === 'string' ? name.trim() : '';
+    if (!normalized || normalized.length > 120 || /[\\/]/.test(normalized)) {
+      throw new BadRequestException('Invalid folder name.');
+    }
+    await this.assertFolder(parentId);
+    const existing = await this.folderRepository.createQueryBuilder('folder')
+      .where('lower(folder.name) = lower(:name)', { name: normalized })
+      .andWhere(parentId === null ? 'folder.parentId IS NULL' : 'folder.parentId = :parentId', { parentId })
+      .getOne();
+    if (existing) {
+      throw new ConflictException('A folder with that name already exists.');
+    }
+    try {
+      const saved = await this.folderRepository.save(
+        this.folderRepository.create({ name: normalized, parentId }),
+      );
+      return { id: saved.uuid, name: saved.name, parentId: saved.parentId };
+    } catch {
+      throw new ConflictException('Could not create the folder.');
+    }
+  }
+
+  async deleteFolder(id: string): Promise<void> {
+    await this.assertFolder(id);
+    const [children, assets] = await Promise.all([
+      this.folderRepository.countBy({ parentId: id }),
+      this.repository.countBy({ folderId: id }),
+    ]);
+    if (children > 0 || assets > 0) {
+      throw new ConflictException('Only empty folders can be deleted.');
+    }
+    await this.folderRepository.delete({ uuid: id });
+  }
+
+  async moveAsset(uuid: string, folderId: string | null): Promise<Asset> {
+    await this.assertFolder(folderId);
+    const asset = await this.findAsset(uuid);
+    asset.folderId = folderId;
+    return this.mapAsset(await this.repository.save(asset));
+  }
+
+  private async assertFolder(id: string | null): Promise<void> {
+    if (id !== null && !(await this.folderRepository.existsBy({ uuid: id }))) {
+      throw new BadRequestException('Folder does not exist.');
+    }
+  }
+
+  getImagePresets(): Readonly<Record<string, AssetImageVariantDefinition>> {
+    return ASSET_IMAGE_VARIANTS;
+  }
+
+  getImagePresetRevision(name: string): string | undefined {
+    return ASSET_IMAGE_REVISIONS[name];
   }
 
   async getAll(type?: AssetType): Promise<Asset[]> {
@@ -277,18 +348,19 @@ export class AssetsService {
       );
     }
 
+    const storageName = imageVariantStorageName(variantName);
     let variant = await this.variantRepository.findOneBy({
       assetUuid: uuid,
-      name: variantName,
+      name: storageName,
       format: variantFormat,
     });
 
     if (!variant) {
-      await this.generateMissingImageVariants(asset);
+      await this.generateMissingImageVariants(asset, variantName);
 
       variant = await this.variantRepository.findOneBy({
         assetUuid: uuid,
-        name: variantName,
+        name: storageName,
         format: variantFormat,
       });
     }
@@ -423,6 +495,7 @@ export class AssetsService {
 
   private async prepareImage(
     buffer: Buffer,
+    names: readonly string[],
   ): Promise<PreparedImage> {
     let metadata: Metadata;
 
@@ -454,12 +527,11 @@ export class AssetsService {
     const displayHeight = rotated ? width : height;
     const variants: PreparedVariant[] = [];
 
-    for (const [name, definition] of Object.entries(
-      ASSET_IMAGE_VARIANTS,
-    ) as Array<[
-      AssetImageVariantName,
-      AssetImageVariantDefinition,
-    ]>) {
+    for (const name of names) {
+      const definition = ASSET_IMAGE_VARIANTS[name];
+      if (!definition) {
+        throw new BadRequestException(`Unknown image preset: ${name}.`);
+      }
       let base = sharp(buffer, {
         failOn: 'error',
       }).rotate();
@@ -493,14 +565,14 @@ export class AssetsService {
       const webp = await resized
         .clone()
         .webp({
-          quality: 82,
+          quality: ASSET_IMAGE_FORMATS.webpQuality,
         })
         .toBuffer({
           resolveWithObject: true,
         });
 
       variants.push({
-        name,
+        name: imageVariantStorageName(name),
         format: 'webp',
         extension: 'webp',
         mimeType: 'image/webp',
@@ -516,7 +588,7 @@ export class AssetsService {
         ? await resized
             .clone()
             .png({
-              compressionLevel: 9,
+              compressionLevel: ASSET_IMAGE_FORMATS.pngCompressionLevel,
             })
             .toBuffer({
               resolveWithObject: true,
@@ -524,10 +596,7 @@ export class AssetsService {
         : await resized
             .clone()
             .jpeg({
-              quality:
-                name === 'social'
-                  ? 88
-                  : 85,
+              quality: ASSET_IMAGE_FORMATS.jpegQuality,
               mozjpeg: true,
             })
             .toBuffer({
@@ -535,7 +604,7 @@ export class AssetsService {
             });
 
       variants.push({
-        name,
+        name: imageVariantStorageName(name),
         format: 'fallback',
         extension:
           fallbackIsPng
@@ -631,6 +700,7 @@ export class AssetsService {
 
   private async generateMissingImageVariants(
     asset: AssetEntry,
+    name: string,
   ): Promise<void> {
     const absolutePath = join(
       this.storagePath,
@@ -644,7 +714,7 @@ export class AssetsService {
       );
     }
 
-    const prepared = await this.prepareImage(buffer);
+    const prepared = await this.prepareImage(buffer, [name]);
     const storedFiles: StoredFile[] = [];
     const existingVariants =
       await this.variantRepository.findBy({
@@ -783,12 +853,7 @@ export class AssetsService {
   private parseVariantName(
     value: string,
   ): AssetImageVariantName {
-    if (
-      value === 'thumbnail' ||
-      value === 'medium' ||
-      value === 'large' ||
-      value === 'social'
-    ) {
+    if (Object.hasOwn(ASSET_IMAGE_VARIANTS, value)) {
       return value;
     }
 
@@ -891,10 +956,11 @@ export class AssetsService {
       height: asset.height,
       descriptionDe: asset.descriptionDe,
       descriptionEn: asset.descriptionEn,
+      folderId: asset.folderId,
       url: `/api/assets/${asset.uuid}`,
       thumbnailUrl:
         asset.type === 'image'
-          ? `/api/assets/${asset.uuid}/image/thumbnail/webp`
+          ? `/api/assets/${asset.uuid}/image/thumbnail/webp?v=${ASSET_IMAGE_REVISIONS['thumbnail']}`
           : null,
       createdAt: asset.createdAt.toISOString(),
     };

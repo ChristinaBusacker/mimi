@@ -181,6 +181,12 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'media',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/media/admin-media').then((module) => module.AdminMedia),
+      },
+      {
         path: 'music',
         canActivate: [adminGuard],
         loadComponent: () =>

@@ -29,7 +29,7 @@ export class AssetVariantEntry {
 
   @PrimaryColumn({
     type: 'varchar',
-    length: 20,
+    length: 64,
   })
   name!: AssetImageVariantName;
 

@@ -15,6 +15,10 @@
                 "watchAssets": true
             },
             {
+                "include": "assets/image-presets.json",
+                "watchAssets": true
+            },
+            {
                 "include": "mail/templates/**/*.mjml",
                 "watchAssets": true
             }

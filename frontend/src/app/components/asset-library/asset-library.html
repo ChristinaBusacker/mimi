@@ -1,6 +1,8 @@
 <dialog
   #dialog
   class="library-dialog"
+  [class.embedded]="embedded()"
+  [attr.open]="embedded() ? '' : null"
   [class.dragging]="dragActive()"
   (close)="onClosed()"
   (dragenter)="onDragEnter($event)"
@@ -33,6 +35,7 @@
       <button
         type="button"
         class="close"
+        [hidden]="embedded()"
         [attr.aria-label]="'admin.assetPicker.close' | i18n | async"
         (click)="close()"
       >
@@ -64,6 +67,7 @@
       <label class="upload">
         <input
           type="file"
+          multiple
           [accept]="accept()"
           [disabled]="uploading()"
           (change)="uploadFromInput($event)"
@@ -76,6 +80,36 @@
           }}
         </span>
       </label>
+    </div>
+
+    <nav class="folder-navigation" [attr.aria-label]="'admin.media.folders' | i18n | async">
+      <button type="button" [class.active]="folderId() === null" (click)="changeFolder(null)">
+        {{ 'admin.media.root' | i18n | async }}
+      </button>
+      @if (currentFolder(); as current) {
+        <button type="button" (click)="goToParent()">← {{ 'admin.media.parent' | i18n | async }}</button>
+        <strong>{{ current.name }}</strong>
+      }
+    </nav>
+    <div class="folder-toolbar">
+      @for (folder of childFolders(); track folder.id) {
+        <button type="button" class="folder-item" (click)="changeFolder(folder.id)">
+          <span aria-hidden="true">📁</span> {{ folder.name }}
+        </button>
+      }
+      <label class="new-folder">
+        <span>{{ 'admin.media.newFolder' | i18n | async }}</span>
+        <input type="text" maxlength="120" [value]="folderName()" (input)="setFolderName($event)"
+          [placeholder]="'admin.media.folderPlaceholder' | i18n | async" />
+      </label>
+      <button type="button" [disabled]="!folderName().trim() || folderBusy()" (click)="createFolder()">
+        {{ 'admin.media.create' | i18n | async }}
+      </button>
+      @if (currentFolder()) {
+        <button type="button" class="folder-delete" [disabled]="folderBusy()" (click)="deleteCurrentFolder()">
+          {{ 'admin.media.deleteFolder' | i18n | async }}
+        </button>
+      }
     </div>
 
     @if (type() === 'image') {
@@ -102,8 +136,8 @@
               <button
                 type="button"
                 class="preview"
-                [disabled]="!decorative() && !hasCompleteDescriptions(asset)"
-                (click)="select(asset)"
+                [disabled]="!embedded() && !decorative() && !hasCompleteDescriptions(asset)"
+                (click)="embedded() ? toggleDetails(asset.id) : select(asset)"
               >
                 <img
                   [src]="asset.thumbnailUrl ?? asset.url"
@@ -128,6 +162,15 @@
             }
             @if (focusedId() === asset.id && asset.type === 'image') {
               <div class="descriptions">
+                <label>
+                  <span>{{ 'admin.media.moveTo' | i18n | async }}</span>
+                  <select [value]="asset.folderId ?? ''" (change)="moveAsset(asset, $event)">
+                    <option value="">{{ 'admin.media.root' | i18n | async }}</option>
+                    @for (folder of folders(); track folder.id) {
+                      <option [value]="folder.id">{{ folder.name }}</option>
+                    }
+                  </select>
+                </label>
                 <label>
                   <span>{{ 'admin.assetPicker.descriptionDe' | i18n | async }}</span>
                   <textarea
@@ -174,9 +217,20 @@
             @if (focusedId() === asset.id || asset.type === 'audio') {
             <div class="actions">
               @if (asset.type === 'audio') {
-                <button type="button" class="select" (click)="select(asset)">
-                  {{ 'admin.assetPicker.select' | i18n | async }}
-                </button>
+                <label class="audio-folder">
+                  <span>{{ 'admin.media.moveTo' | i18n | async }}</span>
+                  <select [value]="asset.folderId ?? ''" (change)="moveAsset(asset, $event)">
+                    <option value="">{{ 'admin.media.root' | i18n | async }}</option>
+                    @for (folder of folders(); track folder.id) {
+                      <option [value]="folder.id">{{ folder.name }}</option>
+                    }
+                  </select>
+                </label>
+                @if (!embedded()) {
+                  <button type="button" class="select" (click)="select(asset)">
+                    {{ 'admin.assetPicker.select' | i18n | async }}
+                  </button>
+                }
               }
 
               @if (confirmingDeleteId() === asset.id) {

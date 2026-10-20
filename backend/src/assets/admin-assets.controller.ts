@@ -34,6 +34,7 @@ import { ContributorGuard } from '../auth/guards/contributor.guard';
 import { SessionAuthGuard } from '../auth/guards/session-auth.guard';
 import { AUTH_SESSION_COOKIE } from '../auth/session-cookie';
 import { AssetDto } from './dto/asset.dto';
+import { AssetFolderDto } from './dto/asset-folder.dto';
 import { UpdateAssetDescriptionsDto } from './dto/update-asset-descriptions.dto';
 import type { UploadedAssetFile } from './asset-file';
 import { AssetsService } from './assets.service';
@@ -59,6 +60,7 @@ export class AdminAssetsController {
   })
   async upload(
     @UploadedFile() file?: UploadedAssetFile,
+    @Query('folderId') folderId?: string,
   ): Promise<AssetDto> {
     if (!file) {
       throw new BadRequestException(
@@ -66,7 +68,7 @@ export class AdminAssetsController {
       );
     }
 
-    return this.assetsService.create(file);
+    return this.assetsService.create(file, folderId || null);
   }
 
   @Get()
@@ -90,6 +92,34 @@ export class AdminAssetsController {
     );
   }
 
+
+  @Get('image-presets')
+  getImagePresets() {
+    return this.assetsService.getImagePresets();
+  }
+
+  @Get('folders')
+  @ApiOkResponse({ type: AssetFolderDto, isArray: true })
+  getFolders(): Promise<AssetFolderDto[]> {
+    return this.assetsService.getFolders();
+  }
+
+  @Post('folders')
+  @ApiCreatedResponse({ type: AssetFolderDto })
+  createFolder(@Body() body: { name: string; parentId?: string | null }): Promise<AssetFolderDto> {
+    return this.assetsService.createFolder(body.name, body.parentId ?? null);
+  }
+
+  @Delete('folders/:uuid')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteFolder(@Param('uuid') uuid: string): Promise<void> {
+    return this.assetsService.deleteFolder(uuid);
+  }
+
+  @Patch(':uuid/folder')
+  moveAsset(@Param('uuid') uuid: string, @Body() body: { folderId: string | null }): Promise<AssetDto> {
+    return this.assetsService.moveAsset(uuid, body.folderId ?? null);
+  }
 
   @Patch(':uuid/descriptions')
   @ApiOperation({

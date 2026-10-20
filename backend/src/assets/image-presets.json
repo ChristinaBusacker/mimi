@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "presets": {
+    "thumbnail": { "width": 512, "height": 512, "fit": "cover", "withoutEnlargement": true, "position": "attention" },
+    "small": { "width": 480, "fit": "inside", "withoutEnlargement": true },
+    "medium": { "width": 960, "fit": "inside", "withoutEnlargement": true },
+    "large": { "width": 1440, "fit": "inside", "withoutEnlargement": true },
+    "xl": { "width": 1920, "fit": "inside", "withoutEnlargement": true },
+    "xxl": { "width": 2560, "fit": "inside", "withoutEnlargement": true },
+    "social": { "width": 1200, "height": 630, "fit": "cover", "withoutEnlargement": false, "position": "attention" }
+  },
+  "formats": {
+    "webp": { "quality": 82 },
+    "fallback": { "jpegQuality": 85, "pngCompressionLevel": 9 }
+  }
+}

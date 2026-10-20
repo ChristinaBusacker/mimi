@@ -9,6 +9,7 @@ import { getAssetMaxUploadBytes } from './asset.config';
 import { AdminAssetsController } from './admin-assets.controller';
 import { AssetsController } from './assets.controller';
 import { AssetEntry } from './entities/asset.entry';
+import { AssetFolderEntry } from './entities/asset-folder.entry';
 import { AssetUsageEntry } from './entities/asset-usage.entry';
 import { AssetVariantEntry } from './entities/asset-variant.entry';
 import { AssetsService } from './assets.service';
@@ -18,6 +19,7 @@ import { AssetsService } from './assets.service';
     AuthModule,
     TypeOrmModule.forFeature([
       AssetEntry,
+      AssetFolderEntry,
       AssetUsageEntry,
       AssetVariantEntry,
     ]),

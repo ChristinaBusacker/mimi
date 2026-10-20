@@ -45,6 +45,9 @@ export class AssetDto implements Asset {
   })
   descriptionEn!: string | null;
 
+  @ApiProperty({ nullable: true })
+  folderId!: string | null;
+
   @ApiProperty({
     example: '/api/assets/4aa2d987-53a2-4b36-9d38-f5de9e4a2d5f',
   })
