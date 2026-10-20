@@ -64,7 +64,7 @@
               [attr.aria-label]="thumbnail.alt + ' ' + ($index + 1)"
               (click)="select($index)"
             >
-              <img [src]="thumbnail.src" alt="" />
+              <img [src]="thumbnail.thumbnailSrc ?? thumbnail.src" alt="" loading="lazy" />
             </button>
           }
         </div>

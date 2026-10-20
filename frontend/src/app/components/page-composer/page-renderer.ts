@@ -30,6 +30,7 @@ import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { MusicLibraryPlayer } from '../music-library-player/music-library-player';
 import { LightboxService } from '../lightbox/lightbox.service';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
+import { ResponsiveImageService } from '../../core/assets/responsive-image.service';
 
 export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
 export type CanvasMoveKind = 'section' | 'row' | 'block';
@@ -57,14 +58,7 @@ interface PointerDrag {
   active: boolean;
 }
 
-const markdown = new MarkdownIt({ html: false, linkify: false, breaks: false });
 const ASSET = /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
-markdown.renderer.rules['image'] = (tokens, index): string => {
-  const token = tokens[index];
-  const match = ASSET.exec(token.attrGet('src')?.toString() ?? '');
-  if (!match) return '';
-  return `<img src="/api/assets/${match[1]}/image/large/fallback" alt="${markdown.utils.escapeHtml(token.content)}" loading="lazy">`;
-};
 
 /** Identical public and editor canvas. Editor controls never affect the saved document. */
 @Component({
@@ -77,6 +71,23 @@ markdown.renderer.rules['image'] = (tokens, index): string => {
 export class PageRenderer {
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly lightbox = inject(LightboxService);
+  protected readonly imageSources = inject(ResponsiveImageService);
+  private readonly markdown = new MarkdownIt({ html: false, linkify: false, breaks: false });
+
+  constructor() {
+    this.markdown.renderer.rules['image'] = (tokens, index): string => {
+      const token = tokens[index];
+      const match = ASSET.exec(token.attrGet('src')?.toString() ?? '');
+      if (!match) return '';
+      const assetId = match[1];
+      const src = this.imageSources.url(assetId, 1440);
+      const srcset = this.imageSources.srcset(assetId);
+      const responsive = srcset
+        ? ` srcset="${srcset}" sizes="(max-width: 700px) 94vw, 960px"`
+        : '';
+      return `<img src="${src}"${responsive} alt="${this.markdown.utils.escapeHtml(token.content)}" loading="lazy">`;
+    };
+  }
 
   readonly album = input<AlbumBookletContext | null>(null);
   /** Studio rendering must never instantiate an interactive audio player. */
@@ -120,7 +131,8 @@ export class PageRenderer {
       return;
     }
     this.lightbox.open(gallery.items.map((item) => ({
-      src: this.image(item.assetId),
+      src: this.imageSources.url(item.assetId, Infinity),
+      thumbnailSrc: this.imageSources.url(item.assetId, 480),
       alt: item.alt[this.locale()] || item.alt.de,
     })), index);
   }
@@ -250,8 +262,15 @@ export class PageRenderer {
     return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
   }
   protected surface(styles: PageStyles): string { return `page-surface--${styles.background ?? 'none'}`; }
-  protected html(content: string): string { return markdown.render(content); }
-  protected image(assetId: string): string { return `/api/assets/${encodeURIComponent(assetId)}/image/large/fallback`; }
+  protected html(content: string): string { return this.markdown.render(content); }
+  protected image(assetId: string): string { return this.imageSources.url(assetId, 1440); }
+  protected imageSrcset(assetId: string): string | null { return this.imageSources.srcset(assetId); }
+  protected gallerySizes(layout: PageGalleryBlock['layout'], index: number): string {
+    const featured = index === 0 && layout !== undefined && layout !== 'grid';
+    return featured
+      ? '(max-width: 580px) 94vw, (max-width: 1100px) 70vw, 800px'
+      : '(max-width: 580px) 90vw, (max-width: 1100px) 45vw, 420px';
+  }
 
   protected styleVars(styles: PageStyles): Record<string, string> {
     const result: Record<string, string> = {};
@@ -305,7 +324,7 @@ export class PageRenderer {
       return `linear-gradient(${value.angle}deg, ${value.from}, ${value.to})`;
     const shade = value.overlay === 'strong' ? 'rgb(15 10 25 / 62%)'
       : value.overlay === 'soft' ? 'rgb(15 10 25 / 30%)' : 'transparent';
-    const asset = `/api/assets/${encodeURIComponent(value.assetId)}/image/large/fallback`;
+    const asset = this.imageSources.url(value.assetId, 1920);
     return `linear-gradient(${shade}, ${shade}), url("${asset}")`;
   }
 }

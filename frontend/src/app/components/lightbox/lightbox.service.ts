@@ -6,6 +6,7 @@ import {
 
 export interface LightboxItem {
   src: string;
+  thumbnailSrc?: string;
   alt: string;
 }
 

@@ -115,7 +115,8 @@
                       }
                       @case ('image') {
                         @if (block.assetId) {
-                          <img class="page-document__image" [src]="image(block.assetId)" [alt]="block.alt[locale()] || block.alt.de" loading="lazy"
+                          <img class="page-document__image" [src]="image(block.assetId)" [attr.srcset]="imageSrcset(block.assetId)"
+                            sizes="(max-width: 700px) 94vw, 960px" [alt]="block.alt[locale()] || block.alt.de" loading="lazy"
                             (click)="editImage($event, block.id)" />
                         } @else if (editable()) {
                           <button type="button" class="page-document__empty page-document__empty--action" (click)="editImage($event, block.id)"><app-icon name="image" /> {{ 'page.editor.chooseImage' | i18n | async }}</button>
@@ -135,7 +136,8 @@
                             <button type="button" class="page-document__gallery-item"
                               [attr.aria-label]="item.alt[locale()] || item.alt.de || ('page.editor.gallery.openImage' | i18n | async)"
                               (click)="openGalleryItem($event, block, $index)">
-                              <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                              <img [src]="image(item.assetId)" [attr.srcset]="imageSrcset(item.assetId)"
+                                [attr.sizes]="gallerySizes(block.layout, $index)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
                               @if (!editable()) {
                                 <span class="page-document__gallery-zoom" aria-hidden="true"><app-icon name="search" /></span>
                               }
@@ -151,13 +153,15 @@
                         } @else if (studio()) {
                           <div class="page-document__slider-preview">
                             @for (item of block.items; track item.id) {
-                              <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                              <img [src]="image(item.assetId)" [attr.srcset]="imageSrcset(item.assetId)"
+                                sizes="(max-width: 700px) 90vw, 480px" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
                             }
                           </div>
                         } @else if (block.items.length === 1) {
                           <button type="button" class="page-document__slide page-document__slide--single"
                             (click)="openGalleryItem($event, block, 0)">
                             <img [src]="image(block.items[0].assetId)"
+                              [attr.srcset]="imageSrcset(block.items[0].assetId)" sizes="(max-width: 700px) 94vw, 960px"
                               [alt]="block.items[0].alt[locale()] || block.items[0].alt.de" loading="lazy" />
                           </button>
                         } @else {
@@ -168,7 +172,8 @@
                               <div carouselSlide>
                                 <button type="button" class="page-document__slide"
                                   (click)="openGalleryItem($event, block, $index)">
-                                  <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                                  <img [src]="image(item.assetId)" [attr.srcset]="imageSrcset(item.assetId)"
+                                    sizes="(max-width: 700px) 94vw, 960px" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
                                 </button>
                               </div>
                             }
@@ -184,7 +189,7 @@
                           <div class="page-document__cards-preview">
                             @for (card of block.items; track card.id) {
                               <article class="page-document__card">
-                                @if (card.assetId) { <img class="page-document__card-image" [src]="image(card.assetId)" [alt]="card.alt[locale()] || card.alt.de" loading="lazy" /> }
+                                @if (card.assetId) { <img class="page-document__card-image" [src]="image(card.assetId)" [attr.srcset]="imageSrcset(card.assetId)" sizes="(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 360px" [alt]="card.alt[locale()] || card.alt.de" loading="lazy" /> }
                                 <div class="page-document__card-body">
                                   <h3>{{ card.title[locale()] || card.title.de }}</h3>
                                   <p>{{ card.description[locale()] || card.description.de }}</p>
@@ -205,7 +210,7 @@
                             @for (card of block.items; track card.id) {
                               <div carouselSlide>
                                 <article class="page-document__card">
-                                  @if (card.assetId) { <img class="page-document__card-image" [src]="image(card.assetId)" [alt]="card.alt[locale()] || card.alt.de" loading="lazy" /> }
+                                  @if (card.assetId) { <img class="page-document__card-image" [src]="image(card.assetId)" [attr.srcset]="imageSrcset(card.assetId)" sizes="(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 360px" [alt]="card.alt[locale()] || card.alt.de" loading="lazy" /> }
                                   <div class="page-document__card-body">
                                     <h3>{{ card.title[locale()] || card.title.de }}</h3>
                                     <p>{{ card.description[locale()] || card.description.de }}</p>

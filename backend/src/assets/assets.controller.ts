@@ -36,6 +36,12 @@ interface ByteRange {
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
+  @Get('image-presets')
+  @ApiOperation({ summary: 'List responsive image presets' })
+  getImagePresets() {
+    return this.assetsService.getImagePresets();
+  }
+
   @Get(':uuid/image/:variant/:format')
   @ApiOperation({
     summary: 'Get a generated image variant',
