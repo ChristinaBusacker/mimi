@@ -8,6 +8,7 @@
   display: grid;
   gap: var(--spacing-md);
   color: var(--color-text);
+  @include maxWidthContent;
 }
 
 .back {
