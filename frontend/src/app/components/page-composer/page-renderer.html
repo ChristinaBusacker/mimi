@@ -130,7 +130,7 @@
                           [class.page-document__gallery--featured-right]="block.layout === 'featuredRight' && block.items.length >= 3"
                           [class.page-document__gallery--panorama]="block.layout === 'panorama' && block.items.length >= 2"
                           [class.page-document__gallery--mosaic]="block.layout === 'mosaic' && block.items.length >= 4"
-                          [class.page-document__gallery--filmstrip]="block.layout === 'filmstrip' && block.items.length >= 2">
+                          >
                           @for (item of block.items; track item.id) {
                             <button type="button" class="page-document__gallery-item"
                               [attr.aria-label]="item.alt[locale()] || item.alt.de || ('page.editor.gallery.openImage' | i18n | async)"
@@ -142,6 +142,85 @@
                             </button>
                           }
                         </div>
+                      }
+                      @case ('slider') {
+                        @if (block.items.length === 0) {
+                          @if (studio()) {
+                            <div class="page-document__empty"><app-icon name="image" /> {{ 'page.editor.slider.empty' | i18n | async }}</div>
+                          }
+                        } @else if (studio()) {
+                          <div class="page-document__slider-preview">
+                            @for (item of block.items; track item.id) {
+                              <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                            }
+                          </div>
+                        } @else if (block.items.length === 1) {
+                          <button type="button" class="page-document__slide page-document__slide--single"
+                            (click)="openGalleryItem($event, block, 0)">
+                            <img [src]="image(block.items[0].assetId)"
+                              [alt]="block.items[0].alt[locale()] || block.items[0].alt.de" loading="lazy" />
+                          </button>
+                        } @else {
+                          <app-carousel [perView]="1" [gap]="12"
+                            [previousLabel]="('page.editor.slider.previous' | i18n | async) ?? ''"
+                            [nextLabel]="('page.editor.slider.next' | i18n | async) ?? ''">
+                            @for (item of block.items; track item.id) {
+                              <div carouselSlide>
+                                <button type="button" class="page-document__slide"
+                                  (click)="openGalleryItem($event, block, $index)">
+                                  <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                                </button>
+                              </div>
+                            }
+                          </app-carousel>
+                        }
+                      }
+                      @case ('cardCarousel') {
+                        @if (block.items.length === 0) {
+                          @if (studio()) {
+                            <div class="page-document__empty"><app-icon name="layout-template" /> {{ 'page.editor.carousel.empty' | i18n | async }}</div>
+                          }
+                        } @else if (studio() || block.items.length === 1) {
+                          <div class="page-document__cards-preview">
+                            @for (card of block.items; track card.id) {
+                              <article class="page-document__card">
+                                @if (card.assetId) { <img class="page-document__card-image" [src]="image(card.assetId)" [alt]="card.alt[locale()] || card.alt.de" loading="lazy" /> }
+                                <div class="page-document__card-body">
+                                  <h3>{{ card.title[locale()] || card.title.de }}</h3>
+                                  <p>{{ card.description[locale()] || card.description.de }}</p>
+                                  @if (!studio() && card.href) {
+                                    <a [href]="card.href" [attr.target]="externalLink(card.href) ? '_blank' : null"
+                                      [attr.rel]="externalLink(card.href) ? 'noopener noreferrer' : null">
+                                      {{ 'page.editor.card.visit' | i18n | async }}
+                                    </a>
+                                  }
+                                </div>
+                              </article>
+                            }
+                          </div>
+                        } @else {
+                          <app-carousel [perView]="3" [gap]="16" [breakpoints]="cardBreakpoints"
+                            [previousLabel]="('page.editor.carousel.previous' | i18n | async) ?? ''"
+                            [nextLabel]="('page.editor.carousel.next' | i18n | async) ?? ''">
+                            @for (card of block.items; track card.id) {
+                              <div carouselSlide>
+                                <article class="page-document__card">
+                                  @if (card.assetId) { <img class="page-document__card-image" [src]="image(card.assetId)" [alt]="card.alt[locale()] || card.alt.de" loading="lazy" /> }
+                                  <div class="page-document__card-body">
+                                    <h3>{{ card.title[locale()] || card.title.de }}</h3>
+                                    <p>{{ card.description[locale()] || card.description.de }}</p>
+                                    @if (card.href) {
+                                      <a [href]="card.href" [attr.target]="externalLink(card.href) ? '_blank' : null"
+                                        [attr.rel]="externalLink(card.href) ? 'noopener noreferrer' : null">
+                                        {{ 'page.editor.card.visit' | i18n | async }}
+                                      </a>
+                                    }
+                                  </div>
+                                </article>
+                              </div>
+                            }
+                          </app-carousel>
+                        }
                       }
                       @case ('spacer') {
                         <div aria-hidden="true" [style.height.px]="block.height"></div>

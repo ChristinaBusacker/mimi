@@ -1,6 +1,7 @@
 import type {
   PageBlock,
   ComposerBackground,
+  PageCardItem,
   PageColumn,
   PageDocument,
   PageGalleryItem,
@@ -159,6 +160,25 @@ function galleryItem(value: unknown): PageGalleryItem {
   const data = record(value);
   return { id: id(data['id']), assetId: assetId(data['assetId']), alt: localized(data['alt']) };
 }
+function cardItem(value: unknown): PageCardItem {
+  const data = record(value);
+  const href = string(data['href'], 800);
+  if (href && !/^(?:https?:\/\/[^\s\\]+|\/(?!\/)[^\s\\]*)$/.test(href))
+    invalid('invalid card destination');
+  const localizedWithLimit = (value: unknown, max: number): LocalizedText => {
+    const text = localized(value);
+    if (text.de.length > max || text.en.length > max) invalid('card text too long');
+    return text;
+  };
+  return {
+    id: id(data['id']),
+    assetId: data['assetId'] === null ? null : assetId(data['assetId']),
+    alt: localizedWithLimit(data['alt'], 300),
+    title: localizedWithLimit(data['title'], 200),
+    description: localizedWithLimit(data['description'], 800),
+    href,
+  };
+}
 function block(value: unknown): PageBlock {
   const data = record(value);
   const base = node(data);
@@ -174,17 +194,21 @@ function block(value: unknown): PageBlock {
       };
     case 'gallery': {
       const layout = data['layout'];
-      if (
-        layout !== undefined &&
-        (typeof layout !== 'string' ||
-          !['grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'].includes(layout))
-      ) invalid('invalid gallery layout');
+      if (layout !== undefined &&
+          !['grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'].includes(String(layout)))
+        invalid('invalid gallery layout');
+      // Previously published filmstrips are displayed as ordinary galleries.
+      const normalized = layout === 'filmstrip' ? 'grid' : layout;
       return {
         ...base, type: 'gallery',
-        ...(layout === undefined ? {} : { layout: layout as 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic' | 'filmstrip' }),
+        ...(normalized === undefined ? {} : { layout: normalized as 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic' }),
         items: list(data['items'], 36).map(galleryItem),
       };
     }
+    case 'slider':
+      return { ...base, type: 'slider', items: list(data['items'], 36).map(galleryItem) };
+    case 'cardCarousel':
+      return { ...base, type: 'cardCarousel', items: list(data['items'], 24).map(cardItem) };
     case 'spacer':
       return { ...base, type: 'spacer', height: number(data['height'], 240, 32) };
     case 'albumDetails':
@@ -257,7 +281,8 @@ export function validateAlbumBooklet(value: unknown): PageDocument {
         add(c.id);
         for (const b of c.blocks) {
           add(b.id);
-          if (b.type === 'gallery') for (const item of b.items) add(item.id);
+          if (b.type === 'gallery' || b.type === 'slider' || b.type === 'cardCarousel')
+            for (const item of b.items) add(item.id);
           if (b.type === 'albumTracks' && ++albumPlayers > 1)
             invalid('only one album track player is allowed');
         }

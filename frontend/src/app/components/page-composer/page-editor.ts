@@ -61,6 +61,10 @@ const makeBlock = (kind: BlockKind): PageBlock => {
       return { ...base, type: kind, assetId: null, alt: { de: '', en: '' } };
     case 'gallery':
       return { ...base, type: kind, layout: 'grid', items: [] };
+    case 'slider':
+      return { ...base, type: kind, items: [] };
+    case 'cardCarousel':
+      return { ...base, type: kind, items: [] };
     case 'spacer':
       return { ...base, type: kind, height: 48 };
     case 'albumDetails':
@@ -367,7 +371,10 @@ export class PageEditor {
   protected readonly outlineOpen = signal(false);
   protected readonly addTarget = signal<CanvasInsert | null>(null);
   protected readonly inlineTextId = signal<string | null>(null);
-  protected readonly blockKinds: readonly BlockKind[] = ['text', 'image', 'gallery', 'spacer', 'albumDetails', 'albumTracks', 'albumCredits'];
+  protected readonly blockKinds: readonly BlockKind[] = [
+    'text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer',
+    'albumDetails', 'albumTracks', 'albumCredits',
+  ];
   protected readonly device = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
   protected readonly inspectorTab = signal<'content' | 'design' | 'advanced'>('content');
   protected readonly breakpoint = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -517,6 +524,10 @@ export class PageEditor {
         return 'image';
       case 'gallery':
         return 'gallery';
+      case 'slider':
+        return 'image';
+      case 'cardCarousel':
+        return 'layout-template';
       case 'spacer':
         return 'spacer';
       case 'albumDetails':
@@ -655,7 +666,7 @@ export class PageEditor {
     const layout = this.value(event);
     if (
       layout !== 'grid' && layout !== 'featured' && layout !== 'featuredRight' &&
-      layout !== 'panorama' && layout !== 'mosaic' && layout !== 'filmstrip'
+      layout !== 'panorama' && layout !== 'mosaic'
     ) return;
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'gallery') node.layout = layout;
@@ -672,20 +683,24 @@ export class PageEditor {
     const value = this.value(event);
     if (!value) return;
     this.changeSelected((node) => {
-      if ('type' in node && node.type === 'gallery') {
-        node.items.push({ id: crypto.randomUUID(), assetId: value, alt: { de: '', en: '' } });
+      if ('type' in node && (node.type === 'gallery' || node.type === 'slider') && node.items.length < 36) {
+        const asset = this.assets().find((item) => item.id === value);
+        node.items.push({
+          id: crypto.randomUUID(), assetId: value,
+          alt: { de: asset?.descriptionDe ?? '', en: asset?.descriptionEn ?? '' },
+        });
       }
     });
   }
   protected deleteGalleryImage(id: string): void {
     this.changeSelected((node) => {
-      if ('type' in node && node.type === 'gallery')
+      if ('type' in node && (node.type === 'gallery' || node.type === 'slider'))
         node.items = node.items.filter((item) => item.id !== id);
     });
   }
   protected moveGalleryImage(id: string, direction: -1 | 1): void {
     this.changeSelected((node) => {
-      if (!('type' in node) || node.type !== 'gallery') return;
+      if (!('type' in node) || (node.type !== 'gallery' && node.type !== 'slider')) return;
       const index = node.items.findIndex((item) => item.id === id);
       const target = index + direction;
       if (index < 0 || target < 0 || target >= node.items.length) return;
@@ -695,9 +710,53 @@ export class PageEditor {
   protected updateGalleryAlt(id: string, event: Event): void {
     const text = this.value(event);
     this.changeSelected((node) => {
-      if ('type' in node && node.type === 'gallery') {
+      if ('type' in node && (node.type === 'gallery' || node.type === 'slider')) {
         const item = node.items.find((candidate) => candidate.id === id);
         if (item) item.alt[this.locale()] = text;
+      }
+    });
+  }
+  protected addCard(): void {
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'cardCarousel' && node.items.length < 24) {
+        node.items.push({
+          id: crypto.randomUUID(), assetId: null,
+          alt: { de: '', en: '' }, title: { de: '', en: '' },
+          description: { de: '', en: '' }, href: '',
+        });
+      }
+    });
+  }
+  protected removeCard(id: string): void {
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'cardCarousel')
+        node.items = node.items.filter((item) => item.id !== id);
+    });
+  }
+  protected moveCard(id: string, direction: -1 | 1): void {
+    this.changeSelected((node) => {
+      if (!('type' in node) || node.type !== 'cardCarousel') return;
+      const index = node.items.findIndex((item) => item.id === id);
+      const target = index + direction;
+      if (index < 0 || target < 0 || target >= node.items.length) return;
+      [node.items[index], node.items[target]] = [node.items[target], node.items[index]];
+    });
+  }
+  protected editCard(
+    id: string,
+    field: 'assetId' | 'alt' | 'title' | 'description' | 'href',
+    event: Event,
+  ): void {
+    const value = this.value(event);
+    this.changeSelected((node) => {
+      if (!('type' in node) || node.type !== 'cardCarousel') return;
+      const card = node.items.find((item) => item.id === id);
+      if (!card) return;
+      if (field === 'assetId') card.assetId = value || null;
+      else if (field === 'href') card.href = value.slice(0, 800);
+      else {
+        const max = field === 'description' ? 800 : field === 'title' ? 200 : 300;
+        card[field][this.locale()] = value.slice(0, max);
       }
     });
   }
@@ -783,8 +842,9 @@ export class PageEditor {
           if ('rows' in value) value.rows.forEach(freshen);
           if ('columns' in value) value.columns.forEach(freshen);
           if ('blocks' in value) value.blocks.forEach(freshen);
-          if ('type' in value && value.type === 'gallery')
-            for (const image of value.items) image.id = crypto.randomUUID();
+          if ('type' in value &&
+              (value.type === 'gallery' || value.type === 'slider' || value.type === 'cardCarousel'))
+            for (const item of value.items) item.id = crypto.randomUUID();
         };
         freshen(duplicate);
         list.splice(index + 1, 0, duplicate);

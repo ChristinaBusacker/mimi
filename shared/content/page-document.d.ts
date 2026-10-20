@@ -51,8 +51,26 @@ export interface PageGalleryItem {
 export interface PageGalleryBlock extends PageNode {
   type: 'gallery';
   /** Existing galleries default to the regular grid. */
-  layout?: 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic' | 'filmstrip';
+  layout?: 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic';
   items: PageGalleryItem[];
+}
+/** Full-size images in the existing Glide carousel, independent of gallery presets. */
+export interface PageSliderBlock extends PageNode {
+  type: 'slider';
+  items: PageGalleryItem[];
+}
+export interface PageCardItem {
+  id: string;
+  assetId: string | null;
+  alt: LocalizedText;
+  title: LocalizedText;
+  description: LocalizedText;
+  /** Empty for a card without a destination. */
+  href: string;
+}
+export interface PageCardCarouselBlock extends PageNode {
+  type: 'cardCarousel';
+  items: PageCardItem[];
 }
 export interface PageSpacerBlock extends PageNode {
   type: 'spacer';
@@ -77,6 +95,7 @@ export interface PageAlbumCreditsBlock extends PageNode {
   entries: PageAlbumCredit[];
 }
 export type PageBlock = PageTextBlock | PageImageBlock | PageGalleryBlock | PageSpacerBlock
+  | PageSliderBlock | PageCardCarouselBlock
   | PageAlbumDetailsBlock | PageAlbumTracksBlock | PageAlbumCreditsBlock;
 export interface PageColumn extends PageNode {
   /** Vertical position of the blocks in a stretched column. Defaults to start. */

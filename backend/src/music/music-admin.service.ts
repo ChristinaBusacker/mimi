@@ -263,7 +263,10 @@ export class MusicAdminService {
             assets.add(column.styles.designBackground.assetId);
           for (const block of column.blocks) {
           if (block.type === 'image' && block.assetId) assets.add(block.assetId);
-          if (block.type === 'gallery') for (const item of block.items) assets.add(item.assetId);
+          if (block.type === 'gallery' || block.type === 'slider')
+            for (const item of block.items) assets.add(item.assetId);
+          if (block.type === 'cardCarousel')
+            for (const item of block.items) if (item.assetId) assets.add(item.assetId);
           if (block.type === 'text') {
             for (const text of [block.markdown.de, block.markdown.en]) {
               for (const id of this.assetUsageService.extractMarkdownAssetIds(text)) assets.add(id);

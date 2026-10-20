@@ -57,7 +57,7 @@ describe('Album booklet document validation', () => {
   });
 
   it('supports all gallery presets while retaining older galleries', () => {
-    for (const layout of ['grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'] as const) {
+    for (const layout of ['grid', 'featured', 'featuredRight', 'panorama', 'mosaic'] as const) {
       const input = document('1');
       input.sections[0].rows[0].columns[0].blocks = [
         { id: 'gallery', type: 'gallery', styles, layout, items: [] },
@@ -70,6 +70,49 @@ describe('Album booklet document validation', () => {
       { id: 'gallery', type: 'gallery', styles, items: [] },
     ];
     expect(validateAlbumBooklet(legacy)).toEqual(legacy);
+  });
+
+  it('replaces a legacy filmstrip preset with a normal grid without discarding images', () => {
+    const input = document('1');
+    input.sections[0].rows[0].columns[0].blocks = [
+      { id: 'legacy-gallery', type: 'gallery', styles, layout: 'filmstrip' as 'grid', items: [] },
+    ];
+    const result = validateAlbumBooklet(input);
+    const block = result.sections[0].rows[0].columns[0].blocks[0];
+    expect(block.type).toBe('gallery');
+    if (block.type === 'gallery') expect(block.layout).toBe('grid');
+  });
+
+  it('supports a slider and cards with localized editorial content', () => {
+    const input = document('1');
+    input.sections[0].rows[0].columns[0].blocks = [
+      { id: 'slider', styles, type: 'slider', items: [] },
+      { id: 'cards', styles, type: 'cardCarousel', items: [{
+        id: 'card-1', assetId: null, alt: { de: '', en: '' },
+        title: { de: 'Geschichte', en: 'Story' },
+        description: { de: 'Hinter den Liedern', en: 'Behind the songs' },
+        href: '/musik',
+      }] },
+    ];
+    expect(validateAlbumBooklet(input)).toEqual(input);
+    const invalid = structuredClone(input);
+    const block = invalid.sections[0].rows[0].columns[0].blocks[1];
+    if (block.type === 'cardCarousel') block.items[0].href = 'javascript:alert(1)';
+    expect(() => validateAlbumBooklet(invalid)).toThrow(BadRequestException);
+  });
+
+  it('rejects duplicate card IDs across booklet blocks', () => {
+    const input = document('1');
+    input.sections[0].rows[0].columns[0].blocks = [
+      { id: 'slider', styles, type: 'slider', items: [{
+        id: 'repeated', assetId: '11111111-1111-4111-8111-111111111111', alt: { de: '', en: '' },
+      }] },
+      { id: 'cards', styles, type: 'cardCarousel', items: [{
+        id: 'repeated', assetId: null, alt: { de: '', en: '' },
+        title: { de: '', en: '' }, description: { de: '', en: '' }, href: '',
+      }] },
+    ];
+    expect(() => validateAlbumBooklet(input)).toThrow(BadRequestException);
   });
 
   it('rejects arbitrary column alignment and gallery layouts', () => {

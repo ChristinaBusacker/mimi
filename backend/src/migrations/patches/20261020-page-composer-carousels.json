@@ -1,0 +1,84 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.block.slider",
+      "de": "Bild-Slider",
+      "en": "Image slider"
+    },
+    {
+      "key": "page.editor.block.cardCarousel",
+      "de": "Karten-Karussell",
+      "en": "Card carousel"
+    },
+    {
+      "key": "page.editor.slider.empty",
+      "de": "Bilder für den Slider hinzufügen",
+      "en": "Add images to the slider"
+    },
+    {
+      "key": "page.editor.carousel.empty",
+      "de": "Karten für das Karussell hinzufügen",
+      "en": "Add cards to the carousel"
+    },
+    {
+      "key": "page.editor.slider.previous",
+      "de": "Vorheriges Bild",
+      "en": "Previous image"
+    },
+    {
+      "key": "page.editor.slider.next",
+      "de": "Nächstes Bild",
+      "en": "Next image"
+    },
+    {
+      "key": "page.editor.carousel.previous",
+      "de": "Vorherige Karten",
+      "en": "Previous cards"
+    },
+    {
+      "key": "page.editor.carousel.next",
+      "de": "Nächste Karten",
+      "en": "Next cards"
+    },
+    {
+      "key": "page.editor.card.item",
+      "de": "Karte",
+      "en": "Card"
+    },
+    {
+      "key": "page.editor.card.add",
+      "de": "Karte hinzufügen",
+      "en": "Add card"
+    },
+    {
+      "key": "page.editor.card.image",
+      "de": "Kartenbild",
+      "en": "Card image"
+    },
+    {
+      "key": "page.editor.card.noImage",
+      "de": "Kein Bild",
+      "en": "No image"
+    },
+    {
+      "key": "page.editor.card.title",
+      "de": "Überschrift",
+      "en": "Heading"
+    },
+    {
+      "key": "page.editor.card.description",
+      "de": "Beschreibung",
+      "en": "Description"
+    },
+    {
+      "key": "page.editor.card.link",
+      "de": "Linkziel (optional)",
+      "en": "Link destination (optional)"
+    },
+    {
+      "key": "page.editor.card.visit",
+      "de": "Mehr erfahren",
+      "en": "Learn more"
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import type { AlbumBookletContext } from '@shared/content/album-booklet-context'
 import type {
   ComposerBackground,
   PageGalleryBlock,
+  PageSliderBlock,
   PageDocument,
   PageLocale,
   PageStyles,
@@ -21,6 +22,8 @@ import {
 } from '@angular/core';
 import MarkdownIt from 'markdown-it';
 import { Icon } from '../icon/icon';
+import { Carousel } from '../carousel/carousel';
+import { CarouselSlide } from '../carousel/carousel-slide.directive';
 import type { Asset } from '@shared/assets/asset';
 import { PageInlineMarkdown } from './page-inline-markdown';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
@@ -67,7 +70,7 @@ markdown.renderer.rules['image'] = (tokens, index): string => {
 @Component({
   selector: 'app-page-renderer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgStyle, AsyncPipe, I18nPipe, Icon, PageInlineMarkdown, MusicLibraryPlayer],
+  imports: [NgStyle, AsyncPipe, I18nPipe, Icon, Carousel, CarouselSlide, PageInlineMarkdown, MusicLibraryPlayer],
   templateUrl: './page-renderer.html',
   styleUrl: './page-renderer.scss',
 })
@@ -104,7 +107,13 @@ export class PageRenderer {
     this.nodeSelect.emit({ kind, id });
   }
 
-  protected openGalleryItem(event: Event, gallery: PageGalleryBlock, index: number): void {
+  protected readonly cardBreakpoints = { 1000: { perView: 2 }, 700: { perView: 1 } };
+
+  protected externalLink(href: string): boolean {
+    return /^https?:\/\//i.test(href);
+  }
+
+  protected openGalleryItem(event: Event, gallery: PageGalleryBlock | PageSliderBlock, index: number): void {
     event.stopPropagation();
     if (this.editable()) {
       this.nodeSelect.emit({ kind: 'block', id: gallery.id });

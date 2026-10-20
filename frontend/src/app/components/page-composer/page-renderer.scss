@@ -1,5 +1,6 @@
 @use './composer-variables';
 @use './page-album-blocks';
+@use './page-carousel-blocks';
 :host { display: block; min-width: 0; container: page-composer / inline-size; }
 .page-document { display: grid; gap: clamp(26px, 4vw, 64px); min-width: 0; color: inherit; }
 .page-document__rows, .page-document__column { display: grid; align-content: start; min-width: 0; gap: var(--pc-gap, 16px); }
@@ -93,22 +94,6 @@
 .page-document__gallery--mosaic > .page-document__gallery-item:nth-child(4n + 4) img {
   aspect-ratio: 21 / 9;
 }
-.page-document__gallery--filmstrip {
-  grid-template-columns: none;
-  grid-auto-flow: column;
-  grid-auto-columns: clamp(190px, 35%, 360px);
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
-  padding: 4px 4px 12px;
-}
-.page-document__gallery--filmstrip > .page-document__gallery-item {
-  scroll-snap-align: start;
-}
-.page-document__gallery--filmstrip > .page-document__gallery-item img {
-  aspect-ratio: 3 / 4;
-}
 @container page-composer (max-width: 580px) {
   .page-document__gallery--featured-right,
   .page-document__gallery--panorama,
@@ -130,9 +115,6 @@
   }
   .page-document__gallery--panorama > .page-document__gallery-item:first-child img {
     aspect-ratio: 16 / 9;
-  }
-  .page-document__gallery--filmstrip {
-    grid-auto-columns: min(82%, 300px);
   }
 }
 @media (prefers-reduced-motion: reduce) {

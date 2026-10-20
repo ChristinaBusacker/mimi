@@ -423,7 +423,6 @@
                     <option value="featuredRight">{{ 'page.editor.gallery.featuredRight' | i18n | async }}</option>
                     <option value="panorama">{{ 'page.editor.gallery.panorama' | i18n | async }}</option>
                     <option value="mosaic">{{ 'page.editor.gallery.mosaic' | i18n | async }}</option>
-                    <option value="filmstrip">{{ 'page.editor.gallery.filmstrip' | i18n | async }}</option>
                   </select>
                   @for (image of block.items; track image.id) {
                     <div class="composer__gallery-item">
@@ -450,6 +449,68 @@
                       <option [value]="image.id">{{ image.originalFilename }}</option>
                     }
                   </select>
+                }
+                @case ('slider') {
+                  <h3>{{ 'page.editor.block.slider' | i18n | async }}</h3>
+                  @for (image of block.items; track image.id) {
+                    <div class="composer__gallery-item">
+                      <img [src]="imageUrl(image.assetId)" alt="" />
+                      <input [value]="image.alt[locale()]" maxlength="200"
+                        [attr.aria-label]="'page.editor.alt' | i18n | async"
+                        (change)="updateGalleryAlt(image.id, $event)" />
+                      <div class="composer__gallery-actions">
+                        <button type="button" [disabled]="$first" (click)="moveGalleryImage(image.id, -1)"
+                          [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
+                        <button type="button" [disabled]="$last" (click)="moveGalleryImage(image.id, 1)"
+                          [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
+                        <button type="button" (click)="deleteGalleryImage(image.id)"
+                          [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                      </div>
+                    </div>
+                  }
+                  <label>{{ 'page.editor.chooseImage' | i18n | async }}</label>
+                  <select [disabled]="block.items.length >= 36" (change)="addGalleryImage($event)">
+                    <option value="">{{ 'page.editor.chooseImage' | i18n | async }}</option>
+                    @for (image of assets(); track image.id) {
+                      <option [value]="image.id">{{ image.originalFilename }}</option>
+                    }
+                  </select>
+                }
+                @case ('cardCarousel') {
+                  <h3>{{ 'page.editor.block.cardCarousel' | i18n | async }}</h3>
+                  @for (card of block.items; track card.id) {
+                    <fieldset class="composer__card-editor">
+                      <legend>{{ 'page.editor.card.item' | i18n | async }} {{ $index + 1 }}</legend>
+                      <div class="composer__gallery-actions">
+                        <button type="button" [disabled]="$first" (click)="moveCard(card.id, -1)"
+                          [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
+                        <button type="button" [disabled]="$last" (click)="moveCard(card.id, 1)"
+                          [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
+                        <button type="button" (click)="removeCard(card.id)"
+                          [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                      </div>
+                      <label>{{ 'page.editor.card.image' | i18n | async }}</label>
+                      <select [value]="card.assetId ?? ''" (change)="editCard(card.id, 'assetId', $event)">
+                        <option value="">{{ 'page.editor.card.noImage' | i18n | async }}</option>
+                        @for (asset of assets(); track asset.id) {
+                          <option [value]="asset.id">{{ asset.originalFilename }}</option>
+                        }
+                      </select>
+                      @if (card.assetId) { <img class="composer__card-preview" [src]="imageUrl(card.assetId)" alt="" /> }
+                      <label>{{ 'page.editor.alt' | i18n | async }}</label>
+                      <input [value]="card.alt[locale()]" maxlength="300" (change)="editCard(card.id, 'alt', $event)" />
+                      <label>{{ 'page.editor.card.title' | i18n | async }}</label>
+                      <input [value]="card.title[locale()]" maxlength="200" (change)="editCard(card.id, 'title', $event)" />
+                      <label>{{ 'page.editor.card.description' | i18n | async }}</label>
+                      <textarea [value]="card.description[locale()]" maxlength="800" rows="3"
+                        (change)="editCard(card.id, 'description', $event)"></textarea>
+                      <label>{{ 'page.editor.card.link' | i18n | async }}</label>
+                      <input [value]="card.href" maxlength="800" placeholder="/musik"
+                        (change)="editCard(card.id, 'href', $event)" />
+                    </fieldset>
+                  }
+                  <button class="composer__card-add" type="button" [disabled]="block.items.length >= 24"
+                    (click)="addCard()"><app-icon name="plus" /> {{ 'page.editor.card.add' | i18n | async }}</button>
                 }
                 @case ('albumDetails') {
                   <p class="composer__hint">{{ 'page.editor.album.autoDetails' | i18n | async }}</p>
