@@ -48,6 +48,24 @@ describe('Album booklet document validation', () => {
     expect('unexpected' in validateAlbumBooklet(input)).toBe(false);
   });
 
+  it('accepts vertical column alignment and the featured gallery layout', () => {
+    const input = document('1');
+    const column = input.sections[0].rows[0].columns[0];
+    column.contentAlign = 'end';
+    column.blocks = [{ id: 'gallery', type: 'gallery', styles, layout: 'featured', items: [] }];
+    expect(validateAlbumBooklet(input)).toEqual(input);
+  });
+
+  it('rejects arbitrary column alignment and gallery layouts', () => {
+    const input = document('1');
+    const column = input.sections[0].rows[0].columns[0];
+    column.contentAlign = 'baseline' as 'start';
+    expect(() => validateAlbumBooklet(input)).toThrow(BadRequestException);
+    column.contentAlign = 'start';
+    column.blocks = [{ id: 'gallery', type: 'gallery', styles, layout: 'tiles' as 'grid', items: [] }];
+    expect(() => validateAlbumBooklet(input)).toThrow(BadRequestException);
+  });
+
   it('accepts album details and track blocks without persisting duplicate album data', () => {
     const input = document('1');
     input.sections[0].rows[0].columns[0].blocks = [

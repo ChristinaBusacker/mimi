@@ -1,0 +1,64 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.selectRow",
+      "de": "Zeile auswählen",
+      "en": "Select row"
+    },
+    {
+      "key": "page.editor.columnContentAlign",
+      "de": "Inhalt vertikal ausrichten",
+      "en": "Vertical content alignment"
+    },
+    {
+      "key": "page.editor.columnAlign.start",
+      "de": "Oben",
+      "en": "Top"
+    },
+    {
+      "key": "page.editor.columnAlign.center",
+      "de": "Mitte",
+      "en": "Center"
+    },
+    {
+      "key": "page.editor.columnAlign.end",
+      "de": "Unten",
+      "en": "Bottom"
+    },
+    {
+      "key": "page.editor.gallery.layout",
+      "de": "Galerie-Layout",
+      "en": "Gallery layout"
+    },
+    {
+      "key": "page.editor.gallery.grid",
+      "de": "Raster",
+      "en": "Grid"
+    },
+    {
+      "key": "page.editor.gallery.featured",
+      "de": "Hervorgehobenes Bild",
+      "en": "Featured image"
+    },
+    {
+      "key": "page.editor.gallery.openImage",
+      "de": "Bild vergrößern",
+      "en": "Enlarge image"
+    },
+    {
+      "key": "page.editor.shortcut.save",
+      "de": "Entwurf speichern (Strg+S)",
+      "en": "Save draft (Ctrl+S)"
+    },
+    {
+      "key": "page.editor.shortcut.undo",
+      "de": "Rückgängig (Strg+Z)",
+      "en": "Undo (Ctrl+Z)"
+    },
+    {
+      "key": "page.editor.shortcut.redo",
+      "de": "Wiederholen (Strg+Y / Strg+Umschalt+Z)",
+      "en": "Redo (Ctrl+Y / Ctrl+Shift+Z)"
+    }
+  ]
+}

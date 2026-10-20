@@ -1,6 +1,7 @@
 import type { AlbumBookletContext } from '@shared/content/album-booklet-context';
 import type {
   ComposerBackground,
+  PageGalleryBlock,
   PageDocument,
   PageLocale,
   PageStyles,
@@ -24,6 +25,7 @@ import type { Asset } from '@shared/assets/asset';
 import { PageInlineMarkdown } from './page-inline-markdown';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { MusicLibraryPlayer } from '../music-library-player/music-library-player';
+import { LightboxService } from '../lightbox/lightbox.service';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 
 export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
@@ -71,6 +73,7 @@ markdown.renderer.rules['image'] = (tokens, index): string => {
 })
 export class PageRenderer {
   private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly lightbox = inject(LightboxService);
 
   readonly album = input<AlbumBookletContext | null>(null);
   /** Studio rendering must never instantiate an interactive audio player. */
@@ -99,6 +102,18 @@ export class PageRenderer {
     if (!this.editable()) return;
     event.stopPropagation();
     this.nodeSelect.emit({ kind, id });
+  }
+
+  protected openGalleryItem(event: Event, gallery: PageGalleryBlock, index: number): void {
+    event.stopPropagation();
+    if (this.editable()) {
+      this.nodeSelect.emit({ kind: 'block', id: gallery.id });
+      return;
+    }
+    this.lightbox.open(gallery.items.map((item) => ({
+      src: this.image(item.assetId),
+      alt: item.alt[this.locale()] || item.alt.de,
+    })), index);
   }
 
   protected editText(event: Event, id: string): void {

@@ -21,6 +21,7 @@
   @if (loading()) {
     <p>{{ 'admin.music.loading' | i18n | async }}</p>
   } @else if (album()) {
-    <app-page-editor [document]="document()" [assets]="images()" [album]="albumContext()" [coverAssetId]="album()?.coverAssetId ?? null" (documentChange)="updateDocument($event)" />
+    <app-page-editor [document]="document()" [assets]="images()" [album]="albumContext()" [coverAssetId]="album()?.coverAssetId ?? null"
+      (documentChange)="updateDocument($event)" (saveRequest)="save()" />
   }
 </section>

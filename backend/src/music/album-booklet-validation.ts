@@ -172,8 +172,16 @@ function block(value: unknown): PageBlock {
         assetId: data['assetId'] === null ? null : assetId(data['assetId']),
         alt: localized(data['alt']),
       };
-    case 'gallery':
-      return { ...base, type: 'gallery', items: list(data['items'], 36).map(galleryItem) };
+    case 'gallery': {
+      const layout = data['layout'];
+      if (layout !== undefined && layout !== 'grid' && layout !== 'featured')
+        invalid('invalid gallery layout');
+      return {
+        ...base, type: 'gallery',
+        ...(layout === undefined ? {} : { layout: layout as 'grid' | 'featured' }),
+        items: list(data['items'], 36).map(galleryItem),
+      };
+    }
     case 'spacer':
       return { ...base, type: 'spacer', height: number(data['height'], 240, 32) };
     case 'albumDetails':
@@ -196,7 +204,14 @@ function block(value: unknown): PageBlock {
 }
 function column(value: unknown): PageColumn {
   const data = record(value);
-  return { ...node(data, true), blocks: list(data['blocks'], 36).map(block) };
+  const contentAlign = data['contentAlign'];
+  if (contentAlign !== undefined && !['start', 'center', 'end'].includes(String(contentAlign)))
+    invalid('invalid column content alignment');
+  return {
+    ...node(data, true),
+    ...(contentAlign === undefined ? {} : { contentAlign: contentAlign as 'start' | 'center' | 'end' }),
+    blocks: list(data['blocks'], 36).map(block),
+  };
 }
 function row(value: unknown): PageRow {
   const data = record(value);

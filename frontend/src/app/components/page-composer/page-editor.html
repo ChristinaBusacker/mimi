@@ -1,4 +1,4 @@
-<section class="composer" (keydown)="keyboard($event)">
+<section class="composer">
   <header class="composer__toolbar">
     <div class="composer__toolbar-group">
       <button
@@ -19,11 +19,16 @@
         <app-icon name="layout-template" /> {{ 'page.editor.title' | i18n | async }}
       </button>
       <span class="composer__toolbar-divider"></span>
+      <button type="button" class="composer__tool composer__save" (click)="saveRequest.emit()"
+        [title]="'page.editor.shortcut.save' | i18n | async">
+        {{ 'page.editor.saveDraft' | i18n | async }}
+      </button>
       <button
         type="button"
         class="composer__tool"
         [disabled]="!undoAvailable()"
         [attr.aria-label]="'page.editor.undo' | i18n | async"
+        [title]="'page.editor.shortcut.undo' | i18n | async"
         (click)="undo()"
       >
         <app-icon name="undo-2" />
@@ -33,6 +38,7 @@
         class="composer__tool"
         [disabled]="!redoAvailable()"
         [attr.aria-label]="'page.editor.redo' | i18n | async"
+        [title]="'page.editor.shortcut.redo' | i18n | async"
         (click)="redo()"
       >
         <app-icon name="redo-2" />
@@ -410,6 +416,11 @@
                 }
                 @case ('gallery') {
                   <h3>{{ 'page.editor.block.gallery' | i18n | async }}</h3>
+                  <label>{{ 'page.editor.gallery.layout' | i18n | async }}</label>
+                  <select [value]="block.layout ?? 'grid'" (change)="setGalleryLayout($event)">
+                    <option value="grid">{{ 'page.editor.gallery.grid' | i18n | async }}</option>
+                    <option value="featured">{{ 'page.editor.gallery.featured' | i18n | async }}</option>
+                  </select>
                   @for (image of block.items; track image.id) {
                     <div class="composer__gallery-item">
                       <img [src]="imageUrl(image.assetId)" alt="" />
@@ -418,7 +429,14 @@
                         [attr.aria-label]="'page.editor.alt' | i18n | async"
                         (change)="updateGalleryAlt(image.id, $event)"
                       />
-                      <button type="button" (click)="deleteGalleryImage(image.id)">×</button>
+                      <div class="composer__gallery-actions">
+                        <button type="button" [disabled]="$first" (click)="moveGalleryImage(image.id, -1)"
+                          [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
+                        <button type="button" [disabled]="$last" (click)="moveGalleryImage(image.id, 1)"
+                          [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
+                        <button type="button" (click)="deleteGalleryImage(image.id)"
+                          [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                      </div>
                     </div>
                   }
                   <label>{{ 'page.editor.chooseImage' | i18n | async }}</label>
@@ -494,6 +512,16 @@
                 {{ 'page.editor.mobile' | i18n | async }}
               </button>
             </div>
+            @if (selectedColumn(); as column) {
+              <div class="composer__design-group">
+                <label>{{ 'page.editor.columnContentAlign' | i18n | async }}</label>
+                <select [value]="column.contentAlign ?? 'start'" (change)="setColumnAlignment($event)">
+                  <option value="start">{{ 'page.editor.columnAlign.start' | i18n | async }}</option>
+                  <option value="center">{{ 'page.editor.columnAlign.center' | i18n | async }}</option>
+                  <option value="end">{{ 'page.editor.columnAlign.end' | i18n | async }}</option>
+                </select>
+              </div>
+            }
             @if (selected()?.kind === 'section' || selected()?.kind === 'column') {
               <p class="composer__hint">{{ 'page.editor.design.global' | i18n | async }}</p>
               <div class="composer__design-group">

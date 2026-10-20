@@ -1,249 +1,1046 @@
 @use './page-editor-album';
 
-:host { display: block; min-width: 0; }
-.composer { --composer-accent: #da8dbb; color: var(--color-text); border: 1px solid rgb(218 141 187 / 36%); border-radius: 18px; overflow: hidden; background: #211929; }
-.composer button, .composer select, .composer input { font: inherit; }
-.composer button { cursor: pointer; }
-.composer button:focus-visible, .composer input:focus-visible, .composer select:focus-visible { outline: 2px solid #f4badd; outline-offset: 2px; }
-.composer__toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; background: #35243a; }
-.composer__toolbar-actions { display: flex; gap: 5px; flex-wrap: wrap; }
-.composer__toolbar button, .composer__actions button, .composer__block-actions button, .composer__inspector header button { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; gap: 5px; padding: 5px 9px; border-radius: 8px; border: 1px solid rgb(255 255 255 / 18%); background: transparent; color: inherit; }
-.composer button.is-active, .composer button:hover { background: rgb(218 141 187 / 21%); }
-.composer__toolbar app-icon, .composer__actions app-icon, .composer__block-actions app-icon, .composer__inspector app-icon { width: 17px; height: 17px; }
-.composer__workspace { display: grid; grid-template-columns: minmax(0, 1fr) 290px; align-items: start; }
-.composer__canvas { display: grid; gap: 18px; padding: clamp(12px, 2vw, 26px); min-width: 0; background: linear-gradient(160deg, #271b33, #1b1828); }
-.composer__section { padding: 10px; border: 1px solid #a778b7; border-radius: 13px; background: rgb(129 83 142 / 9%); min-width: 0; }
-.composer__section.is-selected { box-shadow: inset 0 0 0 1px #d7a2e5; }
-.composer__rows { display: grid; gap: 14px; }
-.composer__rowwrap { padding: 8px; border: 1px solid rgb(109 167 217 / 55%); border-radius: 10px; min-width: 0; }
-.composer__rowwrap.is-selected { border-color: #80c0f5; }
-.composer__row { display: grid; gap: 8px; min-width: 0; }
-.composer__column { min-width: 0; min-height: 100px; border: 1px dashed rgb(171 201 227 / 47%); background: rgb(255 255 255 / 3%); border-radius: 9px; padding: 8px; display: grid; align-content: start; gap: 9px; }
-.composer__column.is-selected { border-color: #e4c9ff; background: rgb(255 255 255 / 7%); }
-.composer__nodebar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 5px; }
-.composer__nodebar > button, .composer__columnbar, .composer__block-label { border: 0; background: transparent; color: inherit; font-size: 0.8rem; font-weight: 700; text-align: left; padding: 5px; }
-.composer__nodebar--row > button { font-size: 0.73rem; }
-.composer__actions, .composer__block-actions { display: flex; gap: 3px; }
-.composer__columnbar { color: #bbd6f7; font-size: 0.68rem; }
-.composer__block { padding: 8px; border-radius: 7px; background: rgb(255 255 255 / 7%); border: 1px solid rgb(255 255 255 / 10%); overflow: hidden; }
-.composer__block.is-selected { border-color: #f0b8d5; }
-.composer__block-label { display: flex; align-items: center; gap: 5px; color: #f5bede; }
-.composer__block-excerpt { white-space: pre-line; max-height: 110px; overflow: hidden; font-size: 0.76rem; opacity: 0.8; overflow-wrap: anywhere; }
-.composer__thumbnail { display: block; max-width: 100%; max-height: 150px; object-fit: contain; }
-.composer__mini-gallery { display: flex; gap: 4px; overflow: hidden; }
-.composer__mini-gallery img { max-width: 70px; max-height: 70px; }
-.composer__spacer { border: 1px dashed rgb(255 255 255 / 22%); }
-.composer__block-actions { justify-content: end; margin-top: 6px; }
-.composer__block-actions button { min-width: 27px; height: 27px; font-size: 0.8rem; }
-.composer__add-block { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-.composer__add-block label { font-size: 0.68rem; }
-.composer__add-block select { min-width: 0; flex: 1; font-size: 0.75rem; }
-.composer__add-block button, .composer__add-row, .composer__add-section { border: 1px dashed #b58bc6; color: inherit; background: rgb(191 138 205 / 8%); border-radius: 9px; padding: 9px; }
-.composer__add-section { min-height: 56px; }
-.composer__inspector { display: grid; align-content: start; gap: 9px; padding: 15px; min-width: 0; position: sticky; top: 0; max-height: 83vh; overflow-y: auto; border-left: 1px solid rgb(255 255 255 / 12%); background: #2c2134; }
-.composer__inspector header { display: flex; align-items: center; justify-content: space-between; }
-.composer__inspector label { font-size: 0.76rem; font-weight: 650; }
-.composer__inspector input, .composer__inspector select { width: 100%; min-width: 0; padding: 8px; border-radius: 7px; background: #211928; border: 1px solid #634c6e; color: inherit; }
-.composer__inspector h3 { font-size: 0.91rem; margin: 14px 0 4px; }
-.composer__inspector app-markdown-editor { display: block; min-width: 0; }
-.composer__layouts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
-.composer__layout { display: flex; gap: 3px; height: 60px; position: relative; padding: 8px 5px 22px; border: 1px solid #6f5975; background: #211928; border-radius: 7px; color: inherit; }
-.composer__layout span { background: #9472a4; border-radius: 3px; min-width: 0; }
-.composer__layout.is-active { border-color: #f3b6d9; }
-.composer__layout small { position: absolute; left: 0; right: 0; bottom: 3px; text-align: center; font-size: 0.57rem; }
-.composer__gallery-item { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 5px; }
-.composer__gallery-item img { width: 44px; height: 42px; object-fit: cover; }
-.composer__gallery-item button { color: inherit; border: 0; background: transparent; }
-.composer__empty-inspector { text-align: center; padding: 55px 8px; opacity: 0.75; font-size: 0.85rem; }
-.composer__preview { padding: 24px; min-height: 320px; background: #211929; }
-@media (max-width: 1000px) { .composer__workspace { grid-template-columns: minmax(0,1fr); } .composer__inspector { position: static; border: 0; border-top: 1px solid #654c72; max-height: none; } }
-@media (max-width: 740px) { .composer__row { grid-template-columns: minmax(0,1fr) !important; } .composer__toolbar { align-items: start; flex-direction: column; } .composer__canvas { padding: 8px; } .composer__actions button { min-width: 29px; } }
-
-.composer__page-settings { display: inline-flex; align-items: center; gap: 8px; border: none; background: transparent; color: inherit; font-weight: 800; padding: 6px; }
-.composer__page-settings app-icon { width: 16px; }
-
-/* 4B: accessible structural drag targets, restrained Divi-like inspector. */
-.composer__handle { cursor: grab !important; touch-action: none; }
-.composer__handle:active { cursor: grabbing !important; }
-.composer__drop-target { min-height: 9px; border-radius: 6px; transition: background 120ms ease, box-shadow 120ms ease; }
-.composer__drop-target.is-over { background: #e9b2d6; box-shadow: 0 0 0 2px rgb(233 178 214 / 38%); }
-.composer__drop-target--end { min-height: 16px; }
-.composer__toolbar button:disabled { opacity: .35; cursor: not-allowed; }
-.composer__device { width: 100%; max-width: 100%; margin: 0 auto; transition: max-width .18s ease; }
-.composer__device--tablet { max-width: 768px; }
-.composer__device--mobile { max-width: 390px; }
-.composer__preview { min-height: 550px; overflow-x: auto; background: radial-gradient(ellipse at center top, #342238 0%, #1d1928 74%); }
-.composer__device app-page-renderer { display: block; }
-.composer__tabs, .composer__breakpoints { display: flex; gap: 4px; flex-wrap: wrap; }
-.composer__tabs button, .composer__breakpoints button, .composer__reset {
-  padding: 8px 10px; color: inherit; border: 1px solid #6b536e; border-radius: 8px;
-  background: rgb(255 255 255 / 4%); font-size: .76rem;
+:host {
+  display: block;
+  min-width: 0;
 }
-.composer__tabs button.is-active, .composer__breakpoints button.is-active {
-  background: rgb(218 141 187 / 25%); border-color: #f0b4d8;
+.composer {
+  --composer-accent: #da8dbb;
+  color: var(--color-text);
+  border: 1px solid rgb(218 141 187 / 36%);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #211929;
 }
-.composer__hint { font-size: .8rem; opacity: .72; line-height: 1.5; overflow-wrap: anywhere; }
-@media (prefers-reduced-motion: reduce) { .composer__device, .composer__drop-target { transition: none; } }
-
-/* Structural drop targets remain visible while a node is being dragged. */
-.composer__handle { cursor: grab !important; touch-action: none; }
-.composer__handle:active { cursor: grabbing !important; }
-.composer__drop-target { min-height: 9px; border-radius: 6px; transition: background 120ms ease, box-shadow 120ms ease; }
-.composer__drop-target.is-over { background: #e9b2d6; box-shadow: 0 0 0 2px rgb(233 178 214 / 38%); }
-.composer__drop-target--end { min-height: 16px; }
-.composer__toolbar button:disabled { opacity: .35; cursor: not-allowed; }
-.composer__device { width: 100%; max-width: 100%; margin: 0 auto; transition: max-width .18s ease; }
-.composer__device--tablet { max-width: 768px; }
-.composer__device--mobile { max-width: 390px; }
-.composer__preview { min-height: 550px; overflow-x: auto; background: radial-gradient(ellipse at center top, #342238 0%, #1d1928 74%); }
-.composer__device app-page-renderer { display: block; }
-.composer__tabs, .composer__breakpoints { display: flex; gap: 4px; flex-wrap: wrap; }
-.composer__tabs button, .composer__breakpoints button, .composer__reset {
-  padding: 8px 10px; color: inherit; border: 1px solid #6b536e; border-radius: 8px;
-  background: rgb(255 255 255 / 4%); font-size: .76rem;
+.composer button,
+.composer select,
+.composer input {
+  font: inherit;
 }
-.composer__tabs button.is-active, .composer__breakpoints button.is-active {
-  background: rgb(218 141 187 / 25%); border-color: #f0b4d8;
+.composer button {
+  cursor: pointer;
 }
-.composer__hint { font-size: .8rem; opacity: .72; line-height: 1.5; overflow-wrap: anywhere; }
-@media (prefers-reduced-motion: reduce) { .composer__device, .composer__drop-target { transition: none; } }
-
-/* 4C: The canvas is the page. Structural outlines and forms no longer occupy it. */
-.composer { background: #201725; border: 1px solid rgb(233 170 213 / 23%); overflow: visible; }
-.composer__toolbar { position: relative; z-index: 6; padding: 9px 13px; background: #302239; border-radius: 17px 17px 0 0; }
-.composer__toolbar-group { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-.composer__toolbar-divider { width: 1px; height: 22px; margin: 0 5px; background: rgb(255 255 255 / 17%); }
-.composer__toolbar .composer__tool { border: 0; min-width: 35px; height: 35px; padding: 7px; }
-.composer__toolbar .composer__locale { font-size: .76rem; font-weight: 800; }
-.composer__toolbar .composer__preview-toggle { padding: 7px 11px; font-size: .79rem; }
-.composer__workspace { display: grid; grid-template-columns: minmax(0, 1fr) 310px; align-items: stretch; }
-.composer__workspace--outline { grid-template-columns: 215px minmax(0, 1fr) 310px; }
-.composer__workspace--preview { grid-template-columns: minmax(0, 1fr); }
-.composer__outline { display: flex; flex-direction: column; align-items: stretch; overflow-y: auto;
-  min-width: 0; max-height: 85vh; padding: 13px 7px; background: #2a2031; border-right: 1px solid rgb(255 255 255 / 10%); }
-.composer__outline header { display: flex; align-items: center; gap: 7px; padding: 8px 10px 14px;
-  font-size: .83rem; font-weight: 750; }
-.composer__outline header app-icon { width: 16px; height: 16px; }
-.composer__outline button { border: 0; border-radius: 7px; padding: 8px; text-align: left;
-  background: transparent; color: #ead7ec; font-size: .75rem; cursor: pointer;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.composer__outline button:hover, .composer__outline button.is-active { background: rgb(229 167 211 / 19%); }
-.composer__tree-section { padding-left: 15px !important; }
-.composer__tree-row { padding-left: 25px !important; }
-.composer__tree-column { padding-left: 36px !important; }
-.composer__tree-block { padding-left: 49px !important; opacity: .88; }
-.composer__canvas-shell { position: relative; min-width: 0; background: #251b2e; }
-.composer__canvas { position: relative; display: block; padding: clamp(22px, 3vw, 46px);
-  min-height: 500px; min-width: 0; overflow: auto; isolation: isolate;
-  background: #171321; }
-/* Match the public booklet-world treatment without applying it to the entire admin page. */
-.composer__booklet-world { position: absolute; z-index: 0; inset: 0; --booklet-world-size: 170%; }
-.composer__booklet-world .booklet-world__artwork { filter: blur(76px) saturate(.91) brightness(.62); }
-.composer__device { position: relative; z-index: 1; width: 100%; max-width: 100%; margin: 0 auto;
-  background: transparent; min-height: 300px; transition: max-width .18s ease; }
-.composer__device--tablet { max-width: 768px; }
-.composer__device--mobile { max-width: 390px; }
-.composer__device app-page-renderer { display: block; width: 100%; }
-.composer__inspector { position: sticky; top: 0; border-left: 1px solid rgb(255 255 255 / 9%);
-  max-height: min(90vh, 1100px); background: #30243a; padding: 20px; }
-.composer__inspector h3 { font-size: .82rem; letter-spacing: .01em; }
-.composer__inspector label { margin-top: 9px; }
-.composer__inspector input, .composer__inspector select { padding: 11px; }
-.composer__tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.composer__tabs button { min-width: 0; padding: 9px 3px; font-size: .72rem; }
-.composer__insert-scrim { position: fixed; inset: 0; z-index: 1500; display: grid; place-items: center;
-  padding: 22px 12px; background: rgb(18 10 24 / 62%); overflow-y: auto; }
-.composer__insert-menu { width: min(460px, 100%); padding: 18px; border: 1px solid #a679a8;
-  border-radius: 15px; background: #33243b; box-shadow: 0 15px 70px rgb(0 0 0 / 36%); }
-.composer__insert-menu header { display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 15px; gap: 8px; }
-.composer__insert-menu header button { background: transparent; border: 0; color: inherit; cursor: pointer; }
-.composer__insert-menu header app-icon { width: 19px; height: 19px; }
-.composer__layouts--insert { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.composer__block-palette { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
-.composer__block-palette button { display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 9px; min-height: 95px; border: 1px solid #775d7c; border-radius: 10px;
-  color: #f9e3f3; background: rgb(255 255 255 / 4%); cursor: pointer; }
-.composer__block-palette button:hover, .composer__block-palette button:focus-visible { background: rgb(236 160 213 / 15%); border-color: #e7b0d1; }
-.composer__block-palette app-icon { width: 27px; height: 27px; }
-@media (max-width: 1190px) {
-  .composer__workspace { grid-template-columns: minmax(0,1fr) 290px; }
-  .composer__workspace--outline { grid-template-columns: 165px minmax(0,1fr) 290px; }
-  .composer__workspace--preview { grid-template-columns: 1fr; }
+.composer button:focus-visible,
+.composer input:focus-visible,
+.composer select:focus-visible {
+  outline: 2px solid #f4badd;
+  outline-offset: 2px;
 }
-@media (max-width: 900px) {
-  .composer__workspace, .composer__workspace--outline { grid-template-columns: minmax(0,1fr); }
-  .composer__outline { max-height: 250px; border-right: 0; border-bottom: 1px solid rgb(255 255 255 / 12%); }
-  .composer__inspector { position: static; max-height: none; border-left: 0; border-top: 1px solid rgb(255 255 255 / 13%); }
+.composer__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #35243a;
+}
+.composer__toolbar-actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.composer__toolbar button,
+.composer__actions button,
+.composer__block-actions button,
+.composer__inspector header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 8px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  background: transparent;
+  color: inherit;
+}
+.composer button.is-active,
+.composer button:hover {
+  background: rgb(218 141 187 / 21%);
+}
+.composer__toolbar app-icon,
+.composer__actions app-icon,
+.composer__block-actions app-icon,
+.composer__inspector app-icon {
+  width: 17px;
+  height: 17px;
+}
+.composer__workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  align-items: start;
+}
+.composer__canvas {
+  display: grid;
+  gap: 18px;
+  padding: clamp(12px, 2vw, 26px);
+  min-width: 0;
+  background: linear-gradient(160deg, #271b33, #1b1828);
+}
+.composer__section {
+  padding: 10px;
+  border: 1px solid #a778b7;
+  border-radius: 13px;
+  background: rgb(129 83 142 / 9%);
+  min-width: 0;
+}
+.composer__section.is-selected {
+  box-shadow: inset 0 0 0 1px #d7a2e5;
+}
+.composer__rows {
+  display: grid;
+  gap: 14px;
+}
+.composer__rowwrap {
+  padding: 8px;
+  border: 1px solid rgb(109 167 217 / 55%);
+  border-radius: 10px;
+  min-width: 0;
+}
+.composer__rowwrap.is-selected {
+  border-color: #80c0f5;
+}
+.composer__row {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.composer__column {
+  min-width: 0;
+  min-height: 100px;
+  border: 1px dashed rgb(171 201 227 / 47%);
+  background: rgb(255 255 255 / 3%);
+  border-radius: 9px;
+  padding: 8px;
+  display: grid;
+  align-content: start;
+  gap: 9px;
+}
+.composer__column.is-selected {
+  border-color: #e4c9ff;
+  background: rgb(255 255 255 / 7%);
+}
+.composer__nodebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 5px;
+}
+.composer__nodebar > button,
+.composer__columnbar,
+.composer__block-label {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: left;
+  padding: 5px;
+}
+.composer__nodebar--row > button {
+  font-size: 0.73rem;
+}
+.composer__actions,
+.composer__block-actions {
+  display: flex;
+  gap: 3px;
+}
+.composer__columnbar {
+  color: #bbd6f7;
+  font-size: 0.68rem;
+}
+.composer__block {
+  padding: 8px;
+  border-radius: 7px;
+  background: rgb(255 255 255 / 7%);
+  border: 1px solid rgb(255 255 255 / 10%);
+  overflow: hidden;
+}
+.composer__block.is-selected {
+  border-color: #f0b8d5;
+}
+.composer__block-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #f5bede;
+}
+.composer__block-excerpt {
+  white-space: pre-line;
+  max-height: 110px;
+  overflow: hidden;
+  font-size: 0.76rem;
+  opacity: 0.8;
+  overflow-wrap: anywhere;
+}
+.composer__thumbnail {
+  display: block;
+  max-width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+}
+.composer__mini-gallery {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+}
+.composer__mini-gallery img {
+  max-width: 70px;
+  max-height: 70px;
+}
+.composer__spacer {
+  border: 1px dashed rgb(255 255 255 / 22%);
+}
+.composer__block-actions {
+  justify-content: end;
+  margin-top: 6px;
+}
+.composer__block-actions button {
+  min-width: 27px;
+  height: 27px;
+  font-size: 0.8rem;
+}
+.composer__add-block {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.composer__add-block label {
+  font-size: 0.68rem;
+}
+.composer__add-block select {
+  min-width: 0;
+  flex: 1;
+  font-size: 0.75rem;
+}
+.composer__add-block button,
+.composer__add-row,
+.composer__add-section {
+  border: 1px dashed #b58bc6;
+  color: inherit;
+  background: rgb(191 138 205 / 8%);
+  border-radius: 9px;
+  padding: 9px;
+}
+.composer__add-section {
+  min-height: 56px;
+}
+.composer__inspector {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  padding: 15px;
+  min-width: 0;
+  position: sticky;
+  top: 0;
+  max-height: 83vh;
+  overflow-y: auto;
+  border-left: 1px solid rgb(255 255 255 / 12%);
+  background: #2c2134;
+}
+.composer__inspector header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.composer__inspector label {
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+.composer__inspector input,
+.composer__inspector select {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 7px;
+  background: #211928;
+  border: 1px solid #634c6e;
+  color: inherit;
+}
+.composer__inspector h3 {
+  font-size: 0.91rem;
+  margin: 14px 0 4px;
+}
+.composer__inspector app-markdown-editor {
+  display: block;
+  min-width: 0;
+}
+.composer__layouts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.composer__layout {
+  display: flex;
+  gap: 3px;
+  height: 60px;
+  position: relative;
+  padding: 8px 5px 22px;
+  border: 1px solid #6f5975;
+  background: #211928;
+  border-radius: 7px;
+  color: inherit;
+}
+.composer__layout span {
+  background: #9472a4;
+  border-radius: 3px;
+  min-width: 0;
+}
+.composer__layout.is-active {
+  border-color: #f3b6d9;
+}
+.composer__layout small {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3px;
+  text-align: center;
+  font-size: 0.57rem;
+}
+.composer__gallery-item {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 5px;
+}
+.composer__gallery-item img {
+  width: 44px;
+  height: 42px;
+  object-fit: cover;
+}
+.composer__gallery-item button {
+  color: inherit;
+  border: 0;
+  background: transparent;
+}
+.composer__gallery-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.composer__gallery-actions button {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.composer__gallery-actions button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.composer__gallery-actions button:hover:not(:disabled) {
+  background: rgb(233 174 215 / 18%);
+}
+.composer__gallery-actions app-icon {
+  width: 15px;
+  height: 15px;
+}
+.composer__empty-inspector {
+  text-align: center;
+  padding: 55px 8px;
+  opacity: 0.75;
+  font-size: 0.85rem;
+}
+.composer__preview {
+  padding: 24px;
+  min-height: 320px;
+  background: #211929;
+}
+@media (max-width: 1000px) {
+  .composer__workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .composer__inspector {
+    position: static;
+    border: 0;
+    border-top: 1px solid #654c72;
+    max-height: none;
+  }
 }
 @media (max-width: 740px) {
-  .composer__toolbar { flex-direction: row; justify-content: space-between; }
-  .composer__toolbar-group { gap: 2px; }
-  .composer__canvas { padding: 30px 12px; }
-  .composer__toolbar .composer__tool { min-width: 31px; height: 33px; }
-  .composer__toolbar .composer__preview-toggle { font-size: 0; gap: 0; }
+  .composer__row {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .composer__toolbar {
+    align-items: start;
+    flex-direction: column;
+  }
+  .composer__canvas {
+    padding: 8px;
+  }
+  .composer__actions button {
+    min-width: 29px;
+  }
 }
-.composer__inspector-actions { display: flex; gap: 4px; align-items: center; }
 
+.composer__page-settings {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-weight: 800;
+  padding: 6px;
+}
+.composer__page-settings app-icon {
+  width: 16px;
+}
+
+/* 4B: accessible structural drag targets, restrained Divi-like inspector. */
+.composer__handle {
+  cursor: grab !important;
+  touch-action: none;
+}
+.composer__handle:active {
+  cursor: grabbing !important;
+}
+.composer__drop-target {
+  min-height: 9px;
+  border-radius: 6px;
+  transition:
+    background 120ms ease,
+    box-shadow 120ms ease;
+}
+.composer__drop-target.is-over {
+  background: #e9b2d6;
+  box-shadow: 0 0 0 2px rgb(233 178 214 / 38%);
+}
+.composer__drop-target--end {
+  min-height: 16px;
+}
+.composer__toolbar button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.composer__device {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  transition: max-width 0.18s ease;
+}
+.composer__device--tablet {
+  max-width: 768px;
+}
+.composer__device--mobile {
+  max-width: 390px;
+}
+.composer__preview {
+  min-height: 550px;
+  overflow-x: auto;
+  background: radial-gradient(ellipse at center top, #342238 0%, #1d1928 74%);
+}
+.composer__device app-page-renderer {
+  display: block;
+}
+.composer__tabs,
+.composer__breakpoints {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.composer__tabs button,
+.composer__breakpoints button,
+.composer__reset {
+  padding: 8px 10px;
+  color: inherit;
+  border: 1px solid #6b536e;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 4%);
+  font-size: 0.76rem;
+}
+.composer__tabs button.is-active,
+.composer__breakpoints button.is-active {
+  background: rgb(218 141 187 / 25%);
+  border-color: #f0b4d8;
+}
+.composer__hint {
+  font-size: 0.8rem;
+  opacity: 0.72;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  .composer__device,
+  .composer__drop-target {
+    transition: none;
+  }
+}
+
+/* Structural drop targets remain visible while a node is being dragged. */
+.composer__handle {
+  cursor: grab !important;
+  touch-action: none;
+}
+.composer__handle:active {
+  cursor: grabbing !important;
+}
+.composer__drop-target {
+  min-height: 9px;
+  border-radius: 6px;
+  transition:
+    background 120ms ease,
+    box-shadow 120ms ease;
+}
+.composer__drop-target.is-over {
+  background: #e9b2d6;
+  box-shadow: 0 0 0 2px rgb(233 178 214 / 38%);
+}
+.composer__drop-target--end {
+  min-height: 16px;
+}
+.composer__toolbar button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.composer__device {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  transition: max-width 0.18s ease;
+}
+.composer__device--tablet {
+  max-width: 768px;
+}
+.composer__device--mobile {
+  max-width: 390px;
+}
+.composer__preview {
+  min-height: 550px;
+  overflow-x: auto;
+  background: radial-gradient(ellipse at center top, #342238 0%, #1d1928 74%);
+}
+.composer__device app-page-renderer {
+  display: block;
+}
+.composer__tabs,
+.composer__breakpoints {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.composer__tabs button,
+.composer__breakpoints button,
+.composer__reset {
+  padding: 8px 10px;
+  color: inherit;
+  border: 1px solid #6b536e;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 4%);
+  font-size: 0.76rem;
+}
+.composer__tabs button.is-active,
+.composer__breakpoints button.is-active {
+  background: rgb(218 141 187 / 25%);
+  border-color: #f0b4d8;
+}
+.composer__hint {
+  font-size: 0.8rem;
+  opacity: 0.72;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  .composer__device,
+  .composer__drop-target {
+    transition: none;
+  }
+}
+
+/* 4C: The canvas is the page. Structural outlines and forms no longer occupy it. */
+.composer {
+  background: #201725;
+  border: 1px solid rgb(233 170 213 / 23%);
+  overflow: visible;
+  --composer-sticky-top: 62px;
+  --composer-toolbar-height: 53px;
+}
+.composer__toolbar {
+  position: sticky;
+  top: var(--composer-sticky-top);
+  z-index: 40;
+  padding: 9px 13px;
+  background: #302239;
+  border-radius: 17px 17px 0 0;
+}
+.composer__toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.composer__toolbar-divider {
+  width: 1px;
+  height: 22px;
+  margin: 0 5px;
+  background: rgb(255 255 255 / 17%);
+}
+.composer__toolbar .composer__tool {
+  border: 0;
+  min-width: 35px;
+  height: 35px;
+  padding: 7px;
+}
+.composer__toolbar .composer__locale {
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+.composer__toolbar .composer__preview-toggle {
+  padding: 7px 11px;
+  font-size: 0.79rem;
+}
+.composer__workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  align-items: stretch;
+}
+.composer__workspace--outline {
+  grid-template-columns: 215px minmax(0, 1fr) 310px;
+}
+.composer__workspace--preview {
+  grid-template-columns: minmax(0, 1fr);
+}
+.composer__outline {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow-y: auto;
+  position: sticky;
+  align-self: start;
+  top: calc(var(--composer-sticky-top) + var(--composer-toolbar-height));
+  min-width: 0;
+  max-height: calc(100dvh - var(--composer-sticky-top) - var(--composer-toolbar-height));
+  padding: 13px 7px;
+  background: #2a2031;
+  border-right: 1px solid rgb(255 255 255 / 10%);
+}
+.composer__outline header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px 14px;
+  font-size: 0.83rem;
+  font-weight: 750;
+}
+.composer__outline header app-icon {
+  width: 16px;
+  height: 16px;
+}
+.composer__outline button {
+  border: 0;
+  border-radius: 7px;
+  padding: 8px;
+  text-align: left;
+  background: transparent;
+  color: #ead7ec;
+  font-size: 0.75rem;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.composer__outline button:hover,
+.composer__outline button.is-active {
+  background: rgb(229 167 211 / 19%);
+}
+.composer__tree-section {
+  padding-left: 15px !important;
+}
+.composer__tree-row {
+  padding-left: 25px !important;
+}
+.composer__tree-column {
+  padding-left: 36px !important;
+}
+.composer__tree-block {
+  padding-left: 49px !important;
+  opacity: 0.88;
+}
+.composer__canvas-shell {
+  position: relative;
+  min-width: 0;
+  background: #251b2e;
+}
+.composer__canvas {
+  position: relative;
+  display: block;
+  padding: clamp(22px, 3vw, 46px);
+  min-height: 500px;
+  min-width: 0;
+  overflow: auto;
+  isolation: isolate;
+  background: #171321;
+}
+/* Match the public booklet-world treatment without applying it to the entire admin page. */
+.composer__booklet-world {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  --booklet-world-size: 170%;
+}
+.composer__booklet-world .booklet-world__artwork {
+  filter: blur(76px) saturate(0.91) brightness(0.62);
+}
+.composer__device {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  background: transparent;
+  min-height: 300px;
+  transition: max-width 0.18s ease;
+}
+.composer__device--tablet {
+  max-width: 768px;
+}
+.composer__device--mobile {
+  max-width: 390px;
+}
+.composer__device app-page-renderer {
+  display: block;
+  width: 100%;
+}
+.composer__inspector {
+  position: sticky;
+  align-self: start;
+  top: calc(var(--composer-sticky-top) + var(--composer-toolbar-height));
+  max-height: calc(100dvh - var(--composer-sticky-top) - var(--composer-toolbar-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-left: 1px solid rgb(255 255 255 / 9%);
+  background: #30243a;
+  padding: 20px;
+}
+.composer__inspector h3 {
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+}
+.composer__inspector label {
+  margin-top: 9px;
+}
+.composer__inspector input,
+.composer__inspector select {
+  padding: 11px;
+}
+.composer__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.composer__tabs button {
+  min-width: 0;
+  padding: 9px 3px;
+  font-size: 0.72rem;
+}
+.composer__insert-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: grid;
+  place-items: center;
+  padding: 22px 12px;
+  background: rgb(18 10 24 / 62%);
+  overflow-y: auto;
+}
+.composer__insert-menu {
+  width: min(460px, 100%);
+  padding: 18px;
+  border: 1px solid #a679a8;
+  border-radius: 15px;
+  background: #33243b;
+  box-shadow: 0 15px 70px rgb(0 0 0 / 36%);
+}
+.composer__insert-menu header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 8px;
+}
+.composer__insert-menu header button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.composer__insert-menu header app-icon {
+  width: 19px;
+  height: 19px;
+}
+.composer__layouts--insert {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.composer__block-palette {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+.composer__block-palette button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 95px;
+  border: 1px solid #775d7c;
+  border-radius: 10px;
+  color: #f9e3f3;
+  background: rgb(255 255 255 / 4%);
+  cursor: pointer;
+}
+.composer__block-palette button:hover,
+.composer__block-palette button:focus-visible {
+  background: rgb(236 160 213 / 15%);
+  border-color: #e7b0d1;
+}
+.composer__block-palette app-icon {
+  width: 27px;
+  height: 27px;
+}
+@media (max-width: 1190px) {
+  .composer__workspace {
+    grid-template-columns: minmax(0, 1fr) 290px;
+  }
+  .composer__workspace--outline {
+    grid-template-columns: 165px minmax(0, 1fr) 290px;
+  }
+  .composer__workspace--preview {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  /* The public mobile header is itself sticky and occupies 56px. */
+  .composer {
+    --composer-sticky-top: 56px;
+  }
+  .composer__workspace,
+  .composer__workspace--outline {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .composer__outline {
+    position: static;
+    max-height: 250px;
+    border-right: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+  }
+  .composer__inspector {
+    position: static;
+    max-height: none;
+    border-left: 0;
+    border-top: 1px solid rgb(255 255 255 / 13%);
+  }
+}
+@media (max-width: 740px) {
+  .composer__toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .composer__toolbar-group {
+    gap: 2px;
+  }
+  .composer__canvas {
+    padding: 30px 12px;
+  }
+  .composer__toolbar .composer__tool {
+    min-width: 31px;
+    height: 33px;
+  }
+  .composer__toolbar .composer__preview-toggle {
+    font-size: 0;
+    gap: 0;
+  }
+}
+.composer__inspector-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
 
 /* Editor workspace controls. These values are UI state, never document content. */
-.composer__workspace:not(.composer__workspace--preview):not(.composer__workspace--inspector-hidden) {
+.composer__workspace:not(.composer__workspace--preview):not(
+    .composer__workspace--inspector-hidden
+  ) {
   grid-template-columns: minmax(0, 1fr) 10px minmax(0, var(--composer-inspector-width, 380px));
 }
-.composer__workspace--outline:not(.composer__workspace--preview):not(.composer__workspace--inspector-hidden) {
+.composer__workspace--outline:not(.composer__workspace--preview):not(
+    .composer__workspace--inspector-hidden
+  ) {
   grid-template-columns: 215px minmax(0, 1fr) 10px minmax(0, var(--composer-inspector-width, 380px));
 }
 .composer__workspace--inspector-hidden:not(.composer__workspace--preview) {
   grid-template-columns: minmax(0, 1fr);
 }
-.composer__workspace--outline.composer__workspace--inspector-hidden:not(.composer__workspace--preview) {
+.composer__workspace--outline.composer__workspace--inspector-hidden:not(
+    .composer__workspace--preview
+  ) {
   grid-template-columns: 215px minmax(0, 1fr);
 }
 .composer__splitter {
-  display: grid; place-items: center; position: relative; z-index: 5;
-  cursor: col-resize; touch-action: none; background: #38283f;
+  display: grid;
+  place-items: center;
+  position: relative;
+  z-index: 5;
+  cursor: col-resize;
+  touch-action: none;
+  background: #38283f;
   border-inline: 1px solid rgb(255 255 255 / 9%);
 }
-.composer__splitter span { width: 4px; height: 46px; border-radius: 5px; background: #957097; }
-.composer__splitter:hover, .composer__splitter:focus-visible { background: #72496e; outline: none; }
-.composer__splitter:hover span, .composer__splitter:focus-visible span { background: #ffd4eb; }
-.composer__canvas-shell { overflow-x: auto; }
-.composer__device:not(.composer__device--tablet):not(.composer__device--mobile) { min-width: 980px; }
-.composer__device--tablet { width: 768px; max-width: none; }
-.composer__device--mobile { width: 390px; max-width: none; }
+.composer__splitter span {
+  width: 4px;
+  height: 46px;
+  border-radius: 5px;
+  background: #957097;
+}
+.composer__splitter:hover,
+.composer__splitter:focus-visible {
+  background: #72496e;
+  outline: none;
+}
+.composer__splitter:hover span,
+.composer__splitter:focus-visible span {
+  background: #ffd4eb;
+}
+.composer__canvas-shell {
+  overflow-x: auto;
+}
+.composer__device:not(.composer__device--tablet):not(.composer__device--mobile) {
+  min-width: 980px;
+}
+.composer__device--tablet {
+  width: 768px;
+  max-width: none;
+}
+.composer__device--mobile {
+  width: 390px;
+  max-width: none;
+}
 .composer__breadcrumbs {
-  display: flex; gap: 3px; align-items: center; overflow-x: auto; padding: 9px 16px;
-  border-block: 1px solid rgb(255 255 255 / 10%); background: #2b2032;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  overflow-x: auto;
+  padding: 9px 16px;
+  border-block: 1px solid rgb(255 255 255 / 10%);
+  background: #2b2032;
   white-space: nowrap;
 }
-.composer__breadcrumbs button { border: 0; padding: 5px 9px; border-radius: 7px;
-  background: transparent; color: #eac9df; font-size: .78rem; }
-.composer__breadcrumbs button:hover, .composer__breadcrumbs button[aria-current] { background: #65405e; }
-.composer__breadcrumbs app-icon { width: 13px; color: #ad86a6; }
-.composer__inspector { min-width: 0; }
-.composer__reset-width { border: 0; background: transparent; color: #f0c2db; cursor: pointer; }
-.composer__asset-preview {
-  display: grid; justify-items: center; gap: 10px; min-height: 120px;
-  padding: 14px; border: 1px dashed #ae80a9; border-radius: 9px;
-  background: #372b3f; color: #f4cde2; cursor: pointer; width: 100%;
+.composer__breadcrumbs button {
+  border: 0;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: transparent;
+  color: #eac9df;
+  font-size: 0.78rem;
 }
-.composer__asset-preview img { width: min(100%, 220px); max-height: 140px; object-fit: contain; }
-.composer__asset-preview app-icon { width: 25px; height: 25px; }
+.composer__breadcrumbs button:hover,
+.composer__breadcrumbs button[aria-current] {
+  background: #65405e;
+}
+.composer__breadcrumbs app-icon {
+  width: 13px;
+  color: #ad86a6;
+}
+.composer__inspector {
+  min-width: 0;
+}
+.composer__reset-width {
+  border: 0;
+  background: transparent;
+  color: #f0c2db;
+  cursor: pointer;
+}
+.composer__asset-preview {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  min-height: 120px;
+  padding: 14px;
+  border: 1px dashed #ae80a9;
+  border-radius: 9px;
+  background: #372b3f;
+  color: #f4cde2;
+  cursor: pointer;
+  width: 100%;
+}
+.composer__asset-preview img {
+  width: min(100%, 220px);
+  max-height: 140px;
+  object-fit: contain;
+}
+.composer__asset-preview app-icon {
+  width: 25px;
+  height: 25px;
+}
 @media (max-width: 900px) {
-  .composer__workspace:not(.composer__workspace--preview):not(.composer__workspace--inspector-hidden),
-  .composer__workspace--outline:not(.composer__workspace--preview):not(.composer__workspace--inspector-hidden),
+  .composer__workspace:not(.composer__workspace--preview):not(
+      .composer__workspace--inspector-hidden
+    ),
+  .composer__workspace--outline:not(.composer__workspace--preview):not(
+      .composer__workspace--inspector-hidden
+    ),
   .composer__workspace--inspector-hidden:not(.composer__workspace--preview),
-  .composer__workspace--outline.composer__workspace--inspector-hidden:not(.composer__workspace--preview) {
+  .composer__workspace--outline.composer__workspace--inspector-hidden:not(
+      .composer__workspace--preview
+    ) {
     grid-template-columns: minmax(0, 1fr);
   }
-  .composer__splitter { display: none; }
+  .composer__splitter {
+    display: none;
+  }
 }
-@media (prefers-reduced-motion: reduce) { .composer__splitter, .composer__device { transition: none; } }
-.composer__design-group { display: grid; gap: 9px; padding: 12px 0; border-bottom: 1px solid rgb(255 255 255 / 10%); }
-.composer__design-colors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.composer__design-colors label { display: grid; gap: 6px; }
-.composer__inspector input[type='color'] { min-height: 44px; cursor: pointer; padding: 4px; }
-.composer__background-image { display: flex; flex-direction: column; align-items: center; gap: 8px;
-  width: 100%; padding: 10px; border: 1px dashed #b08bb3; border-radius: 10px;
-  background: rgb(255 255 255 / 5%); color: inherit; cursor: pointer; }
-.composer__background-image img { width: 100%; max-height: 135px; object-fit: contain; }
+@media (prefers-reduced-motion: reduce) {
+  .composer__splitter,
+  .composer__device {
+    transition: none;
+  }
+}
+/* Keep the save action useful on narrow editor widths. */
+.composer__save {
+  white-space: nowrap;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.composer__design-group {
+  display: grid;
+  gap: 9px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+}
+.composer__design-colors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.composer__design-colors label {
+  display: grid;
+  gap: 6px;
+}
+.composer__inspector input[type='color'] {
+  min-height: 44px;
+  cursor: pointer;
+  padding: 4px;
+}
+.composer__background-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed #b08bb3;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 5%);
+  color: inherit;
+  cursor: pointer;
+}
+.composer__background-image img {
+  width: 100%;
+  max-height: 135px;
+  object-fit: contain;
+}

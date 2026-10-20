@@ -39,6 +39,13 @@
             [attr.data-editor-parent]="editable() ? section.id : null" [attr.data-editor-index]="editable() ? rowIndex : null"
             (click)="choose($event, 'row', row.id)">
             @if (editable()) {
+              <button type="button" class="page-document__row-select"
+                [class.is-selected]="selectedId() === row.id"
+                [attr.aria-label]="('page.editor.selectRow' | i18n | async) + ' ' + (rowIndex + 1)"
+                (click)="choose($event, 'row', row.id)">
+                <app-icon name="layout-template" />
+                <span>{{ 'page.editor.row' | i18n | async }} {{ rowIndex + 1 }}</span>
+              </button>
               <div class="page-document__controls" (click)="$event.stopPropagation()">
                 <span>{{ 'page.editor.row' | i18n | async }}</span>
                 <button type="button" (click)="choose($event, 'row', row.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
@@ -53,6 +60,7 @@
               <div class="page-document__column page-document__node" [class]="surface(column.styles)"
                 [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === column.id"
                 [class.is-drop-end]="dropAt(column.id, 'end')" [ngStyle]="styleVars(column.styles)"
+                [style.align-content]="column.contentAlign ?? 'start'"
                 [attr.data-editor-kind]="editable() ? 'column' : null" [attr.data-editor-id]="editable() ? column.id : null"
                 (click)="choose($event, 'column', column.id)">
                 @if (editable()) {
@@ -115,11 +123,18 @@
                       }
                       @case ('gallery') {
                         @if (editable() && !block.items.length) {
-                          <div class="page-document__empty"><app-icon name="images" /> {{ 'page.editor.block.gallery' | i18n | async }}</div>
+                          <div class="page-document__empty"><app-icon name="gallery" /> {{ 'page.editor.block.gallery' | i18n | async }}</div>
                         }
-                        <div class="page-document__gallery">
+                        <div class="page-document__gallery" [class.page-document__gallery--featured]="block.layout === 'featured'">
                           @for (item of block.items; track item.id) {
-                            <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                            <button type="button" class="page-document__gallery-item"
+                              [attr.aria-label]="item.alt[locale()] || item.alt.de || ('page.editor.gallery.openImage' | i18n | async)"
+                              (click)="openGalleryItem($event, block, $index)">
+                              <img [src]="image(item.assetId)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                              @if (!editable()) {
+                                <span class="page-document__gallery-zoom" aria-hidden="true"><app-icon name="search" /></span>
+                              }
+                            </button>
                           }
                         </div>
                       }

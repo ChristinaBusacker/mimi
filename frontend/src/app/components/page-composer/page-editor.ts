@@ -13,7 +13,7 @@ import type {
 } from '@shared/content/page-document';
 import { PAGE_ROW_LAYOUTS, PAGE_ROW_OPTIONS } from '@shared/content/page-layouts';
 import { AsyncPipe } from '@angular/common';
-import { ElementRef, afterNextRender, viewChild } from '@angular/core';
+import { ElementRef, HostListener, afterNextRender, viewChild } from '@angular/core';
 import { AssetLibrary } from '../asset-library/asset-library';
 import {
   ChangeDetectionStrategy,
@@ -45,7 +45,7 @@ const initialStyles = (): PageStyles => ({
   align: 'left',
 });
 const node = (): PageNode => ({ id: crypto.randomUUID(), styles: initialStyles() });
-const makeColumn = (): PageColumn => ({ ...node(), styles: { ...initialStyles(), spacing: 'small' }, blocks: [] });
+const makeColumn = (): PageColumn => ({ ...node(), contentAlign: 'start', styles: { ...initialStyles(), spacing: 'small' }, blocks: [] });
 const makeRow = (layout: RowLayout): PageRow => ({
   ...node(),
   layout,
@@ -60,7 +60,7 @@ const makeBlock = (kind: BlockKind): PageBlock => {
     case 'image':
       return { ...base, type: kind, assetId: null, alt: { de: '', en: '' } };
     case 'gallery':
-      return { ...base, type: kind, items: [] };
+      return { ...base, type: kind, layout: 'grid', items: [] };
     case 'spacer':
       return { ...base, type: kind, height: 48 };
     case 'albumDetails':
@@ -98,6 +98,8 @@ export class PageEditor {
     return id ? `url("/api/assets/${encodeURIComponent(id)}/image/large/fallback")` : 'none';
   });
   readonly documentChange = output<PageDocument>();
+  /** Request persistence from the parent; the editor never saves directly. */
+  readonly saveRequest = output<void>();
 
   private readonly workspace = viewChild<ElementRef<HTMLElement>>('workspace');
   private readonly imageLibrary = viewChild(AssetLibrary);
@@ -391,6 +393,10 @@ export class PageEditor {
     const value = this.active();
     return value && 'layout' in value ? value : null;
   });
+  protected readonly selectedColumn = computed(() => {
+    const value = this.active();
+    return value && 'blocks' in value ? value : null;
+  });
 
   constructor() {
     afterNextRender(() => {
@@ -537,41 +543,48 @@ export class PageEditor {
     this.refreshHistory();
     this.documentChange.emit(next);
   }
+  @HostListener('document:keydown', ['$event'])
   protected keyboard(event: KeyboardEvent): void {
-    if (
-      event.altKey &&
-      !event.ctrlKey &&
-      !event.metaKey &&
-      (event.key === 'ArrowUp' || event.key === 'ArrowDown')
-    ) {
+    if (event.defaultPrevented) return;
+    const key = event.key.toLowerCase();
+    const modifier = event.ctrlKey || event.metaKey;
+    if (modifier && !event.altKey && !event.shiftKey && key === 's') {
+      event.preventDefault();
+      this.saveRequest.emit();
+      return;
+    }
+
+    const element = event.target;
+    const editing = element instanceof HTMLElement && Boolean(
+      element.closest('input, textarea, select, [contenteditable="true"], .markdown-editor'),
+    );
+    // Escape dismisses the insertion menu or inline editing without modifying content.
+    if (event.key === 'Escape' && !editing) {
+      if (this.addTarget()) {
+        event.preventDefault();
+        this.addTarget.set(null);
+      } else if (this.inlineTextId()) {
+        event.preventDefault();
+        this.inlineTextId.set(null);
+      }
+      return;
+    }
+    if (event.altKey && !modifier && !editing &&
+        (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
       const selected = this.selected();
-      const target = event.target;
-      if (
-        selected &&
-        selected.kind !== 'page' &&
-        selected.kind !== 'column' &&
-        !(
-          target instanceof HTMLElement &&
-          target.closest('input, textarea, select, [contenteditable="true"]')
-        )
-      ) {
+      if (selected && selected.kind !== 'page' && selected.kind !== 'column') {
         event.preventDefault();
         this.shift(selected.kind, selected.id, event.key === 'ArrowUp' ? -1 : 1);
       }
       return;
     }
-    if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
-    const element = event.target;
-    if (
-      element instanceof HTMLElement &&
-      element.closest('input, textarea, [contenteditable="true"], .markdown-editor')
-    )
-      return;
-    if (event.key.toLowerCase() === 'z') {
+    // Native undo in text fields remains intact. Structural history works everywhere else.
+    if (!modifier || event.altKey || editing) return;
+    if (key === 'z') {
       event.preventDefault();
       if (event.shiftKey) this.redo();
       else this.undo();
-    } else if (event.key.toLowerCase() === 'y') {
+    } else if (key === 'y' && !event.shiftKey) {
       event.preventDefault();
       this.redo();
     }
@@ -637,6 +650,20 @@ export class PageEditor {
     this.commit(next);
     this.inspect('block', block.id);
   }
+  protected setGalleryLayout(event: Event): void {
+    const layout = this.value(event);
+    if (layout !== 'grid' && layout !== 'featured') return;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'gallery') node.layout = layout;
+    });
+  }
+  protected setColumnAlignment(event: Event): void {
+    const contentAlign = this.value(event);
+    if (contentAlign !== 'start' && contentAlign !== 'center' && contentAlign !== 'end') return;
+    this.changeSelected((node) => {
+      if ('blocks' in node) node.contentAlign = contentAlign;
+    });
+  }
   protected addGalleryImage(event: Event): void {
     const value = this.value(event);
     if (!value) return;
@@ -650,6 +677,15 @@ export class PageEditor {
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'gallery')
         node.items = node.items.filter((item) => item.id !== id);
+    });
+  }
+  protected moveGalleryImage(id: string, direction: -1 | 1): void {
+    this.changeSelected((node) => {
+      if (!('type' in node) || node.type !== 'gallery') return;
+      const index = node.items.findIndex((item) => item.id === id);
+      const target = index + direction;
+      if (index < 0 || target < 0 || target >= node.items.length) return;
+      [node.items[index], node.items[target]] = [node.items[target], node.items[index]];
     });
   }
   protected updateGalleryAlt(id: string, event: Event): void {

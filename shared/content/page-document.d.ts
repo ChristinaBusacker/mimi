@@ -50,6 +50,8 @@ export interface PageGalleryItem {
 }
 export interface PageGalleryBlock extends PageNode {
   type: 'gallery';
+  /** Existing galleries default to the regular grid. */
+  layout?: 'grid' | 'featured';
   items: PageGalleryItem[];
 }
 export interface PageSpacerBlock extends PageNode {
@@ -77,6 +79,8 @@ export interface PageAlbumCreditsBlock extends PageNode {
 export type PageBlock = PageTextBlock | PageImageBlock | PageGalleryBlock | PageSpacerBlock
   | PageAlbumDetailsBlock | PageAlbumTracksBlock | PageAlbumCreditsBlock;
 export interface PageColumn extends PageNode {
+  /** Vertical position of the blocks in a stretched column. Defaults to start. */
+  contentAlign?: 'start' | 'center' | 'end';
   blocks: PageBlock[];
 }
 export interface PageRow extends PageNode {
