@@ -17,16 +17,19 @@ import { firstValueFrom } from 'rxjs';
 
 import { AdminAssetsService } from '../../core/assets/admin-assets.service';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
+import { Icon } from '../icon/icon';
 
 type EditorMode = 'image' | 'thumbnail';
 type Aspect = 'free' | 'square' | 'wide' | 'portrait' | 'classic';
 type CropAxis = 'width' | 'height';
+type CropHandle = 'move' | 'nw' | 'ne' | 'sw' | 'se';
 
 interface DragState {
   pointerId: number;
   clientX: number;
   clientY: number;
   crop: AssetCropRect;
+  handle: CropHandle;
 }
 
 const FULL: AssetCropRect = { x: 0, y: 0, width: 1, height: 1 };
@@ -49,7 +52,7 @@ function fitAspect(width: number, height: number, aspect: number): AssetCropRect
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, I18nPipe],
+  imports: [AsyncPipe, I18nPipe, Icon],
   selector: 'app-image-editor',
   styleUrl: './image-editor.scss',
   templateUrl: './image-editor.html',
@@ -75,7 +78,9 @@ export class ImageEditor {
   protected readonly crop = signal<AssetCropRect>(FULL);
   protected readonly thumbnailCrop = signal<AssetCropRect>(FULL);
   protected readonly zoom = signal(1);
+  protected readonly cropHandles: readonly Exclude<CropHandle, 'move'>[] = ['nw', 'ne', 'sw', 'se'];
   protected readonly ready = signal(false);
+  protected readonly preciseControls = signal(false);
   protected readonly loadingError = signal(false);
   protected readonly saving = signal(false);
   protected readonly saveFailed = signal(false);
@@ -99,6 +104,10 @@ export class ImageEditor {
     });
   }
 
+  protected togglePreciseControls(): void {
+    this.preciseControls.update((visible) => !visible);
+  }
+
   protected close(): void {
     this.dialog()?.nativeElement.close();
   }
@@ -110,7 +119,9 @@ export class ImageEditor {
   }
 
   protected rotate(direction: -1 | 1): void {
-    this.rotation.update((value) => ((value + direction * 90 + 360) % 360) as AssetImageEdits['rotation']);
+    this.rotation.update(
+      (value) => ((value + direction * 90 + 360) % 360) as AssetImageEdits['rotation'],
+    );
     this.crop.set(FULL);
     this.thumbnailCrop.set(this.centeredThumbnail(FULL));
     this.aspect.set('free');
@@ -144,10 +155,20 @@ export class ImageEditor {
     this.zoom.set(scale);
     const selected = this.cropSelection();
     const dimensions = this.previewDimensions();
-    const base = this.mode() === 'thumbnail'
-      ? fitAspect(dimensions.width, dimensions.height, 1)
-      : fitAspect(dimensions.width, dimensions.height, this.aspectRatio(this.aspect(), dimensions.width / dimensions.height));
-    this.setSelection(this.centeredOnCurrent({ ...base, width: base.width / scale, height: base.height / scale }, selected));
+    const base =
+      this.mode() === 'thumbnail'
+        ? fitAspect(dimensions.width, dimensions.height, 1)
+        : fitAspect(
+            dimensions.width,
+            dimensions.height,
+            this.aspectRatio(this.aspect(), dimensions.width / dimensions.height),
+          );
+    this.setSelection(
+      this.centeredOnCurrent(
+        { ...base, width: base.width / scale, height: base.height / scale },
+        selected,
+      ),
+    );
   }
 
   protected changeFreeAxis(axis: CropAxis, event: Event): void {
@@ -170,36 +191,98 @@ export class ImageEditor {
     });
   }
 
-  protected pointerDown(event: PointerEvent): void {
+  protected pointerDown(event: PointerEvent, handle: CropHandle = 'move'): void {
     const target = event.currentTarget;
-    if (!(target instanceof HTMLElement)) return;
+    if (!(target instanceof HTMLElement) || !event.isPrimary) return;
     event.preventDefault();
+    event.stopPropagation();
     target.setPointerCapture(event.pointerId);
     this.drag = {
       pointerId: event.pointerId,
       clientX: event.clientX,
       clientY: event.clientY,
       crop: this.cropSelection(),
+      handle,
     };
   }
 
   protected pointerMove(event: PointerEvent): void {
-    if (!this.drag || this.drag.pointerId !== event.pointerId) return;
+    const drag = this.drag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
     const canvas = this.canvas()?.nativeElement;
     if (!canvas) return;
     const bounds = canvas.getBoundingClientRect();
     if (bounds.width === 0 || bounds.height === 0) return;
-    const rect = this.drag.crop;
-    const next = {
-      ...rect,
-      x: constrain(rect.x + (event.clientX - this.drag.clientX) / bounds.width, 0, 1 - rect.width),
-      y: constrain(rect.y + (event.clientY - this.drag.clientY) / bounds.height, 0, 1 - rect.height),
-    };
-    this.setSelection(next);
+    const dx = (event.clientX - drag.clientX) / bounds.width;
+    const dy = (event.clientY - drag.clientY) / bounds.height;
+    if (drag.handle === 'move') {
+      this.setSelection({
+        ...drag.crop,
+        x: constrain(drag.crop.x + dx, 0, 1 - drag.crop.width),
+        y: constrain(drag.crop.y + dy, 0, 1 - drag.crop.height),
+      });
+      return;
+    }
+    this.setSelection(this.resizedCrop(drag.crop, dx, dy, drag.handle));
   }
 
   protected pointerUp(event: PointerEvent): void {
     if (this.drag?.pointerId === event.pointerId) this.drag = null;
+  }
+
+  protected nudgeCrop(event: KeyboardEvent): void {
+    const step = event.shiftKey ? 0.05 : 0.01;
+    const delta = {
+      ArrowLeft: [-step, 0],
+      ArrowRight: [step, 0],
+      ArrowUp: [0, -step],
+      ArrowDown: [0, step],
+    } as const;
+    if (!Object.hasOwn(delta, event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const [dx, dy] = delta[event.key as keyof typeof delta];
+    const crop = this.cropSelection();
+    this.setSelection({
+      ...crop,
+      x: constrain(crop.x + dx, 0, 1 - crop.width),
+      y: constrain(crop.y + dy, 0, 1 - crop.height),
+    });
+  }
+
+  private resizedCrop(
+    current: AssetCropRect,
+    dx: number,
+    dy: number,
+    handle: Exclude<CropHandle, 'move'>,
+  ): AssetCropRect {
+    const west = handle.endsWith('w');
+    const north = handle.startsWith('n');
+    const anchorX = west ? current.x + current.width : current.x;
+    const anchorY = north ? current.y + current.height : current.y;
+    const maxWidth = west ? anchorX : 1 - anchorX;
+    const maxHeight = north ? anchorY : 1 - anchorY;
+    let width = constrain(current.width + (west ? -dx : dx), 0.06, maxWidth);
+    let height = constrain(current.height + (north ? -dy : dy), 0.06, maxHeight);
+
+    if (this.mode() === 'thumbnail' || this.aspect() !== 'free') {
+      // Keep the ratio of the current crop in normalized image coordinates.
+      const ratio = current.width / current.height;
+      if (Math.abs(dx) / current.width > Math.abs(dy) / current.height) {
+        height = width / ratio;
+      } else {
+        width = height * ratio;
+      }
+      width = Math.min(width, maxWidth, maxHeight * ratio);
+      height = width / ratio;
+    }
+
+    return {
+      x: west ? anchorX - width : anchorX,
+      y: north ? anchorY - height : anchorY,
+      width,
+      height,
+    };
   }
 
   protected reset(): void {
@@ -253,11 +336,16 @@ export class ImageEditor {
 
   private aspectRatio(aspect: Aspect, natural: number): number {
     switch (aspect) {
-      case 'square': return 1;
-      case 'wide': return 16 / 9;
-      case 'portrait': return 4 / 5;
-      case 'classic': return 3 / 2;
-      default: return natural;
+      case 'square':
+        return 1;
+      case 'wide':
+        return 16 / 9;
+      case 'portrait':
+        return 4 / 5;
+      case 'classic':
+        return 3 / 2;
+      default:
+        return natural;
     }
   }
 
@@ -265,8 +353,10 @@ export class ImageEditor {
     const image = this.source;
     if (!image) return { width: 1, height: 1 };
     const swapped = this.rotation() === 90 || this.rotation() === 270;
-    return { width: swapped ? image.naturalHeight : image.naturalWidth,
-      height: swapped ? image.naturalWidth : image.naturalHeight };
+    return {
+      width: swapped ? image.naturalHeight : image.naturalWidth,
+      height: swapped ? image.naturalWidth : image.naturalHeight,
+    };
   }
 
   private previewDimensions(): { width: number; height: number } {
@@ -325,16 +415,30 @@ export class ImageEditor {
     sourceContext.translate(fullWidth / 2, fullHeight / 2);
     sourceContext.scale(this.flipX() ? -1 : 1, this.flipY() ? -1 : 1);
     sourceContext.rotate((this.rotation() * Math.PI) / 180);
-    sourceContext.drawImage(image, -image.naturalWidth * scale / 2,
-      -image.naturalHeight * scale / 2, image.naturalWidth * scale, image.naturalHeight * scale);
+    const imageScale = scale;
+    sourceContext.drawImage(
+      image,
+      (-image.naturalWidth * imageScale) / 2,
+      (-image.naturalHeight * imageScale) / 2,
+      image.naturalWidth * imageScale,
+      image.naturalHeight * imageScale,
+    );
 
     const main = this.mode() === 'thumbnail' ? this.crop() : FULL;
     canvas.width = Math.max(1, Math.round(fullWidth * main.width));
     canvas.height = Math.max(1, Math.round(fullHeight * main.height));
     const context = canvas.getContext('2d');
-    context?.drawImage(sourceCanvas, main.x * fullWidth, main.y * fullHeight,
-      main.width * fullWidth, main.height * fullHeight,
-      0, 0, canvas.width, canvas.height);
+    context?.drawImage(
+      sourceCanvas,
+      main.x * fullWidth,
+      main.y * fullHeight,
+      main.width * fullWidth,
+      main.height * fullHeight,
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+    );
     this.previewRatio.set(`${canvas.width} / ${canvas.height}`);
     this.renderThumbnail(sourceCanvas);
   }
@@ -350,13 +454,16 @@ export class ImageEditor {
     if (!ctx) return;
     preview.width = 256;
     preview.height = 256;
-    ctx.drawImage(canvas,
+    ctx.drawImage(
+      canvas,
       (main.x + rect.x * main.width) * canvas.width,
       (main.y + rect.y * main.height) * canvas.height,
       rect.width * main.width * canvas.width,
       rect.height * main.height * canvas.height,
-      0, 0, 256, 256);
+      0,
+      0,
+      256,
+      256,
+    );
   }
-
-
 }

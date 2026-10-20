@@ -1,105 +1,228 @@
-<dialog #dialog class="image-editor" (close)="closed.emit()" [attr.aria-label]="'admin.media.editor.title' | i18n | async">
-  <header>
-    <div>
+<dialog
+  #dialog
+  class="image-editor"
+  (close)="closed.emit()"
+  [attr.aria-label]="'admin.media.editor.title' | i18n | async"
+>
+  <header class="editor-header">
+    <div class="heading">
       <h2>{{ 'admin.media.editor.title' | i18n | async }}</h2>
-      <p>{{ 'admin.media.editor.instructions' | i18n | async }}</p>
+      <p [title]="asset().originalFilename">{{ asset().originalFilename }}</p>
     </div>
-    <button type="button" class="close" (click)="close()" [attr.aria-label]="'admin.media.editor.cancel' | i18n | async">×</button>
+    <button
+      type="button"
+      class="close"
+      (click)="close()"
+      [attr.aria-label]="'admin.media.editor.cancel' | i18n | async"
+    >
+      <app-icon name="x" class="white" />
+    </button>
   </header>
 
   @if (loadingError()) {
-    <p role="alert">{{ 'admin.media.editor.loadError' | i18n | async }}</p>
+    <p role="alert" class="error">{{ 'admin.media.editor.loadError' | i18n | async }}</p>
   } @else {
-    <div class="tabs" role="group" [attr.aria-label]="'admin.media.editor.title' | i18n | async">
+    <div
+      class="editor-modes"
+      role="group"
+      [attr.aria-label]="'admin.media.editor.title' | i18n | async"
+    >
       <button type="button" [attr.aria-pressed]="mode() === 'image'" (click)="changeMode('image')">
-        {{ 'admin.media.editor.image' | i18n | async }}
+        <app-icon name="crop" class="white" /> {{ 'admin.media.editor.image' | i18n | async }}
       </button>
-      <button type="button" [attr.aria-pressed]="mode() === 'thumbnail'" (click)="changeMode('thumbnail')">
-        {{ 'admin.media.editor.thumbnail' | i18n | async }}
+      <button
+        type="button"
+        [attr.aria-pressed]="mode() === 'thumbnail'"
+        (click)="changeMode('thumbnail')"
+      >
+        <app-icon name="image" class="white" /> {{ 'admin.media.editor.thumbnail' | i18n | async }}
       </button>
+      <span class="editor-hint">{{ 'admin.media.editor.instructions' | i18n | async }}</span>
     </div>
 
     <div class="workspace">
       <div class="canvas-area">
-        <div class="image-frame" [style.aspect-ratio]="previewRatio()" [attr.aria-label]="'admin.media.editor.preview' | i18n | async">
-          <canvas #canvas></canvas>
-          @if (ready()) {
-            <div class="crop"
-              [style.left.%]="cropSelection().x * 100"
-              [style.top.%]="cropSelection().y * 100"
-              [style.width.%]="cropSelection().width * 100"
-              [style.height.%]="cropSelection().height * 100"
-              (pointerdown)="pointerDown($event)"
-              (pointermove)="pointerMove($event)"
-              (pointerup)="pointerUp($event)"
-              (pointercancel)="pointerUp($event)">
-              <span class="crop-grid" aria-hidden="true"></span>
-            </div>
-          }
+        <div class="stage">
+          <div
+            class="image-frame"
+            [style.aspect-ratio]="previewRatio()"
+            [attr.aria-label]="'admin.media.editor.preview' | i18n | async"
+          >
+            <canvas #canvas></canvas>
+            @if (ready()) {
+              <div
+                class="crop"
+                tabindex="0"
+                role="group"
+                [attr.aria-label]="'admin.media.editor.dragCrop' | i18n | async"
+                [style.left.%]="cropSelection().x * 100"
+                [style.top.%]="cropSelection().y * 100"
+                [style.width.%]="cropSelection().width * 100"
+                [style.height.%]="cropSelection().height * 100"
+                (pointerdown)="pointerDown($event)"
+                (pointermove)="pointerMove($event)"
+                (pointerup)="pointerUp($event)"
+                (pointercancel)="pointerUp($event)"
+                (keydown)="nudgeCrop($event)"
+              >
+                <span class="crop-grid" aria-hidden="true"></span>
+                @for (handle of cropHandles; track handle) {
+                  <span
+                    class="crop-handle"
+                    [class.crop-handle--nw]="handle === 'nw'"
+                    [class.crop-handle--ne]="handle === 'ne'"
+                    [class.crop-handle--sw]="handle === 'sw'"
+                    [class.crop-handle--se]="handle === 'se'"
+                    (pointerdown)="pointerDown($event, handle)"
+                    aria-hidden="true"
+                  ></span>
+                }
+              </div>
+            }
+          </div>
         </div>
-        <p class="hint">{{ 'admin.media.editor.moveHint' | i18n | async }}</p>
+        <p class="hint">{{ 'admin.media.editor.dragCrop' | i18n | async }}</p>
       </div>
 
-      <aside>
-        <div class="transform-actions">
-          <button type="button" (click)="rotate(-1)">{{ 'admin.media.editor.rotateLeft' | i18n | async }}</button>
-          <button type="button" (click)="rotate(1)">{{ 'admin.media.editor.rotateRight' | i18n | async }}</button>
-          <button type="button" [attr.aria-pressed]="flipX()" (click)="flip('x')">
-            {{ 'admin.media.editor.flipX' | i18n | async }}
-          </button>
-          <button type="button" [attr.aria-pressed]="flipY()" (click)="flip('y')">
-            {{ 'admin.media.editor.flipY' | i18n | async }}
-          </button>
+      <aside class="editor-tools">
+        <div class="tool-group">
+          <strong>{{ 'admin.media.editor.image' | i18n | async }}</strong>
+          <div class="transform-actions">
+            <button
+              type="button"
+              (click)="rotate(-1)"
+              [attr.aria-label]="'admin.media.editor.rotateLeft' | i18n | async"
+              [title]="'admin.media.editor.rotateLeft' | i18n | async"
+            >
+              <app-icon name="rotate-ccw" class="white" />
+            </button>
+            <button
+              type="button"
+              (click)="rotate(1)"
+              [attr.aria-label]="'admin.media.editor.rotateRight' | i18n | async"
+              [title]="'admin.media.editor.rotateRight' | i18n | async"
+            >
+              <app-icon name="rotate-cw" class="white" />
+            </button>
+            <button
+              type="button"
+              [attr.aria-pressed]="flipX()"
+              (click)="flip('x')"
+              [attr.aria-label]="'admin.media.editor.flipX' | i18n | async"
+              [title]="'admin.media.editor.flipX' | i18n | async"
+            >
+              <app-icon name="flip-horizontal" class="white" />
+            </button>
+            <button
+              type="button"
+              [attr.aria-pressed]="flipY()"
+              (click)="flip('y')"
+              [attr.aria-label]="'admin.media.editor.flipY' | i18n | async"
+              [title]="'admin.media.editor.flipY' | i18n | async"
+            >
+              <app-icon name="flip-vertical" class="white" />
+            </button>
+          </div>
         </div>
-
-        @if (mode() === 'image') {
-          <label>
-            {{ 'admin.media.editor.aspect' | i18n | async }}
-            <select [value]="aspect()" (change)="changeAspect($event)">
-              <option value="free">{{ 'admin.media.editor.free' | i18n | async }}</option>
-              <option value="square">{{ 'admin.media.editor.square' | i18n | async }}</option>
-              <option value="wide">{{ 'admin.media.editor.wide' | i18n | async }}</option>
-              <option value="portrait">{{ 'admin.media.editor.portrait' | i18n | async }}</option>
-              <option value="classic">{{ 'admin.media.editor.classic' | i18n | async }}</option>
-            </select>
+        <div class="tool-group">
+          @if (mode() === 'image') {
+            <label>
+              {{ 'admin.media.editor.aspect' | i18n | async }}
+              <select [value]="aspect()" (change)="changeAspect($event)">
+                <option value="free">{{ 'admin.media.editor.free' | i18n | async }}</option>
+                <option value="square">{{ 'admin.media.editor.square' | i18n | async }}</option>
+                <option value="wide">{{ 'admin.media.editor.wide' | i18n | async }}</option>
+                <option value="portrait">{{ 'admin.media.editor.portrait' | i18n | async }}</option>
+                <option value="classic">{{ 'admin.media.editor.classic' | i18n | async }}</option>
+              </select>
+            </label>
+          } @else {
+            <strong>{{ 'admin.media.editor.thumbnail' | i18n | async }}</strong>
+            <p class="small-hint">{{ 'admin.media.editor.thumbHint' | i18n | async }}</p>
+          }
+          <label class="slider-control">
+            <span
+              >{{ 'admin.media.editor.zoom' | i18n | async }}
+              <output>{{ zoom().toFixed(2) }}×</output></span
+            >
+            <input
+              type="range"
+              min="1"
+              max="4"
+              step="0.05"
+              [value]="zoom()"
+              (input)="changeZoom($event)"
+            />
           </label>
-        }
-
-        @if (mode() === 'image' && aspect() === 'free') {
-          <label>
-            {{ 'admin.media.editor.cropWidth' | i18n | async }}
-            <input type="range" min="10" max="100" step="1" [value]="crop().width * 100" (input)="changeFreeAxis('width', $event)" />
-          </label>
-          <label>
-            {{ 'admin.media.editor.cropHeight' | i18n | async }}
-            <input type="range" min="10" max="100" step="1" [value]="crop().height * 100" (input)="changeFreeAxis('height', $event)" />
-          </label>
-        } @else {
-          <label>
-            {{ 'admin.media.editor.zoom' | i18n | async }}
-            <input type="range" min="1" max="4" step="0.05" [value]="zoom()" (input)="changeZoom($event)" />
-          </label>
-        }
-
-        <label>
-          {{ 'admin.media.editor.offsetX' | i18n | async }}
-          <input type="range" min="0" max="100" step="1"
-            [disabled]="cropSelection().width >= 1"
-            [value]="cropSelection().x / (1 - cropSelection().width) * 100 || 0"
-            (input)="moveAxis('x', $event)" />
-        </label>
-        <label>
-          {{ 'admin.media.editor.offsetY' | i18n | async }}
-          <input type="range" min="0" max="100" step="1"
-            [disabled]="cropSelection().height >= 1"
-            [value]="cropSelection().y / (1 - cropSelection().height) * 100 || 0"
-            (input)="moveAxis('y', $event)" />
-        </label>
-
-        <div class="thumbnail-preview">
+        </div>
+        <div class="tool-group precise-group">
+          <button
+            type="button"
+            class="precise-toggle"
+            [attr.aria-expanded]="preciseControls()"
+            (click)="togglePreciseControls()"
+          >
+            <app-icon name="sliders-horizontal" class="white" />
+            {{ 'admin.media.editor.precise' | i18n | async }}
+            <app-icon [name]="preciseControls() ? 'chevron-up' : 'chevron-down'" class="white" />
+          </button>
+          @if (preciseControls()) {
+            @if (mode() === 'image' && aspect() === 'free') {
+              <label class="slider-control"
+                ><span>{{ 'admin.media.editor.cropWidth' | i18n | async }}</span>
+                <input
+                  type="range"
+                  min="10"
+                  max="100"
+                  step="1"
+                  [value]="crop().width * 100"
+                  (input)="changeFreeAxis('width', $event)"
+                />
+              </label>
+              <label class="slider-control"
+                ><span>{{ 'admin.media.editor.cropHeight' | i18n | async }}</span>
+                <input
+                  type="range"
+                  min="10"
+                  max="100"
+                  step="1"
+                  [value]="crop().height * 100"
+                  (input)="changeFreeAxis('height', $event)"
+                />
+              </label>
+            }
+            <label class="slider-control"
+              ><span>{{ 'admin.media.editor.offsetX' | i18n | async }}</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                [disabled]="cropSelection().width >= 1"
+                [value]="(cropSelection().x / (1 - cropSelection().width)) * 100 || 0"
+                (input)="moveAxis('x', $event)"
+              />
+            </label>
+            <label class="slider-control"
+              ><span>{{ 'admin.media.editor.offsetY' | i18n | async }}</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                [disabled]="cropSelection().height >= 1"
+                [value]="(cropSelection().y / (1 - cropSelection().height)) * 100 || 0"
+                (input)="moveAxis('y', $event)"
+              />
+            </label>
+          }
+        </div>
+        <div class="thumbnail-preview tool-group">
           <strong>{{ 'admin.media.editor.thumbnailPreview' | i18n | async }}</strong>
-          <canvas #thumbnail [attr.aria-label]="'admin.media.editor.thumbnailPreview' | i18n | async"></canvas>
-          <small>{{ 'admin.media.editor.thumbHint' | i18n | async }}</small>
+          <canvas
+            #thumbnail
+            [attr.aria-label]="'admin.media.editor.thumbnailPreview' | i18n | async"
+          ></canvas>
         </div>
       </aside>
     </div>
@@ -109,14 +232,15 @@
     <p role="alert" class="error">{{ 'admin.media.editor.error' | i18n | async }}</p>
   }
   <footer>
-    <button type="button" (click)="reset()" [disabled]="!ready() || saving()">
-      {{ 'admin.media.editor.reset' | i18n | async }}
+    <button type="button" class="reset" (click)="reset()" [disabled]="!ready() || saving()">
+      <app-icon name="undo-2" class="white" /> {{ 'admin.media.editor.reset' | i18n | async }}
     </button>
     <div>
       <button type="button" (click)="close()" [disabled]="saving()">
         {{ 'admin.media.editor.cancel' | i18n | async }}
       </button>
       <button type="button" class="primary" (click)="save()" [disabled]="!ready() || saving()">
+        <app-icon name="check" class="white" />
         {{ (saving() ? 'admin.media.editor.saving' : 'admin.media.editor.save') | i18n | async }}
       </button>
     </div>

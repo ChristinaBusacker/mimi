@@ -19,12 +19,13 @@ import { AdminAssetsService } from '../../core/assets/admin-assets.service';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { Button } from '../button/button';
 import { ImageEditor } from '../image-editor/image-editor';
+import { Icon } from '../icon/icon';
 
 type AssetSort = 'newest' | 'oldest' | 'nameAsc' | 'nameDesc';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, DatePipe, I18nPipe, Button, ImageEditor],
+  imports: [AsyncPipe, DatePipe, I18nPipe, Button, ImageEditor, Icon],
   selector: 'app-asset-library',
   styleUrl: './asset-library.scss',
   templateUrl: './asset-library.html',
@@ -77,6 +78,8 @@ export class AssetLibrary implements OnInit {
   protected readonly bulkBusy = signal(false);
   protected readonly selectedIds = signal<ReadonlySet<string>>(new Set<string>());
   protected readonly bulkTargetId = signal<string | null>(null);
+  protected readonly dragTargetFolder = signal<string | null>(null);
+  private draggedAssetIds: string[] = [];
 
   protected readonly availableAssets = computed(() => {
     const byId = new Map<string, Asset>();
@@ -90,6 +93,10 @@ export class AssetLibrary implements OnInit {
 
     return [...byId.values()];
   });
+
+  protected readonly focusedAsset = computed(
+    () => this.availableAssets().find((asset) => asset.id === this.focusedId()) ?? null,
+  );
 
   protected readonly folderPaths = computed(() => {
     const byId = new Map(this.folders().map((folder) => [folder.id, folder] as const));
@@ -125,7 +132,10 @@ export class AssetLibrary implements OnInit {
     const query = this.search().trim().toLocaleLowerCase();
 
     const assets = this.availableAssets()
-      .filter((asset) => (query.length > 0 && this.searchAllFolders()) || asset.folderId === this.folderId())
+      .filter(
+        (asset) =>
+          (query.length > 0 && this.searchAllFolders()) || asset.folderId === this.folderId(),
+      )
       .filter((asset) => !this.incompleteOnly() || !this.hasCompleteDescriptions(asset))
       .filter(
         (asset) =>
@@ -259,10 +269,12 @@ export class AssetLibrary implements OnInit {
     this.bulkBusy.set(true);
     this.errorKey.set(null);
     try {
-      const updated = await firstValueFrom(this.assetsService.moveAssets({
-        ids: assets.map((asset) => asset.id),
-        folderId: this.bulkTargetId(),
-      }));
+      const updated = await firstValueFrom(
+        this.assetsService.moveAssets({
+          ids: assets.map((asset) => asset.id),
+          folderId: this.bulkTargetId(),
+        }),
+      );
       const moved = new Set(updated.map((asset) => asset.id));
       this.loadedAssets.update((current) => [
         ...updated,
@@ -271,6 +283,89 @@ export class AssetLibrary implements OnInit {
       for (const asset of updated) this.assetUpdated.emit(asset);
       this.selectedIds.set(new Set<string>());
       this.bulkMode.set(false);
+    } catch {
+      this.errorKey.set('admin.media.bulkMoveFailed');
+    } finally {
+      this.bulkBusy.set(false);
+    }
+  }
+
+  protected openAsset(asset: Asset): void {
+    if (this.bulkMode()) {
+      const next = new Set(this.selectedIds());
+      if (next.has(asset.id)) next.delete(asset.id);
+      else if (next.size < 1000) next.add(asset.id);
+      else {
+        this.errorKey.set('admin.media.bulkLimit');
+        return;
+      }
+      this.selectedIds.set(next);
+      return;
+    }
+    this.focusedId.set(asset.id);
+    this.confirmingDeleteId.set(null);
+  }
+
+  protected clearFocus(): void {
+    this.focusedId.set(null);
+    this.confirmingDeleteId.set(null);
+  }
+
+  protected startAssetDrag(event: DragEvent, asset: Asset): void {
+    if (!this.embedded() || !event.dataTransfer) return;
+    this.draggedAssetIds =
+      this.selectedIds().has(asset.id) && this.selectedIds().size > 1
+        ? [...this.selectedIds()]
+        : [asset.id];
+    event.dataTransfer.setData('application/x-mimi-asset', asset.id);
+    event.dataTransfer.effectAllowed = 'move';
+  }
+
+  protected endAssetDrag(): void {
+    this.draggedAssetIds = [];
+    this.dragTargetFolder.set(null);
+  }
+
+  protected dragOverFolder(event: DragEvent, folderId: string | null): void {
+    if (this.draggedAssetIds.length === 0 || !event.dataTransfer) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = 'move';
+    this.dragTargetFolder.set(folderId ?? 'root');
+  }
+
+  protected dragLeaveFolder(event: DragEvent): void {
+    event.stopPropagation();
+    this.dragTargetFolder.set(null);
+  }
+
+  protected async dropOnFolder(event: DragEvent, folderId: string | null): Promise<void> {
+    if (this.draggedAssetIds.length === 0 || this.bulkBusy()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const ids = this.draggedAssetIds;
+    this.endAssetDrag();
+    const moved = this.availableAssets().filter(
+      (asset) => ids.includes(asset.id) && asset.folderId !== folderId,
+    );
+    if (!moved.length) return;
+    this.bulkBusy.set(true);
+    this.errorKey.set(null);
+    try {
+      const updated = await firstValueFrom(
+        this.assetsService.moveAssets({
+          ids: moved.map((asset) => asset.id),
+          folderId,
+        }),
+      );
+      const idSet = new Set(updated.map((asset) => asset.id));
+      this.loadedAssets.update((assets) => [
+        ...updated,
+        ...assets.filter((asset) => !idSet.has(asset.id)),
+      ]);
+      for (const asset of updated) this.assetUpdated.emit(asset);
+      this.selectedIds.set(new Set<string>());
+      this.changeFolder(folderId);
     } catch {
       this.errorKey.set('admin.media.bulkMoveFailed');
     } finally {
@@ -366,7 +461,10 @@ export class AssetLibrary implements OnInit {
   }
 
   protected editorSaved(asset: Asset): void {
-    this.loadedAssets.update((assets) => [asset, ...assets.filter((candidate) => candidate.id !== asset.id)]);
+    this.loadedAssets.update((assets) => [
+      asset,
+      ...assets.filter((candidate) => candidate.id !== asset.id),
+    ]);
     this.assetUpdated.emit(asset);
     this.editingAsset.set(null);
   }

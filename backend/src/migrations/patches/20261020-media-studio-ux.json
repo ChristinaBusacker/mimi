@@ -1,0 +1,34 @@
+{
+  "localizations": [
+    {
+      "key": "admin.media.inspector",
+      "de": "Dateidetails",
+      "en": "File details"
+    },
+    {
+      "key": "admin.media.inspectorHint",
+      "de": "Wähle ein Medium aus, um es anzusehen und zu bearbeiten.",
+      "en": "Select an asset to inspect and edit it."
+    },
+    {
+      "key": "admin.media.inspectorClose",
+      "de": "Detailansicht schließen",
+      "en": "Close details"
+    },
+    {
+      "key": "admin.media.dragFolderHint",
+      "de": "Ziehe Dateien auf einen Ordner, um sie zu verschieben.",
+      "en": "Drag assets onto a folder to move them."
+    },
+    {
+      "key": "admin.media.editor.dragCrop",
+      "de": "Ausschnitt ziehen oder an den Ecken verändern. Mit den Pfeiltasten fein verschieben.",
+      "en": "Drag the crop or resize its corners. Use arrow keys for fine adjustments."
+    },
+    {
+      "key": "admin.media.editor.precise",
+      "de": "Feineinstellungen",
+      "en": "Fine adjustments"
+    }
+  ]
+}
