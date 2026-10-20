@@ -438,6 +438,9 @@
                 @case ('albumCredits') {
                   <label>{{ 'page.editor.album.heading' | i18n | async }}</label>
                   <input maxlength="200" [value]="block.heading[locale()]" (change)="editCreditsHeading($event)" />
+                  @if (!block.entries.length) {
+                    <p class="composer__hint">{{ 'admin.music.editorial.creditsAuto' | i18n | async }}</p>
+                  }
                   @for (credit of block.entries; track $index; let creditIndex = $index) {
                     <div class="composer__credit-editor">
                       <label>{{ 'page.editor.album.creditName' | i18n | async }}</label>
@@ -447,7 +450,9 @@
                       <button type="button" (click)="removeCredit(creditIndex)">{{ 'page.editor.remove' | i18n | async }}</button>
                     </div>
                   }
-                  <button type="button" [disabled]="block.entries.length >= 40" (click)="addCredit()">{{ 'page.editor.album.addCredit' | i18n | async }}</button>
+                  @if (block.entries.length) {
+                    <button type="button" [disabled]="block.entries.length >= 40" (click)="addCredit()">{{ 'page.editor.album.addCredit' | i18n | async }}</button>
+                  }
                 }
                 @case ('spacer') {
                   <h3>{{ 'page.editor.block.spacer' | i18n | async }}</h3>

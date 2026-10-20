@@ -146,6 +146,11 @@ export class MusicAdminService {
           slug: dto.slug,
           coverAssetId: dto.coverAssetId,
           releasedAt: dto.releasedAt,
+          editorial: dto.editorial ?? {
+            genre: { de: '', en: '' },
+            mood: { de: '', en: '' },
+            credits: [],
+          },
           status: dto.status,
           publishedAt:
             dto.status === 'published'
@@ -193,6 +198,7 @@ export class MusicAdminService {
         slug: dto.slug,
         coverAssetId: dto.coverAssetId,
         releasedAt: dto.releasedAt,
+        editorial: dto.editorial ?? album.editorial,
         status: dto.status,
         publishedAt:
           dto.status === 'published'
@@ -877,6 +883,7 @@ export class MusicAdminService {
       slug: album.slug,
       coverAssetId: album.coverAssetId,
       releasedAt: album.releasedAt,
+      editorial: album.editorial,
       status: album.status,
       translations: this.mapTranslations(translations),
       createdAt: album.createdAt.toISOString(),

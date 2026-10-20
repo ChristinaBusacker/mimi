@@ -64,6 +64,7 @@ export class AdminAlbumBooklet implements OnInit {
       title: album.translations.de.title,
       coverAssetId: album.coverAssetId,
       releasedAt: album.releasedAt,
+      editorial: album.editorial,
       tracks,
     };
   }

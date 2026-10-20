@@ -4,7 +4,7 @@ import type {
   MusicAdminTranslation,
   MusicAdminTranslations,
 } from '@shared/music/music-admin';
-import type { MusicPublicationStatus } from '@shared/music/music';
+import type { MusicAlbumEditorial, MusicPublicationStatus } from '@shared/music/music';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -55,6 +55,9 @@ export class MusicAdminAlbumDto implements MusicAdminAlbum {
     type: String,
   })
   releasedAt!: string | null;
+
+  @ApiProperty({ type: Object })
+  editorial!: MusicAlbumEditorial;
 
   @ApiProperty({
     enum: ['draft', 'published'],

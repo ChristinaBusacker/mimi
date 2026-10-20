@@ -98,6 +98,55 @@
         </div>
       </fieldset>
 
+      <fieldset class="album-editorial">
+        <legend>{{ 'admin.music.editorial.title' | i18n | async }}</legend>
+        <p class="album-editorial__description">{{ 'admin.music.editorial.description' | i18n | async }}</p>
+        <div class="admin-editor__grid">
+          <label>
+            <span>{{ 'admin.music.editorial.genreDe' | i18n | async }}</span>
+            <input type="text" maxlength="100" formControlName="genreDe" />
+          </label>
+          <label>
+            <span>{{ 'admin.music.editorial.genreEn' | i18n | async }}</span>
+            <input type="text" maxlength="100" formControlName="genreEn" />
+          </label>
+          <label>
+            <span>{{ 'admin.music.editorial.moodDe' | i18n | async }}</span>
+            <input type="text" maxlength="100" formControlName="moodDe" />
+          </label>
+          <label>
+            <span>{{ 'admin.music.editorial.moodEn' | i18n | async }}</span>
+            <input type="text" maxlength="100" formControlName="moodEn" />
+          </label>
+        </div>
+        <div class="album-editorial__credits-header">
+          <strong>{{ 'admin.music.editorial.credits' | i18n | async }}</strong>
+          <button type="button" [disabled]="credits().length >= 40" (click)="addAlbumCredit()">
+            {{ 'admin.music.editorial.addCredit' | i18n | async }}
+          </button>
+        </div>
+        @for (credit of credits(); track $index; let index = $index) {
+          <div class="album-editorial__credit">
+            <label>
+              <span>{{ 'admin.music.editorial.creditName' | i18n | async }}</span>
+              <input type="text" maxlength="120" [value]="credit.name" (input)="updateAlbumCredit(index, 'name', $event)" />
+            </label>
+            <label>
+              <span>{{ 'admin.music.editorial.creditRoleDe' | i18n | async }}</span>
+              <input type="text" maxlength="100" [value]="credit.role.de" (input)="updateAlbumCredit(index, 'de', $event)" />
+            </label>
+            <label>
+              <span>{{ 'admin.music.editorial.creditRoleEn' | i18n | async }}</span>
+              <input type="text" maxlength="100" [value]="credit.role.en" (input)="updateAlbumCredit(index, 'en', $event)" />
+            </label>
+            <button type="button" class="album-editorial__remove" (click)="removeAlbumCredit(index)">
+              {{ 'admin.music.editorial.removeCredit' | i18n | async }}
+            </button>
+          </div>
+        } @empty {
+          <p class="album-editorial__description">{{ 'admin.music.editorial.noCredits' | i18n | async }}</p>
+        }
+      </fieldset>
 
       <fieldset>
         <legend>{{ 'admin.music.albumTracks.title' | i18n | async }}</legend>

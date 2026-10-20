@@ -19,6 +19,7 @@ import { discordRoleSyncMigration } from '../community/discord/discord-role-sync
 import { communityTwitchLinkMigration } from '../community/twitch/community-twitch-link.schema-migration';
 import { musicPublicationTrackingMigration } from '../music/music-publication-tracking.schema-migration';
 import { albumBookletSchemaMigration } from '../music/album-booklet.schema-migration';
+import { musicAlbumEditorialSchemaMigration } from '../music/music-album-editorial.schema-migration';
 import { notificationDeliveryMigration } from '../notifications/notification-delivery.schema-migration';
 import { notificationPreferencesMigration } from '../notifications/notification-preferences.schema-migration';
 import { pushSubscriptionsMigration } from '../push/push-subscriptions.schema-migration';
@@ -531,6 +532,7 @@ const migrations: readonly SchemaMigration[] = [
   notificationPreferencesMigration,
   musicPublicationTrackingMigration,
   albumBookletSchemaMigration,
+  musicAlbumEditorialSchemaMigration,
   notificationDeliveryMigration,
   seoEditorialMetadataMigration,
   assetDescriptionsMigration,

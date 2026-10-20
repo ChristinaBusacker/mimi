@@ -1,4 +1,4 @@
-import type { MusicPublicationStatus } from './music';
+import type { MusicAlbumEditorial, MusicPublicationStatus } from './music';
 
 export interface MusicAdminTranslation {
   title: string;
@@ -15,6 +15,7 @@ export interface MusicAdminAlbum {
   slug: string;
   coverAssetId: string | null;
   releasedAt: string | null;
+  editorial: MusicAlbumEditorial;
   status: MusicPublicationStatus;
   translations: MusicAdminTranslations;
   createdAt: string;
@@ -43,6 +44,8 @@ export interface SaveMusicAdminAlbum {
   slug: string;
   coverAssetId: string | null;
   releasedAt: string | null;
+  /** Optional for clients that have not yet upgraded. Omission preserves existing data. */
+  editorial?: MusicAlbumEditorial;
   status: MusicPublicationStatus;
   translations: MusicAdminTranslations;
 }

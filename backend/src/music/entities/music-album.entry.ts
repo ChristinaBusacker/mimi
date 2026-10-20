@@ -1,4 +1,4 @@
-import type { MusicPublicationStatus } from '@shared/music/music';
+import type { MusicAlbumEditorial, MusicPublicationStatus } from '@shared/music/music';
 import type { PageDocument } from '@shared/content/page-document';
 
 import {
@@ -44,6 +44,9 @@ export class MusicAlbumEntry {
     nullable: true,
   })
   releasedAt!: string | null;
+
+  @Column({ type: 'jsonb' })
+  editorial!: MusicAlbumEditorial;
 
   @Column({
     type: 'varchar',

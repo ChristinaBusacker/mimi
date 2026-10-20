@@ -140,6 +140,7 @@ export class MusicAlbumPage {
     title: this.data().album.title,
     coverAssetId: this.data().album.coverAssetId,
     releasedAt: this.data().album.releasedAt,
+    editorial: this.data().album.editorial,
     tracks: this.tracks(),
   }));
 

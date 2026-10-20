@@ -135,6 +135,18 @@
                                 <span><strong>{{ date }}</strong><small>{{ 'page.editor.album.releaseLabel' | i18n | async }}</small></span>
                               </div>
                             }
+                            @if (entry.editorial.genre[locale()] || entry.editorial.genre.de) {
+                              <div class="page-document__album-fact">
+                                <app-icon name="music" />
+                                <span><strong>{{ entry.editorial.genre[locale()] || entry.editorial.genre.de }}</strong><small>{{ 'admin.music.editorial.genre' | i18n | async }}</small></span>
+                              </div>
+                            }
+                            @if (entry.editorial.mood[locale()] || entry.editorial.mood.de) {
+                              <div class="page-document__album-fact">
+                                <app-icon name="heart" />
+                                <span><strong>{{ entry.editorial.mood[locale()] || entry.editorial.mood.de }}</strong><small>{{ 'admin.music.editorial.mood' | i18n | async }}</small></span>
+                              </div>
+                            }
                             <div class="page-document__album-fact">
                               <app-icon name="list-numbered" />
                               <span><strong>{{ entry.tracks.length }} {{ 'music.album.tracks' | i18n | async }}</strong><small>{{ 'page.editor.album.trackCountLabel' | i18n | async }}</small></span>
@@ -169,11 +181,12 @@
                         }
                       }
                       @case ('albumCredits') {
-                        @if (block.entries.length || studio()) {
+                        @let credits = block.entries.length ? block.entries : (album()?.editorial.credits ?? []);
+                        @if (credits.length || studio()) {
                           <section class="page-document__album-credits">
                             <h3>{{ block.heading[locale()] || block.heading.de }}</h3>
                             <dl>
-                              @for (credit of block.entries; track $index) {
+                              @for (credit of credits; track $index) {
                                 <div>
                                   <dt>{{ credit.role[locale()] || credit.role.de }}</dt>
                                   <dd>{{ credit.name }}</dd>

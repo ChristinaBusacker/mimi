@@ -8,9 +8,11 @@ import type { MusicPublicationStatus } from '@shared/music/music';
 
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   ArrayNotEmpty,
   ArrayUnique,
   IsArray,
+  IsDefined,
   IsIn,
   IsInt,
   IsObject,
@@ -19,6 +21,7 @@ import {
   IsUrl,
   IsUUID,
   Matches,
+  MaxLength,
   Min,
   MinLength,
   ValidateIf,
@@ -50,6 +53,52 @@ export class MusicAdminTranslationsInputDto
   en!: MusicAdminTranslationInputDto | null;
 }
 
+/** Bound text fields; no free-form JSON passes into the album entity. */
+export class MusicAlbumLocalizedTextInputDto {
+  @IsString()
+  @MaxLength(100)
+  de!: string;
+
+  @IsString()
+  @MaxLength(100)
+  en!: string;
+}
+
+export class MusicAlbumCreditInputDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(120)
+  @Matches(/\S/)
+  name!: string;
+
+  @IsDefined()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MusicAlbumLocalizedTextInputDto)
+  role!: MusicAlbumLocalizedTextInputDto;
+}
+
+export class MusicAlbumEditorialInputDto {
+  @IsDefined()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MusicAlbumLocalizedTextInputDto)
+  genre!: MusicAlbumLocalizedTextInputDto;
+
+  @IsDefined()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MusicAlbumLocalizedTextInputDto)
+  mood!: MusicAlbumLocalizedTextInputDto;
+
+  @IsDefined()
+  @IsArray()
+  @ArrayMaxSize(40)
+  @ValidateNested({ each: true })
+  @Type(() => MusicAlbumCreditInputDto)
+  credits!: MusicAlbumCreditInputDto[];
+}
+
 export class SaveAlbumBookletDto {
   @IsObject()
   document!: unknown;
@@ -69,6 +118,12 @@ export class SaveMusicAdminAlbumDto
   @IsOptional()
   @Matches(DATE_PATTERN)
   releasedAt!: string | null;
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MusicAlbumEditorialInputDto)
+  editorial?: MusicAlbumEditorialInputDto;
 
   @IsIn(['draft', 'published'])
   status!: MusicPublicationStatus;

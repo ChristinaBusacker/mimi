@@ -1,6 +1,17 @@
-import type { PageDocument } from '../content/page-document';
+import type { PageDocument, LocalizedText } from '../content/page-document';
 
 export type MusicPublicationStatus = 'draft' | 'published';
+
+/** Album-level editorial data. Booklet layouts only reference these values. */
+export interface MusicAlbumCredit {
+  name: string;
+  role: LocalizedText;
+}
+export interface MusicAlbumEditorial {
+  genre: LocalizedText;
+  mood: LocalizedText;
+  credits: MusicAlbumCredit[];
+}
 
 export interface MusicAlbumSummary {
   id: string;
@@ -11,6 +22,7 @@ export interface MusicAlbumSummary {
 }
 
 export interface MusicAlbum extends MusicAlbumSummary {
+  editorial: MusicAlbumEditorial;
   booklet: PageDocument | null;
   contentHtml: string;
   tracks: MusicTrackSummary[];

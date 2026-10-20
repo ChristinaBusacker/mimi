@@ -108,6 +108,7 @@ export class MusicService {
 
     return {
       ...this.mapAlbumSummary(album, translation),
+      editorial: album.editorial,
       booklet: album.bookletPublished,
       contentHtml: this.markdownRenderer.render(
         translation.contentMarkdown,

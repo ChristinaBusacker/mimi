@@ -4,6 +4,17 @@
   display: block;
 }
 
+.album-editorial__description { margin: 0; color: var(--color-text); opacity: .8; }
+.album-editorial__credits-header { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); align-items: center; justify-content: space-between; }
+.album-editorial__credits-header button, .album-editorial__remove {
+  padding: var(--spacing-xs) var(--spacing-sm); border: 1px solid var(--color-primary);
+  background: transparent; color: inherit; border-radius: 8px; cursor: pointer;
+}
+.album-editorial__credits-header button:disabled { opacity: .5; cursor: not-allowed; }
+.album-editorial__credit { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-sm); align-items: end; padding: var(--spacing-sm); border: 1px solid var(--color-primary); border-radius: 10px; }
+.album-editorial__remove { grid-column: 1 / -1; justify-self: end; }
+@media (max-width: 700px) { .album-editorial__credit { grid-template-columns: 1fr; } }
+
 .admin-editor {
   display: grid;
   gap: var(--spacing-lg);

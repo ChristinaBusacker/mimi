@@ -1,4 +1,5 @@
 import type { Asset } from '@shared/assets/asset';
+import type { MusicAlbumCredit } from '@shared/music/music';
 import type {
   MusicAdminAlbum,
   MusicAdminTrack,
@@ -61,6 +62,7 @@ export class AdminAlbumEditor implements OnInit {
     this.route.snapshot.paramMap.get('id');
   protected readonly images = signal<Asset[]>([]);
   protected readonly tracks = signal<MusicAdminTrack[]>([]);
+  protected readonly credits = signal<MusicAlbumCredit[]>([]);
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
@@ -101,6 +103,10 @@ export class AdminAlbumEditor implements OnInit {
     releasedAt: new FormControl('', {
       nonNullable: true,
     }),
+    genreDe: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
+    genreEn: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
+    moodDe: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
+    moodEn: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
     status: new FormControl<MusicPublicationStatus>(
       'draft',
       {
@@ -609,6 +615,17 @@ export class AdminAlbumEditor implements OnInit {
     const value = this.form.getRawValue();
     const englishTitle = value.titleEn.trim();
     const englishContent = value.contentEn.trim();
+    const credits = this.credits()
+      .map((credit) => ({
+        name: credit.name.trim(),
+        role: { de: credit.role.de.trim(), en: credit.role.en.trim() },
+      }))
+      .filter((credit) => credit.name || credit.role.de || credit.role.en);
+
+    if (credits.some((credit) => !credit.name)) {
+      this.errorKey.set('admin.music.editorial.creditNameRequired');
+      return null;
+    }
 
     if (englishContent && !englishTitle) {
       this.errorKey.set(
@@ -624,6 +641,11 @@ export class AdminAlbumEditor implements OnInit {
         value.coverAssetId || null,
       releasedAt:
         value.releasedAt || null,
+      editorial: {
+        genre: { de: value.genreDe.trim(), en: value.genreEn.trim() },
+        mood: { de: value.moodDe.trim(), en: value.moodEn.trim() },
+        credits,
+      },
       status: value.status,
       translations: {
         de: {
@@ -642,12 +664,20 @@ export class AdminAlbumEditor implements OnInit {
   }
 
   private patchForm(album: MusicAdminAlbum): void {
+    this.credits.set(album.editorial.credits.map((credit) => ({
+      name: credit.name,
+      role: { ...credit.role },
+    })));
     this.form.setValue({
       slug: album.slug,
       coverAssetId:
         album.coverAssetId ?? '',
       releasedAt:
         album.releasedAt ?? '',
+      genreDe: album.editorial.genre.de,
+      genreEn: album.editorial.genre.en,
+      moodDe: album.editorial.mood.de,
+      moodEn: album.editorial.mood.en,
       status: album.status,
       titleDe:
         album.translations.de.title,
@@ -658,6 +688,27 @@ export class AdminAlbumEditor implements OnInit {
       contentEn:
         album.translations.en?.contentMarkdown ?? '',
     });
+  }
+
+  protected addAlbumCredit(): void {
+    if (this.credits().length >= 40) return;
+    this.credits.update((current) => [...current, { name: '', role: { de: '', en: '' } }]);
+  }
+
+  protected removeAlbumCredit(index: number): void {
+    this.credits.update((current) => current.filter((_, position) => position !== index));
+  }
+
+  protected updateAlbumCredit(index: number, field: 'name' | 'de' | 'en', event: Event): void {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    const value = target.value;
+    this.credits.update((current) => current.map((credit, position) => {
+      if (position !== index) return credit;
+      return field === 'name'
+        ? { ...credit, name: value }
+        : { ...credit, role: { ...credit.role, [field]: value } };
+    }));
   }
 
   private titleFromFilename(filename: string): string {

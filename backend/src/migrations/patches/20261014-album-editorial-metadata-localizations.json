@@ -1,0 +1,89 @@
+{
+  "localizations": [
+    {
+      "key": "admin.music.editorial.title",
+      "de": "Albumwelt und Mitwirkende",
+      "en": "Album world and credits"
+    },
+    {
+      "key": "admin.music.editorial.description",
+      "de": "Diese Angaben werden einmal am Album gepflegt und automatisch im digitalen Booklet angezeigt.",
+      "en": "Edit these values once on the album and reuse them automatically in its digital booklet."
+    },
+    {
+      "key": "admin.music.editorial.genre",
+      "de": "Genre",
+      "en": "Genre"
+    },
+    {
+      "key": "admin.music.editorial.mood",
+      "de": "Stimmung",
+      "en": "Mood"
+    },
+    {
+      "key": "admin.music.editorial.genreDe",
+      "de": "Genre (Deutsch)",
+      "en": "Genre (German)"
+    },
+    {
+      "key": "admin.music.editorial.genreEn",
+      "de": "Genre (Englisch)",
+      "en": "Genre (English)"
+    },
+    {
+      "key": "admin.music.editorial.moodDe",
+      "de": "Stimmung (Deutsch)",
+      "en": "Mood (German)"
+    },
+    {
+      "key": "admin.music.editorial.moodEn",
+      "de": "Stimmung (Englisch)",
+      "en": "Mood (English)"
+    },
+    {
+      "key": "admin.music.editorial.credits",
+      "de": "Mitwirkende",
+      "en": "Credits"
+    },
+    {
+      "key": "admin.music.editorial.addCredit",
+      "de": "Mitwirkende hinzufügen",
+      "en": "Add contributor"
+    },
+    {
+      "key": "admin.music.editorial.creditName",
+      "de": "Name",
+      "en": "Name"
+    },
+    {
+      "key": "admin.music.editorial.creditRoleDe",
+      "de": "Beitrag (Deutsch)",
+      "en": "Role (German)"
+    },
+    {
+      "key": "admin.music.editorial.creditRoleEn",
+      "de": "Beitrag (Englisch)",
+      "en": "Role (English)"
+    },
+    {
+      "key": "admin.music.editorial.removeCredit",
+      "de": "Eintrag entfernen",
+      "en": "Remove contributor"
+    },
+    {
+      "key": "admin.music.editorial.noCredits",
+      "de": "Noch keine Mitwirkenden eingetragen.",
+      "en": "No contributors added yet."
+    },
+    {
+      "key": "admin.music.editorial.creditNameRequired",
+      "de": "Bitte gib für alle Mitwirkenden einen Namen an.",
+      "en": "Please enter a name for every contributor."
+    },
+    {
+      "key": "admin.music.editorial.creditsAuto",
+      "de": "Mitwirkende werden aus den Albumdaten übernommen. Ältere Booklets mit eigenen Einträgen behalten diese weiterhin.",
+      "en": "Credits are taken from the album. Legacy booklets with their own entries continue using them."
+    }
+  ]
+}
