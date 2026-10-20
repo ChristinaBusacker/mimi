@@ -63,9 +63,10 @@ export class AssetsController {
         uuid,
         variant,
         format,
+        typeof request.query['v'] === 'string' ? request.query['v'] : undefined,
       );
 
-    const revisioned = request.query['v'] === this.assetsService.getImagePresetRevision(variant);
+    const revisioned = Boolean(resolved.revision);
     return this.sendFile(
       resolved,
       request,

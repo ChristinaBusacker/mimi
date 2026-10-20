@@ -1,4 +1,4 @@
-import type { AssetType } from '@shared/assets/asset';
+import type { AssetType, AssetImageEdits } from '@shared/assets/asset';
 
 import {
   Column,
@@ -77,6 +77,9 @@ export class AssetEntry {
 
   @Column({ type: 'uuid', nullable: true })
   folderId!: string | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  imageEdits!: AssetImageEdits | null;
 
   @CreateDateColumn({
     type: 'timestamptz',

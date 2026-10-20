@@ -18,12 +18,13 @@ import { firstValueFrom } from 'rxjs';
 import { AdminAssetsService } from '../../core/assets/admin-assets.service';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { Button } from '../button/button';
+import { ImageEditor } from '../image-editor/image-editor';
 
 type AssetSort = 'newest' | 'oldest' | 'nameAsc' | 'nameDesc';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, DatePipe, I18nPipe, Button],
+  imports: [AsyncPipe, DatePipe, I18nPipe, Button, ImageEditor],
   selector: 'app-asset-library',
   styleUrl: './asset-library.scss',
   templateUrl: './asset-library.html',
@@ -59,6 +60,7 @@ export class AssetLibrary implements OnInit {
     () => this.folders().find((folder) => folder.id === this.folderId()) ?? null,
   );
   protected readonly focusedId = signal<string | null>(null);
+  protected readonly editingAsset = signal<Asset | null>(null);
   readonly decorative = input(false);
   protected readonly incompleteOnly = signal(false);
   protected readonly sort = signal<AssetSort>('newest');
@@ -237,6 +239,20 @@ export class AssetLibrary implements OnInit {
 
     this.assetSelected.emit(asset);
     this.close();
+  }
+
+  protected openEditor(asset: Asset): void {
+    this.editingAsset.set(asset);
+  }
+
+  protected closeEditor(): void {
+    this.editingAsset.set(null);
+  }
+
+  protected editorSaved(asset: Asset): void {
+    this.loadedAssets.update((assets) => [asset, ...assets.filter((candidate) => candidate.id !== asset.id)]);
+    this.assetUpdated.emit(asset);
+    this.editingAsset.set(null);
   }
 
   protected toggleDetails(id: string): void {

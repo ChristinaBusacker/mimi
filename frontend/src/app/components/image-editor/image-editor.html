@@ -1,0 +1,124 @@
+<dialog #dialog class="image-editor" (close)="closed.emit()" [attr.aria-label]="'admin.media.editor.title' | i18n | async">
+  <header>
+    <div>
+      <h2>{{ 'admin.media.editor.title' | i18n | async }}</h2>
+      <p>{{ 'admin.media.editor.instructions' | i18n | async }}</p>
+    </div>
+    <button type="button" class="close" (click)="close()" [attr.aria-label]="'admin.media.editor.cancel' | i18n | async">×</button>
+  </header>
+
+  @if (loadingError()) {
+    <p role="alert">{{ 'admin.media.editor.loadError' | i18n | async }}</p>
+  } @else {
+    <div class="tabs" role="group" [attr.aria-label]="'admin.media.editor.title' | i18n | async">
+      <button type="button" [attr.aria-pressed]="mode() === 'image'" (click)="changeMode('image')">
+        {{ 'admin.media.editor.image' | i18n | async }}
+      </button>
+      <button type="button" [attr.aria-pressed]="mode() === 'thumbnail'" (click)="changeMode('thumbnail')">
+        {{ 'admin.media.editor.thumbnail' | i18n | async }}
+      </button>
+    </div>
+
+    <div class="workspace">
+      <div class="canvas-area">
+        <div class="image-frame" [style.aspect-ratio]="previewRatio()" [attr.aria-label]="'admin.media.editor.preview' | i18n | async">
+          <canvas #canvas></canvas>
+          @if (ready()) {
+            <div class="crop"
+              [style.left.%]="cropSelection().x * 100"
+              [style.top.%]="cropSelection().y * 100"
+              [style.width.%]="cropSelection().width * 100"
+              [style.height.%]="cropSelection().height * 100"
+              (pointerdown)="pointerDown($event)"
+              (pointermove)="pointerMove($event)"
+              (pointerup)="pointerUp($event)"
+              (pointercancel)="pointerUp($event)">
+              <span class="crop-grid" aria-hidden="true"></span>
+            </div>
+          }
+        </div>
+        <p class="hint">{{ 'admin.media.editor.moveHint' | i18n | async }}</p>
+      </div>
+
+      <aside>
+        <div class="transform-actions">
+          <button type="button" (click)="rotate(-1)">{{ 'admin.media.editor.rotateLeft' | i18n | async }}</button>
+          <button type="button" (click)="rotate(1)">{{ 'admin.media.editor.rotateRight' | i18n | async }}</button>
+          <button type="button" [attr.aria-pressed]="flipX()" (click)="flip('x')">
+            {{ 'admin.media.editor.flipX' | i18n | async }}
+          </button>
+          <button type="button" [attr.aria-pressed]="flipY()" (click)="flip('y')">
+            {{ 'admin.media.editor.flipY' | i18n | async }}
+          </button>
+        </div>
+
+        @if (mode() === 'image') {
+          <label>
+            {{ 'admin.media.editor.aspect' | i18n | async }}
+            <select [value]="aspect()" (change)="changeAspect($event)">
+              <option value="free">{{ 'admin.media.editor.free' | i18n | async }}</option>
+              <option value="square">{{ 'admin.media.editor.square' | i18n | async }}</option>
+              <option value="wide">{{ 'admin.media.editor.wide' | i18n | async }}</option>
+              <option value="portrait">{{ 'admin.media.editor.portrait' | i18n | async }}</option>
+              <option value="classic">{{ 'admin.media.editor.classic' | i18n | async }}</option>
+            </select>
+          </label>
+        }
+
+        @if (mode() === 'image' && aspect() === 'free') {
+          <label>
+            {{ 'admin.media.editor.cropWidth' | i18n | async }}
+            <input type="range" min="10" max="100" step="1" [value]="crop().width * 100" (input)="changeFreeAxis('width', $event)" />
+          </label>
+          <label>
+            {{ 'admin.media.editor.cropHeight' | i18n | async }}
+            <input type="range" min="10" max="100" step="1" [value]="crop().height * 100" (input)="changeFreeAxis('height', $event)" />
+          </label>
+        } @else {
+          <label>
+            {{ 'admin.media.editor.zoom' | i18n | async }}
+            <input type="range" min="1" max="4" step="0.05" [value]="zoom()" (input)="changeZoom($event)" />
+          </label>
+        }
+
+        <label>
+          {{ 'admin.media.editor.offsetX' | i18n | async }}
+          <input type="range" min="0" max="100" step="1"
+            [disabled]="cropSelection().width >= 1"
+            [value]="cropSelection().x / (1 - cropSelection().width) * 100 || 0"
+            (input)="moveAxis('x', $event)" />
+        </label>
+        <label>
+          {{ 'admin.media.editor.offsetY' | i18n | async }}
+          <input type="range" min="0" max="100" step="1"
+            [disabled]="cropSelection().height >= 1"
+            [value]="cropSelection().y / (1 - cropSelection().height) * 100 || 0"
+            (input)="moveAxis('y', $event)" />
+        </label>
+
+        <div class="thumbnail-preview">
+          <strong>{{ 'admin.media.editor.thumbnailPreview' | i18n | async }}</strong>
+          <canvas #thumbnail [attr.aria-label]="'admin.media.editor.thumbnailPreview' | i18n | async"></canvas>
+          <small>{{ 'admin.media.editor.thumbHint' | i18n | async }}</small>
+        </div>
+      </aside>
+    </div>
+  }
+
+  @if (saveFailed()) {
+    <p role="alert" class="error">{{ 'admin.media.editor.error' | i18n | async }}</p>
+  }
+  <footer>
+    <button type="button" (click)="reset()" [disabled]="!ready() || saving()">
+      {{ 'admin.media.editor.reset' | i18n | async }}
+    </button>
+    <div>
+      <button type="button" (click)="close()" [disabled]="saving()">
+        {{ 'admin.media.editor.cancel' | i18n | async }}
+      </button>
+      <button type="button" class="primary" (click)="save()" [disabled]="!ready() || saving()">
+        {{ (saving() ? 'admin.media.editor.saving' : 'admin.media.editor.save') | i18n | async }}
+      </button>
+    </div>
+  </footer>
+</dialog>

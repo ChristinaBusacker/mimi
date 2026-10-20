@@ -24,6 +24,7 @@ import { notificationDeliveryMigration } from '../notifications/notification-del
 import { notificationPreferencesMigration } from '../notifications/notification-preferences.schema-migration';
 import { pushSubscriptionsMigration } from '../push/push-subscriptions.schema-migration';
 import { assetDescriptionsMigration } from '../assets/asset-descriptions.schema-migration';
+import { assetImageEditsMigration } from '../assets/asset-image-edits.schema-migration';
 import { assetFoldersMigration } from '../assets/asset-folders.schema-migration';
 import { seoEditorialMetadataMigration } from '../seo/seo-editorial-metadata.schema-migration';
 
@@ -538,6 +539,7 @@ const migrations: readonly SchemaMigration[] = [
   seoEditorialMetadataMigration,
   assetDescriptionsMigration,
   assetFoldersMigration,
+  assetImageEditsMigration,
 ];
 
 export async function runSchemaMigrations(

@@ -162,6 +162,9 @@
             }
             @if (focusedId() === asset.id && asset.type === 'image') {
               <div class="descriptions">
+                <button type="button" class="edit-image" (click)="openEditor(asset)">
+                  {{ 'admin.media.editImage' | i18n | async }}
+                </button>
                 <label>
                   <span>{{ 'admin.media.moveTo' | i18n | async }}</span>
                   <select [value]="asset.folderId ?? ''" (change)="moveAsset(asset, $event)">
@@ -275,3 +278,7 @@
     </div>
   }
 </dialog>
+
+@if (editingAsset(); as asset) {
+  <app-image-editor [asset]="asset" (saved)="editorSaved($event)" (closed)="closeEditor()" />
+}

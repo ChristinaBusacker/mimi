@@ -1,0 +1,45 @@
+:host { display: contents; }
+
+.image-editor {
+  width: min(1200px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  overflow: auto;
+  border: 2px solid var(--color-secondary);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-text);
+  &::backdrop { background: rgb(0 0 0 / 70%); }
+  header, footer { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+  header h2, header p { margin: 0 0 0.4rem; }
+  header p, .hint, small { opacity: 0.8; }
+  .close { font-size: 2rem; border: 0; background: transparent; color: inherit; }
+  button, select { font: inherit; cursor: pointer; }
+  button { padding: 0.55rem 0.8rem; border-radius: var(--radius-card); border: 1px solid var(--color-secondary); background: var(--color-surface); color: inherit; }
+  button:disabled { cursor: not-allowed; opacity: 0.5; }
+  button[aria-pressed='true'], button.primary { background: var(--color-primary); font-weight: 700; }
+  .tabs, .transform-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tabs { margin: 1rem 0; }
+  .workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 290px); gap: 1.25rem; align-items: start; }
+  .canvas-area { min-width: 0; }
+  .image-frame { position: relative; width: 100%; background: repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 22px 22px; overflow: hidden; }
+  .image-frame > canvas { display: block; width: 100%; height: 100%; }
+  .crop { position: absolute; box-sizing: border-box; border: 2px solid white; outline: 1px solid black; box-shadow: 0 0 0 9999px rgb(0 0 0 / 50%); cursor: move; touch-action: none; }
+  .crop-grid { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent 33.2%, #fff9 33.3%, transparent 33.5%, transparent 66.5%, #fff9 66.7%, transparent 66.8%), linear-gradient(0deg, transparent 33.2%, #fff9 33.3%, transparent 33.5%, transparent 66.5%, #fff9 66.7%, transparent 66.8%); }
+  aside { display: grid; gap: 1rem; }
+  aside label { display: grid; gap: 0.35rem; font-weight: 700; }
+  aside label select { padding: 0.6rem; min-width: 0; }
+  aside input[type='range'] { width: 100%; accent-color: var(--color-primary); }
+  .thumbnail-preview { display: grid; justify-items: start; gap: 0.4rem; }
+  .thumbnail-preview canvas { display: block; width: min(190px, 100%); aspect-ratio: 1; background: var(--color-surface); }
+  footer { margin-top: 1.5rem; align-items: center; }
+  footer > div { display: flex; gap: 0.5rem; }
+  .error { color: var(--color-primary); font-weight: 700; }
+}
+@media (max-width: 780px) {
+  .image-editor { width: calc(100vw - 1rem); max-height: calc(100dvh - 1rem); }
+  .image-editor .workspace { grid-template-columns: minmax(0, 1fr); }
+  .image-editor footer { flex-wrap: wrap; }
+}

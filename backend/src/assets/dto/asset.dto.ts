@@ -1,7 +1,4 @@
-import type {
-  Asset,
-  AssetType,
-} from '@shared/assets/asset';
+import type { Asset, AssetType, AssetImageEdits } from '@shared/assets/asset';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -49,14 +46,23 @@ export class AssetDto implements Asset {
   folderId!: string | null;
 
   @ApiProperty({
+    type: 'object',
+    nullable: true,
+    additionalProperties: true,
+  })
+  imageEdits!: AssetImageEdits | null;
+
+  @ApiProperty()
+  originalUrl!: string;
+
+  @ApiProperty({
     example: '/api/assets/4aa2d987-53a2-4b36-9d38-f5de9e4a2d5f',
   })
   url!: string;
 
   @ApiProperty({
     nullable: true,
-    example:
-      '/api/assets/4aa2d987-53a2-4b36-9d38-f5de9e4a2d5f/image/thumbnail/webp',
+    example: '/api/assets/4aa2d987-53a2-4b36-9d38-f5de9e4a2d5f/image/thumbnail/webp',
   })
   thumbnailUrl!: string | null;
 

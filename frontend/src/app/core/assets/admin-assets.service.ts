@@ -2,6 +2,7 @@ import type {
   Asset,
   AssetFolder,
   AssetType,
+  AssetImageEdits,
   UpdateAssetDescriptions,
 } from '@shared/assets/asset';
 
@@ -61,6 +62,10 @@ export class AdminAssetsService {
       folderId ? `/admin/assets?folderId=${encodeURIComponent(folderId)}` : '/admin/assets',
       body,
     );
+  }
+
+  updateImageEdits(id: string, input: AssetImageEdits): Observable<Asset> {
+    return this.request.patch<Asset, AssetImageEdits>(`/admin/assets/${id}/image-edits`, input);
   }
 
   updateDescriptions(

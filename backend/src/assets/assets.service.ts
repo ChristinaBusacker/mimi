@@ -1,6 +1,7 @@
 import type {
   Asset,
   AssetType,
+  AssetImageEdits,
   UpdateAssetDescriptions,
 } from '@shared/assets/asset';
 
@@ -45,6 +46,14 @@ import {
   type AssetImageVariantName,
 } from './asset-image-variant';
 import { AssetUsageService } from './asset-usage.service';
+import {
+  editedImageBuffer,
+  imageEditFingerprint,
+  parseImageEdits,
+  pixelCrop,
+  pixelThumbnailCrop,
+  validateThumbnailCrop,
+} from './image-edit';
 import {
   getAssetMaxUploadBytes,
   getAssetStoragePath,
@@ -183,6 +192,7 @@ export class AssetsService {
               mimeType,
               sizeBytes: file.size,
               folderId,
+              imageEdits: null,
               contentHash,
               width: preparedImage?.width ?? null,
               height: preparedImage?.height ?? null,
@@ -278,6 +288,10 @@ export class AssetsService {
     return ASSET_IMAGE_REVISIONS[name];
   }
 
+  private revision(name: string, edits: AssetImageEdits | null): string {
+    return `${ASSET_IMAGE_REVISIONS[name]}${edits ? `-${imageEditFingerprint(edits)}` : ''}`;
+  }
+
   async getAll(type?: AssetType): Promise<Asset[]> {
     const assets = await this.repository.find({
       where: type
@@ -323,6 +337,26 @@ export class AssetsService {
     );
   }
 
+  async updateImageEdits(uuid: string, input: unknown): Promise<Asset> {
+    const imageEdits = parseImageEdits(input);
+    const asset = await this.findAsset(uuid);
+    if (asset.type !== 'image') {
+      throw new BadRequestException('Only images can be edited.');
+    }
+    let width = asset.width;
+    let height = asset.height;
+    if (width === null || height === null) {
+      const oriented = await sharp(await readFile(join(this.storagePath, asset.storageKey))).rotate().toBuffer();
+      const metadata = await sharp(oriented).metadata();
+      width = metadata.width ?? null;
+      height = metadata.height ?? null;
+    }
+    if (!width || !height) throw new BadRequestException('Image dimensions are unavailable.');
+    validateThumbnailCrop(imageEdits, width, height);
+    asset.imageEdits = imageEdits;
+    return this.mapAsset(await this.repository.save(asset));
+  }
+
   async resolveFile(uuid: string): Promise<ResolvedAssetFile> {
     const asset = await this.findAsset(uuid);
 
@@ -337,7 +371,8 @@ export class AssetsService {
     uuid: string,
     name: string,
     format: string,
-  ): Promise<ResolvedAssetFile> {
+    requestedRevision?: string,
+  ): Promise<ResolvedAssetFile & { revision: string | null }> {
     const variantName = this.parseVariantName(name);
     const variantFormat = this.parseVariantFormat(format);
     const asset = await this.findAsset(uuid);
@@ -348,14 +383,20 @@ export class AssetsService {
       );
     }
 
-    const storageName = imageVariantStorageName(variantName);
+    const currentRevision = this.revision(variantName, asset.imageEdits);
+    if (requestedRevision && !/^[a-f0-9]{12}(?:-[a-f0-9]{8})?$/.test(requestedRevision)) {
+      throw new NotFoundException('Image revision not found.');
+    }
+    const storageName = requestedRevision
+      ? `${variantName}-${requestedRevision}`
+      : imageVariantStorageName(variantName, imageEditFingerprint(asset.imageEdits));
     let variant = await this.variantRepository.findOneBy({
       assetUuid: uuid,
       name: storageName,
       format: variantFormat,
     });
 
-    if (!variant) {
+    if (!variant && (!requestedRevision || requestedRevision === currentRevision)) {
       await this.generateMissingImageVariants(asset, variantName);
 
       variant = await this.variantRepository.findOneBy({
@@ -371,11 +412,12 @@ export class AssetsService {
       );
     }
 
-    return this.resolveStoredFile(
+    const resolved = await this.resolveStoredFile(
       variant.storageKey,
       variant.mimeType,
       `Image variant for asset "${uuid}"`,
     );
+    return { ...resolved, revision: requestedRevision ?? null };
   }
 
   async delete(uuid: string): Promise<void> {
@@ -496,6 +538,7 @@ export class AssetsService {
   private async prepareImage(
     buffer: Buffer,
     names: readonly string[],
+    edits: AssetImageEdits | null = null,
   ): Promise<PreparedImage> {
     let metadata: Metadata;
 
@@ -526,15 +569,23 @@ export class AssetsService {
     const displayWidth = rotated ? height : width;
     const displayHeight = rotated ? width : height;
     const variants: PreparedVariant[] = [];
+    const sourceBuffer = await editedImageBuffer(buffer, edits);
+    const sourceMetadata = await sharp(sourceBuffer).metadata();
+    const editedWidth = sourceMetadata.width!;
+    const editedHeight = sourceMetadata.height!;
 
     for (const name of names) {
       const definition = ASSET_IMAGE_VARIANTS[name];
       if (!definition) {
         throw new BadRequestException(`Unknown image preset: ${name}.`);
       }
-      let base = sharp(buffer, {
-        failOn: 'error',
-      }).rotate();
+      let variantSource = sourceBuffer;
+      if (name === 'thumbnail' && edits?.thumbnailCrop) {
+        variantSource = await sharp(sourceBuffer)
+          .extract(pixelThumbnailCrop(edits.thumbnailCrop, editedWidth, editedHeight))
+          .toBuffer();
+      }
+      let base = sharp(variantSource, { failOn: 'error' });
 
       if (
         name === 'social' &&
@@ -572,7 +623,7 @@ export class AssetsService {
         });
 
       variants.push({
-        name: imageVariantStorageName(name),
+        name: imageVariantStorageName(name, imageEditFingerprint(edits)),
         format: 'webp',
         extension: 'webp',
         mimeType: 'image/webp',
@@ -604,7 +655,7 @@ export class AssetsService {
             });
 
       variants.push({
-        name: imageVariantStorageName(name),
+        name: imageVariantStorageName(name, imageEditFingerprint(edits)),
         format: 'fallback',
         extension:
           fallbackIsPng
@@ -714,7 +765,7 @@ export class AssetsService {
       );
     }
 
-    const prepared = await this.prepareImage(buffer, [name]);
+    const prepared = await this.prepareImage(buffer, [name], asset.imageEdits);
     const storedFiles: StoredFile[] = [];
     const existingVariants =
       await this.variantRepository.findBy({
@@ -945,6 +996,13 @@ export class AssetsService {
       .digest('hex');
   }
 
+  private displayPreset(): string {
+    const sizes = Object.entries(ASSET_IMAGE_VARIANTS)
+      .filter(([, preset]) => preset.fit === 'inside')
+      .sort((left, right) => right[1].width - left[1].width);
+    return sizes[0]?.[0] ?? 'thumbnail';
+  }
+
   private mapAsset(asset: AssetEntry): Asset {
     return {
       id: asset.uuid,
@@ -957,10 +1015,14 @@ export class AssetsService {
       descriptionDe: asset.descriptionDe,
       descriptionEn: asset.descriptionEn,
       folderId: asset.folderId,
-      url: `/api/assets/${asset.uuid}`,
+      imageEdits: asset.imageEdits,
+      originalUrl: `/api/assets/${asset.uuid}`,
+      url: asset.type === 'image'
+        ? `/api/assets/${asset.uuid}/image/${this.displayPreset()}/webp?v=${this.revision(this.displayPreset(), asset.imageEdits)}`
+        : `/api/assets/${asset.uuid}`,
       thumbnailUrl:
         asset.type === 'image'
-          ? `/api/assets/${asset.uuid}/image/thumbnail/webp?v=${ASSET_IMAGE_REVISIONS['thumbnail']}`
+          ? `/api/assets/${asset.uuid}/image/thumbnail/webp?v=${this.revision('thumbnail', asset.imageEdits)}`
           : null,
       createdAt: asset.createdAt.toISOString(),
     };

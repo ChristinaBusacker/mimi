@@ -1,0 +1,154 @@
+{
+  "localizations": [
+    {
+      "key": "admin.media.editImage",
+      "de": "Bild bearbeiten",
+      "en": "Edit image"
+    },
+    {
+      "key": "admin.media.editor.title",
+      "de": "Bild bearbeiten",
+      "en": "Edit image"
+    },
+    {
+      "key": "admin.media.editor.instructions",
+      "de": "Wähle den sichtbaren Ausschnitt. Das Original bleibt erhalten.",
+      "en": "Choose the visible crop. The original is preserved."
+    },
+    {
+      "key": "admin.media.editor.image",
+      "de": "Bild",
+      "en": "Image"
+    },
+    {
+      "key": "admin.media.editor.thumbnail",
+      "de": "Thumbnail",
+      "en": "Thumbnail"
+    },
+    {
+      "key": "admin.media.editor.rotateLeft",
+      "de": "90° nach links drehen",
+      "en": "Rotate 90° left"
+    },
+    {
+      "key": "admin.media.editor.rotateRight",
+      "de": "90° nach rechts drehen",
+      "en": "Rotate 90° right"
+    },
+    {
+      "key": "admin.media.editor.flipX",
+      "de": "Horizontal spiegeln",
+      "en": "Flip horizontally"
+    },
+    {
+      "key": "admin.media.editor.flipY",
+      "de": "Vertikal spiegeln",
+      "en": "Flip vertically"
+    },
+    {
+      "key": "admin.media.editor.aspect",
+      "de": "Seitenverhältnis",
+      "en": "Aspect ratio"
+    },
+    {
+      "key": "admin.media.editor.free",
+      "de": "Frei",
+      "en": "Free"
+    },
+    {
+      "key": "admin.media.editor.square",
+      "de": "Quadrat (1:1)",
+      "en": "Square (1:1)"
+    },
+    {
+      "key": "admin.media.editor.wide",
+      "de": "Querformat (16:9)",
+      "en": "Landscape (16:9)"
+    },
+    {
+      "key": "admin.media.editor.portrait",
+      "de": "Hochformat (4:5)",
+      "en": "Portrait (4:5)"
+    },
+    {
+      "key": "admin.media.editor.classic",
+      "de": "Klassisch (3:2)",
+      "en": "Classic (3:2)"
+    },
+    {
+      "key": "admin.media.editor.zoom",
+      "de": "Ausschnitt vergrößern",
+      "en": "Zoom crop"
+    },
+    {
+      "key": "admin.media.editor.cropWidth",
+      "de": "Ausschnittbreite",
+      "en": "Crop width"
+    },
+    {
+      "key": "admin.media.editor.cropHeight",
+      "de": "Ausschnitthöhe",
+      "en": "Crop height"
+    },
+    {
+      "key": "admin.media.editor.offsetX",
+      "de": "Horizontal verschieben",
+      "en": "Move horizontally"
+    },
+    {
+      "key": "admin.media.editor.offsetY",
+      "de": "Vertikal verschieben",
+      "en": "Move vertically"
+    },
+    {
+      "key": "admin.media.editor.moveHint",
+      "de": "Den Ausschnitt mit der Maus oder per Touch verschieben.",
+      "en": "Drag the crop with a mouse or touch."
+    },
+    {
+      "key": "admin.media.editor.reset",
+      "de": "Zurücksetzen",
+      "en": "Reset"
+    },
+    {
+      "key": "admin.media.editor.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.media.editor.save",
+      "de": "Speichern",
+      "en": "Save"
+    },
+    {
+      "key": "admin.media.editor.saving",
+      "de": "Speichert …",
+      "en": "Saving…"
+    },
+    {
+      "key": "admin.media.editor.error",
+      "de": "Die Bildbearbeitung konnte nicht gespeichert werden.",
+      "en": "Could not save the image edits."
+    },
+    {
+      "key": "admin.media.editor.loadError",
+      "de": "Das Originalbild konnte nicht geladen werden.",
+      "en": "Could not load the original image."
+    },
+    {
+      "key": "admin.media.editor.preview",
+      "de": "Vorschau des bearbeiteten Bildes",
+      "en": "Preview of the edited image"
+    },
+    {
+      "key": "admin.media.editor.thumbHint",
+      "de": "Dieser Ausschnitt gilt nur für quadratische Thumbnails.",
+      "en": "This crop only affects square thumbnails."
+    },
+    {
+      "key": "admin.media.editor.thumbnailPreview",
+      "de": "Thumbnail-Vorschau",
+      "en": "Thumbnail preview"
+    }
+  ]
+}

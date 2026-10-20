@@ -96,10 +96,10 @@ export const ASSET_IMAGE_VARIANTS = configuration.presets;
 export const ASSET_IMAGE_FORMATS = configuration.formats;
 export const ASSET_IMAGE_REVISIONS = configuration.revisions;
 
-export function imageVariantStorageName(name: string): string {
+export function imageVariantStorageName(name: string, editRevision = ''): string {
   const revision = ASSET_IMAGE_REVISIONS[name];
   if (!revision) {
     throw new Error(`Unknown image preset: ${name}.`);
   }
-  return `${name}-${revision}`;
+  return `${name}-${revision}${editRevision ? `-${editRevision}` : ''}`;
 }

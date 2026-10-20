@@ -121,6 +121,16 @@ export class AdminAssetsController {
     return this.assetsService.moveAsset(uuid, body.folderId ?? null);
   }
 
+  @Patch(':uuid/image-edits')
+  @ApiOperation({ summary: 'Save non-destructive image edits and thumbnail crop' })
+  @ApiOkResponse({ type: AssetDto })
+  updateImageEdits(
+    @Param('uuid') uuid: string,
+    @Body() edits: unknown,
+  ): Promise<AssetDto> {
+    return this.assetsService.updateImageEdits(uuid, edits);
+  }
+
   @Patch(':uuid/descriptions')
   @ApiOperation({
     summary: 'Update localized image descriptions',
