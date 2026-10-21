@@ -17,12 +17,15 @@
         <option value="paragraph">
           {{ 'admin.markdown.paragraph' | i18n | async }}
         </option>
+        <option value="heading1">{{ 'admin.markdown.workflow.heading1' | i18n | async }}</option>
         <option value="heading2">
           {{ 'admin.markdown.heading2' | i18n | async }}
         </option>
         <option value="heading3">
           {{ 'admin.markdown.heading3' | i18n | async }}
         </option>
+        <option value="heading4">{{ 'admin.markdown.workflow.heading4' | i18n | async }}</option>
+        <option value="codeBlock">{{ 'admin.markdown.workflow.codeBlock' | i18n | async }}</option>
       </select>
     </label>
 
@@ -101,6 +104,15 @@
       (click)="toggleBlockquote()"
     >
       <app-icon name="quote" class="white" />
+    </button>
+
+    <button type="button" [disabled]="isDisabled()" [class.active]="isCodeActive()"
+      [attr.aria-label]="'admin.markdown.workflow.inlineCode' | i18n | async" (click)="toggleCode()">
+      <app-icon name="code-2" />
+    </button>
+    <button type="button" [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.workflow.horizontalRule' | i18n | async" (click)="insertHorizontalRule()">
+      <app-icon name="minus" />
     </button>
 
     <span class="divider"></span>

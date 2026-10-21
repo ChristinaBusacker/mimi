@@ -1,0 +1,21 @@
+{
+  "localizations": [
+    { "key": "admin.media.workflow.clearSearch", "de": "Suche löschen", "en": "Clear search" },
+    { "key": "admin.media.workflow.rename", "de": "Umbenennen", "en": "Rename" },
+    { "key": "admin.media.workflow.generating", "de": "Bild wird vorbereitet …", "en": "Preparing image…" },
+    { "key": "admin.media.workflow.unavailable", "de": "Bild derzeit nicht verfügbar", "en": "Image currently unavailable" },
+    { "key": "admin.media.workflow.descriptionsNeeded", "de": "Erst Bildbeschreibungen ergänzen", "en": "Image descriptions required" },
+    { "key": "admin.media.workflow.checkingUsages", "de": "Verwendungen werden geprüft …", "en": "Checking references…" },
+    { "key": "admin.media.workflow.usedIn", "de": "Dieses Bild wird verwendet in:", "en": "This image is used in:" },
+    { "key": "admin.media.workflow.notUsed", "de": "Keine bekannten Verwendungen", "en": "No known references" },
+    { "key": "admin.media.workflow.replace", "de": "Bild ersetzen", "en": "Replace image" },
+    { "key": "admin.media.workflow.replaceConfirm", "de": "Bild jetzt ersetzen", "en": "Replace this image" },
+    { "key": "admin.media.workflow.replaceWarning", "de": "Das Bild wird in allen Verwendungen ersetzt durch:", "en": "This image will be replaced everywhere with:" },
+    { "key": "admin.media.workflow.replaceFailed", "de": "Bild konnte nicht ersetzt werden. Format und Duplikate prüfen.", "en": "Could not replace image. Check format and duplicates." },
+    { "key": "admin.markdown.workflow.heading1", "de": "Überschrift 1", "en": "Heading 1" },
+    { "key": "admin.markdown.workflow.heading4", "de": "Überschrift 4", "en": "Heading 4" },
+    { "key": "admin.markdown.workflow.codeBlock", "de": "Codeblock", "en": "Code block" },
+    { "key": "admin.markdown.workflow.inlineCode", "de": "Inline-Code", "en": "Inline code" },
+    { "key": "admin.markdown.workflow.horizontalRule", "de": "Trennlinie", "en": "Horizontal rule" }
+  ]
+}

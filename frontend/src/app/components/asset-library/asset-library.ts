@@ -50,7 +50,16 @@ export class AssetLibrary implements OnInit {
   private dragDepth = 0;
 
   protected readonly search = signal('');
-  protected readonly searchAllFolders = signal(false);
+  protected readonly searchAllFolders = signal(true);
+  protected readonly selectionAnchorId = signal<string | null>(null);
+  protected readonly contextFolderId = signal<string | null>(null);
+  protected readonly renamingFolderId = signal<string | null>(null);
+  protected readonly renameDraft = signal('');
+  protected readonly usageForAssetId = signal<string | null>(null);
+  protected readonly usages = signal<readonly { ownerType: string; ownerUuid: string; scope: string }[]>([]);
+  protected readonly usageLoading = signal(false);
+  protected readonly imageLoaded = signal<ReadonlySet<string>>(new Set<string>());
+  protected readonly imageFailed = signal<ReadonlySet<string>>(new Set<string>());
   protected readonly folders = signal<AssetFolder[]>([]);
   protected readonly folderId = signal<string | null>(null);
   protected readonly folderName = signal('');
@@ -63,6 +72,8 @@ export class AssetLibrary implements OnInit {
   );
   protected readonly focusedId = signal<string | null>(null);
   protected readonly editingAsset = signal<Asset | null>(null);
+  protected readonly replaceDraft = signal<{ asset: Asset; file: File } | null>(null);
+  protected readonly replacing = signal(false);
   readonly decorative = input(false);
   protected readonly incompleteOnly = signal(false);
   protected readonly sort = signal<AssetSort>('newest');
@@ -199,6 +210,23 @@ export class AssetLibrary implements OnInit {
     this.search.set(this.readControlValue(event));
   }
 
+  protected clearSearch(): void {
+    this.search.set('');
+  }
+
+  protected imageReady(id: string): void {
+    this.imageLoaded.update((current) => new Set(current).add(id));
+    this.imageFailed.update((current) => {
+      const next = new Set(current);
+      next.delete(id);
+      return next;
+    });
+  }
+
+  protected imageError(id: string): void {
+    this.imageFailed.update((current) => new Set(current).add(id));
+  }
+
   protected setSort(event: Event): void {
     const value = this.readControlValue(event);
 
@@ -290,18 +318,39 @@ export class AssetLibrary implements OnInit {
     }
   }
 
-  protected openAsset(asset: Asset): void {
-    if (this.bulkMode()) {
-      const next = new Set(this.selectedIds());
+  protected openAsset(asset: Asset, event: MouseEvent): void {
+    const range = event.shiftKey;
+    const toggle = event.ctrlKey || event.metaKey;
+    const next = new Set(this.selectedIds());
+    if (range) {
+      const items = this.filteredAssets();
+      const anchor = items.findIndex((item) => item.id === this.selectionAnchorId());
+      const current = items.findIndex((item) => item.id === asset.id);
+      if (anchor >= 0 && current >= 0) {
+        for (const item of items.slice(Math.min(anchor, current), Math.max(anchor, current) + 1)) {
+          next.add(item.id);
+        }
+      } else {
+        next.add(asset.id);
+      }
+    } else if (toggle || this.bulkMode()) {
       if (next.has(asset.id)) next.delete(asset.id);
       else if (next.size < 1000) next.add(asset.id);
       else {
         this.errorKey.set('admin.media.bulkLimit');
         return;
       }
-      this.selectedIds.set(next);
+      this.selectionAnchorId.set(asset.id);
+    } else {
+      next.clear();
+      this.selectionAnchorId.set(asset.id);
+    }
+    if (next.size > 1000) {
+      this.errorKey.set('admin.media.bulkLimit');
       return;
     }
+    this.selectedIds.set(next);
+    this.bulkMode.set(next.size > 0);
     this.focusedId.set(asset.id);
     this.confirmingDeleteId.set(null);
   }
@@ -365,7 +414,8 @@ export class AssetLibrary implements OnInit {
       ]);
       for (const asset of updated) this.assetUpdated.emit(asset);
       this.selectedIds.set(new Set<string>());
-      this.changeFolder(folderId);
+      this.bulkMode.set(false);
+      this.dragTargetFolder.set(null);
     } catch {
       this.errorKey.set('admin.media.bulkMoveFailed');
     } finally {
@@ -377,7 +427,64 @@ export class AssetLibrary implements OnInit {
     this.folderId.set(id);
     this.focusedId.set(null);
     this.confirmingDeleteId.set(null);
+    this.contextFolderId.set(null);
     this.errorKey.set(null);
+  }
+
+  protected openFolderContext(event: MouseEvent, id: string): void {
+    if (!this.embedded()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.contextFolderId.set(id);
+  }
+
+  protected beginFolderRename(id: string): void {
+    const folder = this.folders().find((item) => item.id === id);
+    if (!folder) return;
+    this.renameDraft.set(folder.name);
+    this.renamingFolderId.set(id);
+    this.contextFolderId.set(null);
+  }
+
+  protected setRenameDraft(event: Event): void {
+    this.renameDraft.set(this.readControlValue(event));
+  }
+
+  protected cancelFolderRename(): void {
+    this.renamingFolderId.set(null);
+  }
+
+  protected async saveFolderRename(): Promise<void> {
+    const id = this.renamingFolderId();
+    const name = this.renameDraft().trim();
+    if (!id || !name || this.folderBusy()) return;
+    this.folderBusy.set(true);
+    this.errorKey.set(null);
+    try {
+      const folder = await firstValueFrom(this.assetsService.renameFolder(id, name));
+      this.folders.update((current) => current.map((item) => item.id === id ? folder : item));
+      this.renamingFolderId.set(null);
+    } catch {
+      this.errorKey.set('admin.media.folderCreateFailed');
+    } finally {
+      this.folderBusy.set(false);
+    }
+  }
+
+  protected async deleteContextFolder(id: string): Promise<void> {
+    this.contextFolderId.set(null);
+    this.errorKey.set(null);
+    this.folderBusy.set(true);
+    try {
+      await firstValueFrom(this.assetsService.deleteFolder(id));
+      const parent = this.folders().find((item) => item.id === id)?.parentId ?? null;
+      this.folders.update((items) => items.filter((item) => item.id !== id));
+      if (this.folderId() === id) this.changeFolder(parent);
+    } catch {
+      this.errorKey.set('admin.media.folderDeleteFailed');
+    } finally {
+      this.folderBusy.set(false);
+    }
   }
 
   protected goToParent(): void {
@@ -450,6 +557,33 @@ export class AssetLibrary implements OnInit {
 
     this.assetSelected.emit(asset);
     this.close();
+  }
+
+  protected stageReplacement(asset: Asset, event: Event): void {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || !target.files?.length) return;
+    const file = target.files[0];
+    target.value = '';
+    this.replaceDraft.set({ asset, file });
+  }
+
+  protected async confirmReplacement(): Promise<void> {
+    const draft = this.replaceDraft();
+    if (!draft || this.replacing()) return;
+    this.replacing.set(true);
+    this.errorKey.set(null);
+    try {
+      const saved = await firstValueFrom(this.assetsService.replaceImage(draft.asset.id, draft.file));
+      this.loadedAssets.update((assets) => [saved, ...assets.filter((item) => item.id !== saved.id)]);
+      this.imageLoaded.update((current) => { const next = new Set(current); next.delete(saved.id); return next; });
+      this.imageFailed.update((current) => { const next = new Set(current); next.delete(saved.id); return next; });
+      this.assetUpdated.emit(saved);
+      this.replaceDraft.set(null);
+    } catch {
+      this.errorKey.set('admin.media.workflow.replaceFailed');
+    } finally {
+      this.replacing.set(false);
+    }
   }
 
   protected openEditor(asset: Asset): void {
@@ -626,17 +760,31 @@ export class AssetLibrary implements OnInit {
     }
   }
 
-  protected requestDelete(asset: Asset): void {
+  protected async requestDelete(asset: Asset): Promise<void> {
     this.confirmingDeleteId.set(asset.id);
+    this.usageForAssetId.set(asset.id);
+    this.usages.set([]);
+    this.usageLoading.set(true);
     this.errorKey.set(null);
+    try {
+      const usages = await firstValueFrom(this.assetsService.getUsages(asset.id));
+      if (this.usageForAssetId() === asset.id) this.usages.set(usages);
+    } catch {
+      this.errorKey.set('admin.assetPicker.loadFailed');
+      this.usages.set([{ ownerType: 'unknown', ownerUuid: '', scope: '' }]);
+    } finally {
+      this.usageLoading.set(false);
+    }
   }
 
   protected cancelDelete(): void {
     this.confirmingDeleteId.set(null);
+    this.usageForAssetId.set(null);
+    this.usages.set([]);
   }
 
   protected async deleteAsset(asset: Asset): Promise<void> {
-    if (this.deletingId()) {
+    if (this.deletingId() || this.usageLoading() || this.usages().length > 0) {
       return;
     }
 

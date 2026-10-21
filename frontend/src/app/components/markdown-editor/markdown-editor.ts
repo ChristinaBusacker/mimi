@@ -54,8 +54,11 @@ type EditableMedia =
 
 type EditorBlockType =
   | 'paragraph'
+  | 'heading1'
   | 'heading2'
-  | 'heading3';
+  | 'heading3'
+  | 'heading4'
+  | 'codeBlock';
 
 interface StoredSelection {
   kind: 'text' | 'node';
@@ -211,12 +214,12 @@ export class MarkdownEditor
       element,
       extensions: [
         StarterKit.configure({
-          code: false,
-          codeBlock: false,
+          code: {},
+          codeBlock: {},
           heading: {
-            levels: [2, 3],
+            levels: [1, 2, 3, 4],
           },
-          horizontalRule: false,
+          horizontalRule: {},
           strike: false,
           underline: false,
           link: {
@@ -324,6 +327,10 @@ export class MarkdownEditor
     EditorBlockType {
     this.revision();
 
+    if (this.editor()?.isActive('codeBlock')) return 'codeBlock';
+    if (this.editor()?.isActive('heading', { level: 1 })) return 'heading1';
+    if (this.editor()?.isActive('heading', { level: 4 })) return 'heading4';
+
     if (
       this.editor()?.isActive(
         'heading',
@@ -360,6 +367,15 @@ export class MarkdownEditor
       this.editor();
 
     if (!editor) {
+      return;
+    }
+
+    if (value === 'codeBlock') {
+      editor.chain().focus().setCodeBlock().run();
+      return;
+    }
+    if (value === 'heading1' || value === 'heading4') {
+      editor.chain().focus().setHeading({ level: value === 'heading1' ? 1 : 4 }).run();
       return;
     }
 
@@ -500,6 +516,19 @@ export class MarkdownEditor
         'youtubeEmbed',
       ) !== null
     );
+  }
+
+  protected isCodeActive(): boolean {
+    this.revision();
+    return this.editor()?.isActive('code') ?? false;
+  }
+
+  protected toggleCode(): void {
+    this.editor()?.chain().focus().toggleCode().run();
+  }
+
+  protected insertHorizontalRule(): void {
+    this.editor()?.chain().focus().setHorizontalRule().run();
   }
 
   protected toggleBold(): void {

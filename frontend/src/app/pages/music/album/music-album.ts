@@ -9,6 +9,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
 } from '@angular/core';
 import {
@@ -31,6 +32,7 @@ import { MusicLibraryPlayer } from '../../../components/music-library-player/mus
 import { RenderedContent } from '../../../components/rendered-content/rendered-content';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { I18nState } from '../../../core/i18n/i18n.state';
+import { AlbumSelectionService } from '../../../core/music/album-selection.service';
 import type { Language } from '../../../core/i18n/i18n.types';
 import {
   type MusicAlbumPageData,
@@ -58,6 +60,7 @@ export class MusicAlbumPage {
     inject(Store);
   private readonly music =
     inject(MusicPublicService);
+  private readonly albumSelection = inject(AlbumSelectionService);
 
   private readonly initialData =
     this.route.snapshot.data[
@@ -113,6 +116,12 @@ export class MusicAlbumPage {
       initialValue: this.initialData,
     },
   );
+
+  constructor() {
+    effect(() => {
+      this.albumSelection.selectedSlug = this.data().album.slug;
+    });
+  }
 
   protected readonly tracks =
     computed<

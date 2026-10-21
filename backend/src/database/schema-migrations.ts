@@ -26,6 +26,7 @@ import { pushSubscriptionsMigration } from '../push/push-subscriptions.schema-mi
 import { assetDescriptionsMigration } from '../assets/asset-descriptions.schema-migration';
 import { assetImageEditsMigration } from '../assets/asset-image-edits.schema-migration';
 import { assetFoldersMigration } from '../assets/asset-folders.schema-migration';
+import { assetReplacementMigration } from '../assets/asset-replacement.schema-migration';
 import { seoEditorialMetadataMigration } from '../seo/seo-editorial-metadata.schema-migration';
 
 interface SchemaMigration {
@@ -540,6 +541,7 @@ const migrations: readonly SchemaMigration[] = [
   assetDescriptionsMigration,
   assetFoldersMigration,
   assetImageEditsMigration,
+  assetReplacementMigration,
 ];
 
 export async function runSchemaMigrations(

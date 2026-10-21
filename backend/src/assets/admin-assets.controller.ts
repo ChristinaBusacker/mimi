@@ -111,6 +111,13 @@ export class AdminAssetsController {
     return this.assetsService.createFolder(body.name, body.parentId ?? null);
   }
 
+  @Patch('folders/:uuid')
+  @ApiOperation({ summary: 'Rename a media folder' })
+  @ApiOkResponse({ type: AssetFolderDto })
+  renameFolder(@Param('uuid') uuid: string, @Body() body: { name: string }): Promise<AssetFolderDto> {
+    return this.assetsService.renameFolder(uuid, body.name);
+  }
+
   @Delete('folders/:uuid')
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteFolder(@Param('uuid') uuid: string): Promise<void> {
@@ -127,6 +134,16 @@ export class AdminAssetsController {
   @Patch(':uuid/folder')
   moveAsset(@Param('uuid') uuid: string, @Body() body: { folderId: string | null }): Promise<AssetDto> {
     return this.assetsService.moveAsset(uuid, body.folderId ?? null);
+  }
+
+  @Post(':uuid/replace')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Replace image binary while preserving asset references' })
+  @ApiOkResponse({ type: AssetDto })
+  replaceImage(@Param('uuid') uuid: string, @UploadedFile() file?: UploadedAssetFile): Promise<AssetDto> {
+    if (!file) throw new BadRequestException('Image file required.');
+    return this.assetsService.replaceImage(uuid, file);
   }
 
   @Patch(':uuid/image-edits')
@@ -154,6 +171,12 @@ export class AdminAssetsController {
       uuid,
       dto,
     );
+  }
+
+  @Get(':uuid/usages')
+  @ApiOperation({ summary: 'List content references to an asset before deletion' })
+  getUsages(@Param('uuid') uuid: string): Promise<Array<{ ownerType: string; ownerUuid: string; scope: string }>> {
+    return this.assetsService.getUsages(uuid);
   }
 
   @Delete(':uuid')

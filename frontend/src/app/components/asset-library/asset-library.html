@@ -53,12 +53,17 @@
     <div class="controls">
       <label>
         <span>{{ 'admin.assetPicker.search' | i18n | async }}</span>
-        <input
-          type="search"
-          [value]="search()"
-          [placeholder]="'admin.assetPicker.searchPlaceholder' | i18n | async"
-          (input)="setSearch($event)"
-        />
+        <div class="media-search-control">
+          <input
+            type="search"
+            [value]="search()"
+            [placeholder]="'admin.assetPicker.searchPlaceholder' | i18n | async"
+            (input)="setSearch($event)"
+          />
+          @if (search()) {
+            <button type="button" class="media-search-clear" (click)="clearSearch()" [attr.aria-label]="'admin.media.workflow.clearSearch' | i18n | async">×</button>
+          }
+        </div>
       </label>
 
       <label>
@@ -229,6 +234,7 @@
           @for (folder of folders(); track folder.id) {
             <button
               type="button"
+              (contextmenu)="openFolderContext($event, folder.id)"
               [class.active]="folderId() === folder.id"
               [class.drop-target]="dragTargetFolder() === folder.id"
               [title]="folderPaths()[folder.id]"
@@ -239,6 +245,20 @@
             >
               <app-icon name="folder" /><span>{{ folderPaths()[folder.id] }}</span>
             </button>
+            @if (contextFolderId() === folder.id) {
+              <div class="media-folder-menu" role="group" [attr.aria-label]="folder.name">
+                <button type="button" (click)="beginFolderRename(folder.id)">{{ 'admin.media.workflow.rename' | i18n | async }}</button>
+                <button type="button" [disabled]="folderBusy()" (click)="deleteContextFolder(folder.id)">{{ 'admin.media.deleteFolder' | i18n | async }}</button>
+                <button type="button" (click)="contextFolderId.set(null)">{{ 'admin.assetPicker.cancel' | i18n | async }}</button>
+              </div>
+            }
+            @if (renamingFolderId() === folder.id) {
+              <div class="media-folder-rename">
+                <input type="text" maxlength="120" [value]="renameDraft()" (input)="setRenameDraft($event)" (keydown.enter)="saveFolderRename()" />
+                <button type="button" [disabled]="folderBusy() || !renameDraft().trim()" (click)="saveFolderRename()">{{ 'admin.media.workflow.rename' | i18n | async }}</button>
+                <button type="button" (click)="cancelFolderRename()">{{ 'admin.assetPicker.cancel' | i18n | async }}</button>
+              </div>
+            }
           }
           <p>{{ 'admin.media.dragFolderHint' | i18n | async }}</p>
         </nav>
@@ -282,14 +302,22 @@
                     type="button"
                     class="preview"
                     [disabled]="!embedded() && !decorative() && !hasCompleteDescriptions(asset)"
-                    (click)="embedded() ? openAsset(asset) : select(asset)"
+                    (click)="embedded() ? openAsset(asset, $event) : select(asset)"
                   >
                     <img
                       [src]="asset.thumbnailUrl ?? asset.url"
                       [alt]="asset.descriptionDe || asset.descriptionEn || asset.originalFilename"
                       draggable="false"
                       loading="lazy"
+                      (load)="imageReady(asset.id)"
+                      (error)="imageError(asset.id)"
                     />
+                    @if (!imageLoaded().has(asset.id) && !imageFailed().has(asset.id)) {
+                      <span class="media-image-state" role="status">{{ 'admin.media.workflow.generating' | i18n | async }}</span>
+                    }
+                    @if (imageFailed().has(asset.id)) {
+                      <span class="media-image-state media-image-state--error" role="status">{{ 'admin.media.workflow.unavailable' | i18n | async }}</span>
+                    }
                   </button>
                 } @else {
                   <audio controls preload="metadata" [src]="asset.url"></audio>
@@ -297,6 +325,9 @@
 
                 <div class="meta">
                   <strong [title]="asset.originalFilename">{{ asset.originalFilename }}</strong>
+                  @if (!embedded() && asset.type === 'image' && !hasCompleteDescriptions(asset)) {
+                    <small class="media-unselectable" role="status">{{ 'admin.media.workflow.descriptionsNeeded' | i18n | async }}</small>
+                  }
                   <span>
                     {{ asset.createdAt | date: 'mediumDate' }} · {{ formatSize(asset.sizeBytes) }}
                   </span>
@@ -446,6 +477,19 @@
               <button type="button" class="edit-image" (click)="openEditor(asset)">
                 <app-icon name="crop" /> {{ 'admin.media.editImage' | i18n | async }}
               </button>
+              <label class="media-replace-button">
+                <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" (change)="stageReplacement(asset, $event)" />
+                <app-icon name="refresh-cw" /> {{ 'admin.media.workflow.replace' | i18n | async }}
+              </label>
+              @if (replaceDraft(); as draft) {
+                @if (draft.asset.id === asset.id) {
+                  <div class="media-replace-confirm" role="group">
+                    <p>{{ 'admin.media.workflow.replaceWarning' | i18n | async }} <strong>{{ draft.file.name }}</strong></p>
+                    <button type="button" [disabled]="replacing()" (click)="confirmReplacement()">{{ 'admin.media.workflow.replaceConfirm' | i18n | async }}</button>
+                    <button type="button" [disabled]="replacing()" (click)="replaceDraft.set(null)">{{ 'admin.assetPicker.cancel' | i18n | async }}</button>
+                  </div>
+                }
+              }
             } @else {
               <audio controls preload="metadata" [src]="asset.url"></audio>
             }
@@ -501,9 +545,21 @@
             <div class="inspector-danger">
               @if (confirmingDeleteId() === asset.id) {
                 <p>{{ 'admin.assetPicker.deleteWarning' | i18n | async }}</p>
+                @if (usageLoading()) {
+                  <p role="status">{{ 'admin.media.workflow.checkingUsages' | i18n | async }}</p>
+                } @else if (usages().length > 0) {
+                  <div class="media-usage-block" role="alert">
+                    <strong>{{ 'admin.media.workflow.usedIn' | i18n | async }}</strong>
+                    @for (usage of usages(); track usage.ownerType + usage.ownerUuid + usage.scope) {
+                      <span>{{ usage.ownerType }} · {{ usage.scope }} · {{ usage.ownerUuid }}</span>
+                    }
+                  </div>
+                } @else {
+                  <p>{{ 'admin.media.workflow.notUsed' | i18n | async }}</p>
+                }
                 <button
                   type="button"
-                  [disabled]="deletingId() === asset.id"
+                  [disabled]="deletingId() === asset.id || usageLoading() || usages().length > 0"
                   (click)="deleteAsset(asset)"
                 >
                   {{ 'admin.assetPicker.deleteConfirm' | i18n | async }}

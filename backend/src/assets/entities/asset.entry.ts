@@ -81,6 +81,9 @@ export class AssetEntry {
   @Column({ type: 'jsonb', nullable: true })
   imageEdits!: AssetImageEdits | null;
 
+  @Column({ type: 'varchar', length: 8, nullable: true })
+  replacementRevision!: string | null;
+
   @CreateDateColumn({
     type: 'timestamptz',
   })

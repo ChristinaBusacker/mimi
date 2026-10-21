@@ -44,6 +44,19 @@ export class AdminAssetsService {
     );
   }
 
+  renameFolder(id: string, name: string): Observable<AssetFolder> {
+    return this.request.patch<AssetFolder, { name: string }>(
+      `/admin/assets/folders/${encodeURIComponent(id)}`, { name },
+    );
+  }
+
+  getUsages(id: string): Observable<Array<{ ownerType: string; ownerUuid: string; scope: string }>> {
+    return this.request.get<Array<{ ownerType: string; ownerUuid: string; scope: string }>>(
+      `/admin/assets/${encodeURIComponent(id)}/usages`,
+      { transferCache: false, deduplicateAcrossTabs: false },
+    );
+  }
+
   deleteFolder(id: string): Observable<void> {
     return this.request.delete<void>(`/admin/assets/folders/${id}`);
   }
@@ -67,6 +80,12 @@ export class AdminAssetsService {
       folderId ? `/admin/assets?folderId=${encodeURIComponent(folderId)}` : '/admin/assets',
       body,
     );
+  }
+
+  replaceImage(id: string, file: File): Observable<Asset> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.request.post<Asset, FormData>(`/admin/assets/${encodeURIComponent(id)}/replace`, body);
   }
 
   updateImageEdits(id: string, input: AssetImageEdits): Observable<Asset> {

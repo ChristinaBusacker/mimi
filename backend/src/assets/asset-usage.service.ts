@@ -49,6 +49,11 @@ export class AssetUsageService {
     ];
   }
 
+  async getUsages(assetUuid: string): Promise<Array<{ ownerType: AssetUsageOwnerType; ownerUuid: string; scope: string }>> {
+    const entries = await this.repository.find({ where: { assetUuid }, order: { ownerType: 'ASC', scope: 'ASC' } });
+    return entries.map(({ ownerType, ownerUuid, scope }) => ({ ownerType, ownerUuid, scope }));
+  }
+
   async assertUnused(
     assetUuid: string,
   ): Promise<void> {

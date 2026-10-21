@@ -62,6 +62,9 @@
   }
 
   select {
+    color-scheme: dark;
+    background-color: #2c1b31;
+    color: #fff;
     padding: var(--spacing-xs) calc(var(--spacing-sm) + 16px) var(--spacing-xs) var(--spacing-sm);
     border-color: var(--color-secondary);
     cursor: pointer;
@@ -71,6 +74,8 @@
       opacity: 0.5;
     }
   }
+
+  select option { background-color: #2c1b31; color: #fff; }
 
   .block-style {
     display: flex;

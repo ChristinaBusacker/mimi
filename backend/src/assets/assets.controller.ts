@@ -128,7 +128,7 @@ export class AssetsController {
     response.setHeader('Accept-Ranges', 'bytes');
     response.setHeader(
       'Cache-Control',
-      revisioned ? 'public, max-age=31536000, immutable' : 'public, max-age=300',
+      revisioned ? 'public, max-age=31536000, immutable' : 'no-cache',
     );
     response.setHeader(
       'Content-Type',

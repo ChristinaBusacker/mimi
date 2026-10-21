@@ -256,6 +256,33 @@ export class AssetsService {
     }
   }
 
+  async renameFolder(id: string, name: string): Promise<AssetFolder> {
+    const normalized = typeof name === 'string' ? name.trim() : '';
+    if (!normalized || normalized.length > 120 || /[\\/]/.test(normalized)) {
+      throw new BadRequestException('Invalid folder name.');
+    }
+    const folder = await this.folderRepository.findOneBy({ uuid: id });
+    if (!folder) throw new NotFoundException('Folder not found.');
+    const existing = await this.folderRepository.createQueryBuilder('folder')
+      .where('lower(folder.name) = lower(:name)', { name: normalized })
+      .andWhere(folder.parentId === null ? 'folder.parentId IS NULL' : 'folder.parentId = :parentId', { parentId: folder.parentId })
+      .andWhere('folder.uuid <> :uuid', { uuid: id })
+      .getOne();
+    if (existing) throw new ConflictException('A folder with that name already exists.');
+    folder.name = normalized;
+    try {
+      const saved = await this.folderRepository.save(folder);
+      return { id: saved.uuid, parentId: saved.parentId, name: saved.name };
+    } catch {
+      throw new ConflictException('Could not rename folder.');
+    }
+  }
+
+  async getUsages(uuid: string): Promise<Array<{ ownerType: string; ownerUuid: string; scope: string }>> {
+    await this.findAsset(uuid);
+    return this.assetUsageService.getUsages(uuid);
+  }
+
   async deleteFolder(id: string): Promise<void> {
     await this.assertFolder(id);
     const [children, assets] = await Promise.all([
@@ -306,8 +333,13 @@ export class AssetsService {
     return ASSET_IMAGE_REVISIONS[name];
   }
 
-  private revision(name: string, edits: AssetImageEdits | null): string {
-    return `${ASSET_IMAGE_REVISIONS[name]}${edits ? `-${imageEditFingerprint(edits)}` : ''}`;
+  private editRevision(edits: AssetImageEdits | null, replacementRevision: string | null): string {
+    return [imageEditFingerprint(edits), replacementRevision].filter(Boolean).join('-');
+  }
+
+  private revision(name: string, edits: AssetImageEdits | null, replacementRevision: string | null = null): string {
+    const suffix = this.editRevision(edits, replacementRevision);
+    return `${ASSET_IMAGE_REVISIONS[name]}${suffix ? `-${suffix}` : ''}`;
   }
 
   async getAll(type?: AssetType): Promise<Asset[]> {
@@ -353,6 +385,40 @@ export class AssetsService {
     return this.mapAsset(
       await this.repository.save(asset),
     );
+  }
+
+  async replaceImage(uuid: string, file: UploadedAssetFile): Promise<Asset> {
+    this.validateUpload(file);
+    const supported = SUPPORTED_ASSET_MIME_TYPES[file.mimetype];
+    if (supported?.type !== 'image') throw new BadRequestException('An image file is required.');
+    const asset = await this.findAsset(uuid);
+    if (asset.type !== 'image') throw new BadRequestException('Only images can be replaced.');
+    const hash = this.hash(file.buffer);
+    const duplicate = await this.repository.findOneBy({ contentHash: hash });
+    if (duplicate && duplicate.uuid !== uuid) {
+      throw new ConflictException('The replacement is already registered as a different asset.');
+    }
+    const prepared = await this.prepareImage(file.buffer, []);
+    const storageKey = `${randomUUID()}.${prepared.extension}`;
+    const stored = await this.storeFile(storageKey, file.buffer);
+    const previousKey = asset.storageKey;
+    try {
+      asset.storageKey = storageKey;
+      asset.originalFilename = this.normalizeFilename(file.originalname);
+      asset.mimeType = prepared.mimeType;
+      asset.sizeBytes = file.size;
+      asset.width = prepared.width;
+      asset.height = prepared.height;
+      asset.contentHash = hash;
+      asset.imageEdits = null;
+      asset.replacementRevision = randomUUID().replace(/-/g, '').slice(0, 8);
+      const saved = await this.repository.save(asset);
+      await this.removeStoredFiles([{ storageKey: previousKey, absolutePath: join(this.storagePath, previousKey) }], true);
+      return this.mapAsset(saved);
+    } catch (error) {
+      await this.removeStoredFiles([stored], true);
+      throw error;
+    }
   }
 
   async updateImageEdits(uuid: string, input: unknown): Promise<Asset> {
@@ -401,13 +467,13 @@ export class AssetsService {
       );
     }
 
-    const currentRevision = this.revision(variantName, asset.imageEdits);
-    if (requestedRevision && !/^[a-f0-9]{12}(?:-[a-f0-9]{8})?$/.test(requestedRevision)) {
+    const currentRevision = this.revision(variantName, asset.imageEdits, asset.replacementRevision);
+    if (requestedRevision && !/^[a-f0-9]{12}(?:-[a-f0-9]{8}){0,2}$/.test(requestedRevision)) {
       throw new NotFoundException('Image revision not found.');
     }
     const storageName = requestedRevision
       ? `${variantName}-${requestedRevision}`
-      : imageVariantStorageName(variantName, imageEditFingerprint(asset.imageEdits));
+      : imageVariantStorageName(variantName, this.editRevision(asset.imageEdits, asset.replacementRevision));
     let variant = await this.variantRepository.findOneBy({
       assetUuid: uuid,
       name: storageName,
@@ -557,6 +623,7 @@ export class AssetsService {
     buffer: Buffer,
     names: readonly string[],
     edits: AssetImageEdits | null = null,
+    replacementRevision: string | null = null,
   ): Promise<PreparedImage> {
     let metadata: Metadata;
 
@@ -641,7 +708,7 @@ export class AssetsService {
         });
 
       variants.push({
-        name: imageVariantStorageName(name, imageEditFingerprint(edits)),
+        name: imageVariantStorageName(name, this.editRevision(edits, replacementRevision)),
         format: 'webp',
         extension: 'webp',
         mimeType: 'image/webp',
@@ -673,7 +740,7 @@ export class AssetsService {
             });
 
       variants.push({
-        name: imageVariantStorageName(name, imageEditFingerprint(edits)),
+        name: imageVariantStorageName(name, this.editRevision(edits, replacementRevision)),
         format: 'fallback',
         extension:
           fallbackIsPng
@@ -783,7 +850,7 @@ export class AssetsService {
       );
     }
 
-    const prepared = await this.prepareImage(buffer, [name], asset.imageEdits);
+    const prepared = await this.prepareImage(buffer, [name], asset.imageEdits, asset.replacementRevision);
     const storedFiles: StoredFile[] = [];
     const existingVariants =
       await this.variantRepository.findBy({
@@ -1034,13 +1101,13 @@ export class AssetsService {
       descriptionEn: asset.descriptionEn,
       folderId: asset.folderId,
       imageEdits: asset.imageEdits,
-      originalUrl: `/api/assets/${asset.uuid}`,
+      originalUrl: `/api/assets/${asset.uuid}${asset.replacementRevision ? `?v=${asset.replacementRevision}` : ''}`,
       url: asset.type === 'image'
-        ? `/api/assets/${asset.uuid}/image/${this.displayPreset()}/webp?v=${this.revision(this.displayPreset(), asset.imageEdits)}`
+        ? `/api/assets/${asset.uuid}/image/${this.displayPreset()}/webp?v=${this.revision(this.displayPreset(), asset.imageEdits, asset.replacementRevision)}`
         : `/api/assets/${asset.uuid}`,
       thumbnailUrl:
         asset.type === 'image'
-          ? `/api/assets/${asset.uuid}/image/thumbnail/webp?v=${this.revision('thumbnail', asset.imageEdits)}`
+          ? `/api/assets/${asset.uuid}/image/thumbnail/webp?v=${this.revision('thumbnail', asset.imageEdits, asset.replacementRevision)}`
           : null,
       createdAt: asset.createdAt.toISOString(),
     };
