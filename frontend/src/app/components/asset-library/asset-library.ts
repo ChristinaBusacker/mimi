@@ -36,10 +36,14 @@ export class AssetLibrary implements OnInit {
 
   readonly type = input.required<AssetType>();
   readonly embedded = input(false);
+  readonly pickerWorkspace = input(true);
+  readonly multiSelect = input(false);
+  protected readonly showWorkspace = computed(() => this.embedded() || this.pickerWorkspace());
   readonly assets = input<readonly Asset[]>([]);
   readonly selectedId = input<string | null>('');
 
   readonly assetSelected = output<Asset>();
+  readonly assetsSelected = output<Asset[]>();
   readonly assetUploaded = output<Asset>();
   readonly assetUpdated = output<Asset>();
   readonly assetDeleted = output<string>();
@@ -88,6 +92,8 @@ export class AssetLibrary implements OnInit {
   protected readonly bulkMode = signal(false);
   protected readonly bulkBusy = signal(false);
   protected readonly selectedIds = signal<ReadonlySet<string>>(new Set<string>());
+  protected readonly pickerOrder = signal<string[]>([]);
+  protected readonly descriptionQueue = signal<string[]>([]);
   protected readonly bulkTargetId = signal<string | null>(null);
   protected readonly dragTargetFolder = signal<string | null>(null);
   private draggedAssetIds: string[] = [];
@@ -186,6 +192,8 @@ export class AssetLibrary implements OnInit {
     this.focusedId.set(null);
     this.incompleteOnly.set(false);
     if (!this.embedded()) {
+      this.selectedIds.set(new Set<string>());
+      this.pickerOrder.set([]);
       this.dialog()?.nativeElement.showModal();
     }
 
@@ -319,6 +327,38 @@ export class AssetLibrary implements OnInit {
   }
 
   protected openAsset(asset: Asset, event: MouseEvent): void {
+    if (!this.embedded()) {
+      this.focusedId.set(asset.id);
+      this.confirmingDeleteId.set(null);
+      if (!this.multiSelect()) return;
+      const previous = this.pickerOrder();
+      let next: string[];
+      if (event.shiftKey) {
+        const visible = this.filteredAssets();
+        const startIndex = visible.findIndex((item) => item.id === this.selectionAnchorId());
+        const endIndex = visible.findIndex((item) => item.id === asset.id);
+        const range = startIndex < 0 || endIndex < 0
+          ? [asset.id]
+          : visible.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1)
+              .map((item) => item.id);
+        next = [...new Set([...previous, ...range])];
+      } else if (event.ctrlKey || event.metaKey) {
+        next = previous.includes(asset.id)
+          ? previous.filter((id) => id !== asset.id)
+          : [...previous, asset.id];
+        this.selectionAnchorId.set(asset.id);
+      } else {
+        next = [asset.id];
+        this.selectionAnchorId.set(asset.id);
+      }
+      if (next.length > 36) {
+        this.errorKey.set('admin.media.bulkLimit');
+        return;
+      }
+      this.pickerOrder.set(next);
+      this.selectedIds.set(new Set(next));
+      return;
+    }
     const range = event.shiftKey;
     const toggle = event.ctrlKey || event.metaKey;
     const next = new Set(this.selectedIds());
@@ -559,6 +599,34 @@ export class AssetLibrary implements OnInit {
     this.close();
   }
 
+  protected confirmPickerSelection(): void {
+    const byId = new Map(this.availableAssets().map((asset) => [asset.id, asset] as const));
+    const chosen = this.pickerOrder()
+      .map((id) => byId.get(id))
+      .filter((asset): asset is Asset => asset !== undefined);
+    if (!chosen.length || chosen.some((asset) =>
+      asset.type === 'image' && !this.decorative() && !this.hasCompleteDescriptions(asset)
+    )) {
+      this.errorKey.set('admin.assetPicker.descriptionsRequired');
+      return;
+    }
+    this.assetsSelected.emit(chosen);
+    this.close();
+  }
+
+  protected pickerSelectionValid(): boolean {
+    if (!this.pickerOrder().length) return false;
+    const byId = new Map(this.availableAssets().map((asset) => [asset.id, asset] as const));
+    return this.pickerOrder().every((id) => {
+      const asset = byId.get(id);
+      return asset && (this.decorative() || this.hasCompleteDescriptions(asset));
+    });
+  }
+
+  protected pickerIndex(id: string): number {
+    return this.pickerOrder().indexOf(id) + 1;
+  }
+
   protected stageReplacement(asset: Asset, event: Event): void {
     const target = event.target;
     if (!(target instanceof HTMLInputElement) || !target.files?.length) return;
@@ -678,6 +746,15 @@ export class AssetLibrary implements OnInit {
         return next;
       });
       this.assetUpdated.emit(updated);
+      this.descriptionQueue.update((ids) => ids.filter((id) => id !== updated.id));
+      const nextId = this.descriptionQueue()[0];
+      if (nextId) {
+        const nextAsset = this.availableAssets().find((item) => item.id === nextId);
+        if (nextAsset) {
+          this.folderId.set(nextAsset.folderId);
+          this.focusedId.set(nextId);
+        }
+      }
     } catch {
       this.errorKey.set('admin.assetPicker.descriptionSaveFailed');
     } finally {
@@ -875,7 +952,7 @@ export class AssetLibrary implements OnInit {
 
       if (asset.type === 'audio' && !this.embedded()) {
         this.select(asset);
-      } else {
+      } else if (asset.type === 'image') {
         this.descriptionDrafts.update((drafts) => ({
           ...drafts,
           [asset.id]: {
@@ -883,6 +960,18 @@ export class AssetLibrary implements OnInit {
             en: asset.descriptionEn ?? '',
           },
         }));
+        if (!this.hasCompleteDescriptions(asset)) {
+          const firstPending = this.descriptionQueue().length === 0;
+          if (!this.descriptionQueue().includes(asset.id)) {
+            this.descriptionQueue.update((ids) => [...ids, asset.id]);
+          }
+          if (firstPending) {
+            this.folderId.set(asset.folderId);
+            this.focusedId.set(asset.id);
+          }
+        } else if (!this.descriptionQueue().length) {
+          this.focusedId.set(asset.id);
+        }
       }
     } catch {
       this.errorKey.set('admin.assetPicker.uploadFailed');

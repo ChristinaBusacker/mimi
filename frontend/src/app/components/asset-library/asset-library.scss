@@ -1,4 +1,5 @@
 @use 'mixins' as *;
+@use './asset-picker-workspace';
 
 :host {
   display: contents;
@@ -422,8 +423,9 @@
 .library-dialog:not(.embedded) .descriptions { padding-top: 10px; border-top: 1px solid rgb(255 255 255 / 13%); }
 .library-dialog:not(.embedded) .media-unselectable { color: #ffb5d0; font-weight: 650; }
 
-/* The embedded library is a workspace; the modal picker keeps its compact layout. */
-.library-dialog.embedded {
+/* The media library and picker share the same workspace layout. */
+.library-dialog.embedded,
+.library-dialog.workspace-picker {
   border-radius: 16px;
   .media-body { padding: clamp(12px, 1.8vw, 22px); gap: 12px; }
   .media-body > header { display: none; }
@@ -499,7 +501,7 @@
   .drop-note { display: none; }
 }
 @media (max-width: 1120px) {
-  .library-dialog.embedded .media-workspace--embedded { grid-template-columns: minmax(155px, 190px) minmax(0, 1fr); }
+  .library-dialog:is(.embedded, .workspace-picker) .media-workspace--embedded { grid-template-columns: minmax(155px, 190px) minmax(0, 1fr); }
   .library-dialog.embedded .media-inspector { grid-column: 1 / -1; border-left: 0; border-top: 1px solid rgb(255 255 255 / 12%); }
   .library-dialog.embedded .media-inspector .inspector-preview { width: min(200px, 100%); }
   .library-dialog.embedded .media-inspector .inspector-placeholder { min-height: 100px; }

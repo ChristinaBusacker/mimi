@@ -442,13 +442,10 @@
                       </div>
                     </div>
                   }
-                  <label>{{ 'page.editor.chooseImage' | i18n | async }}</label>
-                  <select (change)="addGalleryImage($event)">
-                    <option value="">{{ 'page.editor.chooseImage' | i18n | async }}</option>
-                    @for (image of assets(); track image.id) {
-                      <option [value]="image.id">{{ image.originalFilename }}</option>
-                    }
-                  </select>
+                  <button type="button" [disabled]="block.items.length >= 36"
+                    (click)="openGalleryLibrary(block.id)">
+                    <app-icon name="images" /> {{ 'page.editor.chooseImage' | i18n | async }}
+                  </button>
                 }
                 @case ('slider') {
                   <h3>{{ 'page.editor.block.slider' | i18n | async }}</h3>
@@ -468,13 +465,10 @@
                       </div>
                     </div>
                   }
-                  <label>{{ 'page.editor.chooseImage' | i18n | async }}</label>
-                  <select [disabled]="block.items.length >= 36" (change)="addGalleryImage($event)">
-                    <option value="">{{ 'page.editor.chooseImage' | i18n | async }}</option>
-                    @for (image of assets(); track image.id) {
-                      <option [value]="image.id">{{ image.originalFilename }}</option>
-                    }
-                  </select>
+                  <button type="button" [disabled]="block.items.length >= 36"
+                    (click)="openGalleryLibrary(block.id)">
+                    <app-icon name="images" /> {{ 'page.editor.chooseImage' | i18n | async }}
+                  </button>
                 }
                 @case ('cardCarousel') {
                   <h3>{{ 'page.editor.block.cardCarousel' | i18n | async }}</h3>
@@ -675,9 +669,11 @@
   <app-asset-library
     type="image"
     [decorative]="backgroundTarget() !== null"
+    [multiSelect]="galleryTarget() !== null"
     [assets]="assets()"
     [selectedId]="backgroundTarget() ? backgroundAssetId() : selectedImageId()"
     (assetSelected)="chooseAsset($event)"
-    (closed)="mediaTarget.set(null); backgroundTarget.set(null)"
+    (assetsSelected)="appendGalleryAssets($event)"
+    (closed)="mediaTarget.set(null); backgroundTarget.set(null); galleryTarget.set(null)"
   />
 </section>

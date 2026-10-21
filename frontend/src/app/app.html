@@ -2,7 +2,9 @@
   <app-booklet-navigation />
 } @else {
   <app-background />
-  <app-header />
+  @if (!adminMode()) {
+    <app-header />
+  }
 }
 
 <main>

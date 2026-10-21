@@ -112,6 +112,7 @@ export class PageEditor {
   protected readonly inspectorWidth = signal(this.defaultInspectorWidth);
   protected readonly inspectorOpen = signal(true);
   protected readonly mediaTarget = signal<string | null>(null);
+  protected readonly galleryTarget = signal<string | null>(null);
   protected readonly backgroundTarget = signal<string | null>(null);
   protected readonly breadcrumbs = computed((): Selection[] => {
     const selected = this.selected();
@@ -249,6 +250,36 @@ export class PageEditor {
     this.mediaTarget.set(id);
     this.inspect('block', id);
     await this.imageLibrary()?.open();
+  }
+
+  protected async openGalleryLibrary(id: string): Promise<void> {
+    const node = this.find(this.document(), { kind: 'block', id });
+    if (!node || !('type' in node) || (node.type !== 'gallery' && node.type !== 'slider')) return;
+    this.backgroundTarget.set(null);
+    this.mediaTarget.set(null);
+    this.galleryTarget.set(id);
+    this.inspect('block', id);
+    await this.imageLibrary()?.open();
+  }
+
+  protected appendGalleryAssets(assets: Asset[]): void {
+    const id = this.galleryTarget();
+    this.galleryTarget.set(null);
+    if (!id || !assets.length) return;
+    this.changeNode({ kind: 'block', id }, (node) => {
+      if (!('type' in node) || (node.type !== 'gallery' && node.type !== 'slider')) return;
+      const existing = new Set(node.items.map((item) => item.assetId));
+      for (const asset of assets) {
+        if (node.items.length >= 36) break;
+        if (existing.has(asset.id)) continue;
+        existing.add(asset.id);
+        node.items.push({
+          id: crypto.randomUUID(),
+          assetId: asset.id,
+          alt: { de: asset.descriptionDe ?? '', en: asset.descriptionEn ?? '' },
+        });
+      }
+    });
   }
 
   protected async openBackgroundLibrary(): Promise<void> {

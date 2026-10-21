@@ -2,6 +2,7 @@
   #dialog
   class="library-dialog"
   [class.embedded]="embedded()"
+  [class.workspace-picker]="!embedded() && pickerWorkspace()"
   [attr.open]="embedded() ? '' : null"
   [class.dragging]="dragActive()"
   (close)="onClosed()"
@@ -10,7 +11,7 @@
   (dragleave)="onDragLeave($event)"
   (drop)="onDrop($event)"
 >
-  <div class="body" [class.media-body]="embedded()">
+  <div class="body" [class.media-body]="showWorkspace()">
     <header>
       <div>
         <h2>
@@ -216,8 +217,8 @@
       <p class="error" role="alert">{{ error | i18n | async }}</p>
     }
 
-    <div class="media-workspace" [class.media-workspace--embedded]="embedded()">
-      @if (embedded()) {
+    <div class="media-workspace" [class.media-workspace--embedded]="showWorkspace()">
+      @if (showWorkspace()) {
         <nav class="media-tree" [attr.aria-label]="'admin.media.folders' | i18n | async">
           <strong>{{ 'admin.media.folders' | i18n | async }}</strong>
           <button
@@ -245,14 +246,14 @@
             >
               <app-icon name="folder" /><span>{{ folderPaths()[folder.id] }}</span>
             </button>
-            @if (contextFolderId() === folder.id) {
+            @if (embedded() && contextFolderId() === folder.id) {
               <div class="media-folder-menu" role="group" [attr.aria-label]="folder.name">
                 <button type="button" (click)="beginFolderRename(folder.id)">{{ 'admin.media.workflow.rename' | i18n | async }}</button>
                 <button type="button" [disabled]="folderBusy()" (click)="deleteContextFolder(folder.id)">{{ 'admin.media.deleteFolder' | i18n | async }}</button>
                 <button type="button" (click)="contextFolderId.set(null)">{{ 'admin.assetPicker.cancel' | i18n | async }}</button>
               </div>
             }
-            @if (renamingFolderId() === folder.id) {
+            @if (embedded() && renamingFolderId() === folder.id) {
               <div class="media-folder-rename">
                 <input type="text" maxlength="120" [value]="renameDraft()" (input)="setRenameDraft($event)" (keydown.enter)="saveFolderRename()" />
                 <button type="button" [disabled]="folderBusy() || !renameDraft().trim()" (click)="saveFolderRename()">{{ 'admin.media.workflow.rename' | i18n | async }}</button>
@@ -279,7 +280,7 @@
                 [class.selected]="selectedId() === asset.id"
                 [class.bulk-selected]="selectedIds().has(asset.id)"
                 [class.is-expanded]="focusedId() === asset.id"
-                [class.is-focused]="focusedId() === asset.id && embedded()"
+                [class.is-focused]="focusedId() === asset.id && showWorkspace()"
                 [attr.draggable]="embedded() ? 'true' : null"
                 (dragstart)="startAssetDrag($event, asset)"
                 (dragend)="endAssetDrag()"
@@ -297,12 +298,14 @@
                     {{ 'admin.media.bulkSelectItem' | i18n | async }}: {{ asset.originalFilename }}
                   </label>
                 }
+                @if (!embedded() && multiSelect() && pickerIndex(asset.id) > 0) {
+                  <span class="picker-order" aria-hidden="true">{{ pickerIndex(asset.id) }}</span>
+                }
                 @if (asset.type === 'image') {
                   <button
                     type="button"
                     class="preview"
-                    [disabled]="!embedded() && !decorative() && !hasCompleteDescriptions(asset)"
-                    (click)="embedded() ? openAsset(asset, $event) : select(asset)"
+                    (click)="openAsset(asset, $event)"
                   >
                     <img
                       [src]="asset.thumbnailUrl ?? asset.url"
@@ -321,6 +324,9 @@
                   </button>
                 } @else {
                   <audio controls preload="metadata" [src]="asset.url"></audio>
+                  <button type="button" class="library-detail-toggle" (click)="openAsset(asset, $event)">
+                    {{ 'page.editor.media.details' | i18n | async }}
+                  </button>
                 }
 
                 <div class="meta">
@@ -342,7 +348,7 @@
                   }
                 </div>
 
-                @if (!embedded() && asset.type === 'image') {
+                @if (!showWorkspace() && asset.type === 'image') {
                   <button
                     type="button"
                     class="library-detail-toggle"
@@ -352,7 +358,7 @@
                     {{ 'page.editor.media.details' | i18n | async }}
                   </button>
                 }
-                @if (!embedded() && focusedId() === asset.id && asset.type === 'image') {
+                @if (!showWorkspace() && focusedId() === asset.id && asset.type === 'image') {
                   <div class="descriptions">
                     <button type="button" class="edit-image" (click)="openEditor(asset)">
                       {{ 'admin.media.editImage' | i18n | async }}
@@ -409,7 +415,7 @@
                   </div>
                 }
 
-                @if (!embedded() && (focusedId() === asset.id || asset.type === 'audio')) {
+                @if (!showWorkspace() && (focusedId() === asset.id || asset.type === 'audio')) {
                   <div class="actions">
                     @if (asset.type === 'audio') {
                       <label class="audio-folder">
@@ -455,7 +461,7 @@
           </div>
         }
       </div>
-      @if (embedded()) {
+      @if (showWorkspace()) {
         <aside class="media-inspector" [attr.aria-label]="'admin.media.inspector' | i18n | async">
           @if (focusedAsset(); as asset) {
             <div class="inspector-head">
@@ -500,16 +506,24 @@
                 · {{ asset.width }} × {{ asset.height }} px
               }
             </small>
-            <label>
-              <span>{{ 'admin.media.moveTo' | i18n | async }}</span>
-              <select [value]="asset.folderId ?? ''" (change)="moveAsset(asset, $event)">
-                <option value="">{{ 'admin.media.root' | i18n | async }}</option>
-                @for (folder of folders(); track folder.id) {
-                  <option [value]="folder.id">{{ folderPaths()[folder.id] }}</option>
-                }
-              </select>
-            </label>
+            @if (embedded()) {
+              <label>
+                <span>{{ 'admin.media.moveTo' | i18n | async }}</span>
+                <select [value]="asset.folderId ?? ''" (change)="moveAsset(asset, $event)">
+                  <option value="">{{ 'admin.media.root' | i18n | async }}</option>
+                  @for (folder of folders(); track folder.id) {
+                    <option [value]="folder.id">{{ folderPaths()[folder.id] }}</option>
+                  }
+                </select>
+              </label>
+            }
             @if (asset.type === 'image') {
+              @if (descriptionQueue().includes(asset.id)) {
+                <p class="picker-description-prompt" role="status">
+                  {{ 'admin.assetPicker.descriptionMissing' | i18n | async }}
+                  ({{ descriptionQueue().length }})
+                </p>
+              }
               <label>
                 <span>{{ 'admin.assetPicker.descriptionDe' | i18n | async }}</span>
                 <textarea
@@ -541,6 +555,22 @@
                   'admin.assetPicker.descriptionMissing' | i18n | async
                 }}</small>
               }
+            }
+            @if (!embedded() && !multiSelect()) {
+              <button type="button" class="inspector-choose"
+                [disabled]="asset.type === 'image' && !decorative() && !hasCompleteDescriptions(asset)"
+                (click)="select(asset)">
+                {{ 'admin.assetPicker.select' | i18n | async }}
+              </button>
+            }
+            @if (!embedded() && multiSelect()) {
+              <div class="picker-confirm">
+                <strong>{{ 'admin.media.bulkSelected' | i18n | async }}: {{ pickerOrder().length }}</strong>
+                <button type="button" class="inspector-choose"
+                  [disabled]="!pickerSelectionValid()" (click)="confirmPickerSelection()">
+                  {{ 'admin.assetPicker.select' | i18n | async }}
+                </button>
+              </div>
             }
             <div class="inspector-danger">
               @if (confirmingDeleteId() === asset.id) {

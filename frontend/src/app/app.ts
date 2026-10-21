@@ -40,6 +40,15 @@ export class App {
     afterNextRender(() => this.albumDive.listen());
   }
 
+  protected readonly adminMode = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects === '/admin' || event.urlAfterRedirects.startsWith('/admin/')),
+      startWith(this.router.url === '/admin' || this.router.url.startsWith('/admin/')),
+    ),
+    { initialValue: this.router.url === '/admin' || this.router.url.startsWith('/admin/') },
+  );
+
   protected readonly bookletMode = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
