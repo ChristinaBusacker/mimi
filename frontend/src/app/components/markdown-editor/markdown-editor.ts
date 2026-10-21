@@ -73,6 +73,7 @@ const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,20}$/;
   templateUrl: './markdown-editor.html',
 })
 export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAccessor {
+  readonly suggestedColors = input<readonly string[] | null>(null);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly editorHost = viewChild<ElementRef<HTMLElement>>('editorHost');
   private readonly settingsDialog = viewChild<ElementRef<HTMLDialogElement>>('settingsDialog');

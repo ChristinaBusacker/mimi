@@ -14,7 +14,11 @@ import { AsyncPipe, NgStyle } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
+  NgZone,
+  afterEveryRender,
+  afterNextRender,
   inject,
   input,
   output,
@@ -90,7 +94,10 @@ const ASSET = /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
   styleUrl: './page-renderer.scss',
 })
 export class PageRenderer {
-  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly zone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+  private scheduleParallax: (() => void) | null = null;
   private readonly lightbox = inject(LightboxService);
   private readonly sanitizer = inject(DomSanitizer);
   protected readonly playback = inject(MusicPlaybackService);
@@ -98,6 +105,9 @@ export class PageRenderer {
   private readonly markdown = new MarkdownIt({ html: false, linkify: false, breaks: false });
 
   constructor() {
+    // Browser-only: track the actual scroll container, including the Composer canvas.
+    afterNextRender(() => this.initParallax());
+    afterEveryRender(() => this.scheduleParallax?.());
     installMimiTextColor(this.markdown);
     this.markdown.renderer.rules['image'] = (tokens, index): string => {
       const token = tokens[index];
@@ -111,7 +121,8 @@ export class PageRenderer {
           : ` style="width:${layout.widthPercent}%;max-width:100%;height:auto"`;
       const layoutClass = layout
         ? ` class="content-media media-${layout.alignment} size-${layout.size}` +
-          (layout.displayMode ? ` media-mode-${layout.displayMode}` : '') + '"'
+          (layout.displayMode ? ` media-mode-${layout.displayMode}` : '') +
+          '"'
         : '';
       const src = this.imageSources.url(assetId, 1440);
       const srcset = this.imageSources.srcset(assetId);
@@ -155,7 +166,9 @@ export class PageRenderer {
 
   protected readonly cardBreakpoints = { 1000: { perView: 2 }, 700: { perView: 1 } };
   protected readonly sliderBreakpoints = { 600: { perView: 1 } };
-  protected galleryCount(count: number): number { return Math.min(6, count); }
+  protected galleryCount(count: number): number {
+    return Math.min(6, count);
+  }
   protected isTrackPlaying(id: string): boolean {
     return this.playback.playing() && this.playback.activeTrack()?.id === id;
   }
@@ -401,6 +414,50 @@ export class PageRenderer {
       : '(max-width: 580px) 90vw, (max-width: 1100px) 45vw, 420px';
   }
 
+  private initParallax(): void {
+    const doc = this.host.nativeElement.ownerDocument;
+    const win = doc.defaultView;
+    if (!win) return;
+    const reducedMotion = win.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    const update = (): void => {
+      frame = 0;
+      const enabled = win.innerWidth > 900 && !reducedMotion.matches;
+      const height = win.innerHeight;
+      for (const element of this.host.nativeElement.querySelectorAll<HTMLElement>(
+        '.page-document__node--parallax',
+      )) {
+        const rect = element.getBoundingClientRect();
+        if (!enabled || rect.bottom <= 0 || rect.top >= height) {
+          element.style.removeProperty('--pc-parallax-shift');
+          continue;
+        }
+        const progress = Math.max(0, Math.min(1, (height - rect.top) / (height + rect.height)));
+        element.style.setProperty(
+          '--pc-parallax-shift',
+          `${((progress - 0.5) * 140).toFixed(1)}px`,
+        );
+      }
+    };
+    const schedule = (): void => {
+      if (!frame) frame = win.requestAnimationFrame(update);
+    };
+    this.scheduleParallax = schedule;
+    this.zone.runOutsideAngular(() => {
+      doc.addEventListener('scroll', schedule, true);
+      win.addEventListener('resize', schedule);
+      reducedMotion.addEventListener('change', schedule);
+    });
+    this.destroyRef.onDestroy(() => {
+      doc.removeEventListener('scroll', schedule, true);
+      win.removeEventListener('resize', schedule);
+      reducedMotion.removeEventListener('change', schedule);
+      if (frame) win.cancelAnimationFrame(frame);
+      this.scheduleParallax = null;
+    });
+    schedule();
+  }
+
   protected backgroundParallax(styles: PageStyles): boolean {
     return styles.designBackground?.kind === 'image' && styles.designBackground.parallax === true;
   }
@@ -501,21 +558,29 @@ export class PageRenderer {
     // Explicit box values take precedence. Without them, preserve all legacy
     // desktop / tablet / mobile padding values and semantic spacing presets.
     result['--pc-box-padding'] = box(styles.paddingBox) ?? 'var(--pc-padding, 0px)';
-    result['--pc-tablet-box-padding'] = box(styles.responsive?.tablet?.paddingBox) ??
+    result['--pc-tablet-box-padding'] =
+      box(styles.responsive?.tablet?.paddingBox) ??
       (styles.responsive?.tablet?.padding !== undefined && !styles.spacing
-        ? 'var(--pc-tablet-padding)' : 'var(--pc-box-padding)');
-    result['--pc-mobile-box-padding'] = box(styles.responsive?.mobile?.paddingBox) ??
+        ? 'var(--pc-tablet-padding)'
+        : 'var(--pc-box-padding)');
+    result['--pc-mobile-box-padding'] =
+      box(styles.responsive?.mobile?.paddingBox) ??
       (styles.responsive?.mobile?.padding !== undefined && !styles.spacing
-        ? 'var(--pc-mobile-padding)' : 'var(--pc-tablet-box-padding)');
+        ? 'var(--pc-mobile-padding)'
+        : 'var(--pc-tablet-box-padding)');
     result['--pc-box-margin'] = box(styles.marginBox) ?? '0px';
-    result['--pc-tablet-box-margin'] = box(styles.responsive?.tablet?.marginBox) ?? 'var(--pc-box-margin)';
-    result['--pc-mobile-box-margin'] = box(styles.responsive?.mobile?.marginBox) ?? 'var(--pc-tablet-box-margin)';
+    result['--pc-tablet-box-margin'] =
+      box(styles.responsive?.tablet?.marginBox) ?? 'var(--pc-box-margin)';
+    result['--pc-mobile-box-margin'] =
+      box(styles.responsive?.mobile?.marginBox) ?? 'var(--pc-tablet-box-margin)';
     const inline = (edges: PageStyleValues['marginBox']): string | undefined =>
       edges ? `${edges.left}px ${edges.right}px` : undefined;
     // maxWidthContent keeps rows horizontally centered until custom margins are set.
     result['--pc-row-inline'] = inline(styles.marginBox) ?? 'auto';
-    result['--pc-tablet-row-inline'] = inline(styles.responsive?.tablet?.marginBox) ?? 'var(--pc-row-inline)';
-    result['--pc-mobile-row-inline'] = inline(styles.responsive?.mobile?.marginBox) ?? 'var(--pc-tablet-row-inline)';
+    result['--pc-tablet-row-inline'] =
+      inline(styles.responsive?.tablet?.marginBox) ?? 'var(--pc-row-inline)';
+    result['--pc-mobile-row-inline'] =
+      inline(styles.responsive?.mobile?.marginBox) ?? 'var(--pc-tablet-row-inline)';
     return result;
   }
 

@@ -1,6 +1,6 @@
 import {
   ChangeDetectionStrategy, Component, DestroyRef, ElementRef,
-  afterNextRender, inject, input, output, signal, viewChild,
+  afterNextRender, computed, inject, input, output, signal, viewChild,
 } from '@angular/core';
 import { ColorPickerDirective } from 'ngx-color-picker';
 
@@ -36,7 +36,7 @@ import { ColorPickerDirective } from 'ngx-color-picker';
         [cpToggle]="isOpen()"
         cpAlphaChannel="always"
         cpOutputFormat="rgba"
-        [cpPresetColors]="swatches"
+        [cpPresetColors]="swatches()"
         (colorPickerChange)="colorChanged($event)"></span>
     </div>
   `,
@@ -181,13 +181,21 @@ export class ComposerColorPicker {
   readonly value = input.required<string>();
   readonly label = input('Color');
   readonly valueChange = output<string>();
-  protected readonly swatches = [
-    'rgba(218,141,187,1)',
-    'rgba(51,34,61,1)',
-    'rgba(135,87,114,1)',
-    'rgba(255,255,255,1)',
-    'rgba(0,0,0,0)',
-  ];
+  /** null: ordinary picker defaults; []: no colors used in this booklet yet. */
+  readonly suggestedColors = input<readonly string[] | null>(null);
+  protected readonly swatches = computed(() => {
+    const colors = this.suggestedColors();
+    if (colors === null) return [
+      'rgba(218,141,187,1)', 'rgba(51,34,61,1)', 'rgba(135,87,114,1)',
+      'rgba(255,255,255,1)', 'rgba(0,0,0,0)',
+    ];
+    return colors.flatMap((hex) => {
+      if (!/^#[0-9a-f]{8}$/i.test(hex)) return [];
+      const rgb = [1, 3, 5].map((index) => parseInt(hex.slice(index, index + 2), 16));
+      const alpha = +(parseInt(hex.slice(7, 9), 16) / 255).toFixed(4);
+      return [`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`];
+    });
+  });
 
   protected normalized(): string {
     const value = this.value();

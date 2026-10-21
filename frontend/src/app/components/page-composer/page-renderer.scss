@@ -37,23 +37,34 @@
   color: var(--pc-text-color, inherit);
   background-color: var(--pc-design-color, var(--pc-background-color));
 }
-/* Scroll-driven movement uses no JS listener or layout reads. Browsers without
-   scroll timelines retain the normal background, including during SSR. */
-@keyframes composer-image-drift {
-  from { background-position: center 38%; }
-  to { background-position: center 62%; }
+/* The image moves on its own enlarged layer. A normal `cover` background has no
+   vertical overflow when its aspect ratio matches the section, so changing its
+   background-position alone often produces no visible movement. */
+.page-document__node--parallax {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background-image: none;
 }
-@supports (animation-timeline: view(block)) {
-  @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
-    .page-document__node--parallax {
-      animation: composer-image-drift linear both;
-      animation-timeline: view(block);
-      animation-range: entry 0% exit 100%;
-    }
+.page-document__node--parallax::before {
+  content: '';
+  position: absolute;
+  inset: -46px 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--pc-design-image, none);
+  background-position: var(--pc-design-position, center);
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform: translate3d(0, var(--pc-parallax-shift, 0px), 0);
+  will-change: transform;
+}
+@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+  .page-document__node--parallax::before {
+    inset: 0;
+    transform: none;
+    will-change: auto;
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .page-document__node { animation: none; }
 }
 /* All columns stretch to the tallest sibling; each controls its content's vertical alignment. */
 .page-document__row {
@@ -206,22 +217,53 @@
   gap: 12px;
 }
 /* An automatic layout keeps one and two images from appearing as tiny thumbnails. */
-.page-document__gallery--auto[data-count='1'] { grid-template-columns: minmax(0, 1fr); }
-.page-document__gallery--auto[data-count='1'] img { aspect-ratio: 16 / 9; }
-.page-document__gallery--auto[data-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.page-document__gallery--auto[data-count='3'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.page-document__gallery--auto[data-count='3'] > :first-child { grid-row: span 2; }
-.page-document__gallery--auto[data-count='3'] > :first-child img { height: 100%; aspect-ratio: auto; }
-.page-document__gallery--auto[data-count='4'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.page-document__gallery--auto[data-count='5'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.page-document__gallery--auto[data-count='5'] > :first-child { grid-column: span 2; }
-.page-document__gallery--auto[data-count='6'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.page-document__gallery--auto[data-count='1'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.page-document__gallery--auto[data-count='1'] img {
+  aspect-ratio: 16 / 9;
+}
+.page-document__gallery--auto[data-count='2'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.page-document__gallery--auto[data-count='3'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.page-document__gallery--auto[data-count='3'] > :first-child {
+  grid-row: span 2;
+}
+.page-document__gallery--auto[data-count='3'] > :first-child img {
+  height: 100%;
+  aspect-ratio: auto;
+}
+.page-document__gallery--auto[data-count='4'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.page-document__gallery--auto[data-count='5'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.page-document__gallery--auto[data-count='5'] > :first-child {
+  grid-column: span 2;
+}
+.page-document__gallery--auto[data-count='6'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 @container page-composer (max-width: 580px) {
-  .page-document__gallery--auto[data-count] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .page-document__gallery--auto[data-count='1'] { grid-template-columns: minmax(0, 1fr); }
+  .page-document__gallery--auto[data-count] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .page-document__gallery--auto[data-count='1'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .page-document__gallery--auto[data-count='3'] > :first-child,
-  .page-document__gallery--auto[data-count='5'] > :first-child { grid-column: 1 / -1; grid-row: auto; }
-  .page-document__gallery--auto[data-count='3'] > :first-child img { height: auto; aspect-ratio: 16 / 9; }
+  .page-document__gallery--auto[data-count='5'] > :first-child {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .page-document__gallery--auto[data-count='3'] > :first-child img {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
 }
 .page-document__gallery-item {
   position: relative;

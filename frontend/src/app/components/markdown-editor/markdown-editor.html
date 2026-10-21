@@ -120,6 +120,7 @@
     <span class="divider"></span>
     <div class="markdown-editor__color-tool" (pointerdown)="rememberColorSelection()">
       <app-composer-color-picker [label]="('admin.markdown.v2.textColor' | i18n | async) ?? ''"
+        [suggestedColors]="suggestedColors()"
         [disabled]="isDisabled()" [value]="textColor()" (valueChange)="applyTextColor($event)" />
     </div>
     <button type="button" [disabled]="isDisabled()"

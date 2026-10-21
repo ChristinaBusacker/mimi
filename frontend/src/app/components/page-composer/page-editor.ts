@@ -39,6 +39,7 @@ import type { CanvasInsert, CanvasMove, CanvasSelection } from './page-renderer'
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import type { PageStyleValues } from '@shared/content/page-document';
 import { insertPageItem, movePageItem } from './page-editor-operations';
+import { collectBookletColors } from './page-document-colors';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
@@ -130,6 +131,7 @@ const makeBlock = (kind: BlockKind): PageBlock => {
 export class PageEditor {
   readonly album = input<AlbumBookletContext | null>(null);
   readonly document = input.required<PageDocument>();
+  protected readonly bookletColors = computed(() => collectBookletColors(this.document()));
   readonly assets = input<readonly Asset[]>([]);
   readonly coverAssetId = input<string | null>(null);
   protected readonly coverUrl = computed(() => {

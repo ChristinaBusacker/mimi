@@ -25,6 +25,7 @@
         (click)="saveRequest.emit(false)"
         [title]="'page.editor.shortcut.save' | i18n | async"
       >
+        <app-icon name="save"></app-icon>
         {{ 'page.editor.saveDraft' | i18n | async }}
       </button>
       <button
@@ -417,6 +418,7 @@
                 @case ('text') {
                   <h3>{{ 'page.editor.block.text' | i18n | async }}</h3>
                   <app-markdown-editor
+                    [suggestedColors]="bookletColors()"
                     [formControl]="markdownControl"
                     [assets]="assets()"
                     [label]="('page.editor.content' | i18n | async) ?? ''"
@@ -443,7 +445,9 @@
                   <h3>{{ 'page.editor.block.gallery' | i18n | async }}</h3>
                   <label>{{ 'page.editor.gallery.layout' | i18n | async }}</label>
                   <select [value]="block.layout ?? 'grid'" (change)="setGalleryLayout($event)">
-                    <option value="auto">{{ 'page.editor.albumEnhance.galleryAuto' | i18n | async }}</option>
+                    <option value="auto">
+                      {{ 'page.editor.albumEnhance.galleryAuto' | i18n | async }}
+                    </option>
                     <option value="grid">{{ 'page.editor.gallery.grid' | i18n | async }}</option>
                     <option value="featured">
                       {{ 'page.editor.gallery.featured' | i18n | async }}
@@ -511,7 +515,11 @@
                     }
                   </select>
                   <label class="composer__album-toggle">
-                    <input type="checkbox" [checked]="block.showBullets ?? false" (change)="setSliderBullets($event)" />
+                    <input
+                      type="checkbox"
+                      [checked]="block.showBullets ?? false"
+                      (change)="setSliderBullets($event)"
+                    />
                     {{ 'page.editor.albumEnhance.bullets' | i18n | async }}
                   </label>
                   @for (image of block.items; track image.id) {
@@ -831,6 +839,7 @@
                     @switch (node.styles.designBackground?.kind) {
                       @case ('color') {
                         <app-composer-color-picker
+                          [suggestedColors]="bookletColors()"
                           [label]="('page.editor.design.color' | i18n | async) ?? ''"
                           [value]="
                             node.styles.designBackground.kind === 'color'
@@ -843,6 +852,7 @@
                       @case ('gradient') {
                         <div class="composer__design-colors">
                           <app-composer-color-picker
+                            [suggestedColors]="bookletColors()"
                             [label]="('page.editor.design.from' | i18n | async) ?? ''"
                             [value]="
                               node.styles.designBackground.kind === 'gradient'
@@ -852,6 +862,7 @@
                             (valueChange)="setBackgroundColor('from', $event)"
                           />
                           <app-composer-color-picker
+                            [suggestedColors]="bookletColors()"
                             [label]="('page.editor.design.to' | i18n | async) ?? ''"
                             [value]="
                               node.styles.designBackground.kind === 'gradient'
@@ -862,23 +873,29 @@
                           />
                         </div>
                         <label>{{ 'page.editor.backgroundFx.gradientShape' | i18n | async }}</label>
-                        <select [value]="node.styles.designBackground.shape ?? 'linear'"
-                          (change)="setGradientShape($event)">
-                          <option value="linear">{{ 'page.editor.backgroundFx.linear' | i18n | async }}</option>
-                          <option value="radial">{{ 'page.editor.backgroundFx.radial' | i18n | async }}</option>
+                        <select
+                          [value]="node.styles.designBackground.shape ?? 'linear'"
+                          (change)="setGradientShape($event)"
+                        >
+                          <option value="linear">
+                            {{ 'page.editor.backgroundFx.linear' | i18n | async }}
+                          </option>
+                          <option value="radial">
+                            {{ 'page.editor.backgroundFx.radial' | i18n | async }}
+                          </option>
                         </select>
                         @if (node.styles.designBackground.shape !== 'radial') {
-                        <label>{{ 'page.editor.design.angle' | i18n | async }}</label>
-                        <select
-                          [value]="backgroundValue('angle')"
-                          (change)="setGradientAngle($event)"
-                        >
-                          <option value="0">0°</option>
-                          <option value="45">45°</option>
-                          <option value="90">90°</option>
-                          <option value="135">135°</option>
-                          <option value="180">180°</option>
-                        </select>
+                          <label>{{ 'page.editor.design.angle' | i18n | async }}</label>
+                          <select
+                            [value]="backgroundValue('angle')"
+                            (change)="setGradientAngle($event)"
+                          >
+                            <option value="0">0°</option>
+                            <option value="45">45°</option>
+                            <option value="90">90°</option>
+                            <option value="135">135°</option>
+                            <option value="180">180°</option>
+                          </select>
                         }
                       }
                       @case ('image') {
@@ -923,8 +940,11 @@
                           </option>
                         </select>
                         <label class="composer__surface-toggle">
-                          <input type="checkbox" [checked]="node.styles.designBackground.parallax ?? false"
-                            (change)="setBackgroundParallax($event)" />
+                          <input
+                            type="checkbox"
+                            [checked]="node.styles.designBackground.parallax ?? false"
+                            (change)="setBackgroundParallax($event)"
+                          />
                           {{ 'page.editor.backgroundFx.parallax' | i18n | async }}
                         </label>
                       }
@@ -1082,6 +1102,7 @@
                         </select>
                       </label>
                       <app-composer-color-picker
+                        [suggestedColors]="bookletColors()"
                         [label]="('page.editor.design.color' | i18n | async) ?? ''"
                         [value]="border.color"
                         (valueChange)="setBorderColor($event)"
@@ -1154,6 +1175,7 @@
                         /></label>
                       </div>
                       <app-composer-color-picker
+                        [suggestedColors]="bookletColors()"
                         [label]="('page.editor.design.color' | i18n | async) ?? ''"
                         [value]="shadow.color"
                         (valueChange)="setShadowColor($event)"
@@ -1162,32 +1184,50 @@
                   }
                 </div>
               </details>
-            } @else if (selectedBlock()?.type === 'albumDetails' || selectedBlock()?.type === 'albumTracks' || selectedBlock()?.type === 'albumCredits') {
+            } @else if (
+              selectedBlock()?.type === 'albumDetails' ||
+              selectedBlock()?.type === 'albumTracks' ||
+              selectedBlock()?.type === 'albumCredits'
+            ) {
               <details class="composer__accordion" open>
-                <summary><app-icon name="palette" class="white" />
-                  {{ 'page.editor.albumEnhance.colors' | i18n | async }}</summary>
+                <summary>
+                  <app-icon name="palette" class="white" />
+                  {{ 'page.editor.albumEnhance.colors' | i18n | async }}
+                </summary>
                 <div class="composer__accordion-content">
                   @for (field of ['textColor', 'backgroundColor']; track field) {
                     <div class="composer__album-palette-field">
                       <app-composer-color-picker
+                        [suggestedColors]="bookletColors()"
                         [label]="('page.editor.albumEnhance.' + field | i18n | async) ?? field"
                         [value]="albumPaletteColor($any(field))"
-                        (valueChange)="albumPaletteSet($any(field), $event)" />
-                      <button type="button" class="composer__surface-secondary"
-                        (click)="albumPaletteReset($any(field))">
-                        {{ 'page.editor.albumEnhance.reset' | i18n | async }}</button>
+                        (valueChange)="albumPaletteSet($any(field), $event)"
+                      />
+                      <button
+                        type="button"
+                        class="composer__surface-secondary"
+                        (click)="albumPaletteReset($any(field))"
+                      >
+                        {{ 'page.editor.albumEnhance.reset' | i18n | async }}
+                      </button>
                     </div>
                   }
                   @if (selectedBlock()?.type === 'albumDetails') {
                     @for (field of ['iconColor', 'subtitleColor']; track field) {
                       <div class="composer__album-palette-field">
                         <app-composer-color-picker
+                          [suggestedColors]="bookletColors()"
                           [label]="('page.editor.albumEnhance.' + field | i18n | async) ?? field"
                           [value]="albumPaletteColor($any(field))"
-                          (valueChange)="albumPaletteSet($any(field), $event)" />
-                        <button type="button" class="composer__surface-secondary"
-                          (click)="albumPaletteReset($any(field))">
-                          {{ 'page.editor.albumEnhance.reset' | i18n | async }}</button>
+                          (valueChange)="albumPaletteSet($any(field), $event)"
+                        />
+                        <button
+                          type="button"
+                          class="composer__surface-secondary"
+                          (click)="albumPaletteReset($any(field))"
+                        >
+                          {{ 'page.editor.albumEnhance.reset' | i18n | async }}
+                        </button>
                       </div>
                     }
                   }
@@ -1201,11 +1241,13 @@
                 </summary>
                 <div class="composer__accordion-content">
                   <app-composer-color-picker
+                    [suggestedColors]="bookletColors()"
                     [label]="('page.editor.studio.textColor' | i18n | async) ?? ''"
                     [value]="textColor()"
                     (valueChange)="setTextColor($event)"
                   />
                   <app-composer-color-picker
+                    [suggestedColors]="bookletColors()"
                     [label]="
                       ('page.editor.box.headingColor' | i18n | async) ?? 'Überschriftenfarbe'
                     "

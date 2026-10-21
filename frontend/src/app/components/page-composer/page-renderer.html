@@ -16,7 +16,7 @@
         (click)="requestInsert($event, 'section', document().id, sectionIndex)"
         [attr.aria-label]="'page.editor.addSection' | i18n | async"
       >
-        <app-icon name="plus" />
+        <app-icon name="plus" class="white" />
       </button>
     }
     <section
@@ -45,7 +45,7 @@
             (pointercancel)="cancelPointer()"
             [attr.aria-label]="'page.editor.drag' | i18n | async"
           >
-            <app-icon name="grip-vertical" />
+            <app-icon name="grip-vertical" class="white" />
           </button>
           <span>{{ 'page.editor.section' | i18n | async }}</span>
           <button
@@ -53,7 +53,7 @@
             (click)="choose($event, 'section', section.id)"
             [attr.aria-label]="'page.editor.settings' | i18n | async"
           >
-            <app-icon name="settings-2" />
+            <app-icon name="settings-2" class="white" />
           </button>
 
           <button
@@ -61,14 +61,14 @@
             (click)="act($event, 'section', section.id, 'duplicate')"
             [attr.aria-label]="'page.editor.duplicate' | i18n | async"
           >
-            <app-icon name="copy" />
+            <app-icon name="copy" class="white" />
           </button>
           <button
             type="button"
             (click)="act($event, 'section', section.id, 'remove')"
             [attr.aria-label]="'page.editor.remove' | i18n | async"
           >
-            <app-icon name="trash-2" />
+            <app-icon name="trash-2" class="white" />
           </button>
         </div>
       }
@@ -81,7 +81,7 @@
               (click)="requestInsert($event, 'row', section.id, rowIndex)"
               [attr.aria-label]="'page.editor.addRow' | i18n | async"
             >
-              <app-icon name="plus" />
+              <app-icon name="plus" class="white" />
             </button>
           }
           <div
@@ -107,7 +107,7 @@
                 [attr.aria-label]="('page.editor.selectRow' | i18n | async) + ' ' + (rowIndex + 1)"
                 (click)="choose($event, 'row', row.id)"
               >
-                <app-icon name="layout-template" />
+                <app-icon name="layout-template" class="white" />
                 <span>{{ 'page.editor.row' | i18n | async }} {{ rowIndex + 1 }}</span>
               </button>
               <div class="page-document__controls" (click)="$event.stopPropagation()">
@@ -120,7 +120,7 @@
                   (pointercancel)="cancelPointer()"
                   [attr.aria-label]="'page.editor.drag' | i18n | async"
                 >
-                  <app-icon name="grip-vertical" />
+                  <app-icon name="grip-vertical" class="white" />
                 </button>
                 <span>{{ 'page.editor.row' | i18n | async }}</span>
                 <button
@@ -128,7 +128,7 @@
                   (click)="choose($event, 'row', row.id)"
                   [attr.aria-label]="'page.editor.settings' | i18n | async"
                 >
-                  <app-icon name="settings-2" />
+                  <app-icon name="settings-2" class="white" />
                 </button>
 
                 <button
@@ -136,14 +136,14 @@
                   (click)="act($event, 'row', row.id, 'duplicate')"
                   [attr.aria-label]="'page.editor.duplicate' | i18n | async"
                 >
-                  <app-icon name="copy" />
+                  <app-icon name="copy" class="white" />
                 </button>
                 <button
                   type="button"
                   (click)="act($event, 'row', row.id, 'remove')"
                   [attr.aria-label]="'page.editor.remove' | i18n | async"
                 >
-                  <app-icon name="trash-2" />
+                  <app-icon name="trash-2" class="white" />
                 </button>
               </div>
             }
@@ -172,7 +172,7 @@
                       (click)="choose($event, 'column', column.id)"
                       [attr.aria-label]="'page.editor.settings' | i18n | async"
                     >
-                      <app-icon name="settings-2" />
+                      <app-icon name="settings-2" class="white" />
                     </button>
                   </div>
                 }
@@ -184,7 +184,7 @@
                       (click)="requestInsert($event, 'block', column.id, blockIndex)"
                       [attr.aria-label]="'page.editor.addBlock' | i18n | async"
                     >
-                      <app-icon name="plus" />
+                      <app-icon name="plus" class="white" />
                     </button>
                   }
                   <div
@@ -215,7 +215,7 @@
                           (pointercancel)="cancelPointer()"
                           [attr.aria-label]="'page.editor.drag' | i18n | async"
                         >
-                          <app-icon name="grip-vertical" />
+                          <app-icon name="grip-vertical" class="white" />
                         </button>
                         <span>{{ 'page.editor.block.' + block.type | i18n | async }}</span>
                         <button
@@ -223,7 +223,7 @@
                           (click)="choose($event, 'block', block.id)"
                           [attr.aria-label]="'page.editor.settings' | i18n | async"
                         >
-                          <app-icon name="settings-2" />
+                          <app-icon name="settings-2" class="white" />
                         </button>
 
                         @if (block.type === 'text') {
@@ -232,7 +232,7 @@
                             (click)="editText($event, block.id)"
                             [attr.aria-label]="'page.editor.editInline' | i18n | async"
                           >
-                            <app-icon name="pencil" />
+                            <app-icon name="pencil" class="white" />
                           </button>
                         }
                         <button
@@ -240,14 +240,14 @@
                           (click)="act($event, 'block', block.id, 'duplicate')"
                           [attr.aria-label]="'page.editor.duplicate' | i18n | async"
                         >
-                          <app-icon name="copy" />
+                          <app-icon name="copy" class="white" />
                         </button>
                         <button
                           type="button"
                           (click)="act($event, 'block', block.id, 'remove')"
                           [attr.aria-label]="'page.editor.remove' | i18n | async"
                         >
-                          <app-icon name="trash-2" />
+                          <app-icon name="trash-2" class="white" />
                         </button>
                       </div>
                     }
@@ -295,21 +295,24 @@
                             class="page-document__empty page-document__empty--action"
                             (click)="editImage($event, block.id)"
                           >
-                            <app-icon name="image" /> {{ 'page.editor.chooseImage' | i18n | async }}
+                            <app-icon name="image" class="white" />
+                            {{ 'page.editor.chooseImage' | i18n | async }}
                           </button>
                         }
                       }
                       @case ('gallery') {
                         @if (editable() && !block.items.length) {
                           <div class="page-document__empty">
-                            <app-icon name="gallery" />
+                            <app-icon name="gallery" class="white" />
                             {{ 'page.editor.block.gallery' | i18n | async }}
                           </div>
                         }
                         <div
                           class="page-document__gallery"
                           [class.page-document__gallery--auto]="block.layout === 'auto'"
-                          [attr.data-count]="block.layout === 'auto' ? galleryCount(block.items.length) : null"
+                          [attr.data-count]="
+                            block.layout === 'auto' ? galleryCount(block.items.length) : null
+                          "
                           [class.page-document__gallery--featured]="
                             block.layout === 'featured' && block.items.length >= 3
                           "
@@ -343,7 +346,7 @@
                               />
                               @if (!editable()) {
                                 <span class="page-document__gallery-zoom" aria-hidden="true"
-                                  ><app-icon name="search"
+                                  ><app-icon name="search" class="white"
                                 /></span>
                               }
                             </button>
@@ -354,12 +357,15 @@
                         @if (block.items.length === 0) {
                           @if (studio()) {
                             <div class="page-document__empty">
-                              <app-icon name="image" />
+                              <app-icon name="image" class="white" />
                               {{ 'page.editor.slider.empty' | i18n | async }}
                             </div>
                           }
                         } @else if (studio()) {
-                          <div class="page-document__slider-preview" [style.--slider-per-view]="block.perView ?? 1.5">
+                          <div
+                            class="page-document__slider-preview"
+                            [style.--slider-per-view]="block.perView ?? 1.5"
+                          >
                             @for (item of block.items; track item.id) {
                               <img
                                 [src]="image(item.assetId)"
@@ -425,7 +431,7 @@
                         @if (block.items.length === 0) {
                           @if (studio()) {
                             <div class="page-document__empty">
-                              <app-icon name="layout-template" />
+                              <app-icon name="layout-template" class="white" />
                               {{ 'page.editor.carousel.empty' | i18n | async }}
                             </div>
                           }
@@ -508,14 +514,16 @@
                       }
                       @case ('albumDetails') {
                         @if (album(); as entry) {
-                          <div class="page-document__album-details"
+                          <div
+                            class="page-document__album-details"
                             [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
                             [style.--pc-album-text]="block.palette?.textColor ?? null"
                             [style.--pc-album-icon]="block.palette?.iconColor ?? null"
-                            [style.--pc-album-subtitle]="block.palette?.subtitleColor ?? null">
+                            [style.--pc-album-subtitle]="block.palette?.subtitleColor ?? null"
+                          >
                             @if (albumDate(entry.releasedAt); as date) {
                               <div class="page-document__album-fact">
-                                <app-icon name="music" />
+                                <app-icon name="music" class="white" />
                                 <span
                                   ><strong>{{ date }}</strong
                                   ><small>{{
@@ -526,7 +534,7 @@
                             }
                             @if (entry.editorial.genre[locale()] || entry.editorial.genre.de) {
                               <div class="page-document__album-fact">
-                                <app-icon name="music" />
+                                <app-icon name="music" class="white" />
                                 <span
                                   ><strong>{{
                                     entry.editorial.genre[locale()] || entry.editorial.genre.de
@@ -539,7 +547,7 @@
                             }
                             @if (entry.editorial.mood[locale()] || entry.editorial.mood.de) {
                               <div class="page-document__album-fact">
-                                <app-icon name="heart" />
+                                <app-icon name="heart" class="white" />
                                 <span
                                   ><strong>{{
                                     entry.editorial.mood[locale()] || entry.editorial.mood.de
@@ -551,7 +559,7 @@
                               </div>
                             }
                             <div class="page-document__album-fact">
-                              <app-icon name="list-numbered" />
+                              <app-icon name="list-numbered" class="white" />
                               <span
                                 ><strong
                                   >{{ entry.tracks.length }}
@@ -571,17 +579,28 @@
                       @case ('albumTracks') {
                         @if (album(); as entry) {
                           @if (studio()) {
-                            <div class="page-document__album-tracklist"
+                            <div
+                              class="page-document__album-tracklist"
                               [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
-                              [style.--pc-album-text]="block.palette?.textColor ?? null">
+                              [style.--pc-album-text]="block.palette?.textColor ?? null"
+                            >
                               <h3>{{ 'page.editor.album.tracklist' | i18n | async }}</h3>
                               @for (track of entry.tracks; track track.id) {
-                                <div class="page-document__album-track" [class.is-playing]="isTrackPlaying(track.id)">
+                                <div
+                                  class="page-document__album-track"
+                                  [class.is-playing]="isTrackPlaying(track.id)"
+                                >
                                   <span>{{ track.trackNumber ?? $index + 1 }}</span>
                                   <strong>{{ track.title }}</strong>
                                   <span>{{ albumDuration(track.durationSeconds) }}</span>
-                                  <span class="page-document__album-track-action" aria-hidden="true">
-                                    <app-icon [name]="isTrackPlaying(track.id) ? 'pause' : 'play'" />
+                                  <span
+                                    class="page-document__album-track-action"
+                                    aria-hidden="true"
+                                  >
+                                    <app-icon
+                                      [name]="isTrackPlaying(track.id) ? 'pause' : 'play'"
+                                      class="white"
+                                    />
                                   </span>
                                 </div>
                               } @empty {
@@ -589,9 +608,12 @@
                               }
                             </div>
                           } @else if (entry.tracks.length) {
-                            <app-music-library-player [tracks]="entry.tracks" [locale]="locale()"
+                            <app-music-library-player
+                              [tracks]="entry.tracks"
+                              [locale]="locale()"
                               [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
-                              [style.--pc-album-text]="block.palette?.textColor ?? null" />
+                              [style.--pc-album-text]="block.palette?.textColor ?? null"
+                            />
                           } @else {
                             <p>{{ 'music.page.noTracks' | i18n | async }}</p>
                           }
@@ -605,9 +627,11 @@
                         @let credits =
                           block.entries.length ? block.entries : (album()?.editorial.credits ?? []);
                         @if (credits.length || studio()) {
-                          <section class="page-document__album-credits"
+                          <section
+                            class="page-document__album-credits"
                             [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
-                            [style.--pc-album-text]="block.palette?.textColor ?? null">
+                            [style.--pc-album-text]="block.palette?.textColor ?? null"
+                          >
                             <h3>{{ block.heading[locale()] || block.heading.de }}</h3>
                             <dl>
                               @for (credit of credits; track $index) {
@@ -632,7 +656,7 @@
                     (click)="requestInsert($event, 'block', column.id, column.blocks.length)"
                     [attr.aria-label]="'page.editor.addBlock' | i18n | async"
                   >
-                    <app-icon name="plus" />
+                    <app-icon name="plus" class="white" />
                   </button>
                 }
               </div>
@@ -645,7 +669,7 @@
             class="page-document__add page-document__add--row"
             (click)="requestInsert($event, 'row', section.id, section.rows.length)"
           >
-            <app-icon name="plus" /> {{ 'page.editor.addRow' | i18n | async }}
+            <app-icon name="plus" class="white" /> {{ 'page.editor.addRow' | i18n | async }}
           </button>
         }
       </div>
@@ -657,7 +681,7 @@
       class="page-document__add page-document__add--section"
       (click)="requestInsert($event, 'section', document().id, document().sections.length)"
     >
-      <app-icon name="plus" /> {{ 'page.editor.addSection' | i18n | async }}
+      <app-icon name="plus" class="white" /> {{ 'page.editor.addSection' | i18n | async }}
     </button>
   }
 </div>
@@ -668,6 +692,6 @@
     [style.top.px]="pointerY()"
     aria-hidden="true"
   >
-    <app-icon name="grip-vertical" /> {{ 'page.editor.drag' | i18n | async }}
+    <app-icon name="grip-vertical" class="white" /> {{ 'page.editor.drag' | i18n | async }}
   </div>
 }
