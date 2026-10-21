@@ -8,6 +8,7 @@
   left: 0;
   display: block;
   pointer-events: none;
+  @include maxWidthContent;
 }
 
 .booklet-navigation {
@@ -34,7 +35,9 @@
   box-shadow: 0 6px 24px rgb(0 0 0 / 22%);
   backdrop-filter: blur(13px);
   text-decoration: none;
-  transition: background 180ms ease, border-color 180ms ease;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease;
 
   &:hover,
   &:focus-visible {
@@ -65,7 +68,9 @@
   font-size: 0.82rem;
   font-weight: 700;
 
-  span { font-size: 1.25rem; }
+  span {
+    font-size: 1.25rem;
+  }
 }
 
 @include compact-layout {
@@ -74,12 +79,21 @@
     padding: 8px 0;
   }
 
-  .booklet-navigation__brand { padding: 5px 11px; }
-  .booklet-navigation__brand img { height: 24px; }
-  .booklet-navigation__return { padding: 7px 12px; font-size: 0.72rem; }
+  .booklet-navigation__brand {
+    padding: 5px 11px;
+  }
+  .booklet-navigation__brand img {
+    height: 24px;
+  }
+  .booklet-navigation__return {
+    padding: 7px 12px;
+    font-size: 0.72rem;
+  }
 }
 
 @include reduced-motion {
   .booklet-navigation__brand,
-  .booklet-navigation__return { transition: none; }
+  .booklet-navigation__return {
+    transition: none;
+  }
 }

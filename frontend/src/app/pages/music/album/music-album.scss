@@ -9,11 +9,9 @@
 .booklet {
   position: relative;
   display: grid;
-  gap: clamp(52px, 7vw, 110px);
   isolation: isolate;
   overflow: hidden;
   min-height: 100dvh;
-  padding: clamp(96px, 12vw, 154px) max(20px, calc((100vw - 1200px) / 2)) 100px;
   background: #171321;
 }
 
@@ -27,6 +25,7 @@
   align-items: center;
   gap: clamp(32px, 7vw, 110px);
   min-height: clamp(440px, 50vh, 750px);
+  @include maxWidthContent;
 }
 
 .booklet__cover {
@@ -51,7 +50,9 @@
   place-items: center;
   background: rgb(255 255 255 / 8%);
 
-  app-icon { width: 76px; }
+  app-icon {
+    width: 76px;
+  }
 }
 
 .booklet__intro {
@@ -85,7 +86,9 @@
   line-height: 1.5;
 }
 
-.booklet__count { font-weight: 700; }
+.booklet__count {
+  font-weight: 700;
+}
 
 .booklet__story {
   width: min(100%, 940px);
@@ -97,7 +100,11 @@
   font-size: clamp(1rem, 1.2vw, 1.18rem);
   line-height: 1.8;
 
-  app-rendered-content { display: block; max-width: 72ch; margin-inline: auto; }
+  app-rendered-content {
+    display: block;
+    max-width: 72ch;
+    margin-inline: auto;
+  }
 }
 
 .booklet__tracks {
@@ -108,7 +115,10 @@
   background: rgb(14 11 25 / 49%);
   box-shadow: 0 22px 48px rgb(0 0 0 / 19%);
 
-  > p { margin: 0; padding: 22px; }
+  > p {
+    margin: 0;
+    padding: 22px;
+  }
 }
 
 @include compact-layout {
@@ -123,15 +133,31 @@
     min-height: 0;
   }
 
-  .booklet__cover { width: min(100%, 360px); }
-  .booklet__intro { text-align: center; }
-  .booklet__intro h1 { font-size: clamp(2.8rem, 9vw, 5rem); }
-  .booklet__story { padding: 30px 18px; }
+  .booklet__cover {
+    width: min(100%, 360px);
+  }
+  .booklet__intro {
+    text-align: center;
+  }
+  .booklet__intro h1 {
+    font-size: clamp(2.8rem, 9vw, 5rem);
+  }
+  .booklet__story {
+    padding: 30px 18px;
+  }
 }
 
 @media (max-width: 480px) {
-  .booklet { padding-inline: 12px; }
-  .booklet__cover { width: min(100%, 270px); }
-  .booklet__intro h1 { font-size: clamp(2.5rem, 10vw, 3.5rem); }
-  .booklet__tracks { padding: 10px; }
+  .booklet {
+    padding-inline: 12px;
+  }
+  .booklet__cover {
+    width: min(100%, 270px);
+  }
+  .booklet__intro h1 {
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+  }
+  .booklet__tracks {
+    padding: 10px;
+  }
 }
