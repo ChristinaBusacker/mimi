@@ -1,145 +1,343 @@
-<div class="page-document page-document__node" [class]="surface(document().styles)"
-  [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === document().id"
-  [ngStyle]="styleVars(document().styles)" [attr.data-editor-kind]="editable() ? 'page' : null"
+<div
+  class="page-document page-document__node"
+  [class]="surface(document().styles)"
+  [class.page-document__node--editable]="editable()"
+  [class.is-selected]="selectedId() === document().id"
+  [ngStyle]="styleVars(document().styles)"
+  [attr.data-editor-kind]="editable() ? 'page' : null"
   [attr.data-editor-id]="editable() ? document().id : null"
-  (click)="choose($event, 'page', document().id)">
+  (click)="choose($event, 'page', document().id)"
+>
   @for (section of document().sections; track section.id; let sectionIndex = $index) {
     @if (editable()) {
-      <button type="button" class="page-document__insert-between" (click)="requestInsert($event, 'section', document().id, sectionIndex)"
-        [attr.aria-label]="'page.editor.addSection' | i18n | async"><app-icon name="plus" /></button>
+      <button
+        type="button"
+        class="page-document__insert-between"
+        (click)="requestInsert($event, 'section', document().id, sectionIndex)"
+        [attr.aria-label]="'page.editor.addSection' | i18n | async"
+      >
+        <app-icon name="plus" />
+      </button>
     }
-    <section class="page-document__section page-document__node" [class]="surface(section.styles)"
-      [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === section.id"
-      [class.is-drop-before]="dropAt(section.id, 'before')" [class.is-drop-after]="dropAt(section.id, 'after')"
-      [ngStyle]="styleVars(section.styles)" [attr.data-editor-kind]="editable() ? 'section' : null"
-      [attr.data-editor-id]="editable() ? section.id : null" [attr.data-editor-parent]="editable() ? document().id : null"
-      [attr.data-editor-index]="editable() ? sectionIndex : null" (click)="choose($event, 'section', section.id)">
+    <section
+      class="page-document__section page-document__node"
+      [class]="surface(section.styles)"
+      [class.page-document__node--editable]="editable()"
+      [class.is-selected]="selectedId() === section.id"
+      [class.is-drop-before]="dropAt(section.id, 'before')"
+      [class.is-drop-after]="dropAt(section.id, 'after')"
+      [ngStyle]="styleVars(section.styles)"
+      [attr.data-editor-kind]="editable() ? 'section' : null"
+      [attr.data-editor-id]="editable() ? section.id : null"
+      [attr.data-editor-parent]="editable() ? document().id : null"
+      [attr.data-editor-index]="editable() ? sectionIndex : null"
+      (click)="choose($event, 'section', section.id)"
+    >
       @if (editable()) {
         <div class="page-document__controls" (click)="$event.stopPropagation()">
           <span>{{ 'page.editor.section' | i18n | async }}</span>
-          <button type="button" (click)="choose($event, 'section', section.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
-          <button type="button" class="page-document__handle" (pointerdown)="startPointer($event, 'section', section.id)"
-            (pointermove)="pointerMove($event)" (pointerup)="pointerUp($event)" (pointercancel)="cancelPointer()"
-            [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
-          <button type="button" (click)="act($event, 'section', section.id, 'duplicate')" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
-          <button type="button" (click)="act($event, 'section', section.id, 'remove')" [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+          <button
+            type="button"
+            (click)="choose($event, 'section', section.id)"
+            [attr.aria-label]="'page.editor.settings' | i18n | async"
+          >
+            <app-icon name="settings-2" />
+          </button>
+          <button
+            type="button"
+            class="page-document__handle"
+            (pointerdown)="startPointer($event, 'section', section.id)"
+            (pointermove)="pointerMove($event)"
+            (pointerup)="pointerUp($event)"
+            (pointercancel)="cancelPointer()"
+            [attr.aria-label]="'page.editor.drag' | i18n | async"
+          >
+            <app-icon name="grip-vertical" />
+          </button>
+          <button
+            type="button"
+            (click)="act($event, 'section', section.id, 'duplicate')"
+            [attr.aria-label]="'page.editor.duplicate' | i18n | async"
+          >
+            <app-icon name="copy" />
+          </button>
+          <button
+            type="button"
+            (click)="act($event, 'section', section.id, 'remove')"
+            [attr.aria-label]="'page.editor.remove' | i18n | async"
+          >
+            <app-icon name="trash-2" />
+          </button>
         </div>
       }
       <div class="page-document__rows">
         @for (row of section.rows; track row.id; let rowIndex = $index) {
           @if (editable()) {
-            <button type="button" class="page-document__insert-between" (click)="requestInsert($event, 'row', section.id, rowIndex)"
-              [attr.aria-label]="'page.editor.addRow' | i18n | async"><app-icon name="plus" /></button>
+            <button
+              type="button"
+              class="page-document__insert-between"
+              (click)="requestInsert($event, 'row', section.id, rowIndex)"
+              [attr.aria-label]="'page.editor.addRow' | i18n | async"
+            >
+              <app-icon name="plus" />
+            </button>
           }
-          <div class="page-document__row page-document__node" [class]="surface(row.styles)"
-            [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === row.id"
-            [class.is-drop-before]="dropAt(row.id, 'before')" [class.is-drop-after]="dropAt(row.id, 'after')"
-            [ngStyle]="styleVars(row.styles)" [style.grid-template-columns]="grid(row.layout)"
-            [attr.data-editor-kind]="editable() ? 'row' : null" [attr.data-editor-id]="editable() ? row.id : null"
-            [attr.data-editor-parent]="editable() ? section.id : null" [attr.data-editor-index]="editable() ? rowIndex : null"
-            (click)="choose($event, 'row', row.id)">
+          <div
+            class="page-document__row page-document__node"
+            [class]="surface(row.styles)"
+            [class.page-document__node--editable]="editable()"
+            [class.is-selected]="selectedId() === row.id"
+            [class.is-drop-before]="dropAt(row.id, 'before')"
+            [class.is-drop-after]="dropAt(row.id, 'after')"
+            [ngStyle]="styleVars(row.styles)"
+            [style.grid-template-columns]="grid(row.layout)"
+            [attr.data-editor-kind]="editable() ? 'row' : null"
+            [attr.data-editor-id]="editable() ? row.id : null"
+            [attr.data-editor-parent]="editable() ? section.id : null"
+            [attr.data-editor-index]="editable() ? rowIndex : null"
+            (click)="choose($event, 'row', row.id)"
+          >
             @if (editable()) {
-              <button type="button" class="page-document__row-select"
+              <button
+                type="button"
+                class="page-document__row-select"
                 [class.is-selected]="selectedId() === row.id"
                 [attr.aria-label]="('page.editor.selectRow' | i18n | async) + ' ' + (rowIndex + 1)"
-                (click)="choose($event, 'row', row.id)">
+                (click)="choose($event, 'row', row.id)"
+              >
                 <app-icon name="layout-template" />
                 <span>{{ 'page.editor.row' | i18n | async }} {{ rowIndex + 1 }}</span>
               </button>
               <div class="page-document__controls" (click)="$event.stopPropagation()">
                 <span>{{ 'page.editor.row' | i18n | async }}</span>
-                <button type="button" (click)="choose($event, 'row', row.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
-                <button type="button" class="page-document__handle" (pointerdown)="startPointer($event, 'row', row.id)"
-                  (pointermove)="pointerMove($event)" (pointerup)="pointerUp($event)" (pointercancel)="cancelPointer()"
-                  [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
-                <button type="button" (click)="act($event, 'row', row.id, 'duplicate')" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
-                <button type="button" (click)="act($event, 'row', row.id, 'remove')" [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                <button
+                  type="button"
+                  (click)="choose($event, 'row', row.id)"
+                  [attr.aria-label]="'page.editor.settings' | i18n | async"
+                >
+                  <app-icon name="settings-2" />
+                </button>
+                <button
+                  type="button"
+                  class="page-document__handle"
+                  (pointerdown)="startPointer($event, 'row', row.id)"
+                  (pointermove)="pointerMove($event)"
+                  (pointerup)="pointerUp($event)"
+                  (pointercancel)="cancelPointer()"
+                  [attr.aria-label]="'page.editor.drag' | i18n | async"
+                >
+                  <app-icon name="grip-vertical" />
+                </button>
+                <button
+                  type="button"
+                  (click)="act($event, 'row', row.id, 'duplicate')"
+                  [attr.aria-label]="'page.editor.duplicate' | i18n | async"
+                >
+                  <app-icon name="copy" />
+                </button>
+                <button
+                  type="button"
+                  (click)="act($event, 'row', row.id, 'remove')"
+                  [attr.aria-label]="'page.editor.remove' | i18n | async"
+                >
+                  <app-icon name="trash-2" />
+                </button>
               </div>
             }
             @for (column of row.columns; track column.id) {
-              <div class="page-document__column page-document__node" [class]="surface(column.styles)"
-                [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === column.id"
-                [class.is-drop-end]="dropAt(column.id, 'end')" [ngStyle]="styleVars(column.styles)"
+              <div
+                class="page-document__column page-document__node"
+                [class]="surface(column.styles)"
+                [class.page-document__node--editable]="editable()"
+                [class.is-selected]="selectedId() === column.id"
+                [class.is-drop-end]="dropAt(column.id, 'end')"
+                [ngStyle]="styleVars(column.styles)"
                 [style.align-content]="column.contentAlign ?? 'start'"
-                [attr.data-editor-kind]="editable() ? 'column' : null" [attr.data-editor-id]="editable() ? column.id : null"
-                (click)="choose($event, 'column', column.id)">
+                [attr.data-editor-kind]="editable() ? 'column' : null"
+                [attr.data-editor-id]="editable() ? column.id : null"
+                (click)="choose($event, 'column', column.id)"
+              >
                 @if (editable()) {
-                  <div class="page-document__controls page-document__controls--column" (click)="$event.stopPropagation()">
+                  <div
+                    class="page-document__controls page-document__controls--column"
+                    (click)="$event.stopPropagation()"
+                  >
                     <span>{{ 'page.editor.column' | i18n | async }}</span>
-                    <button type="button" (click)="choose($event, 'column', column.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
+                    <button
+                      type="button"
+                      (click)="choose($event, 'column', column.id)"
+                      [attr.aria-label]="'page.editor.settings' | i18n | async"
+                    >
+                      <app-icon name="settings-2" />
+                    </button>
                   </div>
                 }
                 @for (block of column.blocks; track block.id; let blockIndex = $index) {
                   @if (editable()) {
-                    <button type="button" class="page-document__insert-between" (click)="requestInsert($event, 'block', column.id, blockIndex)"
-                      [attr.aria-label]="'page.editor.addBlock' | i18n | async"><app-icon name="plus" /></button>
+                    <button
+                      type="button"
+                      class="page-document__insert-between"
+                      (click)="requestInsert($event, 'block', column.id, blockIndex)"
+                      [attr.aria-label]="'page.editor.addBlock' | i18n | async"
+                    >
+                      <app-icon name="plus" />
+                    </button>
                   }
-                  <div class="page-document__block page-document__node" [class]="surface(block.styles)"
-                    [class.page-document__node--editable]="editable()" [class.is-selected]="selectedId() === block.id"
-                    [class.is-drop-before]="dropAt(block.id, 'before')" [class.is-drop-after]="dropAt(block.id, 'after')"
-                    [ngStyle]="styleVars(block.styles)" [attr.data-editor-kind]="editable() ? 'block' : null"
-                    [attr.data-editor-id]="editable() ? block.id : null" [attr.data-editor-parent]="editable() ? column.id : null"
-                    [attr.data-editor-index]="editable() ? blockIndex : null" (click)="choose($event, 'block', block.id)">
+                  <div
+                    class="page-document__block page-document__node"
+                    [class]="surface(block.styles)"
+                    [class.page-document__node--editable]="editable()"
+                    [class.is-selected]="selectedId() === block.id"
+                    [class.is-drop-before]="dropAt(block.id, 'before')"
+                    [class.is-drop-after]="dropAt(block.id, 'after')"
+                    [ngStyle]="styleVars(block.styles)"
+                    [attr.data-editor-kind]="editable() ? 'block' : null"
+                    [attr.data-editor-id]="editable() ? block.id : null"
+                    [attr.data-editor-parent]="editable() ? column.id : null"
+                    [attr.data-editor-index]="editable() ? blockIndex : null"
+                    (click)="choose($event, 'block', block.id)"
+                  >
                     @if (editable()) {
-                      <div class="page-document__controls page-document__controls--block" (click)="$event.stopPropagation()">
-                        <span>{{ ('page.editor.block.' + block.type) | i18n | async }}</span>
-                        <button type="button" (click)="choose($event, 'block', block.id)" [attr.aria-label]="'page.editor.settings' | i18n | async"><app-icon name="settings-2" /></button>
-                        <button type="button" class="page-document__handle" (pointerdown)="startPointer($event, 'block', block.id)"
-                          (pointermove)="pointerMove($event)" (pointerup)="pointerUp($event)" (pointercancel)="cancelPointer()"
-                          [attr.aria-label]="'page.editor.drag' | i18n | async"><app-icon name="grip-vertical" /></button>
+                      <div
+                        class="page-document__controls page-document__controls--block"
+                        (click)="$event.stopPropagation()"
+                      >
+                        <span>{{ 'page.editor.block.' + block.type | i18n | async }}</span>
+                        <button
+                          type="button"
+                          (click)="choose($event, 'block', block.id)"
+                          [attr.aria-label]="'page.editor.settings' | i18n | async"
+                        >
+                          <app-icon name="settings-2" />
+                        </button>
+                        <button
+                          type="button"
+                          class="page-document__handle"
+                          (pointerdown)="startPointer($event, 'block', block.id)"
+                          (pointermove)="pointerMove($event)"
+                          (pointerup)="pointerUp($event)"
+                          (pointercancel)="cancelPointer()"
+                          [attr.aria-label]="'page.editor.drag' | i18n | async"
+                        >
+                          <app-icon name="grip-vertical" />
+                        </button>
                         @if (block.type === 'text') {
-                          <button type="button" (click)="editText($event, block.id)" [attr.aria-label]="'page.editor.editInline' | i18n | async"><app-icon name="pencil" /></button>
+                          <button
+                            type="button"
+                            (click)="editText($event, block.id)"
+                            [attr.aria-label]="'page.editor.editInline' | i18n | async"
+                          >
+                            <app-icon name="pencil" />
+                          </button>
                         }
-                        <button type="button" (click)="act($event, 'block', block.id, 'duplicate')" [attr.aria-label]="'page.editor.duplicate' | i18n | async"><app-icon name="copy" /></button>
-                        <button type="button" (click)="act($event, 'block', block.id, 'remove')" [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                        <button
+                          type="button"
+                          (click)="act($event, 'block', block.id, 'duplicate')"
+                          [attr.aria-label]="'page.editor.duplicate' | i18n | async"
+                        >
+                          <app-icon name="copy" />
+                        </button>
+                        <button
+                          type="button"
+                          (click)="act($event, 'block', block.id, 'remove')"
+                          [attr.aria-label]="'page.editor.remove' | i18n | async"
+                        >
+                          <app-icon name="trash-2" />
+                        </button>
                       </div>
                     }
                     @switch (block.type) {
                       @case ('text') {
                         @if (editable() && inlineTextId() === block.id) {
                           @defer (on immediate) {
-                            <app-page-inline-markdown [markdown]="block.markdown[locale()]" [assets]="assets()"
+                            <app-page-inline-markdown
+                              [markdown]="block.markdown[locale()]"
+                              [assets]="assets()"
                               (markdownChange)="changeInline(block.id, $event)"
-                              (closeEditor)="closeInline(block.id)" />
+                              (closeEditor)="closeInline(block.id)"
+                            />
                           } @placeholder {
                             <div class="page-document__inline-placeholder"></div>
                           }
                         } @else {
                           @if (editable() && !block.markdown[locale()] && !block.markdown.de) {
-                            <p class="page-document__empty" (dblclick)="editText($event, block.id)">{{ 'page.editor.empty' | i18n | async }}</p>
+                            <p class="page-document__empty" (dblclick)="editText($event, block.id)">
+                              {{ 'page.editor.empty' | i18n | async }}
+                            </p>
                           } @else {
-                            <div class="page-document__markdown" [innerHTML]="html(block.markdown[locale()] || block.markdown.de)"
-                              (dblclick)="editText($event, block.id)"></div>
+                            <div
+                              class="page-document__markdown"
+                              [innerHTML]="html(block.markdown[locale()] || block.markdown.de)"
+                              (dblclick)="editText($event, block.id)"
+                            ></div>
                           }
                         }
                       }
                       @case ('image') {
                         @if (block.assetId) {
-                          <img class="page-document__image" [src]="image(block.assetId)" [attr.srcset]="imageSrcset(block.assetId)"
-                            sizes="(max-width: 700px) 94vw, 960px" [alt]="block.alt[locale()] || block.alt.de" loading="lazy"
-                            (click)="editImage($event, block.id)" />
+                          <img
+                            class="page-document__image"
+                            [src]="image(block.assetId)"
+                            [attr.srcset]="imageSrcset(block.assetId)"
+                            sizes="(max-width: 700px) 94vw, 960px"
+                            [alt]="block.alt[locale()] || block.alt.de"
+                            loading="lazy"
+                            (click)="editImage($event, block.id)"
+                          />
                         } @else if (editable()) {
-                          <button type="button" class="page-document__empty page-document__empty--action" (click)="editImage($event, block.id)"><app-icon name="image" /> {{ 'page.editor.chooseImage' | i18n | async }}</button>
+                          <button
+                            type="button"
+                            class="page-document__empty page-document__empty--action"
+                            (click)="editImage($event, block.id)"
+                          >
+                            <app-icon name="image" /> {{ 'page.editor.chooseImage' | i18n | async }}
+                          </button>
                         }
                       }
                       @case ('gallery') {
                         @if (editable() && !block.items.length) {
-                          <div class="page-document__empty"><app-icon name="gallery" /> {{ 'page.editor.block.gallery' | i18n | async }}</div>
+                          <div class="page-document__empty">
+                            <app-icon name="gallery" />
+                            {{ 'page.editor.block.gallery' | i18n | async }}
+                          </div>
                         }
-                        <div class="page-document__gallery"
-                          [class.page-document__gallery--featured]="block.layout === 'featured' && block.items.length >= 3"
-                          [class.page-document__gallery--featured-right]="block.layout === 'featuredRight' && block.items.length >= 3"
-                          [class.page-document__gallery--panorama]="block.layout === 'panorama' && block.items.length >= 2"
-                          [class.page-document__gallery--mosaic]="block.layout === 'mosaic' && block.items.length >= 4"
-                          >
+                        <div
+                          class="page-document__gallery"
+                          [class.page-document__gallery--featured]="
+                            block.layout === 'featured' && block.items.length >= 3
+                          "
+                          [class.page-document__gallery--featured-right]="
+                            block.layout === 'featuredRight' && block.items.length >= 3
+                          "
+                          [class.page-document__gallery--panorama]="
+                            block.layout === 'panorama' && block.items.length >= 2
+                          "
+                          [class.page-document__gallery--mosaic]="
+                            block.layout === 'mosaic' && block.items.length >= 4
+                          "
+                        >
                           @for (item of block.items; track item.id) {
-                            <button type="button" class="page-document__gallery-item"
-                              [attr.aria-label]="item.alt[locale()] || item.alt.de || ('page.editor.gallery.openImage' | i18n | async)"
-                              (click)="openGalleryItem($event, block, $index)">
-                              <img [src]="image(item.assetId)" [attr.srcset]="imageSrcset(item.assetId)"
-                                [attr.sizes]="gallerySizes(block.layout, $index)" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                            <button
+                              type="button"
+                              class="page-document__gallery-item"
+                              [attr.aria-label]="
+                                item.alt[locale()] ||
+                                item.alt.de ||
+                                ('page.editor.gallery.openImage' | i18n | async)
+                              "
+                              (click)="openGalleryItem($event, block, $index)"
+                            >
+                              <img
+                                [src]="image(item.assetId)"
+                                [attr.srcset]="imageSrcset(item.assetId)"
+                                [attr.sizes]="gallerySizes(block.layout, $index)"
+                                [alt]="item.alt[locale()] || item.alt.de"
+                                loading="lazy"
+                              />
                               @if (!editable()) {
-                                <span class="page-document__gallery-zoom" aria-hidden="true"><app-icon name="search" /></span>
+                                <span class="page-document__gallery-zoom" aria-hidden="true"
+                                  ><app-icon name="search"
+                                /></span>
                               }
                             </button>
                           }
@@ -148,32 +346,58 @@
                       @case ('slider') {
                         @if (block.items.length === 0) {
                           @if (studio()) {
-                            <div class="page-document__empty"><app-icon name="image" /> {{ 'page.editor.slider.empty' | i18n | async }}</div>
+                            <div class="page-document__empty">
+                              <app-icon name="image" />
+                              {{ 'page.editor.slider.empty' | i18n | async }}
+                            </div>
                           }
                         } @else if (studio()) {
                           <div class="page-document__slider-preview">
                             @for (item of block.items; track item.id) {
-                              <img [src]="image(item.assetId)" [attr.srcset]="imageSrcset(item.assetId)"
-                                sizes="(max-width: 700px) 90vw, 480px" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                              <img
+                                [src]="image(item.assetId)"
+                                [attr.srcset]="imageSrcset(item.assetId)"
+                                sizes="(max-width: 700px) 90vw, 480px"
+                                [alt]="item.alt[locale()] || item.alt.de"
+                                loading="lazy"
+                              />
                             }
                           </div>
                         } @else if (block.items.length === 1) {
-                          <button type="button" class="page-document__slide page-document__slide--single"
-                            (click)="openGalleryItem($event, block, 0)">
-                            <img [src]="image(block.items[0].assetId)"
-                              [attr.srcset]="imageSrcset(block.items[0].assetId)" sizes="(max-width: 700px) 94vw, 960px"
-                              [alt]="block.items[0].alt[locale()] || block.items[0].alt.de" loading="lazy" />
+                          <button
+                            type="button"
+                            class="page-document__slide page-document__slide--single"
+                            (click)="openGalleryItem($event, block, 0)"
+                          >
+                            <img
+                              [src]="image(block.items[0].assetId)"
+                              [attr.srcset]="imageSrcset(block.items[0].assetId)"
+                              sizes="(max-width: 700px) 94vw, 960px"
+                              [alt]="block.items[0].alt[locale()] || block.items[0].alt.de"
+                              loading="lazy"
+                            />
                           </button>
                         } @else {
-                          <app-carousel [perView]="1" [gap]="12"
+                          <app-carousel
+                            [perView]="1"
+                            [gap]="12"
                             [previousLabel]="('page.editor.slider.previous' | i18n | async) ?? ''"
-                            [nextLabel]="('page.editor.slider.next' | i18n | async) ?? ''">
+                            [nextLabel]="('page.editor.slider.next' | i18n | async) ?? ''"
+                          >
                             @for (item of block.items; track item.id) {
                               <div carouselSlide>
-                                <button type="button" class="page-document__slide"
-                                  (click)="openGalleryItem($event, block, $index)">
-                                  <img [src]="image(item.assetId)" [attr.srcset]="imageSrcset(item.assetId)"
-                                    sizes="(max-width: 700px) 94vw, 960px" [alt]="item.alt[locale()] || item.alt.de" loading="lazy" />
+                                <button
+                                  type="button"
+                                  class="page-document__slide"
+                                  (click)="openGalleryItem($event, block, $index)"
+                                >
+                                  <img
+                                    [src]="image(item.assetId)"
+                                    [attr.srcset]="imageSrcset(item.assetId)"
+                                    sizes="(max-width: 700px) 94vw, 960px"
+                                    [alt]="item.alt[locale()] || item.alt.de"
+                                    loading="lazy"
+                                  />
                                 </button>
                               </div>
                             }
@@ -183,19 +407,36 @@
                       @case ('cardCarousel') {
                         @if (block.items.length === 0) {
                           @if (studio()) {
-                            <div class="page-document__empty"><app-icon name="layout-template" /> {{ 'page.editor.carousel.empty' | i18n | async }}</div>
+                            <div class="page-document__empty">
+                              <app-icon name="layout-template" />
+                              {{ 'page.editor.carousel.empty' | i18n | async }}
+                            </div>
                           }
                         } @else if (studio() || block.items.length === 1) {
                           <div class="page-document__cards-preview">
                             @for (card of block.items; track card.id) {
                               <article class="page-document__card">
-                                @if (card.assetId) { <img class="page-document__card-image" [src]="image(card.assetId)" [attr.srcset]="imageSrcset(card.assetId)" sizes="(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 360px" [alt]="card.alt[locale()] || card.alt.de" loading="lazy" /> }
+                                @if (card.assetId) {
+                                  <img
+                                    class="page-document__card-image"
+                                    [src]="image(card.assetId)"
+                                    [attr.srcset]="imageSrcset(card.assetId)"
+                                    sizes="(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 360px"
+                                    [alt]="card.alt[locale()] || card.alt.de"
+                                    loading="lazy"
+                                  />
+                                }
                                 <div class="page-document__card-body">
                                   <h3>{{ card.title[locale()] || card.title.de }}</h3>
                                   <p>{{ card.description[locale()] || card.description.de }}</p>
                                   @if (!studio() && card.href) {
-                                    <a [href]="card.href" [attr.target]="externalLink(card.href) ? '_blank' : null"
-                                      [attr.rel]="externalLink(card.href) ? 'noopener noreferrer' : null">
+                                    <a
+                                      [href]="card.href"
+                                      [attr.target]="externalLink(card.href) ? '_blank' : null"
+                                      [attr.rel]="
+                                        externalLink(card.href) ? 'noopener noreferrer' : null
+                                      "
+                                    >
                                       {{ 'page.editor.card.visit' | i18n | async }}
                                     </a>
                                   }
@@ -204,19 +445,37 @@
                             }
                           </div>
                         } @else {
-                          <app-carousel [perView]="3" [gap]="16" [breakpoints]="cardBreakpoints"
+                          <app-carousel
+                            [perView]="3"
+                            [gap]="16"
+                            [breakpoints]="cardBreakpoints"
                             [previousLabel]="('page.editor.carousel.previous' | i18n | async) ?? ''"
-                            [nextLabel]="('page.editor.carousel.next' | i18n | async) ?? ''">
+                            [nextLabel]="('page.editor.carousel.next' | i18n | async) ?? ''"
+                          >
                             @for (card of block.items; track card.id) {
                               <div carouselSlide>
                                 <article class="page-document__card">
-                                  @if (card.assetId) { <img class="page-document__card-image" [src]="image(card.assetId)" [attr.srcset]="imageSrcset(card.assetId)" sizes="(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 360px" [alt]="card.alt[locale()] || card.alt.de" loading="lazy" /> }
+                                  @if (card.assetId) {
+                                    <img
+                                      class="page-document__card-image"
+                                      [src]="image(card.assetId)"
+                                      [attr.srcset]="imageSrcset(card.assetId)"
+                                      sizes="(max-width: 700px) 90vw, (max-width: 1000px) 45vw, 360px"
+                                      [alt]="card.alt[locale()] || card.alt.de"
+                                      loading="lazy"
+                                    />
+                                  }
                                   <div class="page-document__card-body">
                                     <h3>{{ card.title[locale()] || card.title.de }}</h3>
                                     <p>{{ card.description[locale()] || card.description.de }}</p>
                                     @if (card.href) {
-                                      <a [href]="card.href" [attr.target]="externalLink(card.href) ? '_blank' : null"
-                                        [attr.rel]="externalLink(card.href) ? 'noopener noreferrer' : null">
+                                      <a
+                                        [href]="card.href"
+                                        [attr.target]="externalLink(card.href) ? '_blank' : null"
+                                        [attr.rel]="
+                                          externalLink(card.href) ? 'noopener noreferrer' : null
+                                        "
+                                      >
                                         {{ 'page.editor.card.visit' | i18n | async }}
                                       </a>
                                     }
@@ -236,28 +495,56 @@
                             @if (albumDate(entry.releasedAt); as date) {
                               <div class="page-document__album-fact">
                                 <app-icon name="music" />
-                                <span><strong>{{ date }}</strong><small>{{ 'page.editor.album.releaseLabel' | i18n | async }}</small></span>
+                                <span
+                                  ><strong>{{ date }}</strong
+                                  ><small>{{
+                                    'page.editor.album.releaseLabel' | i18n | async
+                                  }}</small></span
+                                >
                               </div>
                             }
                             @if (entry.editorial.genre[locale()] || entry.editorial.genre.de) {
                               <div class="page-document__album-fact">
                                 <app-icon name="music" />
-                                <span><strong>{{ entry.editorial.genre[locale()] || entry.editorial.genre.de }}</strong><small>{{ 'admin.music.editorial.genre' | i18n | async }}</small></span>
+                                <span
+                                  ><strong>{{
+                                    entry.editorial.genre[locale()] || entry.editorial.genre.de
+                                  }}</strong
+                                  ><small>{{
+                                    'admin.music.editorial.genre' | i18n | async
+                                  }}</small></span
+                                >
                               </div>
                             }
                             @if (entry.editorial.mood[locale()] || entry.editorial.mood.de) {
                               <div class="page-document__album-fact">
                                 <app-icon name="heart" />
-                                <span><strong>{{ entry.editorial.mood[locale()] || entry.editorial.mood.de }}</strong><small>{{ 'admin.music.editorial.mood' | i18n | async }}</small></span>
+                                <span
+                                  ><strong>{{
+                                    entry.editorial.mood[locale()] || entry.editorial.mood.de
+                                  }}</strong
+                                  ><small>{{
+                                    'admin.music.editorial.mood' | i18n | async
+                                  }}</small></span
+                                >
                               </div>
                             }
                             <div class="page-document__album-fact">
                               <app-icon name="list-numbered" />
-                              <span><strong>{{ entry.tracks.length }} {{ 'music.album.tracks' | i18n | async }}</strong><small>{{ 'page.editor.album.trackCountLabel' | i18n | async }}</small></span>
+                              <span
+                                ><strong
+                                  >{{ entry.tracks.length }}
+                                  {{ 'music.album.tracks' | i18n | async }}</strong
+                                ><small>{{
+                                  'page.editor.album.trackCountLabel' | i18n | async
+                                }}</small></span
+                              >
                             </div>
                           </div>
                         } @else if (studio()) {
-                          <p class="page-document__empty">{{ 'page.editor.album.noContext' | i18n | async }}</p>
+                          <p class="page-document__empty">
+                            {{ 'page.editor.album.noContext' | i18n | async }}
+                          </p>
                         }
                       }
                       @case ('albumTracks') {
@@ -281,11 +568,14 @@
                             <p>{{ 'music.page.noTracks' | i18n | async }}</p>
                           }
                         } @else if (studio()) {
-                          <p class="page-document__empty">{{ 'page.editor.album.noContext' | i18n | async }}</p>
+                          <p class="page-document__empty">
+                            {{ 'page.editor.album.noContext' | i18n | async }}
+                          </p>
                         }
                       }
                       @case ('albumCredits') {
-                        @let credits = block.entries.length ? block.entries : (album()?.editorial.credits ?? []);
+                        @let credits =
+                          block.entries.length ? block.entries : (album()?.editorial.credits ?? []);
                         @if (credits.length || studio()) {
                           <section class="page-document__album-credits">
                             <h3>{{ block.heading[locale()] || block.heading.de }}</h3>
@@ -306,17 +596,25 @@
                   </div>
                 }
                 @if (editable()) {
-                  <button type="button" class="page-document__add page-document__add--block"
+                  <button
+                    type="button"
+                    class="page-document__add page-document__add--block"
                     (click)="requestInsert($event, 'block', column.id, column.blocks.length)"
-                    [attr.aria-label]="'page.editor.addBlock' | i18n | async"><app-icon name="plus" /></button>
+                    [attr.aria-label]="'page.editor.addBlock' | i18n | async"
+                  >
+                    <app-icon name="plus" />
+                  </button>
                 }
               </div>
             }
           </div>
         }
         @if (editable()) {
-          <button type="button" class="page-document__add page-document__add--row"
-            (click)="requestInsert($event, 'row', section.id, section.rows.length)">
+          <button
+            type="button"
+            class="page-document__add page-document__add--row"
+            (click)="requestInsert($event, 'row', section.id, section.rows.length)"
+          >
             <app-icon name="plus" /> {{ 'page.editor.addRow' | i18n | async }}
           </button>
         }
@@ -324,14 +622,22 @@
     </section>
   }
   @if (editable()) {
-    <button type="button" class="page-document__add page-document__add--section"
-      (click)="requestInsert($event, 'section', document().id, document().sections.length)">
+    <button
+      type="button"
+      class="page-document__add page-document__add--section"
+      (click)="requestInsert($event, 'section', document().id, document().sections.length)"
+    >
       <app-icon name="plus" /> {{ 'page.editor.addSection' | i18n | async }}
     </button>
   }
 </div>
 @if (dragging()) {
-  <div class="page-document__drag-pill" [style.left.px]="pointerX()" [style.top.px]="pointerY()" aria-hidden="true">
+  <div
+    class="page-document__drag-pill"
+    [style.left.px]="pointerX()"
+    [style.top.px]="pointerY()"
+    aria-hidden="true"
+  >
     <app-icon name="grip-vertical" /> {{ 'page.editor.drag' | i18n | async }}
   </div>
 }
