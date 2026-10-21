@@ -22,6 +22,8 @@
   width: 22px;
   height: 22px;
   flex: 0 0 auto;
+  /* app-icon uses SVG fill rather than currentColor; color alone has no effect. */
+  fill: var(--pc-album-icon, #df9cbd);
   color: var(--pc-album-icon, #df9cbd);
 }
 .page-document__album-fact span {

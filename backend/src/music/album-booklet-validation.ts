@@ -124,12 +124,15 @@ function backgroundDesign(value: unknown): ComposerBackground {
   if (kind === 'color') return { kind, color: color(data['color']) };
   if (kind === 'gradient') {
     const angle = data['angle'];
+    const shape = data['shape'];
     if (![0, 45, 90, 135, 180].includes(angle as number)) invalid('invalid gradient angle');
+    if (shape !== undefined && shape !== 'linear' && shape !== 'radial') invalid('invalid gradient shape');
     return {
       kind,
       from: color(data['from']),
       to: color(data['to']),
       angle: angle as 0 | 45 | 90 | 135 | 180,
+      ...(shape === undefined ? {} : { shape: shape as 'linear' | 'radial' }),
     };
   }
   if (kind === 'image') {
@@ -140,11 +143,14 @@ function backgroundDesign(value: unknown): ComposerBackground {
       !['none', 'soft', 'strong'].includes(String(overlay))
     )
       invalid('invalid image background');
+    if (data['parallax'] !== undefined && typeof data['parallax'] !== 'boolean')
+      invalid('invalid parallax flag');
     return {
       kind,
       assetId: assetId(data['assetId']),
       position: position as 'center' | 'top' | 'bottom',
       overlay: overlay as 'none' | 'soft' | 'strong',
+      ...(data['parallax'] === undefined ? {} : { parallax: data['parallax'] as boolean }),
     };
   }
   return invalid('unsupported background kind');

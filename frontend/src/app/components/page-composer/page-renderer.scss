@@ -28,12 +28,17 @@
   background-image: var(--pc-design-image, none);
   background-position: var(--pc-design-position, center);
   background-size: cover;
+  background-attachment: var(--pc-design-attachment, scroll);
   padding: var(--pc-box-padding, var(--pc-padding, 0px));
   margin: var(--pc-box-margin, 0px);
   border-radius: var(--pc-radius, 0px);
   text-align: var(--pc-align, left);
   color: var(--pc-text-color, inherit);
   background-color: var(--pc-design-color, var(--pc-background-color));
+}
+/* Fixed CSS backgrounds are unreliable on touch browsers and uncomfortable with reduced motion. */
+@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+  .page-document__node { background-attachment: scroll; }
 }
 /* All columns stretch to the tallest sibling; each controls its content's vertical alignment. */
 .page-document__row {

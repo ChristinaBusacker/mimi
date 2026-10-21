@@ -35,8 +35,10 @@ export interface ComposerShadow {
 }
 export type ComposerBackground =
   | { kind: 'color'; color: string }
-  | { kind: 'gradient'; from: string; to: string; angle: 0 | 45 | 90 | 135 | 180 }
-  | { kind: 'image'; assetId: string; position: 'center' | 'top' | 'bottom'; overlay: 'none' | 'soft' | 'strong' };
+  | { kind: 'gradient'; from: string; to: string; angle: 0 | 45 | 90 | 135 | 180;
+      shape?: 'linear' | 'radial' }
+  | { kind: 'image'; assetId: string; position: 'center' | 'top' | 'bottom';
+      overlay: 'none' | 'soft' | 'strong'; parallax?: boolean };
 export interface PageStyleValues {
   background?: PageSurface;
   backgroundColor?: string;

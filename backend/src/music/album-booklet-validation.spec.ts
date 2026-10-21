@@ -209,6 +209,22 @@ describe('Album booklet document validation', () => {
     expect(() => validateAlbumBooklet(badColor)).toThrow(BadRequestException);
   });
 
+  it('round-trips radial gradients and image parallax without changing legacy backgrounds', () => {
+    const input = document('1');
+    input.sections[0].styles = { ...input.sections[0].styles,
+      designBackground: { kind: 'gradient', from: '#112233ff', to: '#778899aa', angle: 90, shape: 'radial' } };
+    const result = validateAlbumBooklet(input);
+    expect(result.sections[0].styles.designBackground).toEqual(input.sections[0].styles.designBackground);
+    input.sections[0].styles.designBackground = {
+      kind: 'image', assetId: '00000000-0000-4000-8000-000000000001',
+      position: 'center', overlay: 'soft', parallax: true,
+    };
+    expect(validateAlbumBooklet(input).sections[0].styles.designBackground).toEqual(input.sections[0].styles.designBackground);
+    const invalid = structuredClone(input);
+    if (invalid.sections[0].styles.designBackground?.kind === 'image')
+      invalid.sections[0].styles.designBackground.parallax = 'fast' as unknown as boolean;
+    expect(() => validateAlbumBooklet(invalid)).toThrow(BadRequestException);
+  });
   it('supports a readable text shadow and rejects text shadow on containers', () => {
     const input = document('1');
     const textBlock = input.sections[0].rows[0].columns[0].blocks[0];

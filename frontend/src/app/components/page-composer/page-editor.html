@@ -861,6 +861,13 @@
                             (valueChange)="setBackgroundColor('to', $event)"
                           />
                         </div>
+                        <label>{{ 'page.editor.backgroundFx.gradientShape' | i18n | async }}</label>
+                        <select [value]="node.styles.designBackground.shape ?? 'linear'"
+                          (change)="setGradientShape($event)">
+                          <option value="linear">{{ 'page.editor.backgroundFx.linear' | i18n | async }}</option>
+                          <option value="radial">{{ 'page.editor.backgroundFx.radial' | i18n | async }}</option>
+                        </select>
+                        @if (node.styles.designBackground.shape !== 'radial') {
                         <label>{{ 'page.editor.design.angle' | i18n | async }}</label>
                         <select
                           [value]="backgroundValue('angle')"
@@ -872,6 +879,7 @@
                           <option value="135">135°</option>
                           <option value="180">180°</option>
                         </select>
+                        }
                       }
                       @case ('image') {
                         <button
@@ -914,6 +922,11 @@
                             {{ 'page.editor.design.strong' | i18n | async }}
                           </option>
                         </select>
+                        <label class="composer__surface-toggle">
+                          <input type="checkbox" [checked]="node.styles.designBackground.parallax ?? false"
+                            (change)="setBackgroundParallax($event)" />
+                          {{ 'page.editor.backgroundFx.parallax' | i18n | async }}
+                        </label>
                       }
                     }
                   </div>

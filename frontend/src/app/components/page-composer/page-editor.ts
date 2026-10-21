@@ -721,6 +721,14 @@ export class PageEditor {
 
   // RGB and opacity now update together through ComposerColorPicker.
 
+  protected setGradientShape(event: Event): void {
+    const shape = this.value(event);
+    if (shape !== 'linear' && shape !== 'radial') return;
+    this.changeSelected((node) => {
+      const design = node.styles.designBackground;
+      if (design?.kind === 'gradient') design.shape = shape;
+    });
+  }
   protected setGradientAngle(event: Event): void {
     const angle = Number(this.value(event));
     if (![0, 45, 90, 135, 180].includes(angle)) return;
@@ -730,6 +738,13 @@ export class PageEditor {
     });
   }
 
+  protected setBackgroundParallax(event: Event): void {
+    const enabled = (event.target as HTMLInputElement).checked;
+    this.changeSelected((node) => {
+      const design = node.styles.designBackground;
+      if (design?.kind === 'image') design.parallax = enabled;
+    });
+  }
   protected changeBackgroundImage(field: 'position' | 'overlay', event: Event): void {
     const value = this.value(event);
     this.changeSelected((node) => {

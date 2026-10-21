@@ -1,0 +1,24 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.backgroundFx.gradientShape",
+      "de": "Verlaufsart",
+      "en": "Gradient type"
+    },
+    {
+      "key": "page.editor.backgroundFx.linear",
+      "de": "Linear",
+      "en": "Linear"
+    },
+    {
+      "key": "page.editor.backgroundFx.radial",
+      "de": "Radial (kreisförmig)",
+      "en": "Radial (circular)"
+    },
+    {
+      "key": "page.editor.backgroundFx.parallax",
+      "de": "Hintergrundbild beim Scrollen fixieren (Parallax)",
+      "en": "Fixed background while scrolling (parallax)"
+    }
+  ]
+}

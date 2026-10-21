@@ -434,6 +434,11 @@ export class PageRenderer {
     result['--pc-design-image'] = styles.designBackground
       ? this.backgroundImage(styles.designBackground)
       : 'none';
+    // The overlay scrolls normally; the image layer can stay anchored to the viewport.
+    result['--pc-design-attachment'] =
+      styles.designBackground?.kind === 'image' && styles.designBackground.parallax === true
+        ? 'scroll, fixed'
+        : 'scroll';
     result['--pc-design-position'] =
       styles.designBackground?.kind === 'image' ? styles.designBackground.position : 'center';
     const bg = (value: PageStyleValues): string => {
@@ -513,7 +518,9 @@ export class PageRenderer {
   private backgroundImage(value: ComposerBackground): string {
     if (value.kind === 'color') return 'none';
     if (value.kind === 'gradient')
-      return `linear-gradient(${value.angle}deg, ${value.from}, ${value.to})`;
+      return value.shape === 'radial'
+        ? `radial-gradient(circle at center, ${value.from} 0%, ${value.to} 100%)`
+        : `linear-gradient(${value.angle}deg, ${value.from}, ${value.to})`;
     const shade =
       value.overlay === 'strong'
         ? 'rgb(15 10 25 / 62%)'
