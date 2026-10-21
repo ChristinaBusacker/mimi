@@ -36,7 +36,8 @@ import StarterKit from '@tiptap/starter-kit';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { AssetLibrary } from '../asset-library/asset-library';
 import { Icon } from '../icon/icon';
-import { AssetImage } from './asset-image.extension';
+import { AssetImage, mediaWidth } from './asset-image.extension';
+import { MarkdownTextColor } from './text-color.extension';
 import {
   MarkdownStrike,
   MarkdownUnderline,
@@ -58,6 +59,8 @@ type EditorBlockType =
   | 'heading2'
   | 'heading3'
   | 'heading4'
+  | 'subline'
+  | 'eyebrow'
   | 'codeBlock';
 
 interface StoredSelection {
@@ -152,6 +155,8 @@ export class MarkdownEditor
     signal<ContentMediaSize>(
       'large',
     );
+  protected readonly imageWidth = signal<number | null>(null);
+  protected readonly textColor = signal('#f8d7eb');
   protected readonly youtubeValue =
     signal('');
   protected readonly youtubeAlignment =
@@ -217,7 +222,7 @@ export class MarkdownEditor
           code: {},
           codeBlock: {},
           heading: {
-            levels: [1, 2, 3, 4],
+            levels: [1, 2, 3, 4, 5, 6],
           },
           horizontalRule: {},
           strike: false,
@@ -228,6 +233,7 @@ export class MarkdownEditor
         }),
         MarkdownUnderline,
         MarkdownStrike,
+        MarkdownTextColor,
         AssetImage,
         YoutubeEmbed,
         Markdown.configure({
@@ -330,6 +336,8 @@ export class MarkdownEditor
     if (this.editor()?.isActive('codeBlock')) return 'codeBlock';
     if (this.editor()?.isActive('heading', { level: 1 })) return 'heading1';
     if (this.editor()?.isActive('heading', { level: 4 })) return 'heading4';
+    if (this.editor()?.isActive('heading', { level: 5 })) return 'subline';
+    if (this.editor()?.isActive('heading', { level: 6 })) return 'eyebrow';
 
     if (
       this.editor()?.isActive(
@@ -374,8 +382,9 @@ export class MarkdownEditor
       editor.chain().focus().setCodeBlock().run();
       return;
     }
-    if (value === 'heading1' || value === 'heading4') {
-      editor.chain().focus().setHeading({ level: value === 'heading1' ? 1 : 4 }).run();
+    if (value === 'heading1' || value === 'heading4' || value === 'subline' || value === 'eyebrow') {
+      const level = value === 'heading1' ? 1 : value === 'heading4' ? 4 : value === 'subline' ? 5 : 6;
+      editor.chain().focus().setHeading({ level }).run();
       return;
     }
 
@@ -838,6 +847,20 @@ export class MarkdownEditor
         ),
       ),
     );
+    this.imageWidth.set(null);
+  }
+  protected setImageWidth(event: Event): void {
+    this.imageWidth.set(mediaWidth(Number(this.readControlValue(event))));
+  }
+  protected resetImageWidth(): void { this.imageWidth.set(null); }
+  protected applyTextColor(event: Event): void {
+    const color = this.readControlValue(event);
+    if (!/^#[0-9a-f]{6}(?:[0-9a-f]{2})?$/i.test(color)) return;
+    this.textColor.set(color.toLowerCase());
+    this.editor()?.chain().focus().setMark('mimiTextColor', { color: color.toLowerCase() }).run();
+  }
+  protected removeTextColor(): void {
+    this.editor()?.chain().focus().unsetMark('mimiTextColor').run();
   }
 
   protected saveImage(): void {
@@ -869,6 +892,7 @@ export class MarkdownEditor
       alignment:
         this.imageAlignment(),
       size: this.imageSize(),
+      widthPercent: this.imageWidth(),
     };
 
     if (
@@ -1152,6 +1176,7 @@ export class MarkdownEditor
         attrs['size'],
       ),
     );
+    this.imageWidth.set(mediaWidth(attrs['widthPercent']));
     this.editingMedia.set(
       'image',
     );
@@ -1273,6 +1298,7 @@ export class MarkdownEditor
     this.imageSize.set(
       'large',
     );
+    this.imageWidth.set(null);
   }
 
   private resetYoutubeForm():

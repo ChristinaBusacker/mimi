@@ -18,14 +18,21 @@ interface MarkdownImageToken {
 interface ContentMediaLayout {
   alignment: ContentMediaAlignment;
   size: ContentMediaSize;
+  widthPercent: number | null;
 }
 
+// Keep old two-field image titles valid; optional percentage is 10..100.
 const MEDIA_METADATA_PATTERN =
-  /^mimi-media:(left|center|right):(small|medium|large|full)$/;
+  /^mimi-media:(left|center|right):(small|medium|large|full)(?::(100|[1-9]\d?))?$/;
+export function mediaWidth(value: unknown): number | null {
+  if (typeof value !== 'number' || !Number.isInteger(value)) return null;
+  return value >= 10 && value <= 100 ? value : null;
+}
 
 const DEFAULT_MEDIA_LAYOUT: ContentMediaLayout = {
   alignment: 'center',
   size: 'large',
+  widthPercent: null,
 };
 
 function readNodeAttribute(
@@ -54,6 +61,7 @@ function readLayout(
   );
 
   return {
+    widthPercent: mediaWidth(attributes?.['widthPercent']),
     alignment:
       alignment === 'left' ||
       alignment === 'right' ||
@@ -83,6 +91,7 @@ function parseLayoutTitle(
     ? {
         alignment: match[1] as ContentMediaAlignment,
         size: match[2] as ContentMediaSize,
+        widthPercent: match[3] ? mediaWidth(Number(match[3])) : null,
       }
     : DEFAULT_MEDIA_LAYOUT;
 }
@@ -110,6 +119,7 @@ export const AssetImage = Node.create({
       size: {
         default: DEFAULT_MEDIA_LAYOUT.size,
       },
+      widthPercent: { default: null },
     };
   },
 
@@ -133,6 +143,7 @@ export const AssetImage = Node.create({
             size:
               element.getAttribute('data-size') ??
               DEFAULT_MEDIA_LAYOUT.size,
+            widthPercent: mediaWidth(Number(element.getAttribute('data-width-percent'))),
           };
         },
       },
@@ -160,6 +171,10 @@ export const AssetImage = Node.create({
         'data-asset-id': assetId,
         'data-alignment': layout.alignment,
         'data-size': layout.size,
+        ...(layout.widthPercent === null ? {} : {
+          'data-width-percent': layout.widthPercent,
+          style: `width:${layout.widthPercent}%; max-width:100%; height:auto`,
+        }),
         class:
           `content-media media-${layout.alignment} size-${layout.size}`,
         loading: 'lazy',
@@ -193,6 +208,7 @@ export const AssetImage = Node.create({
             : '',
         alignment: layout.alignment,
         size: layout.size,
+        widthPercent: layout.widthPercent,
       },
     };
   },
@@ -212,7 +228,7 @@ export const AssetImage = Node.create({
     );
     const layout = readLayout(node.attrs);
     const metadata =
-      `mimi-media:${layout.alignment}:${layout.size}`;
+      `mimi-media:${layout.alignment}:${layout.size}${layout.widthPercent === null ? '' : ':' + layout.widthPercent}`;
 
     return (
       `![${alt}](asset:${assetId} "${metadata}")`

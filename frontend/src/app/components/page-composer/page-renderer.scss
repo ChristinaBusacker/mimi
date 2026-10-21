@@ -74,6 +74,9 @@
 .page-document__markdown a {
   color: #f1b4da;
 }
+.page-document__markdown h5 { font-size: 1.1em; font-weight: 600; letter-spacing: .04em; }
+.page-document__markdown h6 { font-size: .74em; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
+.page-document__markdown img { max-width: 100%; height: auto; }
 .page-document__image {
   display: block;
   max-width: 100%;

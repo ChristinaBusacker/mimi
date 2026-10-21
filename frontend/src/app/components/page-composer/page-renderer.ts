@@ -35,8 +35,15 @@ import { ResponsiveImageService } from '../../core/assets/responsive-image.servi
 export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
 export type CanvasMoveKind = 'section' | 'row' | 'block';
 export type CanvasInsertKind = 'section' | 'row' | 'block';
-export interface CanvasSelection { kind: CanvasKind; id: string; }
-export interface CanvasInsert { kind: CanvasInsertKind; parentId: string; index: number; }
+export interface CanvasSelection {
+  kind: CanvasKind;
+  id: string;
+}
+export interface CanvasInsert {
+  kind: CanvasInsertKind;
+  parentId: string;
+  index: number;
+}
 export interface CanvasMove {
   kind: CanvasMoveKind;
   id: string;
@@ -64,7 +71,16 @@ const ASSET = /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
 @Component({
   selector: 'app-page-renderer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgStyle, AsyncPipe, I18nPipe, Icon, Carousel, CarouselSlide, PageInlineMarkdown, MusicLibraryPlayer],
+  imports: [
+    NgStyle,
+    AsyncPipe,
+    I18nPipe,
+    Icon,
+    Carousel,
+    CarouselSlide,
+    PageInlineMarkdown,
+    MusicLibraryPlayer,
+  ],
   templateUrl: './page-renderer.html',
   styleUrl: './page-renderer.scss',
 })
@@ -75,17 +91,40 @@ export class PageRenderer {
   private readonly markdown = new MarkdownIt({ html: false, linkify: false, breaks: false });
 
   constructor() {
+    // Corresponds to the safe color-mark syntax in the Markdown editor.
+    this.markdown.inline.ruler.before('emphasis', 'mimiTextColor', (state, silent) => {
+      const match = /^%%#([a-fA-F0-9]{6}(?:[a-fA-F0-9]{2})?)\[([^\]\n]+)\]%%/.exec(
+        state.src.slice(state.pos),
+      );
+      if (!match) return false;
+      if (!silent) {
+        const start = state.push('mimi_text_color_open', 'span', 1);
+        start.attrSet('style', 'color:#' + match[1]);
+        state.md.inline.parse(match[2], state.md, state.env, state.tokens);
+        state.push('mimi_text_color_close', 'span', -1);
+      }
+      state.pos += match[0].length;
+      return true;
+    });
     this.markdown.renderer.rules['image'] = (tokens, index): string => {
       const token = tokens[index];
       const match = ASSET.exec(token.attrGet('src')?.toString() ?? '');
       if (!match) return '';
       const assetId = match[1];
+      const title = token.attrGet('title') ?? '';
+      const layout =
+        /^mimi-media:(left|center|right):(small|medium|large|full)(?::(100|[1-9]\d?))?$/.exec(
+          title + '',
+        );
+      const width = layout?.[3] ? Number(layout[3]) : null;
+      const widthStyle =
+        width !== null && width >= 10 && width <= 100
+          ? ` style="width:${width}%;max-width:100%;height:auto"`
+          : '';
       const src = this.imageSources.url(assetId, 1440);
       const srcset = this.imageSources.srcset(assetId);
-      const responsive = srcset
-        ? ` srcset="${srcset}" sizes="(max-width: 700px) 94vw, 960px"`
-        : '';
-      return `<img src="${src}"${responsive} alt="${this.markdown.utils.escapeHtml(token.content)}" loading="lazy">`;
+      const responsive = srcset ? ` srcset="${srcset}" sizes="(max-width: 700px) 94vw, 960px"` : '';
+      return `<img src="${src}"${responsive}${widthStyle} alt="${this.markdown.utils.escapeHtml(token.content)}" loading="lazy">`;
     };
   }
 
@@ -104,7 +143,11 @@ export class PageRenderer {
   readonly imageEdit = output<string>();
   readonly inlineTextId = input<string | null>(null);
   readonly inlineTextChange = output<{ id: string; markdown: string }>();
-  readonly nodeAction = output<{ kind: 'section' | 'row' | 'block'; id: string; action: 'duplicate' | 'remove' }>();
+  readonly nodeAction = output<{
+    kind: 'section' | 'row' | 'block';
+    id: string;
+    action: 'duplicate' | 'remove';
+  }>();
 
   protected readonly dragging = signal<PointerDrag | null>(null);
   protected readonly pointerX = signal(0);
@@ -124,17 +167,24 @@ export class PageRenderer {
     return /^https?:\/\//i.test(href);
   }
 
-  protected openGalleryItem(event: Event, gallery: PageGalleryBlock | PageSliderBlock, index: number): void {
+  protected openGalleryItem(
+    event: Event,
+    gallery: PageGalleryBlock | PageSliderBlock,
+    index: number,
+  ): void {
     event.stopPropagation();
     if (this.editable()) {
       this.nodeSelect.emit({ kind: 'block', id: gallery.id });
       return;
     }
-    this.lightbox.open(gallery.items.map((item) => ({
-      src: this.imageSources.url(item.assetId, Infinity),
-      thumbnailSrc: this.imageSources.url(item.assetId, 480),
-      alt: item.alt[this.locale()] || item.alt.de,
-    })), index);
+    this.lightbox.open(
+      gallery.items.map((item) => ({
+        src: this.imageSources.url(item.assetId, Infinity),
+        thumbnailSrc: this.imageSources.url(item.assetId, 480),
+        alt: item.alt[this.locale()] || item.alt.de,
+      })),
+      index,
+    );
   }
 
   protected editText(event: Event, id: string): void {
@@ -143,7 +193,12 @@ export class PageRenderer {
     this.textEdit.emit(id);
   }
 
-  protected act(event: Event, kind: 'section' | 'row' | 'block', id: string, action: 'duplicate' | 'remove'): void {
+  protected act(
+    event: Event,
+    kind: 'section' | 'row' | 'block',
+    id: string,
+    action: 'duplicate' | 'remove',
+  ): void {
     event.stopPropagation();
     this.nodeAction.emit({ kind, id, action });
   }
@@ -162,7 +217,12 @@ export class PageRenderer {
     this.imageEdit.emit(id);
   }
 
-  protected requestInsert(event: Event, kind: CanvasInsertKind, parentId: string, index: number): void {
+  protected requestInsert(
+    event: Event,
+    kind: CanvasInsertKind,
+    parentId: string,
+    index: number,
+  ): void {
     event.stopPropagation();
     this.insert.emit({ kind, parentId, index });
   }
@@ -174,7 +234,14 @@ export class PageRenderer {
     const handle = event.currentTarget;
     if (!(handle instanceof HTMLElement)) return;
     handle.setPointerCapture(event.pointerId);
-    this.pending = { kind, id, x: event.clientX, y: event.clientY, pointerId: event.pointerId, active: false };
+    this.pending = {
+      kind,
+      id,
+      x: event.clientX,
+      y: event.clientY,
+      pointerId: event.pointerId,
+      active: false,
+    };
   }
 
   protected pointerMove(event: PointerEvent): void {
@@ -195,7 +262,12 @@ export class PageRenderer {
     const drag = this.pending;
     const target = this.target();
     if (drag.active && target) {
-      this.itemMove.emit({ kind: drag.kind, id: drag.id, parentId: target.parentId, index: target.index });
+      this.itemMove.emit({
+        kind: drag.kind,
+        id: drag.id,
+        parentId: target.parentId,
+        index: target.index,
+      });
     }
     this.cancelPointer();
   }
@@ -212,7 +284,10 @@ export class PageRenderer {
   }
 
   private findDrop(event: PointerEvent, kind: CanvasMoveKind): DropPosition | null {
-    const element = this.host.nativeElement.ownerDocument.elementFromPoint(event.clientX, event.clientY);
+    const element = this.host.nativeElement.ownerDocument.elementFromPoint(
+      event.clientX,
+      event.clientY,
+    );
     if (!(element instanceof Element) || !this.host.nativeElement.contains(element)) return null;
     const targetType = kind === 'block' ? 'block' : kind;
     const target = element.closest<HTMLElement>(`[data-editor-kind="${targetType}"]`);
@@ -220,8 +295,15 @@ export class PageRenderer {
       const parentId = target.dataset['editorParent'];
       const index = Number(target.dataset['editorIndex']);
       if (!parentId || !Number.isInteger(index)) return null;
-      const after = event.clientY > target.getBoundingClientRect().top + target.getBoundingClientRect().height / 2;
-      return { parentId, index: index + Number(after), nodeId: target.dataset['editorId'] ?? '', placement: after ? 'after' : 'before' };
+      const after =
+        event.clientY >
+        target.getBoundingClientRect().top + target.getBoundingClientRect().height / 2;
+      return {
+        parentId,
+        index: index + Number(after),
+        nodeId: target.dataset['editorId'] ?? '',
+        placement: after ? 'after' : 'before',
+      };
     }
     const containerType = kind === 'block' ? 'column' : kind === 'row' ? 'section' : 'page';
     const container = element.closest<HTMLElement>(`[data-editor-kind="${containerType}"]`);
@@ -248,23 +330,36 @@ export class PageRenderer {
     return null;
   }
 
-  protected grid(layout: RowLayout): string { return pageGridColumns(layout); }
+  protected grid(layout: RowLayout): string {
+    return pageGridColumns(layout);
+  }
   protected albumDate(value: string | null): string | null {
     if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
     const date = new Date(`${value}T00:00:00Z`);
     if (Number.isNaN(date.getTime())) return null;
     return new Intl.DateTimeFormat(this.locale() === 'de' ? 'de-DE' : 'en-US', {
-      year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'UTC',
     }).format(date);
   }
   protected albumDuration(seconds: number): string {
     const total = Math.max(0, Math.round(seconds));
     return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
   }
-  protected surface(styles: PageStyles): string { return `page-surface--${styles.background ?? 'none'}`; }
-  protected html(content: string): string { return this.markdown.render(content); }
-  protected image(assetId: string): string { return this.imageSources.url(assetId, 1440); }
-  protected imageSrcset(assetId: string): string | null { return this.imageSources.srcset(assetId); }
+  protected surface(styles: PageStyles): string {
+    return `page-surface--${styles.background ?? 'none'}`;
+  }
+  protected html(content: string): string {
+    return this.markdown.render(content);
+  }
+  protected image(assetId: string): string {
+    return this.imageSources.url(assetId, 1440);
+  }
+  protected imageSrcset(assetId: string): string | null {
+    return this.imageSources.srcset(assetId);
+  }
   protected gallerySizes(layout: PageGalleryBlock['layout'], index: number): string {
     const featured = index === 0 && layout !== undefined && layout !== 'grid';
     return featured
@@ -281,7 +376,8 @@ export class PageRenderer {
     else if (styles.textShadow === 'none') result['text-shadow'] = 'none';
     if (styles.corners) {
       const c = styles.corners;
-      result['border-radius'] = `${c.topLeft}px ${c.topRight}px ${c.bottomRight}px ${c.bottomLeft}px`;
+      result['border-radius'] =
+        `${c.topLeft}px ${c.topRight}px ${c.bottomRight}px ${c.bottomLeft}px`;
     }
     if (styles.border) {
       result['border'] = `${styles.border.width}px ${styles.border.style} ${styles.border.color}`;
@@ -291,43 +387,64 @@ export class PageRenderer {
       result['box-shadow'] = `${s.x}px ${s.y}px ${s.blur}px ${s.spread}px ${s.color}`;
     }
     // A node's own design must not leak down via inherited CSS custom properties.
-    result['--pc-design-color'] = styles.designBackground?.kind === 'color'
-      ? styles.designBackground.color : styles.designBackground ? 'transparent' : 'var(--pc-background-color, transparent)';
+    result['--pc-design-color'] =
+      styles.designBackground?.kind === 'color'
+        ? styles.designBackground.color
+        : styles.designBackground
+          ? 'transparent'
+          : 'var(--pc-background-color, transparent)';
     if (styles.spacing) result['--pc-padding'] = `var(--composer-section-${styles.spacing})`;
     // Always reset these per node: CSS variables otherwise leak into descendants.
     result['--pc-design-image'] = styles.designBackground
-      ? this.backgroundImage(styles.designBackground) : 'none';
-    result['--pc-design-position'] = styles.designBackground?.kind === 'image'
-      ? styles.designBackground.position : 'center';
+      ? this.backgroundImage(styles.designBackground)
+      : 'none';
+    result['--pc-design-position'] =
+      styles.designBackground?.kind === 'image' ? styles.designBackground.position : 'center';
     const bg = (value: PageStyleValues): string => {
       if (value.backgroundColor) return value.backgroundColor;
       switch (value.background) {
-        case 'glass': return 'rgb(24 16 34 / 52%)';
-        case 'solid': return '#282034';
-        case 'accent': return 'rgb(218 139 185 / 16%)';
-        default: return 'transparent';
+        case 'glass':
+          return 'rgb(24 16 34 / 52%)';
+        case 'solid':
+          return '#282034';
+        case 'accent':
+          return 'rgb(218 139 185 / 16%)';
+        default:
+          return 'transparent';
       }
     };
     const base: PageStyleValues = {
-      background: styles.background ?? 'none', backgroundColor: styles.backgroundColor,
-      textColor: styles.textColor, padding: styles.padding ?? 0, gap: styles.gap ?? 16,
-      radius: styles.radius ?? 0, align: styles.align ?? 'left',
+      background: styles.background ?? 'none',
+      backgroundColor: styles.backgroundColor,
+      textColor: styles.textColor,
+      padding: styles.padding ?? 0,
+      gap: styles.gap ?? 16,
+      radius: styles.radius ?? 0,
+      align: styles.align ?? 'left',
     };
     const keys = ['padding', 'gap', 'radius', 'align', 'text-color', 'background-color'] as const;
-    const css = (values: PageStyleValues, key: typeof keys[number]): string | undefined => {
+    const css = (values: PageStyleValues, key: (typeof keys)[number]): string | undefined => {
       switch (key) {
-        case 'padding': return values.padding === undefined ? undefined : `${values.padding}px`;
-        case 'gap': return values.gap === undefined ? undefined : `${values.gap}px`;
-        case 'radius': return values.radius === undefined ? undefined : `${values.radius}px`;
-        case 'align': return values.align;
-        case 'text-color': return values.textColor;
-        case 'background-color': return values.background !== undefined || values.backgroundColor ? bg(values) : undefined;
+        case 'padding':
+          return values.padding === undefined ? undefined : `${values.padding}px`;
+        case 'gap':
+          return values.gap === undefined ? undefined : `${values.gap}px`;
+        case 'radius':
+          return values.radius === undefined ? undefined : `${values.radius}px`;
+        case 'align':
+          return values.align;
+        case 'text-color':
+          return values.textColor;
+        case 'background-color':
+          return values.background !== undefined || values.backgroundColor ? bg(values) : undefined;
       }
     };
     for (const key of keys) {
       result[`--pc-${key}`] = css(base, key) ?? 'inherit';
-      result[`--pc-tablet-${key}`] = css(styles.responsive?.tablet ?? {}, key) ?? `var(--pc-${key})`;
-      result[`--pc-mobile-${key}`] = css(styles.responsive?.mobile ?? {}, key) ?? `var(--pc-tablet-${key})`;
+      result[`--pc-tablet-${key}`] =
+        css(styles.responsive?.tablet ?? {}, key) ?? `var(--pc-${key})`;
+      result[`--pc-mobile-${key}`] =
+        css(styles.responsive?.mobile ?? {}, key) ?? `var(--pc-tablet-${key})`;
     }
     if (styles.spacing) {
       // A semantic spacing preset overrides old numeric values at every breakpoint.
@@ -341,8 +458,12 @@ export class PageRenderer {
     if (value.kind === 'color') return 'none';
     if (value.kind === 'gradient')
       return `linear-gradient(${value.angle}deg, ${value.from}, ${value.to})`;
-    const shade = value.overlay === 'strong' ? 'rgb(15 10 25 / 62%)'
-      : value.overlay === 'soft' ? 'rgb(15 10 25 / 30%)' : 'transparent';
+    const shade =
+      value.overlay === 'strong'
+        ? 'rgb(15 10 25 / 62%)'
+        : value.overlay === 'soft'
+          ? 'rgb(15 10 25 / 30%)'
+          : 'transparent';
     const asset = this.imageSources.url(value.assetId, 1920);
     return `linear-gradient(${shade}, ${shade}), url("${asset}")`;
   }

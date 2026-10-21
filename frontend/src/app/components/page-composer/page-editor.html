@@ -9,18 +9,22 @@
         [attr.aria-label]="'page.editor.outline' | i18n | async"
         [attr.aria-pressed]="outlineOpen()"
       >
-        <app-icon name="panel-left" />
+        <app-icon name="panel-left" class="white" />
       </button>
       <button
         type="button"
         class="composer__page-settings"
         (click)="inspect('page', document().id)"
       >
-        <app-icon name="layout-template" /> {{ 'page.editor.title' | i18n | async }}
+        <app-icon name="layout-template" class="white" /> {{ 'page.editor.title' | i18n | async }}
       </button>
       <span class="composer__toolbar-divider"></span>
-      <button type="button" class="composer__tool composer__save" (click)="saveRequest.emit()"
-        [title]="'page.editor.shortcut.save' | i18n | async">
+      <button
+        type="button"
+        class="composer__tool composer__save"
+        (click)="saveRequest.emit(false)"
+        [title]="'page.editor.shortcut.save' | i18n | async"
+      >
         {{ 'page.editor.saveDraft' | i18n | async }}
       </button>
       <button
@@ -31,7 +35,7 @@
         [title]="'page.editor.shortcut.undo' | i18n | async"
         (click)="undo()"
       >
-        <app-icon name="undo-2" />
+        <app-icon name="undo-2" class="white" />
       </button>
       <button
         type="button"
@@ -41,7 +45,7 @@
         [title]="'page.editor.shortcut.redo' | i18n | async"
         (click)="redo()"
       >
-        <app-icon name="redo-2" />
+        <app-icon name="redo-2" class="white" />
       </button>
     </div>
     <div class="composer__toolbar-group">
@@ -52,7 +56,7 @@
         [attr.aria-label]="'page.editor.desktop' | i18n | async"
         (click)="selectDevice('desktop')"
       >
-        <app-icon name="monitor" />
+        <app-icon name="monitor" class="white" />
       </button>
       <button
         type="button"
@@ -61,7 +65,7 @@
         [attr.aria-label]="'page.editor.tablet' | i18n | async"
         (click)="selectDevice('tablet')"
       >
-        <app-icon name="tablet" />
+        <app-icon name="tablet" class="white" />
       </button>
       <button
         type="button"
@@ -70,7 +74,7 @@
         [attr.aria-label]="'page.editor.mobile' | i18n | async"
         (click)="selectDevice('mobile')"
       >
-        <app-icon name="smartphone" />
+        <app-icon name="smartphone" class="white" />
       </button>
       <span class="composer__toolbar-divider"></span>
       <button
@@ -97,7 +101,7 @@
         [attr.aria-label]="'page.editor.toggleInspector' | i18n | async"
         (click)="inspectorOpen.set(!inspectorOpen())"
       >
-        <app-icon name="panel-right" />
+        <app-icon name="panel-right" class="white" />
       </button>
       <button
         type="button"
@@ -106,7 +110,7 @@
         [attr.aria-pressed]="preview()"
         (click)="togglePreview()"
       >
-        <app-icon [name]="preview() ? 'pencil' : 'eye'" />
+        <app-icon [name]="preview() ? 'pencil' : 'eye'" class="white" />
         {{ 'page.editor.preview' | i18n | async }}
       </button>
     </div>
@@ -115,7 +119,7 @@
     <nav class="composer__breadcrumbs" [attr.aria-label]="'page.editor.breadcrumbs' | i18n | async">
       @for (entry of breadcrumbs(); track entry.id; let last = $last) {
         @if (!$first) {
-          <app-icon name="chevron-right" />
+          <app-icon name="chevron-right" class="white" />
         }
         <button
           type="button"
@@ -140,7 +144,9 @@
   >
     @if (outlineOpen() && !preview()) {
       <nav class="composer__outline" [attr.aria-label]="'page.editor.outline' | i18n | async">
-        <header><app-icon name="list-tree" /> {{ 'page.editor.outline' | i18n | async }}</header>
+        <header>
+          <app-icon name="list-tree" class="white" /> {{ 'page.editor.outline' | i18n | async }}
+        </header>
         <button
           type="button"
           (click)="inspect('page', document().id)"
@@ -191,13 +197,14 @@
       </nav>
     }
     <div class="composer__canvas-shell">
-      <div
-        class="composer__canvas"
-        [class.composer__canvas--preview]="preview()"
-      >
+      <div class="composer__canvas" [class.composer__canvas--preview]="preview()">
         <div class="booklet-world composer__booklet-world" aria-hidden="true">
           @if (coverAssetId(); as cover) {
-            <img class="booklet-world__artwork" [src]="'/api/assets/' + cover + '/image/large/fallback'" alt="" />
+            <img
+              class="booklet-world__artwork"
+              [src]="'/api/assets/' + cover + '/image/large/fallback'"
+              alt=""
+            />
           }
         </div>
         <div
@@ -243,7 +250,7 @@
                 (click)="addTarget.set(null)"
                 [attr.aria-label]="'page.editor.close' | i18n | async"
               >
-                <app-icon name="x" />
+                <app-icon name="x" class="white" />
               </button>
             </header>
             @if (target.kind === 'row') {
@@ -266,7 +273,7 @@
               <div class="composer__block-palette">
                 @for (kind of blockKinds; track kind) {
                   <button type="button" (click)="insertBlock(target.parentId, kind, target.index)">
-                    <app-icon [name]="blockIcon(kind)" />
+                    <app-icon [name]="blockIcon(kind)" class="white" />
                     {{ 'page.editor.block.' + kind | i18n | async }}
                   </button>
                 }
@@ -305,7 +312,7 @@
               (click)="resetInspector()"
               [attr.aria-label]="'page.editor.resetWidth' | i18n | async"
             >
-              <app-icon name="panel-right" />
+              <app-icon name="panel-right" class="white" />
             </button>
             <div class="composer__inspector-actions">
               @if (selected(); as selection) {
@@ -319,14 +326,14 @@
                     (click)="shift(selection.kind, selection.id, -1)"
                     [attr.aria-label]="'page.editor.up' | i18n | async"
                   >
-                    <app-icon name="arrow-up" />
+                    <app-icon name="arrow-up" class="white" />
                   </button>
                   <button
                     type="button"
                     (click)="shift(selection.kind, selection.id, 1)"
                     [attr.aria-label]="'page.editor.down' | i18n | async"
                   >
-                    <app-icon name="arrow-down" />
+                    <app-icon name="arrow-down" class="white" />
                   </button>
                 }
               }
@@ -335,7 +342,7 @@
                 (click)="selected.set(null)"
                 [attr.aria-label]="'page.editor.close' | i18n | async"
               >
-                <app-icon name="x" />
+                <app-icon name="x" class="white" />
               </button>
             </div>
           </header>
@@ -407,7 +414,7 @@
                     @if (block.assetId) {
                       <img [src]="imageUrl(block.assetId)" alt="" />
                     } @else {
-                      <app-icon name="image" />
+                      <app-icon name="image" class="white" />
                     }
                     <span>{{ 'page.editor.chooseImage' | i18n | async }}</span>
                   </button>
@@ -419,10 +426,18 @@
                   <label>{{ 'page.editor.gallery.layout' | i18n | async }}</label>
                   <select [value]="block.layout ?? 'grid'" (change)="setGalleryLayout($event)">
                     <option value="grid">{{ 'page.editor.gallery.grid' | i18n | async }}</option>
-                    <option value="featured">{{ 'page.editor.gallery.featured' | i18n | async }}</option>
-                    <option value="featuredRight">{{ 'page.editor.gallery.featuredRight' | i18n | async }}</option>
-                    <option value="panorama">{{ 'page.editor.gallery.panorama' | i18n | async }}</option>
-                    <option value="mosaic">{{ 'page.editor.gallery.mosaic' | i18n | async }}</option>
+                    <option value="featured">
+                      {{ 'page.editor.gallery.featured' | i18n | async }}
+                    </option>
+                    <option value="featuredRight">
+                      {{ 'page.editor.gallery.featuredRight' | i18n | async }}
+                    </option>
+                    <option value="panorama">
+                      {{ 'page.editor.gallery.panorama' | i18n | async }}
+                    </option>
+                    <option value="mosaic">
+                      {{ 'page.editor.gallery.mosaic' | i18n | async }}
+                    </option>
                   </select>
                   @for (image of block.items; track image.id) {
                     <div class="composer__gallery-item">
@@ -433,18 +448,39 @@
                         (change)="updateGalleryAlt(image.id, $event)"
                       />
                       <div class="composer__gallery-actions">
-                        <button type="button" [disabled]="$first" (click)="moveGalleryImage(image.id, -1)"
-                          [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
-                        <button type="button" [disabled]="$last" (click)="moveGalleryImage(image.id, 1)"
-                          [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
-                        <button type="button" (click)="deleteGalleryImage(image.id)"
-                          [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                        <button
+                          type="button"
+                          [disabled]="$first"
+                          (click)="moveGalleryImage(image.id, -1)"
+                          [attr.aria-label]="'page.editor.up' | i18n | async"
+                        >
+                          <app-icon name="arrow-up" class="white" />
+                        </button>
+                        <button
+                          type="button"
+                          [disabled]="$last"
+                          (click)="moveGalleryImage(image.id, 1)"
+                          [attr.aria-label]="'page.editor.down' | i18n | async"
+                        >
+                          <app-icon name="arrow-down" class="white" />
+                        </button>
+                        <button
+                          type="button"
+                          (click)="deleteGalleryImage(image.id)"
+                          [attr.aria-label]="'page.editor.remove' | i18n | async"
+                        >
+                          <app-icon name="trash-2" class="white" />
+                        </button>
                       </div>
                     </div>
                   }
-                  <button type="button" [disabled]="block.items.length >= 36"
-                    (click)="openGalleryLibrary(block.id)">
-                    <app-icon name="images" /> {{ 'page.editor.chooseImage' | i18n | async }}
+                  <button
+                    type="button"
+                    [disabled]="block.items.length >= 36"
+                    (click)="openGalleryLibrary(block.id)"
+                  >
+                    <app-icon name="images" class="white" />
+                    {{ 'page.editor.chooseImage' | i18n | async }}
                   </button>
                 }
                 @case ('slider') {
@@ -452,22 +488,46 @@
                   @for (image of block.items; track image.id) {
                     <div class="composer__gallery-item">
                       <img [src]="imageUrl(image.assetId)" alt="" />
-                      <input [value]="image.alt[locale()]" maxlength="200"
+                      <input
+                        [value]="image.alt[locale()]"
+                        maxlength="200"
                         [attr.aria-label]="'page.editor.alt' | i18n | async"
-                        (change)="updateGalleryAlt(image.id, $event)" />
+                        (change)="updateGalleryAlt(image.id, $event)"
+                      />
                       <div class="composer__gallery-actions">
-                        <button type="button" [disabled]="$first" (click)="moveGalleryImage(image.id, -1)"
-                          [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
-                        <button type="button" [disabled]="$last" (click)="moveGalleryImage(image.id, 1)"
-                          [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
-                        <button type="button" (click)="deleteGalleryImage(image.id)"
-                          [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                        <button
+                          type="button"
+                          [disabled]="$first"
+                          (click)="moveGalleryImage(image.id, -1)"
+                          [attr.aria-label]="'page.editor.up' | i18n | async"
+                        >
+                          <app-icon name="arrow-up" class="white" />
+                        </button>
+                        <button
+                          type="button"
+                          [disabled]="$last"
+                          (click)="moveGalleryImage(image.id, 1)"
+                          [attr.aria-label]="'page.editor.down' | i18n | async"
+                        >
+                          <app-icon name="arrow-down" class="white" />
+                        </button>
+                        <button
+                          type="button"
+                          (click)="deleteGalleryImage(image.id)"
+                          [attr.aria-label]="'page.editor.remove' | i18n | async"
+                        >
+                          <app-icon name="trash-2" class="white" />
+                        </button>
                       </div>
                     </div>
                   }
-                  <button type="button" [disabled]="block.items.length >= 36"
-                    (click)="openGalleryLibrary(block.id)">
-                    <app-icon name="images" /> {{ 'page.editor.chooseImage' | i18n | async }}
+                  <button
+                    type="button"
+                    [disabled]="block.items.length >= 36"
+                    (click)="openGalleryLibrary(block.id)"
+                  >
+                    <app-icon name="images" class="white" />
+                    {{ 'page.editor.chooseImage' | i18n | async }}
                   </button>
                 }
                 @case ('cardCarousel') {
@@ -476,35 +536,80 @@
                     <fieldset class="composer__card-editor">
                       <legend>{{ 'page.editor.card.item' | i18n | async }} {{ $index + 1 }}</legend>
                       <div class="composer__gallery-actions">
-                        <button type="button" [disabled]="$first" (click)="moveCard(card.id, -1)"
-                          [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
-                        <button type="button" [disabled]="$last" (click)="moveCard(card.id, 1)"
-                          [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
-                        <button type="button" (click)="removeCard(card.id)"
-                          [attr.aria-label]="'page.editor.remove' | i18n | async"><app-icon name="trash-2" /></button>
+                        <button
+                          type="button"
+                          [disabled]="$first"
+                          (click)="moveCard(card.id, -1)"
+                          [attr.aria-label]="'page.editor.up' | i18n | async"
+                        >
+                          <app-icon name="arrow-up" class="white" />
+                        </button>
+                        <button
+                          type="button"
+                          [disabled]="$last"
+                          (click)="moveCard(card.id, 1)"
+                          [attr.aria-label]="'page.editor.down' | i18n | async"
+                        >
+                          <app-icon name="arrow-down" class="white" />
+                        </button>
+                        <button
+                          type="button"
+                          (click)="removeCard(card.id)"
+                          [attr.aria-label]="'page.editor.remove' | i18n | async"
+                        >
+                          <app-icon name="trash-2" class="white" />
+                        </button>
                       </div>
                       <label>{{ 'page.editor.card.image' | i18n | async }}</label>
-                      <select [value]="card.assetId ?? ''" (change)="editCard(card.id, 'assetId', $event)">
+                      <select
+                        [value]="card.assetId ?? ''"
+                        (change)="editCard(card.id, 'assetId', $event)"
+                      >
                         <option value="">{{ 'page.editor.card.noImage' | i18n | async }}</option>
                         @for (asset of assets(); track asset.id) {
                           <option [value]="asset.id">{{ asset.originalFilename }}</option>
                         }
                       </select>
-                      @if (card.assetId) { <img class="composer__card-preview" [src]="imageUrl(card.assetId)" alt="" /> }
+                      @if (card.assetId) {
+                        <img class="composer__card-preview" [src]="imageUrl(card.assetId)" alt="" />
+                      }
                       <label>{{ 'page.editor.alt' | i18n | async }}</label>
-                      <input [value]="card.alt[locale()]" maxlength="300" (change)="editCard(card.id, 'alt', $event)" />
+                      <input
+                        [value]="card.alt[locale()]"
+                        maxlength="300"
+                        (change)="editCard(card.id, 'alt', $event)"
+                      />
                       <label>{{ 'page.editor.card.title' | i18n | async }}</label>
-                      <input [value]="card.title[locale()]" maxlength="200" (change)="editCard(card.id, 'title', $event)" />
+                      <input
+                        [value]="card.title[locale()]"
+                        maxlength="200"
+                        (change)="editCard(card.id, 'title', $event)"
+                      />
                       <label>{{ 'page.editor.card.description' | i18n | async }}</label>
-                      <textarea [value]="card.description[locale()]" maxlength="800" rows="3"
-                        (change)="editCard(card.id, 'description', $event)"></textarea>
+                      <textarea
+                        [value]="card.description[locale()]"
+                        maxlength="800"
+                        rows="3"
+                        (change)="editCard(card.id, 'description', $event)"
+                      ></textarea>
                       <label>{{ 'page.editor.card.link' | i18n | async }}</label>
-                      <input [value]="card.href" maxlength="800" placeholder="/musik"
-                        (change)="editCard(card.id, 'href', $event)" />
+                      <input
+                        [value]="card.href"
+                        maxlength="800"
+                        placeholder="/musik"
+                        (change)="editCard(card.id, 'href', $event)"
+                      />
                     </fieldset>
                   }
-                  <button class="composer__card-add" type="button" [disabled]="block.items.length >= 24"
-                    (click)="addCard()"><app-icon name="plus" /> {{ 'page.editor.card.add' | i18n | async }}</button>
+                  <button
+                    class="composer__card-add"
+                    type="button"
+                    [disabled]="block.items.length >= 24"
+                    (click)="addCard()"
+                  >
+                    <app-icon name="plus" class="white" />
+                    {{ 'page.editor.card.add' | i18n | async }}
+                  </button>
                 }
                 @case ('albumDetails') {
                   <p class="composer__hint">{{ 'page.editor.album.autoDetails' | i18n | async }}</p>
@@ -514,21 +619,43 @@
                 }
                 @case ('albumCredits') {
                   <label>{{ 'page.editor.album.heading' | i18n | async }}</label>
-                  <input maxlength="200" [value]="block.heading[locale()]" (change)="editCreditsHeading($event)" />
+                  <input
+                    maxlength="200"
+                    [value]="block.heading[locale()]"
+                    (change)="editCreditsHeading($event)"
+                  />
                   @if (!block.entries.length) {
-                    <p class="composer__hint">{{ 'admin.music.editorial.creditsAuto' | i18n | async }}</p>
+                    <p class="composer__hint">
+                      {{ 'admin.music.editorial.creditsAuto' | i18n | async }}
+                    </p>
                   }
                   @for (credit of block.entries; track $index; let creditIndex = $index) {
                     <div class="composer__credit-editor">
                       <label>{{ 'page.editor.album.creditName' | i18n | async }}</label>
-                      <input maxlength="120" [value]="credit.name" (change)="editCredit(creditIndex, 'name', $event)" />
+                      <input
+                        maxlength="120"
+                        [value]="credit.name"
+                        (change)="editCredit(creditIndex, 'name', $event)"
+                      />
                       <label>{{ 'page.editor.album.creditRole' | i18n | async }}</label>
-                      <input maxlength="200" [value]="credit.role[locale()]" (change)="editCredit(creditIndex, 'role', $event)" />
-                      <button type="button" (click)="removeCredit(creditIndex)">{{ 'page.editor.remove' | i18n | async }}</button>
+                      <input
+                        maxlength="200"
+                        [value]="credit.role[locale()]"
+                        (change)="editCredit(creditIndex, 'role', $event)"
+                      />
+                      <button type="button" (click)="removeCredit(creditIndex)">
+                        {{ 'page.editor.remove' | i18n | async }}
+                      </button>
                     </div>
                   }
                   @if (block.entries.length) {
-                    <button type="button" [disabled]="block.entries.length >= 40" (click)="addCredit()">{{ 'page.editor.album.addCredit' | i18n | async }}</button>
+                    <button
+                      type="button"
+                      [disabled]="block.entries.length >= 40"
+                      (click)="addCredit()"
+                    >
+                      {{ 'page.editor.album.addCredit' | i18n | async }}
+                    </button>
                   }
                 }
                 @case ('spacer') {
@@ -574,169 +701,377 @@
             @if (selectedColumn(); as column) {
               <div class="composer__design-group">
                 <label>{{ 'page.editor.columnContentAlign' | i18n | async }}</label>
-                <select [value]="column.contentAlign ?? 'start'" (change)="setColumnAlignment($event)">
-                  <option value="start">{{ 'page.editor.columnAlign.start' | i18n | async }}</option>
-                  <option value="center">{{ 'page.editor.columnAlign.center' | i18n | async }}</option>
+                <select
+                  [value]="column.contentAlign ?? 'start'"
+                  (change)="setColumnAlignment($event)"
+                >
+                  <option value="start">
+                    {{ 'page.editor.columnAlign.start' | i18n | async }}
+                  </option>
+                  <option value="center">
+                    {{ 'page.editor.columnAlign.center' | i18n | async }}
+                  </option>
                   <option value="end">{{ 'page.editor.columnAlign.end' | i18n | async }}</option>
                 </select>
               </div>
             }
-            @if (selected()?.kind === 'section' || selected()?.kind === 'row' || selected()?.kind === 'column') {
+            @if (
+              selected()?.kind === 'section' ||
+              selected()?.kind === 'row' ||
+              selected()?.kind === 'column'
+            ) {
               <p class="composer__hint">{{ 'page.editor.design.global' | i18n | async }}</p>
               <details class="composer__accordion" open>
-                <summary><app-icon name="palette" /> {{ 'page.editor.studio.presets' | i18n | async }}</summary>
+                <summary>
+                  <app-icon name="palette" class="white" />
+                  {{ 'page.editor.studio.presets' | i18n | async }}
+                </summary>
                 <div class="composer__accordion-content composer__surface-presets">
-                  <button type="button" (click)="applySurfacePreset('none')">{{ 'page.editor.design.none' | i18n | async }}</button>
-                  <button type="button" (click)="applySurfacePreset('soft')">{{ 'page.editor.surface.soft' | i18n | async }}</button>
-                  <button type="button" (click)="applySurfacePreset('card')">{{ 'page.editor.surface.card' | i18n | async }}</button>
-                  <button type="button" (click)="applySurfacePreset('floating')">{{ 'page.editor.surface.floating' | i18n | async }}</button>
-                  <button type="button" (click)="applySurfacePreset('glow')">{{ 'page.editor.surface.glow' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('none')">
+                    {{ 'page.editor.design.none' | i18n | async }}
+                  </button>
+                  <button type="button" (click)="applySurfacePreset('soft')">
+                    {{ 'page.editor.surface.soft' | i18n | async }}
+                  </button>
+                  <button type="button" (click)="applySurfacePreset('card')">
+                    {{ 'page.editor.surface.card' | i18n | async }}
+                  </button>
+                  <button type="button" (click)="applySurfacePreset('floating')">
+                    {{ 'page.editor.surface.floating' | i18n | async }}
+                  </button>
+                  <button type="button" (click)="applySurfacePreset('glow')">
+                    {{ 'page.editor.surface.glow' | i18n | async }}
+                  </button>
                 </div>
               </details>
               <details class="composer__accordion">
-                <summary><app-icon name="ruler" /> {{ 'page.editor.studio.spacing' | i18n | async }}</summary>
+                <summary>
+                  <app-icon name="ruler" class="white" />
+                  {{ 'page.editor.studio.spacing' | i18n | async }}
+                </summary>
                 <div class="composer__accordion-content">
                   @if (selected()?.kind !== 'row') {
-              <div class="composer__design-group">
-                <label>{{ 'page.editor.design.spacing' | i18n | async }}</label>
-                <select [value]="node.styles.spacing ?? ''" (change)="setSpacing($event)">
-                  @if (!node.styles.spacing) { <option value="">{{ 'page.editor.design.existing' | i18n | async }}</option> }
-                  <option value="small">{{ 'page.editor.design.small' | i18n | async }}</option>
-                  <option value="standard">{{ 'page.editor.design.standard' | i18n | async }}</option>
-                  <option value="large">{{ 'page.editor.design.large' | i18n | async }}</option>
-                </select>
-              </div>
+                    <div class="composer__design-group">
+                      <label>{{ 'page.editor.design.spacing' | i18n | async }}</label>
+                      <select [value]="node.styles.spacing ?? ''" (change)="setSpacing($event)">
+                        @if (!node.styles.spacing) {
+                          <option value="">
+                            {{ 'page.editor.design.existing' | i18n | async }}
+                          </option>
+                        }
+                        <option value="small">
+                          {{ 'page.editor.design.small' | i18n | async }}
+                        </option>
+                        <option value="standard">
+                          {{ 'page.editor.design.standard' | i18n | async }}
+                        </option>
+                        <option value="large">
+                          {{ 'page.editor.design.large' | i18n | async }}
+                        </option>
+                      </select>
+                    </div>
                   }
                 </div>
               </details>
               <details class="composer__accordion" open>
-                <summary><app-icon name="paintbrush" /> {{ 'page.editor.studio.background' | i18n | async }}</summary>
+                <summary>
+                  <app-icon name="paintbrush" class="white" />
+                  {{ 'page.editor.studio.background' | i18n | async }}
+                </summary>
                 <div class="composer__accordion-content">
-              <div class="composer__design-group">
-                <label>{{ 'page.editor.design.backgroundType' | i18n | async }}</label>
-                <select [value]="node.styles.designBackground?.kind ?? (node.styles.background !== 'none' && node.styles.background ? 'legacy' : 'none')" (change)="setBackgroundMode($event)">
-                  <option value="none">{{ 'page.editor.design.none' | i18n | async }}</option>
-                  @if (!node.styles.designBackground && node.styles.background && node.styles.background !== 'none') {
-                    <option value="legacy">{{ 'page.editor.design.existing' | i18n | async }}</option>
-                  }
-                  <option value="color">{{ 'page.editor.design.color' | i18n | async }}</option>
-                  <option value="gradient">{{ 'page.editor.design.gradient' | i18n | async }}</option>
-                  @if (selected()?.kind !== 'row') {
-                    <option value="image">{{ 'page.editor.design.image' | i18n | async }}</option>
-                  }
-                </select>
-                @switch (node.styles.designBackground?.kind) {
-                  @case ('color') {
-                    <app-composer-color-picker [label]="('page.editor.design.color' | i18n | async) ?? ''"
-                      [value]="node.styles.designBackground?.kind === 'color' ? node.styles.designBackground.color : '#000000ff'"
-                      (valueChange)="setBackgroundColor('color', $event)" />
-                  }
-                  @case ('gradient') {
-                    <div class="composer__design-colors">
-                      <app-composer-color-picker [label]="('page.editor.design.from' | i18n | async) ?? ''"
-                        [value]="node.styles.designBackground?.kind === 'gradient' ? node.styles.designBackground.from : '#000000ff'"
-                        (valueChange)="setBackgroundColor('from', $event)" />
-                      <app-composer-color-picker [label]="('page.editor.design.to' | i18n | async) ?? ''"
-                        [value]="node.styles.designBackground?.kind === 'gradient' ? node.styles.designBackground.to : '#000000ff'"
-                        (valueChange)="setBackgroundColor('to', $event)" />
-                    </div>
-                    <label>{{ 'page.editor.design.angle' | i18n | async }}</label>
-                    <select [value]="backgroundValue('angle')" (change)="setGradientAngle($event)">
-                      <option value="0">0°</option><option value="45">45°</option>
-                      <option value="90">90°</option><option value="135">135°</option><option value="180">180°</option>
-                    </select>
-                  }
-                  @case ('image') {
-                    <button class="composer__background-image" type="button" (click)="openBackgroundLibrary()">
-                      @if (backgroundAssetId(); as id) { <img [src]="imageUrl(id)" alt="" /> }
-                      <span>{{ 'page.editor.chooseImage' | i18n | async }}</span>
-                    </button>
-                    <label>{{ 'page.editor.design.position' | i18n | async }}</label>
-                    <select [value]="backgroundValue('position')" (change)="changeBackgroundImage('position', $event)">
-                      <option value="center">{{ 'page.editor.design.position.middle' | i18n | async }}</option>
-                      <option value="top">{{ 'page.editor.design.position.top' | i18n | async }}</option>
-                      <option value="bottom">{{ 'page.editor.design.position.bottom' | i18n | async }}</option>
-                    </select>
-                    <label>{{ 'page.editor.design.overlay' | i18n | async }}</label>
-                    <select [value]="backgroundValue('overlay')" (change)="changeBackgroundImage('overlay', $event)">
+                  <div class="composer__design-group">
+                    <label>{{ 'page.editor.design.backgroundType' | i18n | async }}</label>
+                    <select
+                      [value]="
+                        node.styles.designBackground?.kind ??
+                        (node.styles.background !== 'none' && node.styles.background
+                          ? 'legacy'
+                          : 'none')
+                      "
+                      (change)="setBackgroundMode($event)"
+                    >
                       <option value="none">{{ 'page.editor.design.none' | i18n | async }}</option>
-                      <option value="soft">{{ 'page.editor.design.soft' | i18n | async }}</option>
-                      <option value="strong">{{ 'page.editor.design.strong' | i18n | async }}</option>
+                      @if (
+                        !node.styles.designBackground &&
+                        node.styles.background &&
+                        node.styles.background !== 'none'
+                      ) {
+                        <option value="legacy">
+                          {{ 'page.editor.design.existing' | i18n | async }}
+                        </option>
+                      }
+                      <option value="color">{{ 'page.editor.design.color' | i18n | async }}</option>
+                      <option value="gradient">
+                        {{ 'page.editor.design.gradient' | i18n | async }}
+                      </option>
+                      @if (selected()?.kind !== 'row') {
+                        <option value="image">
+                          {{ 'page.editor.design.image' | i18n | async }}
+                        </option>
+                      }
                     </select>
-                  }
-                }
-              </div>
-                </div>
-              </details>
-              <details class="composer__accordion">
-                <summary><app-icon name="square-dashed" /> {{ 'page.editor.studio.borderCorners' | i18n | async }}</summary>
-                <div class="composer__accordion-content composer__surface-studio">
-                <div class="composer__studio-heading">
-                  <h4>{{ 'page.editor.surface.corners' | i18n | async }}</h4>
-                  <button type="button" class="composer__lock" [class.is-active]="cornerLinks().has('all')"
-                    [attr.aria-pressed]="cornerLinks().has('all')" (click)="toggleCornerLock('all')">
-                    <app-icon [name]="cornerLinks().has('all') ? 'lock' : 'lock-open'" />
-                    {{ 'page.editor.studio.allCorners' | i18n | async }}
-                  </button>
-                </div>
-                <div class="composer__corners">
-                  <label class="composer__corner--tl">{{ 'page.editor.surface.topLeft' | i18n | async }}
-                    <input type="number" min="0" max="160" [value]="cornerValue('topLeft')" (change)="setCorner('topLeft', $event)" /></label>
-                  <button class="composer__corner-link composer__corner-link--top" type="button"
-                    [class.is-active]="cornerLinks().has('top') || cornerLinks().has('all')"
-                    [attr.aria-pressed]="cornerLinks().has('top') || cornerLinks().has('all')"
-                    (click)="toggleCornerLock('top')" [title]="'page.editor.studio.top' | i18n | async"><app-icon name="link" /></button>
-                  <label class="composer__corner--tr">{{ 'page.editor.surface.topRight' | i18n | async }}
-                    <input type="number" min="0" max="160" [value]="cornerValue('topRight')" (change)="setCorner('topRight', $event)" /></label>
-                  <button class="composer__corner-link composer__corner-link--left" type="button"
-                    [class.is-active]="cornerLinks().has('left') || cornerLinks().has('all')"
-                    [attr.aria-pressed]="cornerLinks().has('left') || cornerLinks().has('all')"
-                    (click)="toggleCornerLock('left')" [title]="'page.editor.studio.left' | i18n | async"><app-icon name="link" /></button>
-                  <div class="composer__corner-preview" [style.border-radius]="cornerValue('topLeft') + 'px ' + cornerValue('topRight') + 'px ' + cornerValue('bottomRight') + 'px ' + cornerValue('bottomLeft') + 'px'"></div>
-                  <button class="composer__corner-link composer__corner-link--right" type="button"
-                    [class.is-active]="cornerLinks().has('right') || cornerLinks().has('all')"
-                    [attr.aria-pressed]="cornerLinks().has('right') || cornerLinks().has('all')"
-                    (click)="toggleCornerLock('right')" [title]="'page.editor.studio.right' | i18n | async"><app-icon name="link" /></button>
-                  <label class="composer__corner--bl">{{ 'page.editor.surface.bottomLeft' | i18n | async }}
-                    <input type="number" min="0" max="160" [value]="cornerValue('bottomLeft')" (change)="setCorner('bottomLeft', $event)" /></label>
-                  <button class="composer__corner-link composer__corner-link--bottom" type="button"
-                    [class.is-active]="cornerLinks().has('bottom') || cornerLinks().has('all')"
-                    [attr.aria-pressed]="cornerLinks().has('bottom') || cornerLinks().has('all')"
-                    (click)="toggleCornerLock('bottom')" [title]="'page.editor.studio.bottom' | i18n | async"><app-icon name="link" /></button>
-                  <label class="composer__corner--br">{{ 'page.editor.surface.bottomRight' | i18n | async }}
-                    <input type="number" min="0" max="160" [value]="cornerValue('bottomRight')" (change)="setCorner('bottomRight', $event)" /></label>
-                </div>
-                <label class="composer__surface-toggle">
-                  <input type="checkbox" [checked]="!!node.styles.border" (change)="setBorderEnabled($event)" />
-                  {{ 'page.editor.surface.border' | i18n | async }}
-                </label>
-                @if (node.styles.border; as border) {
-                  <div class="composer__surface-grid">
-                    <label>{{ 'page.editor.surface.width' | i18n | async }}
-                      <input type="number" min="0" max="12" [value]="border.width" (change)="setBorderNumber($event)" />
-                    </label>
-                    <label>{{ 'page.editor.surface.borderStyle' | i18n | async }}
-                      <select [value]="border.style" (change)="setBorderStyle($event)">
-                        <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
-                        <option value="dashed">{{ 'page.editor.surface.dashed' | i18n | async }}</option>
-                        <option value="dotted">{{ 'page.editor.surface.dotted' | i18n | async }}</option>
-                      </select>
-                    </label>
-                    <app-composer-color-picker [label]="('page.editor.design.color' | i18n | async) ?? ''"
-                      [value]="border.color" (valueChange)="setBorderColor($event)" />
+                    @switch (node.styles.designBackground?.kind) {
+                      @case ('color') {
+                        <app-composer-color-picker
+                          [label]="('page.editor.design.color' | i18n | async) ?? ''"
+                          [value]="
+                            node.styles.designBackground.kind === 'color'
+                              ? node.styles.designBackground.color
+                              : '#000000ff'
+                          "
+                          (valueChange)="setBackgroundColor('color', $event)"
+                        />
+                      }
+                      @case ('gradient') {
+                        <div class="composer__design-colors">
+                          <app-composer-color-picker
+                            [label]="('page.editor.design.from' | i18n | async) ?? ''"
+                            [value]="
+                              node.styles.designBackground.kind === 'gradient'
+                                ? node.styles.designBackground.from
+                                : '#000000ff'
+                            "
+                            (valueChange)="setBackgroundColor('from', $event)"
+                          />
+                          <app-composer-color-picker
+                            [label]="('page.editor.design.to' | i18n | async) ?? ''"
+                            [value]="
+                              node.styles.designBackground.kind === 'gradient'
+                                ? node.styles.designBackground.to
+                                : '#000000ff'
+                            "
+                            (valueChange)="setBackgroundColor('to', $event)"
+                          />
+                        </div>
+                        <label>{{ 'page.editor.design.angle' | i18n | async }}</label>
+                        <select
+                          [value]="backgroundValue('angle')"
+                          (change)="setGradientAngle($event)"
+                        >
+                          <option value="0">0°</option>
+                          <option value="45">45°</option>
+                          <option value="90">90°</option>
+                          <option value="135">135°</option>
+                          <option value="180">180°</option>
+                        </select>
+                      }
+                      @case ('image') {
+                        <button
+                          class="composer__background-image"
+                          type="button"
+                          (click)="openBackgroundLibrary()"
+                        >
+                          @if (backgroundAssetId(); as id) {
+                            <img [src]="imageUrl(id)" alt="" />
+                          }
+                          <span>{{ 'page.editor.chooseImage' | i18n | async }}</span>
+                        </button>
+                        <label>{{ 'page.editor.design.position' | i18n | async }}</label>
+                        <select
+                          [value]="backgroundValue('position')"
+                          (change)="changeBackgroundImage('position', $event)"
+                        >
+                          <option value="center">
+                            {{ 'page.editor.design.position.middle' | i18n | async }}
+                          </option>
+                          <option value="top">
+                            {{ 'page.editor.design.position.top' | i18n | async }}
+                          </option>
+                          <option value="bottom">
+                            {{ 'page.editor.design.position.bottom' | i18n | async }}
+                          </option>
+                        </select>
+                        <label>{{ 'page.editor.design.overlay' | i18n | async }}</label>
+                        <select
+                          [value]="backgroundValue('overlay')"
+                          (change)="changeBackgroundImage('overlay', $event)"
+                        >
+                          <option value="none">
+                            {{ 'page.editor.design.none' | i18n | async }}
+                          </option>
+                          <option value="soft">
+                            {{ 'page.editor.design.soft' | i18n | async }}
+                          </option>
+                          <option value="strong">
+                            {{ 'page.editor.design.strong' | i18n | async }}
+                          </option>
+                        </select>
+                      }
+                    }
                   </div>
-                }
                 </div>
               </details>
               <details class="composer__accordion">
-                <summary><app-icon name="layers" /> {{ 'page.editor.studio.boxShadow' | i18n | async }}</summary>
+                <summary>
+                  <app-icon name="square-dashed" />
+                  {{ 'page.editor.studio.borderCorners' | i18n | async }}
+                </summary>
+                <div class="composer__accordion-content composer__surface-studio">
+                  <div class="composer__studio-heading">
+                    <h4>{{ 'page.editor.surface.corners' | i18n | async }}</h4>
+                    <button
+                      type="button"
+                      class="composer__lock"
+                      [class.is-active]="cornerLinks().has('all')"
+                      [attr.aria-pressed]="cornerLinks().has('all')"
+                      (click)="toggleCornerLock('all')"
+                    >
+                      <app-icon [name]="cornerLinks().has('all') ? 'lock' : 'lock-open'" />
+                      {{ 'page.editor.studio.allCorners' | i18n | async }}
+                    </button>
+                  </div>
+                  <div class="composer__corners">
+                    <label class="composer__corner--tl"
+                      >{{ 'page.editor.surface.topLeft' | i18n | async }}
+                      <input
+                        type="number"
+                        min="0"
+                        max="160"
+                        [value]="cornerValue('topLeft')"
+                        (change)="setCorner('topLeft', $event)"
+                    /></label>
+                    <button
+                      class="composer__corner-link composer__corner-link--top"
+                      type="button"
+                      [class.is-active]="cornerLinks().has('top') || cornerLinks().has('all')"
+                      [attr.aria-pressed]="cornerLinks().has('top') || cornerLinks().has('all')"
+                      (click)="toggleCornerLock('top')"
+                      [title]="'page.editor.studio.top' | i18n | async"
+                    >
+                      <app-icon name="link" />
+                    </button>
+                    <label class="composer__corner--tr"
+                      >{{ 'page.editor.surface.topRight' | i18n | async }}
+                      <input
+                        type="number"
+                        min="0"
+                        max="160"
+                        [value]="cornerValue('topRight')"
+                        (change)="setCorner('topRight', $event)"
+                    /></label>
+                    <button
+                      class="composer__corner-link composer__corner-link--left"
+                      type="button"
+                      [class.is-active]="cornerLinks().has('left') || cornerLinks().has('all')"
+                      [attr.aria-pressed]="cornerLinks().has('left') || cornerLinks().has('all')"
+                      (click)="toggleCornerLock('left')"
+                      [title]="'page.editor.studio.left' | i18n | async"
+                    >
+                      <app-icon name="link" />
+                    </button>
+                    <div
+                      class="composer__corner-preview"
+                      [style.border-radius]="
+                        cornerValue('topLeft') +
+                        'px ' +
+                        cornerValue('topRight') +
+                        'px ' +
+                        cornerValue('bottomRight') +
+                        'px ' +
+                        cornerValue('bottomLeft') +
+                        'px'
+                      "
+                    ></div>
+                    <button
+                      class="composer__corner-link composer__corner-link--right"
+                      type="button"
+                      [class.is-active]="cornerLinks().has('right') || cornerLinks().has('all')"
+                      [attr.aria-pressed]="cornerLinks().has('right') || cornerLinks().has('all')"
+                      (click)="toggleCornerLock('right')"
+                      [title]="'page.editor.studio.right' | i18n | async"
+                    >
+                      <app-icon name="link" />
+                    </button>
+                    <label class="composer__corner--bl"
+                      >{{ 'page.editor.surface.bottomLeft' | i18n | async }}
+                      <input
+                        type="number"
+                        min="0"
+                        max="160"
+                        [value]="cornerValue('bottomLeft')"
+                        (change)="setCorner('bottomLeft', $event)"
+                    /></label>
+                    <button
+                      class="composer__corner-link composer__corner-link--bottom"
+                      type="button"
+                      [class.is-active]="cornerLinks().has('bottom') || cornerLinks().has('all')"
+                      [attr.aria-pressed]="cornerLinks().has('bottom') || cornerLinks().has('all')"
+                      (click)="toggleCornerLock('bottom')"
+                      [title]="'page.editor.studio.bottom' | i18n | async"
+                    >
+                      <app-icon name="link" />
+                    </button>
+                    <label class="composer__corner--br"
+                      >{{ 'page.editor.surface.bottomRight' | i18n | async }}
+                      <input
+                        type="number"
+                        min="0"
+                        max="160"
+                        [value]="cornerValue('bottomRight')"
+                        (change)="setCorner('bottomRight', $event)"
+                    /></label>
+                  </div>
+                  <label class="composer__surface-toggle">
+                    <input
+                      type="checkbox"
+                      [checked]="!!node.styles.border"
+                      (change)="setBorderEnabled($event)"
+                    />
+                    {{ 'page.editor.surface.border' | i18n | async }}
+                  </label>
+                  @if (node.styles.border; as border) {
+                    <div class="composer__surface-grid">
+                      <label
+                        >{{ 'page.editor.surface.width' | i18n | async }}
+                        <input
+                          type="number"
+                          min="0"
+                          max="12"
+                          [value]="border.width"
+                          (change)="setBorderNumber($event)"
+                        />
+                      </label>
+                      <label
+                        >{{ 'page.editor.surface.borderStyle' | i18n | async }}
+                        <select [value]="border.style" (change)="setBorderStyle($event)">
+                          <option value="solid">
+                            {{ 'page.editor.surface.solid' | i18n | async }}
+                          </option>
+                          <option value="dashed">
+                            {{ 'page.editor.surface.dashed' | i18n | async }}
+                          </option>
+                          <option value="dotted">
+                            {{ 'page.editor.surface.dotted' | i18n | async }}
+                          </option>
+                        </select>
+                      </label>
+                      <app-composer-color-picker
+                        [label]="('page.editor.design.color' | i18n | async) ?? ''"
+                        [value]="border.color"
+                        (valueChange)="setBorderColor($event)"
+                      />
+                    </div>
+                  }
+                </div>
+              </details>
+              <details class="composer__accordion">
+                <summary>
+                  <app-icon name="layers" /> {{ 'page.editor.studio.boxShadow' | i18n | async }}
+                </summary>
                 <div class="composer__accordion-content">
                   <div class="composer__shadow-presets">
                     @for (preset of shadowPresets; track preset) {
-                      <button type="button" [class.is-active]="shadowPreset() === preset"
-                        [attr.aria-pressed]="shadowPreset() === preset" (click)="applyShadowPreset(preset)">
-                        <span class="composer__shadow-swatch" [style.box-shadow]="shadowPreview(preset)"></span>
-                        {{ ('page.editor.studio.shadow.' + preset) | i18n | async }}
+                      <button
+                        type="button"
+                        [class.is-active]="shadowPreset() === preset"
+                        [attr.aria-pressed]="shadowPreset() === preset"
+                        (click)="applyShadowPreset(preset)"
+                      >
+                        <span
+                          class="composer__shadow-swatch"
+                          [style.box-shadow]="shadowPreview(preset)"
+                        ></span>
+                        {{ 'page.editor.studio.shadow.' + preset | i18n | async }}
                       </button>
                     }
                   </div>
@@ -744,30 +1079,83 @@
                     <details class="composer__shadow-custom" [open]="shadowPreset() === 'custom'">
                       <summary>{{ 'page.editor.studio.fineTune' | i18n | async }}</summary>
                       <div class="composer__surface-grid">
-                        <label>X <input type="number" min="-96" max="96" [value]="shadow.x" (change)="setShadowNumber('x', $event)" /></label>
-                        <label>Y <input type="number" min="-96" max="96" [value]="shadow.y" (change)="setShadowNumber('y', $event)" /></label>
-                        <label>{{ 'page.editor.surface.blur' | i18n | async }} <input type="number" min="0" max="160" [value]="shadow.blur" (change)="setShadowNumber('blur', $event)" /></label>
-                        <label>{{ 'page.editor.surface.spread' | i18n | async }} <input type="number" min="-96" max="96" [value]="shadow.spread" (change)="setShadowNumber('spread', $event)" /></label>
+                        <label
+                          >X
+                          <input
+                            type="number"
+                            min="-96"
+                            max="96"
+                            [value]="shadow.x"
+                            (change)="setShadowNumber('x', $event)"
+                        /></label>
+                        <label
+                          >Y
+                          <input
+                            type="number"
+                            min="-96"
+                            max="96"
+                            [value]="shadow.y"
+                            (change)="setShadowNumber('y', $event)"
+                        /></label>
+                        <label
+                          >{{ 'page.editor.surface.blur' | i18n | async }}
+                          <input
+                            type="number"
+                            min="0"
+                            max="160"
+                            [value]="shadow.blur"
+                            (change)="setShadowNumber('blur', $event)"
+                        /></label>
+                        <label
+                          >{{ 'page.editor.surface.spread' | i18n | async }}
+                          <input
+                            type="number"
+                            min="-96"
+                            max="96"
+                            [value]="shadow.spread"
+                            (change)="setShadowNumber('spread', $event)"
+                        /></label>
                       </div>
-                      <app-composer-color-picker [label]="('page.editor.design.color' | i18n | async) ?? ''"
-                        [value]="shadow.color" (valueChange)="setShadowColor($event)" />
+                      <app-composer-color-picker
+                        [label]="('page.editor.design.color' | i18n | async) ?? ''"
+                        [value]="shadow.color"
+                        (valueChange)="setShadowColor($event)"
+                      />
                     </details>
                   }
                 </div>
               </details>
             } @else if (selectedBlock()?.type === 'text') {
               <details class="composer__accordion" open>
-                <summary><app-icon name="type" /> {{ 'page.editor.studio.typography' | i18n | async }}</summary>
+                <summary>
+                  <app-icon name="type" /> {{ 'page.editor.studio.typography' | i18n | async }}
+                </summary>
                 <div class="composer__accordion-content">
-                  <app-composer-color-picker [label]="('page.editor.studio.textColor' | i18n | async) ?? ''"
-                    [value]="textColor()" (valueChange)="setTextColor($event)" />
-                  <button type="button" class="composer__surface-secondary" (click)="resetTextColor()">
-                    {{ 'page.editor.design.none' | i18n | async }}</button>
-                  <label>{{ 'page.editor.studio.textShadow' | i18n | async }}
-                    <select [value]="selectedBlock()?.styles?.textShadow ?? 'none'" (change)="setTextShadow($event)">
+                  <app-composer-color-picker
+                    [label]="('page.editor.studio.textColor' | i18n | async) ?? ''"
+                    [value]="textColor()"
+                    (valueChange)="setTextColor($event)"
+                  />
+                  <button
+                    type="button"
+                    class="composer__surface-secondary"
+                    (click)="resetTextColor()"
+                  >
+                    {{ 'page.editor.design.none' | i18n | async }}
+                  </button>
+                  <label
+                    >{{ 'page.editor.studio.textShadow' | i18n | async }}
+                    <select
+                      [value]="selectedBlock()?.styles?.textShadow ?? 'none'"
+                      (change)="setTextShadow($event)"
+                    >
                       <option value="none">{{ 'page.editor.design.none' | i18n | async }}</option>
-                      <option value="readability">{{ 'page.editor.studio.readability' | i18n | async }}</option>
-                      <option value="strong">{{ 'page.editor.design.strong' | i18n | async }}</option>
+                      <option value="readability">
+                        {{ 'page.editor.studio.readability' | i18n | async }}
+                      </option>
+                      <option value="strong">
+                        {{ 'page.editor.design.strong' | i18n | async }}
+                      </option>
                     </select>
                   </label>
                 </div>

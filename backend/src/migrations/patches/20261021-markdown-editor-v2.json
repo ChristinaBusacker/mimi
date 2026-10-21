@@ -1,0 +1,34 @@
+{
+  "localizations": [
+    {
+      "key": "admin.markdown.v2.subline",
+      "de": "Subline",
+      "en": "Subline"
+    },
+    {
+      "key": "admin.markdown.v2.eyebrow",
+      "de": "Eyebrow / Überzeile",
+      "en": "Eyebrow / overline"
+    },
+    {
+      "key": "admin.markdown.v2.textColor",
+      "de": "Schriftfarbe",
+      "en": "Text color"
+    },
+    {
+      "key": "admin.markdown.v2.clearColor",
+      "de": "Schriftfarbe entfernen",
+      "en": "Clear text color"
+    },
+    {
+      "key": "admin.markdown.v2.imageWidth",
+      "de": "Bildbreite",
+      "en": "Image width"
+    },
+    {
+      "key": "admin.markdown.v2.automatic",
+      "de": "Automatisch (Bildgröße)",
+      "en": "Automatic (image size)"
+    }
+  ]
+}

@@ -43,8 +43,10 @@ type CornerKey = keyof ComposerCorners;
 type CornerLink = 'all' | 'top' | 'right' | 'bottom' | 'left';
 type ShadowPreset = 'none' | 'soft' | 'card' | 'floating' | 'deep' | 'glow';
 const CORNER_PAIRS: Record<Exclude<CornerLink, 'all'>, readonly [CornerKey, CornerKey]> = {
-  top: ['topLeft', 'topRight'], right: ['topRight', 'bottomRight'],
-  bottom: ['bottomLeft', 'bottomRight'], left: ['topLeft', 'bottomLeft'],
+  top: ['topLeft', 'topRight'],
+  right: ['topRight', 'bottomRight'],
+  bottom: ['bottomLeft', 'bottomRight'],
+  left: ['topLeft', 'bottomLeft'],
 };
 const SHADOW_PRESETS: Record<ShadowPreset, PageStyles['shadow'] | undefined> = {
   none: undefined,
@@ -62,13 +64,22 @@ const initialStyles = (): PageStyles => ({
   align: 'left',
 });
 const node = (): PageNode => ({ id: crypto.randomUUID(), styles: initialStyles() });
-const makeColumn = (): PageColumn => ({ ...node(), contentAlign: 'start', styles: { ...initialStyles(), spacing: 'small' }, blocks: [] });
+const makeColumn = (): PageColumn => ({
+  ...node(),
+  contentAlign: 'start',
+  styles: { ...initialStyles(), spacing: 'small' },
+  blocks: [],
+});
 const makeRow = (layout: RowLayout): PageRow => ({
   ...node(),
   layout,
   columns: PAGE_ROW_LAYOUTS[layout].map(() => makeColumn()),
 });
-const makeSection = (): PageSection => ({ ...node(), styles: { ...initialStyles(), spacing: 'standard' }, rows: [makeRow('1')] });
+const makeSection = (): PageSection => ({
+  ...node(),
+  styles: { ...initialStyles(), spacing: 'standard' },
+  rows: [makeRow('1')],
+});
 const makeBlock = (kind: BlockKind): PageBlock => {
   const base = node();
   switch (kind) {
@@ -121,7 +132,7 @@ export class PageEditor {
   });
   readonly documentChange = output<PageDocument>();
   /** Request persistence from the parent; the editor never saves directly. */
-  readonly saveRequest = output<void>();
+  readonly saveRequest = output<boolean>();
 
   private readonly workspace = viewChild<ElementRef<HTMLElement>>('workspace');
   private readonly imageLibrary = viewChild(AssetLibrary);
@@ -313,13 +324,20 @@ export class PageEditor {
     this.backgroundTarget.set(null);
     if (background) {
       const selection = this.selected();
-      if (!selection || selection.id !== background ||
-          (selection.kind !== 'section' && selection.kind !== 'column')) return;
+      if (
+        !selection ||
+        selection.id !== background ||
+        (selection.kind !== 'section' && selection.kind !== 'column')
+      )
+        return;
       this.changeSelected((node) => {
         node.styles.background = 'none';
         delete node.styles.backgroundColor;
         node.styles.designBackground = {
-          kind: 'image', assetId: asset.id, position: 'center', overlay: 'soft',
+          kind: 'image',
+          assetId: asset.id,
+          position: 'center',
+          overlay: 'soft',
         };
       });
       return;
@@ -341,7 +359,9 @@ export class PageEditor {
     return design?.kind === 'image' ? design.assetId : null;
   }
 
-  protected backgroundValue(field: 'color' | 'from' | 'to' | 'angle' | 'position' | 'overlay'): string {
+  protected backgroundValue(
+    field: 'color' | 'from' | 'to' | 'angle' | 'position' | 'overlay',
+  ): string {
     const design = this.active()?.styles.designBackground;
     if (!design) return '';
     if (design.kind === 'color') return field === 'color' ? design.color.slice(0, 7) : '';
@@ -355,9 +375,14 @@ export class PageEditor {
 
   protected backgroundOpacity(field: 'color' | 'from' | 'to'): number {
     const design = this.active()?.styles.designBackground;
-    const color = design?.kind === 'color' && field === 'color' ? design.color
-      : design?.kind === 'gradient' && field === 'from' ? design.from
-      : design?.kind === 'gradient' && field === 'to' ? design.to : '#000000ff';
+    const color =
+      design?.kind === 'color' && field === 'color'
+        ? design.color
+        : design?.kind === 'gradient' && field === 'from'
+          ? design.from
+          : design?.kind === 'gradient' && field === 'to'
+            ? design.to
+            : '#000000ff';
     return this.opacity(color);
   }
 
@@ -365,21 +390,39 @@ export class PageEditor {
     const alpha = this.alpha(this.value(event));
     this.changeSelected((node) => {
       const design = node.styles.designBackground;
-      if (design?.kind === 'color' && field === 'color') design.color = this.withOpacity(design.color, alpha);
-      if (design?.kind === 'gradient' && field === 'from') design.from = this.withOpacity(design.from, alpha);
-      if (design?.kind === 'gradient' && field === 'to') design.to = this.withOpacity(design.to, alpha);
+      if (design?.kind === 'color' && field === 'color')
+        design.color = this.withOpacity(design.color, alpha);
+      if (design?.kind === 'gradient' && field === 'from')
+        design.from = this.withOpacity(design.from, alpha);
+      if (design?.kind === 'gradient' && field === 'to')
+        design.to = this.withOpacity(design.to, alpha);
     });
   }
 
   protected opacity(hex: string): number {
-    return hex.length === 9 ? Math.round(parseInt(hex.slice(7), 16) / 255 * 100) : 100;
+    return hex.length === 9 ? Math.round((parseInt(hex.slice(7), 16) / 255) * 100) : 100;
   }
-  private alpha(value: string): number { return Math.max(0, Math.min(100, Math.round(Number(value) || 0))); }
+  private alpha(value: string): number {
+    return Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
+  }
   private withOpacity(color: string, alpha: number): string {
-    return `${color.slice(0, 7)}${Math.round(alpha / 100 * 255).toString(16).padStart(2, '0')}`;
+    return `${color.slice(0, 7)}${Math.round((alpha / 100) * 255)
+      .toString(16)
+      .padStart(2, '0')}`;
   }
-  protected readonly cornerKeys: readonly CornerKey[] = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
-  protected readonly cornerLinkKeys: readonly CornerLink[] = ['all', 'top', 'right', 'bottom', 'left'];
+  protected readonly cornerKeys: readonly CornerKey[] = [
+    'topLeft',
+    'topRight',
+    'bottomLeft',
+    'bottomRight',
+  ];
+  protected readonly cornerLinkKeys: readonly CornerLink[] = [
+    'all',
+    'top',
+    'right',
+    'bottom',
+    'left',
+  ];
   protected readonly cornerLinks = signal<ReadonlySet<CornerLink>>(new Set());
   protected cornerValue(key: CornerKey): number {
     return this.active()?.styles.corners?.[key] ?? this.active()?.styles.radius ?? 0;
@@ -394,7 +437,9 @@ export class PageEditor {
         if (!links.has(side)) continue;
         const [a, b] = CORNER_PAIRS[side];
         if (group.has(a) !== group.has(b)) {
-          group.add(a); group.add(b); changed = true;
+          group.add(a);
+          group.add(b);
+          changed = true;
         }
       }
     }
@@ -405,7 +450,13 @@ export class PageEditor {
     const linked = this.linkedCorners(key, this.cornerLinks());
     this.changeSelected((node) => {
       const uniform = node.styles.radius ?? 0;
-      const corners = { topLeft: uniform, topRight: uniform, bottomRight: uniform, bottomLeft: uniform, ...node.styles.corners };
+      const corners = {
+        topLeft: uniform,
+        topRight: uniform,
+        bottomRight: uniform,
+        bottomLeft: uniform,
+        ...node.styles.corners,
+      };
       for (const corner of linked) corners[corner] = value;
       node.styles.corners = corners;
     });
@@ -413,8 +464,13 @@ export class PageEditor {
   protected toggleCornerLock(link: CornerLink): void {
     const next = new Set(this.cornerLinks());
     if (next.has(link)) next.delete(link);
-    else if (link === 'all') { next.clear(); next.add('all'); }
-    else { next.delete('all'); next.add(link); }
+    else if (link === 'all') {
+      next.clear();
+      next.add('all');
+    } else {
+      next.delete('all');
+      next.add(link);
+    }
     this.cornerLinks.set(next);
     if (!next.has(link)) return;
     const anchor: CornerKey = link === 'all' ? 'topLeft' : CORNER_PAIRS[link][0];
@@ -422,26 +478,43 @@ export class PageEditor {
     const value = this.cornerValue(anchor);
     this.changeSelected((node) => {
       const uniform = node.styles.radius ?? 0;
-      const corners = { topLeft: uniform, topRight: uniform, bottomRight: uniform, bottomLeft: uniform, ...node.styles.corners };
+      const corners = {
+        topLeft: uniform,
+        topRight: uniform,
+        bottomRight: uniform,
+        bottomLeft: uniform,
+        ...node.styles.corners,
+      };
       for (const corner of linked) corners[corner] = value;
       node.styles.corners = corners;
     });
   }
   protected setBorderEnabled(event: Event): void {
     const enabled = (event.target as HTMLInputElement).checked;
-    this.changeSelected((node) => { if (enabled) node.styles.border = { width: 1, style: 'solid', color: '#ecadd0c0' }; else delete node.styles.border; });
+    this.changeSelected((node) => {
+      if (enabled) node.styles.border = { width: 1, style: 'solid', color: '#ecadd0c0' };
+      else delete node.styles.border;
+    });
   }
   protected setBorderNumber(event: Event): void {
     const value = Math.min(12, Math.max(0, Number(this.value(event)) || 0));
-    this.changeSelected((node) => { if (node.styles.border) node.styles.border.width = value; });
+    this.changeSelected((node) => {
+      if (node.styles.border) node.styles.border.width = value;
+    });
   }
   protected setBorderStyle(event: Event): void {
     const value = this.value(event);
     if (value !== 'solid' && value !== 'dashed' && value !== 'dotted') return;
-    this.changeSelected((node) => { if (node.styles.border) node.styles.border.style = value; });
+    this.changeSelected((node) => {
+      if (node.styles.border) node.styles.border.style = value;
+    });
   }
-  protected setBorderColor(value: string): void { this.changeSurfaceColor('border', value); }
-  protected setShadowColor(value: string): void { this.changeSurfaceColor('shadow', value); }
+  protected setBorderColor(value: string): void {
+    this.changeSurfaceColor('border', value);
+  }
+  protected setShadowColor(value: string): void {
+    this.changeSurfaceColor('shadow', value);
+  }
   protected setSurfaceOpacity(kind: 'border' | 'shadow', event: Event): void {
     const alpha = this.alpha(this.value(event));
     this.changeSelected((node) => {
@@ -465,38 +538,62 @@ export class PageEditor {
       if (design?.kind === 'gradient' && field === 'to') design.to = color.toLowerCase();
     });
   }
-  protected textColor(): string { return this.selectedBlock()?.styles.textColor ?? '#ffffffff'; }
+  protected textColor(): string {
+    return this.selectedBlock()?.styles.textColor ?? '#ffffffff';
+  }
   protected setTextColor(color: string): void {
     if (!/^#[0-9a-f]{8}$/i.test(color)) return;
-    this.changeSelected((node) => { if ('type' in node && node.type === 'text') node.styles.textColor = color; });
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'text') node.styles.textColor = color;
+    });
   }
   protected resetTextColor(): void {
-    this.changeSelected((node) => { if ('type' in node && node.type === 'text') delete node.styles.textColor; });
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'text') delete node.styles.textColor;
+    });
   }
   protected setTextShadow(event: Event): void {
     const value = this.value(event);
     if (!['none', 'readability', 'strong'].includes(value)) return;
     this.changeSelected((node) => {
-      if ('type' in node && node.type === 'text') node.styles.textShadow = value as 'none' | 'readability' | 'strong';
+      if ('type' in node && node.type === 'text')
+        node.styles.textShadow = value as 'none' | 'readability' | 'strong';
     });
   }
   protected setShadowEnabled(event: Event): void {
     const enabled = (event.target as HTMLInputElement).checked;
-    this.changeSelected((node) => { if (enabled) node.styles.shadow = { x: 0, y: 12, blur: 28, spread: 0, color: '#10061466' }; else delete node.styles.shadow; });
+    this.changeSelected((node) => {
+      if (enabled) node.styles.shadow = { x: 0, y: 12, blur: 28, spread: 0, color: '#10061466' };
+      else delete node.styles.shadow;
+    });
   }
   protected setShadowNumber(field: 'x' | 'y' | 'blur' | 'spread', event: Event): void {
     const n = Number(this.value(event)) || 0;
     const value = field === 'blur' ? Math.max(0, Math.min(160, n)) : Math.max(-96, Math.min(96, n));
-    this.changeSelected((node) => { if (node.styles.shadow) node.styles.shadow[field] = value; });
+    this.changeSelected((node) => {
+      if (node.styles.shadow) node.styles.shadow[field] = value;
+    });
   }
-  protected readonly shadowPresets: readonly ShadowPreset[] = ['none', 'soft', 'card', 'floating', 'deep', 'glow'];
+  protected readonly shadowPresets: readonly ShadowPreset[] = [
+    'none',
+    'soft',
+    'card',
+    'floating',
+    'deep',
+    'glow',
+  ];
   protected shadowPreset(): ShadowPreset | 'custom' {
     const value = this.active()?.styles.shadow;
     if (!value) return 'none';
     for (const preset of this.shadowPresets) {
       const candidate = SHADOW_PRESETS[preset];
-      if (candidate && (Object.keys(candidate) as (keyof NonNullable<typeof candidate>)[])
-          .every((key) => value[key] === candidate[key])) return preset;
+      if (
+        candidate &&
+        (Object.keys(candidate) as (keyof NonNullable<typeof candidate>)[]).every(
+          (key) => value[key] === candidate[key],
+        )
+      )
+        return preset;
     }
     return 'custom';
   }
@@ -513,15 +610,33 @@ export class PageEditor {
   }
   protected applySurfacePreset(name: 'none' | 'soft' | 'card' | 'floating' | 'glow'): void {
     this.changeSelected((node) => {
-      delete node.styles.corners; delete node.styles.border; delete node.styles.shadow;
-      if (name === 'none') { delete node.styles.designBackground; delete node.styles.backgroundColor; node.styles.background = 'none'; node.styles.radius = 0; return; }
+      delete node.styles.corners;
+      delete node.styles.border;
+      delete node.styles.shadow;
+      if (name === 'none') {
+        delete node.styles.designBackground;
+        delete node.styles.backgroundColor;
+        node.styles.background = 'none';
+        node.styles.radius = 0;
+        return;
+      }
       node.styles.background = 'none';
       const radius = name === 'soft' ? 12 : name === 'card' ? 18 : name === 'floating' ? 24 : 20;
-      node.styles.corners = { topLeft: radius, topRight: radius, bottomRight: radius, bottomLeft: radius };
-      node.styles.designBackground = { kind: 'color', color: name === 'glow' ? '#da8dbb28' : '#33223d99' };
+      node.styles.corners = {
+        topLeft: radius,
+        topRight: radius,
+        bottomRight: radius,
+        bottomLeft: radius,
+      };
+      node.styles.designBackground = {
+        kind: 'color',
+        color: name === 'glow' ? '#da8dbb28' : '#33223d99',
+      };
       if (name !== 'soft') node.styles.border = { width: 1, style: 'solid', color: '#eca9d255' };
-      if (name === 'floating') node.styles.shadow = { x: 0, y: 16, blur: 40, spread: 0, color: '#09030b88' };
-      if (name === 'glow') node.styles.shadow = { x: 0, y: 0, blur: 28, spread: 1, color: '#ed93df77' };
+      if (name === 'floating')
+        node.styles.shadow = { x: 0, y: 16, blur: 40, spread: 0, color: '#09030b88' };
+      if (name === 'glow')
+        node.styles.shadow = { x: 0, y: 0, blur: 28, spread: 1, color: '#ed93df77' };
     });
   }
 
@@ -544,13 +659,20 @@ export class PageEditor {
     }
     if (!['none', 'color', 'gradient'].includes(kind)) return;
     const selection = this.selected();
-    if (selection?.kind !== 'section' && selection?.kind !== 'column' && selection?.kind !== 'row') return;
+    if (selection?.kind !== 'section' && selection?.kind !== 'column' && selection?.kind !== 'row')
+      return;
     this.changeSelected((node) => {
       node.styles.background = 'none';
       delete node.styles.backgroundColor;
       if (kind === 'none') delete node.styles.designBackground;
       else if (kind === 'color') node.styles.designBackground = { kind, color: '#35273f' };
-      else node.styles.designBackground = { kind: 'gradient', from: '#875772', to: '#30243e', angle: 135 };
+      else
+        node.styles.designBackground = {
+          kind: 'gradient',
+          from: '#875772',
+          to: '#30243e',
+          angle: 135,
+        };
     });
   }
 
@@ -584,8 +706,15 @@ export class PageEditor {
   protected readonly addTarget = signal<CanvasInsert | null>(null);
   protected readonly inlineTextId = signal<string | null>(null);
   protected readonly blockKinds: readonly BlockKind[] = [
-    'text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer',
-    'albumDetails', 'albumTracks', 'albumCredits',
+    'text',
+    'image',
+    'gallery',
+    'slider',
+    'cardCarousel',
+    'spacer',
+    'albumDetails',
+    'albumTracks',
+    'albumCredits',
   ];
   protected readonly device = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
   protected readonly inspectorTab = signal<'content' | 'design' | 'advanced'>('content');
@@ -775,14 +904,16 @@ export class PageEditor {
     const modifier = event.ctrlKey || event.metaKey;
     if (modifier && !event.altKey && !event.shiftKey && key === 's') {
       event.preventDefault();
-      this.saveRequest.emit();
+      this.saveRequest.emit(false);
       return;
     }
 
     const element = event.target;
-    const editing = element instanceof HTMLElement && Boolean(
-      element.closest('input, textarea, select, [contenteditable="true"], .markdown-editor'),
-    );
+    const editing =
+      element instanceof HTMLElement &&
+      Boolean(
+        element.closest('input, textarea, select, [contenteditable="true"], .markdown-editor'),
+      );
     // Escape dismisses the insertion menu or inline editing without modifying content.
     if (event.key === 'Escape' && !editing) {
       if (this.addTarget()) {
@@ -794,8 +925,12 @@ export class PageEditor {
       }
       return;
     }
-    if (event.altKey && !modifier && !editing &&
-        (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+    if (
+      event.altKey &&
+      !modifier &&
+      !editing &&
+      (event.key === 'ArrowUp' || event.key === 'ArrowDown')
+    ) {
       const selected = this.selected();
       if (selected && selected.kind !== 'page' && selected.kind !== 'column') {
         event.preventDefault();
@@ -858,9 +993,15 @@ export class PageEditor {
     this.inspect('section', section.id);
   }
   protected addBlock(columnId: string, type: BlockKind, index?: number): void {
-    if (type === 'albumTracks' && this.document().sections.some((section) =>
-      section.rows.some((row) => row.columns.some((column) =>
-        column.blocks.some((block) => block.type === 'albumTracks'))))) return;
+    if (
+      type === 'albumTracks' &&
+      this.document().sections.some((section) =>
+        section.rows.some((row) =>
+          row.columns.some((column) => column.blocks.some((block) => block.type === 'albumTracks')),
+        ),
+      )
+    )
+      return;
     const block = makeBlock(type);
     const column = this.find(this.document(), { kind: 'column', id: columnId });
     if (!column || !('blocks' in column)) return;
@@ -878,9 +1019,13 @@ export class PageEditor {
   protected setGalleryLayout(event: Event): void {
     const layout = this.value(event);
     if (
-      layout !== 'grid' && layout !== 'featured' && layout !== 'featuredRight' &&
-      layout !== 'panorama' && layout !== 'mosaic'
-    ) return;
+      layout !== 'grid' &&
+      layout !== 'featured' &&
+      layout !== 'featuredRight' &&
+      layout !== 'panorama' &&
+      layout !== 'mosaic'
+    )
+      return;
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'gallery') node.layout = layout;
     });
@@ -896,10 +1041,15 @@ export class PageEditor {
     const value = this.value(event);
     if (!value) return;
     this.changeSelected((node) => {
-      if ('type' in node && (node.type === 'gallery' || node.type === 'slider') && node.items.length < 36) {
+      if (
+        'type' in node &&
+        (node.type === 'gallery' || node.type === 'slider') &&
+        node.items.length < 36
+      ) {
         const asset = this.assets().find((item) => item.id === value);
         node.items.push({
-          id: crypto.randomUUID(), assetId: value,
+          id: crypto.randomUUID(),
+          assetId: value,
           alt: { de: asset?.descriptionDe ?? '', en: asset?.descriptionEn ?? '' },
         });
       }
@@ -933,9 +1083,12 @@ export class PageEditor {
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'cardCarousel' && node.items.length < 24) {
         node.items.push({
-          id: crypto.randomUUID(), assetId: null,
-          alt: { de: '', en: '' }, title: { de: '', en: '' },
-          description: { de: '', en: '' }, href: '',
+          id: crypto.randomUUID(),
+          assetId: null,
+          alt: { de: '', en: '' },
+          title: { de: '', en: '' },
+          description: { de: '', en: '' },
+          href: '',
         });
       }
     });
@@ -1055,8 +1208,10 @@ export class PageEditor {
           if ('rows' in value) value.rows.forEach(freshen);
           if ('columns' in value) value.columns.forEach(freshen);
           if ('blocks' in value) value.blocks.forEach(freshen);
-          if ('type' in value &&
-              (value.type === 'gallery' || value.type === 'slider' || value.type === 'cardCarousel'))
+          if (
+            'type' in value &&
+            (value.type === 'gallery' || value.type === 'slider' || value.type === 'cardCarousel')
+          )
             for (const item of value.items) item.id = crypto.randomUUID();
         };
         freshen(duplicate);

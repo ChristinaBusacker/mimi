@@ -1,27 +1,49 @@
 <section class="booklet-admin">
   <header class="booklet-admin__header">
     <div>
-      <a [routerLink]="['/admin/music/albums', albumId]">← {{ 'page.editor.back' | i18n | async }}</a>
-      <h1>{{ 'page.editor.title' | i18n | async }} @if (album(); as entry) { · {{ entry.translations.de.title }} }</h1>
+      <a [routerLink]="['/admin/music/albums', albumId]"
+        >← {{ 'page.editor.back' | i18n | async }}</a
+      >
+      <h1>
+        {{ 'page.editor.title' | i18n | async }}
+        @if (album(); as entry) {
+          · {{ entry.translations.de.title }}
+        }
+      </h1>
       <p>{{ 'page.editor.explanation' | i18n | async }}</p>
     </div>
     <div class="booklet-admin__actions">
       <button type="button" [disabled]="loading() || working()" (click)="save()">
         {{ 'page.editor.saveDraft' | i18n | async }}
       </button>
-      <button type="button" class="booklet-admin__publish" [disabled]="loading() || working()" (click)="save(true)">
+      <button
+        type="button"
+        class="booklet-admin__publish"
+        [disabled]="loading() || working()"
+        (click)="save(true)"
+      >
         {{ 'page.editor.publish' | i18n | async }}
       </button>
     </div>
   </header>
   @if (notice(); as message) {
-    <p [class.is-error]="message === 'error'" role="status">{{ ('page.editor.notice.' + message) | i18n | async }}</p>
+    <p [class.is-error]="message === 'error'" role="status">
+      {{ 'page.editor.notice.' + message | i18n | async }}
+    </p>
   }
-  @if (dirty()) { <p class="booklet-admin__unsaved">{{ 'page.editor.unsaved' | i18n | async }}</p> }
+  @if (dirty()) {
+    <p class="booklet-admin__unsaved">{{ 'page.editor.unsaved' | i18n | async }}</p>
+  }
   @if (loading()) {
     <p>{{ 'admin.music.loading' | i18n | async }}</p>
   } @else if (album()) {
-    <app-page-editor [document]="document()" [assets]="images()" [album]="albumContext()" [coverAssetId]="album()?.coverAssetId ?? null"
-      (documentChange)="updateDocument($event)" (saveRequest)="save()" />
+    <app-page-editor
+      [document]="document()"
+      [assets]="images()"
+      [album]="albumContext()"
+      [coverAssetId]="album()?.coverAssetId ?? null"
+      (documentChange)="updateDocument($event)"
+      (saveRequest)="save($event)"
+    />
   }
 </section>

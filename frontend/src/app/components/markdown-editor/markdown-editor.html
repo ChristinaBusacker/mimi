@@ -25,6 +25,8 @@
           {{ 'admin.markdown.heading3' | i18n | async }}
         </option>
         <option value="heading4">{{ 'admin.markdown.workflow.heading4' | i18n | async }}</option>
+        <option value="subline">{{ 'admin.markdown.v2.subline' | i18n | async }}</option>
+        <option value="eyebrow">{{ 'admin.markdown.v2.eyebrow' | i18n | async }}</option>
         <option value="codeBlock">{{ 'admin.markdown.workflow.codeBlock' | i18n | async }}</option>
       </select>
     </label>
@@ -115,6 +117,15 @@
       <app-icon name="minus" />
     </button>
 
+    <span class="divider"></span>
+    <label class="markdown-editor__color-tool">
+      <span>{{ 'admin.markdown.v2.textColor' | i18n | async }}</span>
+      <input type="color" [value]="textColor()" [disabled]="isDisabled()"
+        (input)="applyTextColor($event)" />
+    </label>
+    <button type="button" [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.v2.clearColor' | i18n | async"
+      (click)="removeTextColor()"><app-icon name="eraser" /></button>
     <span class="divider"></span>
 
     <button
@@ -284,6 +295,20 @@
               </option>
             </select>
           </label>
+        </div>
+        <div class="markdown-editor__width-control">
+          <label for="markup-image-width">{{ 'admin.markdown.v2.imageWidth' | i18n | async }}:
+            {{ imageWidth() === null ? ('admin.markdown.v2.automatic' | i18n | async) : imageWidth() + '%' }}
+          </label>
+          <input id="markup-image-width" type="range" min="10" max="100" step="1"
+            [value]="imageWidth() ?? 100" (input)="setImageWidth($event)" />
+          <button type="button" (click)="resetImageWidth()">{{ 'admin.markdown.v2.automatic' | i18n | async }}</button>
+          @if (selectedImage(); as image) {
+            <div class="markdown-editor__width-preview">
+              <img [src]="image.thumbnailUrl ?? image.url" [alt]="imageAlt()"
+                [style.width.%]="imageWidth() ?? 100" />
+            </div>
+          }
         </div>
 
         <div class="dialog-actions">

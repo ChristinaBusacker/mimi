@@ -76,6 +76,10 @@
   }
 
   select option { background-color: #2c1b31; color: #fff; }
+  .markdown-editor__color-tool {
+    display: flex; gap: 5px; align-items: center; font-size: .78rem;
+    input { width: 30px; height: 30px; padding: 1px; cursor: pointer; }
+  }
 
   .block-style {
     display: flex;
@@ -380,6 +384,18 @@
     clear: both;
   }
 }
+.markdown-editor__width-control {
+  display: grid; gap: 8px;
+  input[type='range'] { width: 100%; }
+  button { justify-self: start; border: 1px solid var(--color-secondary); border-radius: 8px;
+    background: transparent; color: inherit; padding: 6px 10px; cursor: pointer; }
+}
+.markdown-editor__width-preview { padding: 12px; border: 1px dashed var(--color-secondary); border-radius: 9px;
+  display: flex; justify-content: center; align-items: center; min-height: 110px;
+  img { height: auto; max-width: 100%; max-height: 180px; object-fit: contain; }
+}
+.markdown-editor__content h5 { font-size: 1.1rem; font-weight: 600; letter-spacing: .04em; }
+.markdown-editor__content h6 { font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
 
 @include compact-layout {
   .markdown-editor__toolbar {
