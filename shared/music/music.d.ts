@@ -11,6 +11,8 @@ export interface MusicAlbumEditorial {
   genre: LocalizedText;
   mood: LocalizedText;
   credits: MusicAlbumCredit[];
+  /** Optional wide background behind the album cover and title. */
+  heroAssetId?: string | null;
 }
 
 export interface MusicAlbumSummary {

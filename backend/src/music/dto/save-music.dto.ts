@@ -97,6 +97,10 @@ export class MusicAlbumEditorialInputDto {
   @ValidateNested({ each: true })
   @Type(() => MusicAlbumCreditInputDto)
   credits!: MusicAlbumCreditInputDto[];
+
+  @IsOptional()
+  @IsUUID()
+  heroAssetId?: string | null;
 }
 
 export class SaveAlbumBookletDto {

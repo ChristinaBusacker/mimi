@@ -9,6 +9,13 @@ const valid = () => ({
 });
 
 describe('Music album editorial metadata validation', () => {
+  it('accepts an optional album hero image UUID and rejects invalid values', () => {
+    const validHero = { ...valid(), heroAssetId: '123e4567-e89b-42d3-a456-426614174000' };
+    expect(validateSync(plainToInstance(MusicAlbumEditorialInputDto, validHero))).toHaveLength(0);
+    const badHero = { ...valid(), heroAssetId: 'not-an-asset' };
+    expect(validateSync(plainToInstance(MusicAlbumEditorialInputDto, badHero)).length).toBeGreaterThan(0);
+  });
+
   it('accepts localized genre, mood and contributor credits', () => {
     expect(validateSync(plainToInstance(MusicAlbumEditorialInputDto, valid()))).toHaveLength(0);
   });

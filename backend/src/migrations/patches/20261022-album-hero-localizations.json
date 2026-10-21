@@ -1,0 +1,14 @@
+{
+  "localizations": [
+    {
+      "key": "admin.music.album.heroImage",
+      "de": "Hero-Hintergrundbild",
+      "en": "Hero background image"
+    },
+    {
+      "key": "admin.music.album.heroSelect",
+      "de": "Hero-Bild auswählen",
+      "en": "Choose hero image"
+    }
+  ]
+}

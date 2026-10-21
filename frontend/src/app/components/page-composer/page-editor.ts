@@ -73,14 +73,16 @@ const makeColumn = (): PageColumn => ({
   styles: { ...initialStyles(), spacing: 'small' },
   blocks: [],
 });
+const mediumPadding = () => ({ top: 16, right: 16, bottom: 16, left: 16 });
 const makeRow = (layout: RowLayout): PageRow => ({
   ...node(),
+  styles: { ...initialStyles(), paddingBox: mediumPadding() },
   layout,
   columns: PAGE_ROW_LAYOUTS[layout].map(() => makeColumn()),
 });
 const makeSection = (): PageSection => ({
   ...node(),
-  styles: { ...initialStyles(), spacing: 'standard' },
+  styles: { ...initialStyles(), paddingBox: mediumPadding() },
   rows: [makeRow('1')],
 });
 const makeBlock = (kind: BlockKind): PageBlock => {
@@ -690,7 +692,11 @@ export class PageEditor {
     if (selection?.kind !== 'section' && selection?.kind !== 'column') return;
     this.changeSelected((node) => {
       if (!value) delete node.styles.spacing;
-      else node.styles.spacing = value as ComposerSpacing;
+      else {
+        node.styles.spacing = value as ComposerSpacing;
+        // Switching to a legacy preset should actually update the visible padding.
+        delete node.styles.paddingBox;
+      }
     });
   }
 

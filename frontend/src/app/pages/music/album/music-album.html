@@ -8,7 +8,12 @@
     }
   </div>
 
-  <header class="booklet__hero">
+  <header class="booklet__hero" [class.booklet__hero--art]="!!album.editorial.heroAssetId">
+    @if (album.editorial.heroAssetId; as heroAssetId) {
+      <div class="booklet__hero-art" aria-hidden="true">
+        <img [src]="assetUrl(heroAssetId)" alt="" fetchpriority="high" />
+      </div>
+    }
     <div class="booklet__cover">
       @if (album.coverAssetId) {
         <img

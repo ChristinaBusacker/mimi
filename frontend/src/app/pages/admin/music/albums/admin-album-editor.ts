@@ -100,6 +100,9 @@ export class AdminAlbumEditor implements OnInit {
     coverAssetId: new FormControl('', {
       nonNullable: true,
     }),
+    heroAssetId: new FormControl('', {
+      nonNullable: true,
+    }),
     releasedAt: new FormControl('', {
       nonNullable: true,
     }),
@@ -642,6 +645,7 @@ export class AdminAlbumEditor implements OnInit {
       releasedAt:
         value.releasedAt || null,
       editorial: {
+        heroAssetId: value.heroAssetId || null,
         genre: { de: value.genreDe.trim(), en: value.genreEn.trim() },
         mood: { de: value.moodDe.trim(), en: value.moodEn.trim() },
         credits,
@@ -672,6 +676,7 @@ export class AdminAlbumEditor implements OnInit {
       slug: album.slug,
       coverAssetId:
         album.coverAssetId ?? '',
+      heroAssetId: album.editorial.heroAssetId ?? '',
       releasedAt:
         album.releasedAt ?? '',
       genreDe: album.editorial.genre.de,

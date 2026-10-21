@@ -95,6 +95,15 @@
             (assetUploaded)="addImage($event)"
             (assetDeleted)="removeImage($event)"
           />
+          <app-asset-picker
+            type="image"
+            formControlName="heroAssetId"
+            [label]="('admin.music.album.heroImage' | i18n | async) || 'Album-Hero-Bild'"
+            [buttonLabel]="('admin.music.album.heroSelect' | i18n | async) || 'Hero-Bild auswählen'"
+            [assets]="images()"
+            (assetUploaded)="addImage($event)"
+            (assetDeleted)="removeImage($event)"
+          />
         </div>
       </fieldset>
 

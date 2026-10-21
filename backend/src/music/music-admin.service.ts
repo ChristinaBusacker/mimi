@@ -135,6 +135,7 @@ export class MusicAdminService {
 
   async createAlbum(dto: SaveMusicAdminAlbumDto): Promise<MusicAdminAlbum> {
     await this.assertAssetType(dto.coverAssetId, 'image');
+    await this.assertAssetType(dto.editorial?.heroAssetId ?? null, 'image');
     await this.validateTranslationAssets(
       dto.translations,
     );
@@ -187,6 +188,7 @@ export class MusicAdminService {
       album.publishedAt === null;
 
     await this.assertAssetType(dto.coverAssetId, 'image');
+    await this.assertAssetType(dto.editorial?.heroAssetId ?? null, 'image');
     await this.validateTranslationAssets(
       dto.translations,
     );
@@ -659,6 +661,9 @@ export class MusicAdminService {
               scope: 'cover',
             },
           ]
+        : []),
+      ...(dto.editorial?.heroAssetId
+        ? [{ assetUuid: dto.editorial.heroAssetId, scope: 'hero' }]
         : []),
       ...this.translationAssetUsages(
         dto.translations,

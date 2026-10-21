@@ -28,7 +28,8 @@
   background-image: var(--pc-design-image, none);
   background-position: var(--pc-design-position, center);
   background-size: cover;
-  background-attachment: var(--pc-design-attachment, scroll);
+  background-attachment: scroll;
+  background-repeat: no-repeat;
   padding: var(--pc-box-padding, var(--pc-padding, 0px));
   margin: var(--pc-box-margin, 0px);
   border-radius: var(--pc-radius, 0px);
@@ -36,9 +37,23 @@
   color: var(--pc-text-color, inherit);
   background-color: var(--pc-design-color, var(--pc-background-color));
 }
-/* Fixed CSS backgrounds are unreliable on touch browsers and uncomfortable with reduced motion. */
-@media (max-width: 900px), (prefers-reduced-motion: reduce) {
-  .page-document__node { background-attachment: scroll; }
+/* Scroll-driven movement uses no JS listener or layout reads. Browsers without
+   scroll timelines retain the normal background, including during SSR. */
+@keyframes composer-image-drift {
+  from { background-position: center 38%; }
+  to { background-position: center 62%; }
+}
+@supports (animation-timeline: view(block)) {
+  @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+    .page-document__node--parallax {
+      animation: composer-image-drift linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-document__node { animation: none; }
 }
 /* All columns stretch to the tallest sibling; each controls its content's vertical alignment. */
 .page-document__row {

@@ -26,6 +26,33 @@
   gap: clamp(32px, 7vw, 110px);
   min-height: clamp(440px, 50vh, 750px);
   @include maxWidthContent;
+  position: relative;
+  isolation: isolate;
+}
+.booklet__hero--art {
+  padding: clamp(20px, 4vw, 48px);
+}
+.booklet__hero-art {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  pointer-events: none;
+}
+.booklet__hero-art img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+.booklet__hero-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(14 9 25 / 48%), rgb(14 9 25 / 38%)),
+    linear-gradient(0deg, #171321 0%, transparent 35%, transparent 72%, #171321 100%);
 }
 
 .booklet__cover {

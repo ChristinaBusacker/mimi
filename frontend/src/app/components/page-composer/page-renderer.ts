@@ -401,6 +401,10 @@ export class PageRenderer {
       : '(max-width: 580px) 90vw, (max-width: 1100px) 45vw, 420px';
   }
 
+  protected backgroundParallax(styles: PageStyles): boolean {
+    return styles.designBackground?.kind === 'image' && styles.designBackground.parallax === true;
+  }
+
   protected styleVars(styles: PageStyles): Record<string, string> {
     const result: Record<string, string> = {};
     if (styles.textShadow === 'readability')
