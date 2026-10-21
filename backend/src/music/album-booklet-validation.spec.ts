@@ -161,6 +161,26 @@ describe('Album booklet document validation', () => {
     expect(() => validateAlbumBooklet(malformed)).toThrow(BadRequestException);
   });
 
+  it('keeps responsive box values and separately validates heading colors', () => {
+    const input = document('1');
+    const section = input.sections[0];
+    // Fixture nodes deliberately share `styles`; isolate mutations for this test.
+    section.styles = { ...section.styles };
+    section.styles.paddingBox = { top: 0, right: 8, bottom: 16, left: 8 };
+    section.styles.marginBox = { top: 12, right: 0, bottom: 12, left: 0 };
+    section.styles.responsive = { mobile: { paddingBox: { top: 4, right: 0, bottom: 4, left: 0 } } };
+    const text = section.rows[0].columns[0].blocks[0];
+    text.styles = { ...text.styles, headingColor: '#aa00cc88' };
+    expect(validateAlbumBooklet(input).sections[0].styles).toEqual(section.styles);
+    expect(validateAlbumBooklet(input).sections[0].rows[0].columns[0].blocks[0].styles.headingColor)
+      .toBe('#aa00cc88');
+    text.styles.headingColor = 'url(evil)';
+    expect(() => validateAlbumBooklet(input)).toThrow(BadRequestException);
+    delete text.styles.headingColor;
+    section.styles.paddingBox!.top = -1;
+    expect(() => validateAlbumBooklet(input)).toThrow(BadRequestException);
+  });
+
   it('supports a readable text shadow and rejects text shadow on containers', () => {
     const input = document('1');
     const textBlock = input.sections[0].rows[0].columns[0].blocks[0];

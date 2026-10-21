@@ -28,7 +28,8 @@
   background-image: var(--pc-design-image, none);
   background-position: var(--pc-design-position, center);
   background-size: cover;
-  padding: var(--pc-padding, 0px);
+  padding: var(--pc-box-padding, var(--pc-padding, 0px));
+  margin: var(--pc-box-margin, 0px);
   border-radius: var(--pc-radius, 0px);
   text-align: var(--pc-align, left);
   color: var(--pc-text-color, inherit);
@@ -42,6 +43,8 @@
   align-items: stretch;
   gap: var(--pc-gap, 16px);
 }
+// Keep maxWidthContent's centering when no explicit margin was set.
+.page-document__row { margin-inline: var(--pc-row-inline, auto); }
 .page-document__section,
 .page-document__block {
   min-width: 0;
@@ -72,6 +75,8 @@
   :first-child { margin-top: 0; }
   :last-child { margin-bottom: 0; }
   a { color: #f1b4da; }
+  // h1-h6 keep inheriting the body color until a distinct color is selected.
+  h1, h2, h3, h4, h5, h6 { color: var(--pc-heading-color, inherit); }
   h5 { font-size: 1.1em; font-weight: 600; letter-spacing: .04em; }
   h6 { font-size: .74em; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
   img { max-width: 100%; height: auto; }
@@ -272,12 +277,14 @@
 }
 @container page-composer (max-width: 900px) {
   .page-document__node {
-    padding: var(--pc-tablet-padding, var(--pc-padding, 0px));
+    padding: var(--pc-tablet-box-padding, var(--pc-box-padding, 0px));
+    margin: var(--pc-tablet-box-margin);
     border-radius: var(--pc-tablet-radius, var(--pc-radius, 0px));
     text-align: var(--pc-tablet-align, var(--pc-align, left));
     color: var(--pc-tablet-text-color, var(--pc-text-color, inherit));
     background-color: var(--pc-tablet-background-color, var(--pc-background-color));
   }
+  .page-document__row { margin-inline: var(--pc-tablet-row-inline, var(--pc-row-inline, auto)); }
   .page-document__rows,
   .page-document__row,
   .page-document__column {
@@ -286,7 +293,8 @@
 }
 @container page-composer (max-width: 580px) {
   .page-document__node {
-    padding: var(--pc-mobile-padding, var(--pc-tablet-padding, var(--pc-padding, 0px)));
+    padding: var(--pc-mobile-box-padding, var(--pc-tablet-box-padding, var(--pc-box-padding, 0px)));
+    margin: var(--pc-mobile-box-margin);
     border-radius: var(--pc-mobile-radius, var(--pc-tablet-radius, var(--pc-radius, 0px)));
     text-align: var(--pc-mobile-align, var(--pc-tablet-align, var(--pc-align, left)));
     color: var(--pc-mobile-text-color, var(--pc-tablet-text-color, var(--pc-text-color, inherit)));
@@ -295,6 +303,7 @@
       var(--pc-tablet-background-color, var(--pc-background-color))
     );
   }
+  .page-document__row { margin-inline: var(--pc-mobile-row-inline, var(--pc-tablet-row-inline, auto)); }
   .page-document__rows,
   .page-document__row,
   .page-document__column {

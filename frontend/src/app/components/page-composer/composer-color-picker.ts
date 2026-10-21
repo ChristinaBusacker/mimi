@@ -33,6 +33,7 @@ import { ColorPickerDirective } from 'ngx-color-picker';
       :host {
         display: block;
         min-width: 0;
+        position: relative;
       }
       .color-picker__trigger {
         display: flex;

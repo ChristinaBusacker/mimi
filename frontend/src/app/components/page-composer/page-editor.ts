@@ -4,6 +4,7 @@ import type {
   PageBlock,
   ComposerSpacing,
   ComposerCorners,
+  ComposerBoxEdges,
   PageColumn,
   PageDocument,
   PageNode,
@@ -14,6 +15,7 @@ import type {
 } from '@shared/content/page-document';
 import { PAGE_ROW_LAYOUTS, PAGE_ROW_OPTIONS } from '@shared/content/page-layouts';
 import { ComposerColorPicker } from './composer-color-picker';
+import { ComposerBoxControl } from './composer-box-control';
 import { AsyncPipe } from '@angular/common';
 import { ElementRef, HostListener, afterNextRender, viewChild } from '@angular/core';
 import { AssetLibrary } from '../asset-library/asset-library';
@@ -115,6 +117,7 @@ const makeBlock = (kind: BlockKind): PageBlock => {
     MarkdownEditor,
     PageRenderer,
     ComposerColorPicker,
+    ComposerBoxControl,
     ReactiveFormsModule,
     AssetLibrary,
   ],
@@ -140,6 +143,14 @@ export class PageEditor {
   private resizing: number | null = null;
   protected readonly inspectorWidth = signal(this.defaultInspectorWidth);
   protected readonly inspectorOpen = signal(true);
+  protected readonly fullscreen = signal(false);
+  protected toggleFullscreen(): void {
+    this.fullscreen.update((value) => !value);
+  }
+  @HostListener('document:keydown.escape')
+  protected closeFullscreenOnEscape(): void {
+    if (this.fullscreen()) this.fullscreen.set(false);
+  }
   protected readonly mediaTarget = signal<string | null>(null);
   protected readonly galleryTarget = signal<string | null>(null);
   protected readonly backgroundTarget = signal<string | null>(null);
@@ -541,6 +552,37 @@ export class PageEditor {
   protected textColor(): string {
     return this.selectedBlock()?.styles.textColor ?? '#ffffffff';
   }
+  protected headingColor(): string {
+    const styles = this.selectedBlock()?.styles;
+    return styles?.headingColor ?? styles?.textColor ?? '#ffffffff';
+  }
+  protected setHeadingColor(color: string): void {
+    if (!/^#[0-9a-f]{8}$/i.test(color)) return;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'text') node.styles.headingColor = color.toLowerCase();
+    });
+  }
+  protected resetHeadingColor(): void {
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'text') delete node.styles.headingColor;
+    });
+  }
+  protected boxValue(kind: 'paddingBox' | 'marginBox'): ComposerBoxEdges | null {
+    const node = this.active();
+    if (!node) return null;
+    const device = this.breakpoint();
+    const source = device === 'desktop' ? node.styles : node.styles.responsive?.[device];
+    return source?.[kind] ?? null;
+  }
+  protected setBoxValue(kind: 'paddingBox' | 'marginBox', value: ComposerBoxEdges | null): void {
+    const device = this.breakpoint();
+    this.changeSelected((node) => {
+      const target: PageStyleValues =
+        device === 'desktop' ? node.styles : ((node.styles.responsive ??= {})[device] ??= {});
+      if (value === null) delete target[kind];
+      else target[kind] = { ...value };
+    });
+  }
   protected setTextColor(color: string): void {
     if (!/^#[0-9a-f]{8}$/i.test(color)) return;
     this.changeSelected((node) => {
@@ -765,8 +807,8 @@ export class PageEditor {
       const selection = this.selected();
       const value = this.active();
       const locale = this.locale();
-      const isText = selection?.kind === 'block' && value &&
-        'type' in value && value.type === 'text';
+      const isText =
+        selection?.kind === 'block' && value && 'type' in value && value.type === 'text';
       const key = isText ? `${selection.id}:${locale}` : null;
       const markdown = isText ? value.markdown[locale] : '';
       const switched = key !== this.boundMarkdownKey;
@@ -815,7 +857,10 @@ export class PageEditor {
     this.selected.set(selection);
     this.inspectorTab.set(kind === 'block' ? 'content' : 'design');
   }
-  protected styleValue(styles: PageStyles, key: keyof PageStyleValues): string | number {
+  protected styleValue(
+    styles: PageStyles,
+    key: Exclude<keyof PageStyleValues, 'paddingBox' | 'marginBox'>,
+  ): string | number {
     const view = this.breakpoint();
     const values = view === 'desktop' ? styles : styles.responsive?.[view];
     return values?.[key] ?? '';

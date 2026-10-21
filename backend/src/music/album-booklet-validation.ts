@@ -78,8 +78,20 @@ function offset(value: unknown): number {
   return value;
 }
 
+function boxEdges(value: unknown): { top: number; right: number; bottom: number; left: number } {
+  const data = record(value);
+  return {
+    top: number(data['top'], 160, 0),
+    right: number(data['right'], 160, 0),
+    bottom: number(data['bottom'], 160, 0),
+    left: number(data['left'], 160, 0),
+  };
+}
 function styleValues(data: Record<string, unknown>, defaults: boolean): PageStyles {
   const result: PageStyles = {};
+  for (const key of ['paddingBox', 'marginBox'] as const) {
+    if (data[key] !== undefined) result[key] = boxEdges(data[key]);
+  }
   if (defaults || data['background'] !== undefined) {
     const value = data['background'] ?? 'none';
     if (!['none', 'glass', 'solid', 'accent'].includes(String(value)))
@@ -140,6 +152,10 @@ function backgroundDesign(value: unknown): ComposerBackground {
 function styles(value: unknown, allowDesign = false, allowTextShadow = false): PageStyles {
   const data = value === undefined ? {} : record(value);
   const result = styleValues(data, true);
+  if (data['headingColor'] !== undefined) {
+    if (!allowTextShadow) invalid('heading color is only valid on text blocks');
+    result.headingColor = surfaceColor(data['headingColor']);
+  }
   if (data['textShadow'] !== undefined) {
     if (!allowTextShadow || !['none', 'readability', 'strong'].includes(String(data['textShadow'])))
       invalid('invalid text shadow');

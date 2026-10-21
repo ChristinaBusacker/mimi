@@ -1,4 +1,4 @@
-<section class="composer">
+<section class="composer" [class.composer--fullscreen]="fullscreen()">
   <header class="composer__toolbar">
     <div class="composer__toolbar-group">
       <button
@@ -92,6 +92,24 @@
         (click)="locale.set('en')"
       >
         EN
+      </button>
+      <button
+        type="button"
+        class="composer__tool"
+        [class.is-active]="fullscreen()"
+        [attr.aria-pressed]="fullscreen()"
+        [attr.aria-label]="
+          (fullscreen() ? 'page.editor.box.exitFullscreen' : 'page.editor.box.fullscreen')
+            | i18n
+            | async
+        "
+        (click)="toggleFullscreen()"
+      >
+        @if (fullscreen()) {
+          <app-icon name="minimize" class="white" />
+        } @else {
+          <app-icon name="maximize" class="white" />
+        }
       </button>
       <button
         type="button"
@@ -750,27 +768,16 @@
                   {{ 'page.editor.studio.spacing' | i18n | async }}
                 </summary>
                 <div class="composer__accordion-content">
-                  @if (selected()?.kind !== 'row') {
-                    <div class="composer__design-group">
-                      <label>{{ 'page.editor.design.spacing' | i18n | async }}</label>
-                      <select [value]="node.styles.spacing ?? ''" (change)="setSpacing($event)">
-                        @if (!node.styles.spacing) {
-                          <option value="">
-                            {{ 'page.editor.design.existing' | i18n | async }}
-                          </option>
-                        }
-                        <option value="small">
-                          {{ 'page.editor.design.small' | i18n | async }}
-                        </option>
-                        <option value="standard">
-                          {{ 'page.editor.design.standard' | i18n | async }}
-                        </option>
-                        <option value="large">
-                          {{ 'page.editor.design.large' | i18n | async }}
-                        </option>
-                      </select>
-                    </div>
-                  }
+                  <app-composer-box-control
+                    [label]="('page.editor.box.padding' | i18n | async) ?? 'Innenabstand'"
+                    [value]="boxValue('paddingBox')"
+                    (valueChange)="setBoxValue('paddingBox', $event)"
+                  />
+                  <app-composer-box-control
+                    [label]="('page.editor.box.margin' | i18n | async) ?? 'Außenabstand'"
+                    [value]="boxValue('marginBox')"
+                    (valueChange)="setBoxValue('marginBox', $event)"
+                  />
                 </div>
               </details>
               <details class="composer__accordion" open>
@@ -903,7 +910,7 @@
               </details>
               <details class="composer__accordion">
                 <summary>
-                  <app-icon name="square-dashed" />
+                  <app-icon name="square-dashed" class="white" />
                   {{ 'page.editor.studio.borderCorners' | i18n | async }}
                 </summary>
                 <div class="composer__accordion-content composer__surface-studio">
@@ -916,7 +923,12 @@
                       [attr.aria-pressed]="cornerLinks().has('all')"
                       (click)="toggleCornerLock('all')"
                     >
-                      <app-icon [name]="cornerLinks().has('all') ? 'lock' : 'lock-open'" />
+                      @if (cornerLinks().has('all')) {
+                        <app-icon name="lock" class="white" />
+                      } @else {
+                        <app-icon name="lock-open" class="white" />
+                      }
+
                       {{ 'page.editor.studio.allCorners' | i18n | async }}
                     </button>
                   </div>
@@ -938,7 +950,7 @@
                       (click)="toggleCornerLock('top')"
                       [title]="'page.editor.studio.top' | i18n | async"
                     >
-                      <app-icon name="link" />
+                      <app-icon name="link" class="white" />
                     </button>
                     <label class="composer__corner--tr"
                       >{{ 'page.editor.surface.topRight' | i18n | async }}
@@ -957,7 +969,7 @@
                       (click)="toggleCornerLock('left')"
                       [title]="'page.editor.studio.left' | i18n | async"
                     >
-                      <app-icon name="link" />
+                      <app-icon name="link" class="white" />
                     </button>
                     <div
                       class="composer__corner-preview"
@@ -980,7 +992,7 @@
                       (click)="toggleCornerLock('right')"
                       [title]="'page.editor.studio.right' | i18n | async"
                     >
-                      <app-icon name="link" />
+                      <app-icon name="link" class="white" />
                     </button>
                     <label class="composer__corner--bl"
                       >{{ 'page.editor.surface.bottomLeft' | i18n | async }}
@@ -999,7 +1011,7 @@
                       (click)="toggleCornerLock('bottom')"
                       [title]="'page.editor.studio.bottom' | i18n | async"
                     >
-                      <app-icon name="link" />
+                      <app-icon name="link" class="white" />
                     </button>
                     <label class="composer__corner--br"
                       >{{ 'page.editor.surface.bottomRight' | i18n | async }}
@@ -1056,7 +1068,8 @@
               </details>
               <details class="composer__accordion">
                 <summary>
-                  <app-icon name="layers" /> {{ 'page.editor.studio.boxShadow' | i18n | async }}
+                  <app-icon name="layers" class="white" />
+                  {{ 'page.editor.studio.boxShadow' | i18n | async }}
                 </summary>
                 <div class="composer__accordion-content">
                   <div class="composer__shadow-presets">
@@ -1128,7 +1141,8 @@
             } @else if (selectedBlock()?.type === 'text') {
               <details class="composer__accordion" open>
                 <summary>
-                  <app-icon name="type" /> {{ 'page.editor.studio.typography' | i18n | async }}
+                  <app-icon name="type" class="white" />
+                  {{ 'page.editor.studio.typography' | i18n | async }}
                 </summary>
                 <div class="composer__accordion-content">
                   <app-composer-color-picker
@@ -1136,6 +1150,20 @@
                     [value]="textColor()"
                     (valueChange)="setTextColor($event)"
                   />
+                  <app-composer-color-picker
+                    [label]="
+                      ('page.editor.box.headingColor' | i18n | async) ?? 'Überschriftenfarbe'
+                    "
+                    [value]="headingColor()"
+                    (valueChange)="setHeadingColor($event)"
+                  />
+                  <button
+                    type="button"
+                    class="composer__surface-secondary"
+                    (click)="resetHeadingColor()"
+                  >
+                    {{ 'page.editor.box.inheritHeadings' | i18n | async }}
+                  </button>
                   <button
                     type="button"
                     class="composer__surface-secondary"
@@ -1163,6 +1191,26 @@
             } @else {
               <p class="composer__hint">{{ 'page.editor.design.managed' | i18n | async }}</p>
             }
+            @if (selected()?.kind === 'block') {
+              <details class="composer__accordion">
+                <summary>
+                  <app-icon name="ruler" class="white" />
+                  {{ 'page.editor.studio.spacing' | i18n | async }}
+                </summary>
+                <div class="composer__accordion-content">
+                  <app-composer-box-control
+                    [label]="('page.editor.box.padding' | i18n | async) ?? 'Innenabstand'"
+                    [value]="boxValue('paddingBox')"
+                    (valueChange)="setBoxValue('paddingBox', $event)"
+                  />
+                  <app-composer-box-control
+                    [label]="('page.editor.box.margin' | i18n | async) ?? 'Außenabstand'"
+                    [value]="boxValue('marginBox')"
+                    (valueChange)="setBoxValue('marginBox', $event)"
+                  />
+                </div>
+              </details>
+            }
             @if (breakpoint() !== 'desktop') {
               <button type="button" class="composer__reset" (click)="clearBreakpoint()">
                 {{ 'page.editor.resetBreakpoint' | i18n | async }}
@@ -1176,7 +1224,7 @@
           }
         } @else {
           <div class="composer__empty-inspector">
-            <app-icon name="mouse-pointer-click" />
+            <app-icon name="mouse-pointer-click" class="white" />
             <p>{{ 'page.editor.selectHint' | i18n | async }}</p>
           </div>
         }

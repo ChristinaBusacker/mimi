@@ -1214,3 +1214,22 @@
     grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr);
   }
 }
+// A viewport-sized workspace without the browser Fullscreen API. Color picker
+// dialogs are still hosted by the Angular root's overlay view container.
+.composer.composer--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 850;
+  width: 100vw;
+  height: 100dvh;
+  overflow: auto;
+  border: 0;
+  border-radius: 0;
+  --composer-sticky-top: 0px;
+}
+.composer--fullscreen .composer__toolbar { top: 0; }
+.composer--fullscreen .composer__outline,
+.composer--fullscreen .composer__inspector {
+  top: var(--composer-toolbar-height);
+  max-height: calc(100dvh - var(--composer-toolbar-height));
+}

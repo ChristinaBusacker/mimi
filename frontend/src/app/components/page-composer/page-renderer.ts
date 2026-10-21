@@ -413,6 +413,8 @@ export class PageRenderer {
       const s = styles.shadow;
       result['box-shadow'] = `${s.x}px ${s.y}px ${s.blur}px ${s.spread}px ${s.color}`;
     }
+    // Heading overrides are local to the text block. Inherit its normal text color otherwise.
+    result['--pc-heading-color'] = styles.headingColor ?? 'inherit';
     // A node's own design must not leak down via inherited CSS custom properties.
     result['--pc-design-color'] =
       styles.designBackground?.kind === 'color'
@@ -478,6 +480,26 @@ export class PageRenderer {
       for (const key of ['--pc-padding', '--pc-tablet-padding', '--pc-mobile-padding'])
         result[key] = `var(--composer-section-${styles.spacing})`;
     }
+    const box = (edges: PageStyleValues['paddingBox']): string | undefined =>
+      edges ? `${edges.top}px ${edges.right}px ${edges.bottom}px ${edges.left}px` : undefined;
+    // Explicit box values take precedence. Without them, preserve all legacy
+    // desktop / tablet / mobile padding values and semantic spacing presets.
+    result['--pc-box-padding'] = box(styles.paddingBox) ?? 'var(--pc-padding, 0px)';
+    result['--pc-tablet-box-padding'] = box(styles.responsive?.tablet?.paddingBox) ??
+      (styles.responsive?.tablet?.padding !== undefined && !styles.spacing
+        ? 'var(--pc-tablet-padding)' : 'var(--pc-box-padding)');
+    result['--pc-mobile-box-padding'] = box(styles.responsive?.mobile?.paddingBox) ??
+      (styles.responsive?.mobile?.padding !== undefined && !styles.spacing
+        ? 'var(--pc-mobile-padding)' : 'var(--pc-tablet-box-padding)');
+    result['--pc-box-margin'] = box(styles.marginBox) ?? '0px';
+    result['--pc-tablet-box-margin'] = box(styles.responsive?.tablet?.marginBox) ?? 'var(--pc-box-margin)';
+    result['--pc-mobile-box-margin'] = box(styles.responsive?.mobile?.marginBox) ?? 'var(--pc-tablet-box-margin)';
+    const inline = (edges: PageStyleValues['marginBox']): string | undefined =>
+      edges ? `${edges.left}px ${edges.right}px` : undefined;
+    // maxWidthContent keeps rows horizontally centered until custom margins are set.
+    result['--pc-row-inline'] = inline(styles.marginBox) ?? 'auto';
+    result['--pc-tablet-row-inline'] = inline(styles.responsive?.tablet?.marginBox) ?? 'var(--pc-row-inline)';
+    result['--pc-mobile-row-inline'] = inline(styles.responsive?.mobile?.marginBox) ?? 'var(--pc-tablet-row-inline)';
     return result;
   }
 

@@ -35,14 +35,6 @@
     >
       @if (editable()) {
         <div class="page-document__controls" (click)="$event.stopPropagation()">
-          <span>{{ 'page.editor.section' | i18n | async }}</span>
-          <button
-            type="button"
-            (click)="choose($event, 'section', section.id)"
-            [attr.aria-label]="'page.editor.settings' | i18n | async"
-          >
-            <app-icon name="settings-2" />
-          </button>
           <button
             type="button"
             class="page-document__handle"
@@ -54,6 +46,15 @@
           >
             <app-icon name="grip-vertical" />
           </button>
+          <span>{{ 'page.editor.section' | i18n | async }}</span>
+          <button
+            type="button"
+            (click)="choose($event, 'section', section.id)"
+            [attr.aria-label]="'page.editor.settings' | i18n | async"
+          >
+            <app-icon name="settings-2" />
+          </button>
+
           <button
             type="button"
             (click)="act($event, 'section', section.id, 'duplicate')"
@@ -109,14 +110,6 @@
                 <span>{{ 'page.editor.row' | i18n | async }} {{ rowIndex + 1 }}</span>
               </button>
               <div class="page-document__controls" (click)="$event.stopPropagation()">
-                <span>{{ 'page.editor.row' | i18n | async }}</span>
-                <button
-                  type="button"
-                  (click)="choose($event, 'row', row.id)"
-                  [attr.aria-label]="'page.editor.settings' | i18n | async"
-                >
-                  <app-icon name="settings-2" />
-                </button>
                 <button
                   type="button"
                   class="page-document__handle"
@@ -128,6 +121,15 @@
                 >
                   <app-icon name="grip-vertical" />
                 </button>
+                <span>{{ 'page.editor.row' | i18n | async }}</span>
+                <button
+                  type="button"
+                  (click)="choose($event, 'row', row.id)"
+                  [attr.aria-label]="'page.editor.settings' | i18n | async"
+                >
+                  <app-icon name="settings-2" />
+                </button>
+
                 <button
                   type="button"
                   (click)="act($event, 'row', row.id, 'duplicate')"
@@ -202,14 +204,6 @@
                         class="page-document__controls page-document__controls--block"
                         (click)="$event.stopPropagation()"
                       >
-                        <span>{{ 'page.editor.block.' + block.type | i18n | async }}</span>
-                        <button
-                          type="button"
-                          (click)="choose($event, 'block', block.id)"
-                          [attr.aria-label]="'page.editor.settings' | i18n | async"
-                        >
-                          <app-icon name="settings-2" />
-                        </button>
                         <button
                           type="button"
                           class="page-document__handle"
@@ -221,6 +215,15 @@
                         >
                           <app-icon name="grip-vertical" />
                         </button>
+                        <span>{{ 'page.editor.block.' + block.type | i18n | async }}</span>
+                        <button
+                          type="button"
+                          (click)="choose($event, 'block', block.id)"
+                          [attr.aria-label]="'page.editor.settings' | i18n | async"
+                        >
+                          <app-icon name="settings-2" />
+                        </button>
+
                         @if (block.type === 'text') {
                           <button
                             type="button"

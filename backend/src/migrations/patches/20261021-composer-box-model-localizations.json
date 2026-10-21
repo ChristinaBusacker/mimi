@@ -1,0 +1,34 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.box.padding",
+      "de": "Innenabstand (Padding)",
+      "en": "Inner spacing (padding)"
+    },
+    {
+      "key": "page.editor.box.margin",
+      "de": "Außenabstand (Margin)",
+      "en": "Outer spacing (margin)"
+    },
+    {
+      "key": "page.editor.box.fullscreen",
+      "de": "Composer im Vollbild",
+      "en": "Fullscreen composer"
+    },
+    {
+      "key": "page.editor.box.exitFullscreen",
+      "de": "Vollbild verlassen",
+      "en": "Exit fullscreen"
+    },
+    {
+      "key": "page.editor.box.headingColor",
+      "de": "Überschriftenfarbe",
+      "en": "Heading color"
+    },
+    {
+      "key": "page.editor.box.inheritHeadings",
+      "de": "Überschriftenfarbe vom Text übernehmen",
+      "en": "Inherit heading color from text"
+    }
+  ]
+}

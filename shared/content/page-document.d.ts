@@ -8,6 +8,13 @@ export type RowLayout =
   '1' | '1-1' | '1-2' | '2-1' | '1-3' | '3-1' | '1-1-1' | '1-1-1-1' | '2-1-1' | '1-2-1' | '1-1-2';
 export type PageSurface = 'none' | 'glass' | 'solid' | 'accent';
 export type ComposerSpacing = 'small' | 'standard' | 'large';
+/** Individual pixel values (0–160) in standard CSS box order. */
+export interface ComposerBoxEdges {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
 export interface ComposerCorners {
   topLeft: number;
   topRight: number;
@@ -35,6 +42,9 @@ export interface PageStyleValues {
   backgroundColor?: string;
   textColor?: string;
   padding?: number;
+  /** New explicit four-sided box model. When absent, old padding/spacing stays in effect. */
+  paddingBox?: ComposerBoxEdges;
+  marginBox?: ComposerBoxEdges;
   gap?: number;
   radius?: number;
   align?: 'left' | 'center' | 'right';
@@ -45,6 +55,8 @@ export interface PageStyles extends PageStyleValues {
   designBackground?: ComposerBackground;
   /** Text blocks only: readability shadows follow the global --text-shadow token. */
   textShadow?: 'none' | 'readability' | 'strong';
+  /** Optional heading override; without it h1-h6 inherit the body text color. */
+  headingColor?: string;
   corners?: ComposerCorners;
   border?: ComposerBorder;
   shadow?: ComposerShadow;
