@@ -77,6 +77,18 @@
 .page-document__markdown h5 { font-size: 1.1em; font-weight: 600; letter-spacing: .04em; }
 .page-document__markdown h6 { font-size: .74em; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
 .page-document__markdown img { max-width: 100%; height: auto; }
+.page-document__markdown img.content-media { display: block; margin-block: 12px; }
+.page-document__markdown img.media-left { float: left; margin-right: 14px; }
+.page-document__markdown img.media-right { float: right; margin-left: 14px; }
+.page-document__markdown img.media-center { margin-inline: auto; }
+.page-document__markdown img.size-small:not([style]) { width: min(100%, 240px); }
+.page-document__markdown img.size-medium:not([style]) { width: min(100%, 360px); }
+.page-document__markdown img.size-large:not([style]) { width: min(100%, 560px); }
+.page-document__markdown img.size-full:not([style]) { width: 100%; }
+@media (max-width: 580px) {
+  .page-document__markdown img.media-left,
+  .page-document__markdown img.media-right { float: none; margin-inline: auto; }
+}
 .page-document__image {
   display: block;
   max-width: 100%;

@@ -2,6 +2,7 @@ import type {
   ContentMediaAlignment,
   ContentMediaSize,
 } from '@shared/content/content-media';
+import { installMimiTextColor, parseMimiMediaTitle, MIMI_MEDIA_TITLE } from './mimi-markdown-rendering';
 
 import { Injectable } from '@nestjs/common';
 import MarkdownIt from 'markdown-it';
@@ -12,20 +13,20 @@ const ASSET_SOURCE_PATTERN =
 
 const YOUTUBE_ID_PATTERN =
   /^[A-Za-z0-9_-]{6,20}$/;
-const MEDIA_METADATA_PATTERN =
-  /^mimi-media:(left|center|right):(small|medium|large|full)$/;
 const YOUTUBE_BLOCK_PATTERN =
   /^:::youtube\s+([A-Za-z0-9_-]{6,20})(?:\s+(left|center|right))?(?:\s+(small|medium|large|full))?\s*$/;
 
 interface ContentMediaLayout {
   alignment: ContentMediaAlignment;
   size: ContentMediaSize;
+  widthPercent: number | null;
 }
 
 const DEFAULT_MEDIA_LAYOUT:
   ContentMediaLayout = {
     alignment: 'center',
     size: 'large',
+    widthPercent: null,
   };
 
 @Injectable()
@@ -40,6 +41,7 @@ export class MarkdownRendererService {
 
   constructor() {
     this.configureUnderline();
+    installMimiTextColor(this.markdown);
     this.configureAssetImages();
     this.configureYouTubeBlocks();
   }
@@ -70,6 +72,13 @@ export class MarkdownRendererService {
         'blockquote',
         'br',
         'hr',
+        'span',
+        'h1',
+        'h4',
+        'h5',
+        'h6',
+        'code',
+        'pre',
         'img',
         'picture',
         'source',
@@ -88,7 +97,8 @@ export class MarkdownRendererService {
           'loading',
           'decoding',
         ],
-        picture: ['class'],
+        span: ['style'],
+        picture: ['class', 'style'],
         source: [
           'srcset',
           'type',
@@ -102,6 +112,13 @@ export class MarkdownRendererService {
           'allowfullscreen',
           'referrerpolicy',
         ],
+      },
+      allowedStyles: {
+        span: { color: [/^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/i] },
+        picture: {
+          width: [/^(?:100|[1-9]\d?)%$/],
+          'max-width': [/^100%$/],
+        },
       },
       allowedClasses: {
         picture: [
@@ -248,7 +265,7 @@ export class MarkdownRendererService {
           );
         const titleAttribute =
           title &&
-          !MEDIA_METADATA_PATTERN.test(
+          !MIMI_MEDIA_TITLE.test(
             title + '',
           )
             ? ` title="${this.markdown.utils.escapeHtml(
@@ -261,8 +278,12 @@ export class MarkdownRendererService {
             layout.size,
           );
 
+        const widthStyle = layout.widthPercent === null
+          ? ''
+          : ` style="width:${layout.widthPercent}%;max-width:100%"`;
+
         return (
-          `<picture class="${this.mediaClasses(layout)}">` +
+          `<picture class="${this.mediaClasses(layout)}"${widthStyle}>` +
           `<source srcset="/api/assets/${assetId}/image/${variant}/webp" type="image/webp">` +
           `<img src="/api/assets/${assetId}/image/${variant}/fallback"` +
           ` alt="${alt}"` +
@@ -429,26 +450,8 @@ export class MarkdownRendererService {
       };
   }
 
-  private parseMediaMetadata(
-    value: string | null,
-  ): ContentMediaLayout {
-    if (!value) {
-      return DEFAULT_MEDIA_LAYOUT;
-    }
-
-    const match =
-      MEDIA_METADATA_PATTERN.exec(
-        value,
-      );
-
-    return match
-      ? {
-          alignment:
-            match[1] as ContentMediaAlignment,
-          size:
-            match[2] as ContentMediaSize,
-        }
-      : DEFAULT_MEDIA_LAYOUT;
+  private parseMediaMetadata(value: string | null): ContentMediaLayout {
+    return parseMimiMediaTitle(value) ?? DEFAULT_MEDIA_LAYOUT;
   }
 
   private normalizeMediaLayout(
@@ -460,6 +463,7 @@ export class MarkdownRendererService {
       | null,
   ): ContentMediaLayout {
     return {
+      widthPercent: null,
       alignment:
         alignment === 'left' ||
         alignment === 'right' ||

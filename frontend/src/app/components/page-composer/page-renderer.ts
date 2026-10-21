@@ -20,7 +20,11 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import type { SafeHtml } from '@angular/platform-browser';
 import MarkdownIt from 'markdown-it';
+import sanitizeHtml from 'sanitize-html';
+import { installMimiTextColor, parseMimiMediaTitle } from '@shared/content/mimi-markdown-rendering';
 import { Icon } from '../icon/icon';
 import { Carousel } from '../carousel/carousel';
 import { CarouselSlide } from '../carousel/carousel-slide.directive';
@@ -87,44 +91,29 @@ const ASSET = /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
 export class PageRenderer {
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly lightbox = inject(LightboxService);
+  private readonly sanitizer = inject(DomSanitizer);
   protected readonly imageSources = inject(ResponsiveImageService);
   private readonly markdown = new MarkdownIt({ html: false, linkify: false, breaks: false });
 
   constructor() {
-    // Corresponds to the safe color-mark syntax in the Markdown editor.
-    this.markdown.inline.ruler.before('emphasis', 'mimiTextColor', (state, silent) => {
-      const match = /^%%#([a-fA-F0-9]{6}(?:[a-fA-F0-9]{2})?)\[([^\]\n]+)\]%%/.exec(
-        state.src.slice(state.pos),
-      );
-      if (!match) return false;
-      if (!silent) {
-        const start = state.push('mimi_text_color_open', 'span', 1);
-        start.attrSet('style', 'color:#' + match[1]);
-        state.md.inline.parse(match[2], state.md, state.env, state.tokens);
-        state.push('mimi_text_color_close', 'span', -1);
-      }
-      state.pos += match[0].length;
-      return true;
-    });
+    installMimiTextColor(this.markdown);
     this.markdown.renderer.rules['image'] = (tokens, index): string => {
       const token = tokens[index];
       const match = ASSET.exec(token.attrGet('src')?.toString() ?? '');
       if (!match) return '';
       const assetId = match[1];
-      const title = token.attrGet('title') ?? '';
-      const layout =
-        /^mimi-media:(left|center|right):(small|medium|large|full)(?::(100|[1-9]\d?))?$/.exec(
-          title + '',
-        );
-      const width = layout?.[3] ? Number(layout[3]) : null;
+      const layout = parseMimiMediaTitle(token.attrGet('title') + '');
       const widthStyle =
-        width !== null && width >= 10 && width <= 100
-          ? ` style="width:${width}%;max-width:100%;height:auto"`
-          : '';
+        layout?.widthPercent === null || !layout
+          ? ''
+          : ` style="width:${layout.widthPercent}%;max-width:100%;height:auto"`;
+      const layoutClass = layout
+        ? ` class="content-media media-${layout.alignment} size-${layout.size}"`
+        : '';
       const src = this.imageSources.url(assetId, 1440);
       const srcset = this.imageSources.srcset(assetId);
       const responsive = srcset ? ` srcset="${srcset}" sizes="(max-width: 700px) 94vw, 960px"` : '';
-      return `<img src="${src}"${responsive}${widthStyle} alt="${this.markdown.utils.escapeHtml(token.content)}" loading="lazy">`;
+      return `<img src="${src}"${responsive}${layoutClass}${widthStyle} alt="${this.markdown.utils.escapeHtml(token.content)}" loading="lazy">`;
     };
   }
 
@@ -351,8 +340,42 @@ export class PageRenderer {
   protected surface(styles: PageStyles): string {
     return `page-surface--${styles.background ?? 'none'}`;
   }
-  protected html(content: string): string {
-    return this.markdown.render(content);
+  protected html(content: string): SafeHtml {
+    // Only MarkdownIt-generated markup reaches this whitelist. Never trust raw editor HTML.
+    const generated = this.markdown.render(content);
+    const clean = sanitizeHtml(generated, {
+      allowedTags: [...sanitizeHtml.defaults.allowedTags, 'img', 'span'],
+      allowedAttributes: {
+        ...sanitizeHtml.defaults.allowedAttributes,
+        img: ['src', 'srcset', 'sizes', 'alt', 'loading', 'class', 'style'],
+        span: ['style'],
+      },
+      allowedClasses: {
+        img: [
+          'content-media',
+          'media-left',
+          'media-center',
+          'media-right',
+          'size-small',
+          'size-medium',
+          'size-large',
+          'size-full',
+        ],
+      },
+      allowedStyles: {
+        span: { color: [/^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/i] },
+        img: {
+          width: [/^(?:100|[1-9]\d?)%$/],
+          'max-width': [/^100%$/],
+          height: [/^auto$/],
+        },
+      },
+      allowedSchemes: ['https', 'http', 'mailto'],
+      allowProtocolRelative: false,
+    });
+    // Sanitized HTML is necessary here: Angular strips the validated inline styles
+    // when assigning a plain string to [innerHTML].
+    return this.sanitizer.bypassSecurityTrustHtml(clean);
   }
   protected image(assetId: string): string {
     return this.imageSources.url(assetId, 1440);
