@@ -1,0 +1,9 @@
+{
+  "localizations": [
+    {"key":"admin.markdown.imageDisplayMode","de":"Bilddarstellung","en":"Image layout"},
+    {"key":"admin.markdown.imageMode.legacy","de":"Bisheriges Layout","en":"Existing layout"},
+    {"key":"admin.markdown.imageMode.inline","de":"Im Text","en":"Inline with text"},
+    {"key":"admin.markdown.imageMode.block","de":"Eigene Zeile","en":"Own row"},
+    {"key":"admin.markdown.imageMode.wrap","de":"Textumfluss","en":"Wrap text"}
+  ]
+}

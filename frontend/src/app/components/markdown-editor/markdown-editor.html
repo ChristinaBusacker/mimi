@@ -121,6 +121,7 @@
     <label class="markdown-editor__color-tool">
       <span>{{ 'admin.markdown.v2.textColor' | i18n | async }}</span>
       <input type="color" [value]="textColor()" [disabled]="isDisabled()"
+        (pointerdown)="rememberColorSelection()" (focus)="rememberColorSelection()"
         (input)="applyTextColor($event)" />
     </label>
     <button type="button" [disabled]="isDisabled()"
@@ -296,6 +297,15 @@
             </select>
           </label>
         </div>
+        <label class="markdown-editor__image-mode-label">
+          <span>{{ 'admin.markdown.imageDisplayMode' | i18n | async }}</span>
+          <select [value]="imageDisplayMode() ?? ''" (change)="changeImageDisplayMode($event)">
+            <option value="">{{ 'admin.markdown.imageMode.legacy' | i18n | async }}</option>
+            <option value="inline">{{ 'admin.markdown.imageMode.inline' | i18n | async }}</option>
+            <option value="block">{{ 'admin.markdown.imageMode.block' | i18n | async }}</option>
+            <option value="wrap">{{ 'admin.markdown.imageMode.wrap' | i18n | async }}</option>
+          </select>
+        </label>
         <div class="markdown-editor__width-control">
           <label for="markup-image-width">{{ 'admin.markdown.v2.imageWidth' | i18n | async }}:
             {{ imageWidth() === null ? ('admin.markdown.v2.automatic' | i18n | async) : imageWidth() + '%' }}

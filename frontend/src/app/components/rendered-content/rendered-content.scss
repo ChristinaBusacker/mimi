@@ -73,6 +73,11 @@
   .size-full {
     width: 100%;
   }
+  // Existing content keeps its original size and float classes.
+  picture.media-mode-inline { display: inline-block; float: none; vertical-align: middle; margin: 0 .25em; }
+  picture.media-mode-block { display: block; float: none; clear: both; margin-block: var(--spacing-md); }
+  picture.media-mode-block.media-left { margin-left: 0; margin-right: auto; }
+  picture.media-mode-block.media-right { margin-left: auto; margin-right: 0; }
 
   .content-youtube {
     overflow: hidden;

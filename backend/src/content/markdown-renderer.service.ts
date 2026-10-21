@@ -20,6 +20,7 @@ interface ContentMediaLayout {
   alignment: ContentMediaAlignment;
   size: ContentMediaSize;
   widthPercent: number | null;
+  displayMode: 'inline' | 'block' | 'wrap' | null;
 }
 
 const DEFAULT_MEDIA_LAYOUT:
@@ -27,6 +28,7 @@ const DEFAULT_MEDIA_LAYOUT:
     alignment: 'center',
     size: 'large',
     widthPercent: null,
+    displayMode: null,
   };
 
 @Injectable()
@@ -130,6 +132,9 @@ export class MarkdownRendererService {
           'size-medium',
           'size-large',
           'size-full',
+          'media-mode-inline',
+          'media-mode-block',
+          'media-mode-wrap',
         ],
         div: [
           'content-youtube',
@@ -464,6 +469,7 @@ export class MarkdownRendererService {
   ): ContentMediaLayout {
     return {
       widthPercent: null,
+      displayMode: null,
       alignment:
         alignment === 'left' ||
         alignment === 'right' ||
@@ -505,6 +511,7 @@ export class MarkdownRendererService {
       'content-media',
       `media-${layout.alignment}`,
       `size-${layout.size}`,
+      ...(layout.displayMode ? [`media-mode-${layout.displayMode}`] : []),
     ].join(' ');
   }
 }

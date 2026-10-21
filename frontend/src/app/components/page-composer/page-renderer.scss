@@ -78,9 +78,18 @@
 .page-document__markdown h6 { font-size: .74em; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
 .page-document__markdown img { max-width: 100%; height: auto; }
 .page-document__markdown img.content-media { display: block; margin-block: 12px; }
+.page-document__markdown img.content-media.media-mode-inline {
+  display: inline-block; vertical-align: middle; float: none; margin: 0 .25em;
+}
+.page-document__markdown img.content-media.media-mode-block {
+  display: block; float: none; clear: both; margin-block: 14px;
+}
+.page-document__markdown img.content-media.media-mode-wrap { display: block; }
 .page-document__markdown img.media-left { float: left; margin-right: 14px; }
 .page-document__markdown img.media-right { float: right; margin-left: 14px; }
 .page-document__markdown img.media-center { margin-inline: auto; }
+.page-document__markdown img.media-mode-block.media-left { margin-left: 0; margin-right: auto; }
+.page-document__markdown img.media-mode-block.media-right { margin-left: auto; margin-right: 0; }
 .page-document__markdown img.size-small:not([style]) { width: min(100%, 240px); }
 .page-document__markdown img.size-medium:not([style]) { width: min(100%, 360px); }
 .page-document__markdown img.size-large:not([style]) { width: min(100%, 560px); }

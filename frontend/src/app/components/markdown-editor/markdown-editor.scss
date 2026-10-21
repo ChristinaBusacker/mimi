@@ -384,6 +384,8 @@
     clear: both;
   }
 }
+.markdown-editor__image-mode-label { display: grid; gap: 7px; font-weight: 700; }
+.markdown-editor__image-mode-label select { padding: 9px; color: inherit; background: var(--color-surface); }
 .markdown-editor__width-control {
   display: grid; gap: 8px;
   input[type='range'] { width: 100%; }
@@ -397,6 +399,38 @@
 .markdown-editor__content h5 { font-size: 1.1rem; font-weight: 600; letter-spacing: .04em; }
 .markdown-editor__content h6 { font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
 
+// NodeView keeps all four handles outside the image's content and uses one undo step per drag.
+.markdown-editor__content .markdown-image {
+  position: relative; display: inline-block; max-width: 100%; vertical-align: middle;
+  min-width: 10%; line-height: 0; margin-block: 10px; box-sizing: border-box;
+  border-radius: var(--radius-card); touch-action: none;
+  &.size-small { width: min(100%, 240px); }
+  &.size-medium { width: min(100%, 360px); }
+  &.size-large { width: min(100%, 560px); }
+  &.size-full { width: 100%; }
+  &.media-mode-legacy.media-center { display: block; float: none; margin-inline: auto; }
+  &.media-mode-legacy.media-left { display: block; float: left; margin-right: var(--spacing-md); }
+  &.media-mode-legacy.media-right { display: block; float: right; margin-left: var(--spacing-md); }
+  &.media-mode-inline { display: inline-block; float: none; margin: 0 .25em; }
+  &.media-mode-block { display: block; float: none; clear: both; }
+  &.media-mode-block.media-center { margin-inline: auto; }
+  &.media-mode-block.media-left { margin-left: 0; margin-right: auto; }
+  &.media-mode-block.media-right { margin-left: auto; margin-right: 0; }
+  &.media-mode-wrap { display: block; }
+  img { display: block; width: 100%; height: auto; max-height: 560px; object-fit: contain; }
+  &.ProseMirror-selectednode { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+}
+.markdown-image__handle {
+  display: none; position: absolute; width: 15px; height: 15px; z-index: 2;
+  background: var(--color-primary); border: 2px solid white; border-radius: 4px;
+  box-shadow: 0 1px 5px #0007; cursor: nwse-resize; touch-action: none;
+  &--nw { top: -8px; left: -8px; }
+  &--ne { top: -8px; right: -8px; cursor: nesw-resize; }
+  &--sw { bottom: -8px; left: -8px; cursor: nesw-resize; }
+  &--se { bottom: -8px; right: -8px; }
+}
+.markdown-editor__content .markdown-image.ProseMirror-selectednode .markdown-image__handle { display: block; }
+.markdown-image__handle:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @include compact-layout {
   .markdown-editor__toolbar {
     top: 0;

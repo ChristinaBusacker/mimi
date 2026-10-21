@@ -36,7 +36,8 @@ import StarterKit from '@tiptap/starter-kit';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { AssetLibrary } from '../asset-library/asset-library';
 import { Icon } from '../icon/icon';
-import { AssetImage, mediaWidth } from './asset-image.extension';
+import { AssetImage, imageDisplayMode, mediaWidth } from './asset-image.extension';
+import type { ImageDisplayMode } from './asset-image.extension';
 import { MarkdownTextColor } from './text-color.extension';
 import {
   MarkdownStrike,
@@ -156,6 +157,7 @@ export class MarkdownEditor
       'large',
     );
   protected readonly imageWidth = signal<number | null>(null);
+  protected readonly imageDisplayMode = signal<ImageDisplayMode | null>(null);
   protected readonly textColor = signal('#f8d7eb');
   protected readonly youtubeValue =
     signal('');
@@ -853,11 +855,28 @@ export class MarkdownEditor
     this.imageWidth.set(mediaWidth(Number(this.readControlValue(event))));
   }
   protected resetImageWidth(): void { this.imageWidth.set(null); }
+  protected changeImageDisplayMode(event: Event): void {
+    const mode = imageDisplayMode(this.readControlValue(event));
+    this.imageDisplayMode.set(mode);
+    if (mode === 'wrap' && this.imageAlignment() === 'center') this.imageAlignment.set('left');
+  }
+  // A native color input takes focus away from contenteditable. Retain the selected text.
+  protected rememberColorSelection(): void {
+    const selection = this.editor()?.state.selection;
+    if (selection && !selection.empty) this.colorSelection = { from: selection.from, to: selection.to };
+  }
+  private colorSelection: { from: number; to: number } | null = null;
   protected applyTextColor(event: Event): void {
     const color = this.readControlValue(event);
     if (!/^#[0-9a-f]{6}(?:[0-9a-f]{2})?$/i.test(color)) return;
     this.textColor.set(color.toLowerCase());
-    this.editor()?.chain().focus().setMark('mimiTextColor', { color: color.toLowerCase() }).run();
+    const editor = this.editor();
+    if (!editor) return;
+    const selected = this.colorSelection;
+    const chain = editor.chain().focus();
+    if (selected) chain.setTextSelection({ from: selected.from, to: selected.to });
+    chain.setMark('mimiTextColor', { color: color.toLowerCase() }).run();
+    this.colorSelection = null;
   }
   protected removeTextColor(): void {
     this.editor()?.chain().focus().unsetMark('mimiTextColor').run();
@@ -893,6 +912,7 @@ export class MarkdownEditor
         this.imageAlignment(),
       size: this.imageSize(),
       widthPercent: this.imageWidth(),
+      displayMode: this.imageDisplayMode(),
     };
 
     if (
@@ -1177,6 +1197,7 @@ export class MarkdownEditor
       ),
     );
     this.imageWidth.set(mediaWidth(attrs['widthPercent']));
+    this.imageDisplayMode.set(imageDisplayMode(attrs['displayMode']));
     this.editingMedia.set(
       'image',
     );
@@ -1299,6 +1320,7 @@ export class MarkdownEditor
       'large',
     );
     this.imageWidth.set(null);
+    this.imageDisplayMode.set(null);
   }
 
   private resetYoutubeForm():

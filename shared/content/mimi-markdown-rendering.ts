@@ -2,12 +2,13 @@ import MarkdownIt from 'markdown-it';
 
 /** The public, backend and editing renderers must read the same stored metadata. */
 export const MIMI_MEDIA_TITLE =
-  /^mimi-media:(left|center|right):(small|medium|large|full)(?::(100|[1-9]\d?))?$/;
+  /^mimi-media:(left|center|right):(small|medium|large|full)(?::(100|[1-9]\d?))?(?::(inline|block|wrap))?$/;
 
 export interface MimiMediaLayout {
   alignment: 'left' | 'center' | 'right';
   size: 'small' | 'medium' | 'large' | 'full';
   widthPercent: number | null;
+  displayMode: 'inline' | 'block' | 'wrap' | null;
 }
 
 export function parseMimiMediaTitle(value: string | null): MimiMediaLayout | null {
@@ -19,6 +20,8 @@ export function parseMimiMediaTitle(value: string | null): MimiMediaLayout | nul
     size: match[2] as MimiMediaLayout['size'],
     widthPercent:
       widthPercent !== null && widthPercent >= 10 && widthPercent <= 100 ? widthPercent : null,
+    displayMode:
+      match[4] === 'inline' || match[4] === 'block' || match[4] === 'wrap' ? match[4] : null,
   };
 }
 
@@ -31,11 +34,19 @@ export function installMimiTextColor(markdown: InstanceType<typeof MarkdownIt>):
     if (!match) return false;
     if (!silent) {
       const open = state.push('mimi_text_color_open', 'span', 1);
-      open.attrSet('style', `color:#${match[1]}`);
+      // Render color tokens explicitly. The default rule ignores custom mark metadata.
+      open.attrSet('data-mimi-color', `#${match[1]}`);
       state.md.inline.parse(match[2], state.md, state.env, state.tokens);
       state.push('mimi_text_color_close', 'span', -1);
     }
     state.pos += match[0].length;
     return true;
   });
+  markdown.renderer.rules['mimi_text_color_open'] = (tokens, index): string => {
+    const value = tokens[index].attrGet('data-mimi-color') ?? '';
+    return /^#[a-fA-F0-9]{6}(?:[a-fA-F0-9]{2})?$/.test(value + '')
+      ? `<span style="color:${(value + '').toLowerCase()}">`
+      : '<span>';
+  };
+  markdown.renderer.rules['mimi_text_color_close'] = (): string => '</span>';
 }

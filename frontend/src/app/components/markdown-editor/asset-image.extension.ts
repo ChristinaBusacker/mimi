@@ -5,6 +5,7 @@ import type {
 
 import { Node } from '@tiptap/core';
 import '@tiptap/markdown';
+import { createAssetImageNodeView } from './asset-image-node-view';
 
 const ASSET_SOURCE_PATTERN =
   /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
@@ -15,15 +16,19 @@ interface MarkdownImageToken {
   title?: unknown;
 }
 
+export type ImageDisplayMode = 'inline' | 'block' | 'wrap';
 interface ContentMediaLayout {
   alignment: ContentMediaAlignment;
   size: ContentMediaSize;
   widthPercent: number | null;
+  displayMode: ImageDisplayMode | null;
 }
-
-// Keep old two-field image titles valid; optional percentage is 10..100.
+export function imageDisplayMode(value: unknown): ImageDisplayMode | null {
+  return value === 'inline' || value === 'block' || value === 'wrap' ? value : null;
+}
+// Existing image titles have neither a percentage nor a layout mode.
 const MEDIA_METADATA_PATTERN =
-  /^mimi-media:(left|center|right):(small|medium|large|full)(?::(100|[1-9]\d?))?$/;
+  /^mimi-media:(left|center|right):(small|medium|large|full)(?::(100|[1-9]\d?))?(?::(inline|block|wrap))?$/;
 export function mediaWidth(value: unknown): number | null {
   if (typeof value !== 'number' || !Number.isInteger(value)) return null;
   return value >= 10 && value <= 100 ? value : null;
@@ -33,6 +38,7 @@ const DEFAULT_MEDIA_LAYOUT: ContentMediaLayout = {
   alignment: 'center',
   size: 'large',
   widthPercent: null,
+  displayMode: null,
 };
 
 function readNodeAttribute(
@@ -62,6 +68,7 @@ function readLayout(
 
   return {
     widthPercent: mediaWidth(attributes?.['widthPercent']),
+    displayMode: imageDisplayMode(attributes?.['displayMode']),
     alignment:
       alignment === 'left' ||
       alignment === 'right' ||
@@ -92,6 +99,7 @@ function parseLayoutTitle(
         alignment: match[1] as ContentMediaAlignment,
         size: match[2] as ContentMediaSize,
         widthPercent: match[3] ? mediaWidth(Number(match[3])) : null,
+        displayMode: imageDisplayMode(match[4]),
       }
     : DEFAULT_MEDIA_LAYOUT;
 }
@@ -120,6 +128,7 @@ export const AssetImage = Node.create({
         default: DEFAULT_MEDIA_LAYOUT.size,
       },
       widthPercent: { default: null },
+      displayMode: { default: null },
     };
   },
 
@@ -144,6 +153,7 @@ export const AssetImage = Node.create({
               element.getAttribute('data-size') ??
               DEFAULT_MEDIA_LAYOUT.size,
             widthPercent: mediaWidth(Number(element.getAttribute('data-width-percent'))),
+            displayMode: imageDisplayMode(element.getAttribute('data-display-mode')),
           };
         },
       },
@@ -171,15 +181,20 @@ export const AssetImage = Node.create({
         'data-asset-id': assetId,
         'data-alignment': layout.alignment,
         'data-size': layout.size,
+        ...(layout.displayMode === null ? {} : { 'data-display-mode': layout.displayMode }),
         ...(layout.widthPercent === null ? {} : {
           'data-width-percent': layout.widthPercent,
           style: `width:${layout.widthPercent}%; max-width:100%; height:auto`,
         }),
-        class:
-          `content-media media-${layout.alignment} size-${layout.size}`,
+        class: `content-media media-${layout.alignment} size-${layout.size}` +
+          (layout.displayMode ? ` media-mode-${layout.displayMode}` : ''),
         loading: 'lazy',
       },
     ];
+  },
+
+  addNodeView() {
+    return ({ node, view, getPos }) => createAssetImageNodeView({ node, view, getPos });
   },
 
   parseMarkdown: (token) => {
@@ -209,6 +224,7 @@ export const AssetImage = Node.create({
         alignment: layout.alignment,
         size: layout.size,
         widthPercent: layout.widthPercent,
+        displayMode: layout.displayMode,
       },
     };
   },
@@ -228,7 +244,9 @@ export const AssetImage = Node.create({
     );
     const layout = readLayout(node.attrs);
     const metadata =
-      `mimi-media:${layout.alignment}:${layout.size}${layout.widthPercent === null ? '' : ':' + layout.widthPercent}`;
+      `mimi-media:${layout.alignment}:${layout.size}` +
+      (layout.widthPercent === null ? '' : ':' + layout.widthPercent) +
+      (layout.displayMode ? ':' + layout.displayMode : '');
 
     return (
       `![${alt}](asset:${assetId} "${metadata}")`

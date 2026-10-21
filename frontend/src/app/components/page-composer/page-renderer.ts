@@ -108,7 +108,8 @@ export class PageRenderer {
           ? ''
           : ` style="width:${layout.widthPercent}%;max-width:100%;height:auto"`;
       const layoutClass = layout
-        ? ` class="content-media media-${layout.alignment} size-${layout.size}"`
+        ? ` class="content-media media-${layout.alignment} size-${layout.size}` +
+          (layout.displayMode ? ` media-mode-${layout.displayMode}` : '') + '"'
         : '';
       const src = this.imageSources.url(assetId, 1440);
       const srcset = this.imageSources.srcset(assetId);
@@ -360,6 +361,9 @@ export class PageRenderer {
           'size-medium',
           'size-large',
           'size-full',
+          'media-mode-inline',
+          'media-mode-block',
+          'media-mode-wrap',
         ],
       },
       allowedStyles: {
