@@ -65,38 +65,41 @@
   overflow-wrap: anywhere;
   line-height: 1.75;
 }
-.page-document__markdown :first-child {
-  margin-top: 0;
+// Markdown is inserted with [innerHTML]. Its descendants do not get Angular's
+// _ngcontent attribute, so normal emulated-scoped selectors never match them.
+// Keep these rules restricted to THIS renderer's host with :host ::ng-deep.
+:host ::ng-deep .page-document__markdown {
+  :first-child { margin-top: 0; }
+  :last-child { margin-bottom: 0; }
+  a { color: #f1b4da; }
+  h5 { font-size: 1.1em; font-weight: 600; letter-spacing: .04em; }
+  h6 { font-size: .74em; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
+  img { max-width: 100%; height: auto; }
+  img.content-media { display: block; margin-block: 12px; }
+  // Legacy content retains its original float/alignment without a mode class.
+  img.media-left { float: left; margin-right: 14px; }
+  img.media-right { float: right; margin-left: 14px; }
+  img.media-center { margin-inline: auto; }
+  // Explicit modes must win against the legacy float rules above.
+  img.content-media.media-mode-inline {
+    display: inline-block; vertical-align: middle; float: none; clear: none; margin: 0 .25em;
+  }
+  img.content-media.media-mode-block {
+    display: block; float: none; clear: both; margin-block: 14px;
+  }
+  img.content-media.media-mode-block.media-left { margin-left: 0; margin-right: auto; }
+  img.content-media.media-mode-block.media-right { margin-left: auto; margin-right: 0; }
+  img.content-media.media-mode-block.media-center { margin-inline: auto; }
+  img.content-media.media-mode-wrap { display: block; }
+  img.size-small:not([style]) { width: min(100%, 240px); }
+  img.size-medium:not([style]) { width: min(100%, 360px); }
+  img.size-large:not([style]) { width: min(100%, 560px); }
+  img.size-full:not([style]) { width: 100%; }
 }
-.page-document__markdown :last-child {
-  margin-bottom: 0;
-}
-.page-document__markdown a {
-  color: #f1b4da;
-}
-.page-document__markdown h5 { font-size: 1.1em; font-weight: 600; letter-spacing: .04em; }
-.page-document__markdown h6 { font-size: .74em; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
-.page-document__markdown img { max-width: 100%; height: auto; }
-.page-document__markdown img.content-media { display: block; margin-block: 12px; }
-.page-document__markdown img.content-media.media-mode-inline {
-  display: inline-block; vertical-align: middle; float: none; margin: 0 .25em;
-}
-.page-document__markdown img.content-media.media-mode-block {
-  display: block; float: none; clear: both; margin-block: 14px;
-}
-.page-document__markdown img.content-media.media-mode-wrap { display: block; }
-.page-document__markdown img.media-left { float: left; margin-right: 14px; }
-.page-document__markdown img.media-right { float: right; margin-left: 14px; }
-.page-document__markdown img.media-center { margin-inline: auto; }
-.page-document__markdown img.media-mode-block.media-left { margin-left: 0; margin-right: auto; }
-.page-document__markdown img.media-mode-block.media-right { margin-left: auto; margin-right: 0; }
-.page-document__markdown img.size-small:not([style]) { width: min(100%, 240px); }
-.page-document__markdown img.size-medium:not([style]) { width: min(100%, 360px); }
-.page-document__markdown img.size-large:not([style]) { width: min(100%, 560px); }
-.page-document__markdown img.size-full:not([style]) { width: 100%; }
 @media (max-width: 580px) {
-  .page-document__markdown img.media-left,
-  .page-document__markdown img.media-right { float: none; margin-inline: auto; }
+  :host ::ng-deep .page-document__markdown {
+    img.media-left, img.media-right { float: none; margin-inline: auto; }
+  }
 }
 .page-document__image {
   display: block;

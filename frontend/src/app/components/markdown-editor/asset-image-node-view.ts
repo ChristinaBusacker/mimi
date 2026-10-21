@@ -150,8 +150,11 @@ export function createAssetImageNodeView({ node, view, getPos }: ImageNodeViewOp
     selectNode() { selected = true; paint(); },
     deselectNode() { selected = false; paint(); },
     stopEvent(event) {
-      return event.target instanceof Element &&
-        !!event.target.closest('.markdown-image__handle');
+      if (!(event.target instanceof Element)) return false;
+      // The image pointerdown handler selects this node explicitly. Do not
+      // let ProseMirror's later mousedown handling move the selection again.
+      return !!event.target.closest('.markdown-image__handle') ||
+        (event.type === 'mousedown' && event.target === image);
     },
     ignoreMutation() { return true; },
   };

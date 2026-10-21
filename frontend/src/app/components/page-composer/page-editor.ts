@@ -727,6 +727,10 @@ export class PageEditor {
   private lastHistoryTime = 0;
   protected readonly selected = signal<Selection | null>(null);
   protected readonly markdownControl = new FormControl('', { nonNullable: true });
+  // A block's editor owns its current content while the user is editing it.
+  // Replaying the document model into the control after each Tiptap update
+  // resets the selection and interrupts image resize node views.
+  private boundMarkdownKey: string | null = null;
 
   protected readonly active = computed(() => {
     const selection = this.selected();
@@ -758,11 +762,23 @@ export class PageEditor {
       }
     });
     effect(() => {
+      const selection = this.selected();
       const value = this.active();
-      const markdown =
-        value && 'type' in value && value.type === 'text' ? value.markdown[this.locale()] : '';
-      if (this.markdownControl.value !== markdown) {
-        this.markdownControl.setValue(markdown, { emitEvent: false });
+      const locale = this.locale();
+      const isText = selection?.kind === 'block' && value &&
+        'type' in value && value.type === 'text';
+      const key = isText ? `${selection.id}:${locale}` : null;
+      const markdown = isText ? value.markdown[locale] : '';
+      const switched = key !== this.boundMarkdownKey;
+      if (switched) this.boundMarkdownKey = key;
+      // New selection / locale: load its saved Markdown. While the editor is
+      // dirty, its FormControl is authoritative; do not write an older model
+      // echo back into it (setContent replaces the ProseMirror selection).
+      if (switched || !this.markdownControl.dirty) {
+        if (this.markdownControl.value !== markdown) {
+          this.markdownControl.setValue(markdown, { emitEvent: false });
+        }
+        if (switched) this.markdownControl.markAsPristine();
       }
     });
     this.markdownControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((markdown) => {
@@ -782,7 +798,21 @@ export class PageEditor {
   }
   protected inspect(kind: Selection['kind'], id: string): void {
     if (this.selected()?.id !== id) this.cornerLinks.set(new Set());
-    this.selected.set({ kind, id });
+    const selection: Selection = { kind, id };
+    const value = this.find(this.document(), selection);
+    const text = kind === 'block' && value && 'type' in value && value.type === 'text';
+    const key = text ? `${id}:${this.locale()}` : null;
+    // Load the new value synchronously before Angular renders the inspector.
+    // Crucially, do not rebind when the user reselects the SAME text block.
+    if (key !== this.boundMarkdownKey) {
+      this.boundMarkdownKey = key;
+      const markdown = text ? value.markdown[this.locale()] : '';
+      if (this.markdownControl.value !== markdown) {
+        this.markdownControl.setValue(markdown, { emitEvent: false });
+      }
+      this.markdownControl.markAsPristine();
+    }
+    this.selected.set(selection);
     this.inspectorTab.set(kind === 'block' ? 'content' : 'design');
   }
   protected styleValue(styles: PageStyles, key: keyof PageStyleValues): string | number {

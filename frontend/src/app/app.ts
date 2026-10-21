@@ -1,4 +1,4 @@
-import { Component, afterNextRender, inject } from '@angular/core';
+import { Component, ViewContainerRef, afterNextRender, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
@@ -35,7 +35,7 @@ export class App {
   private readonly router = inject(Router);
   private readonly albumDive = inject(AlbumDiveService);
 
-  constructor() {
+  constructor(public vcRef: ViewContainerRef) {
     // Capture only album-entry links, without changing the site's other navigation.
     afterNextRender(() => this.albumDive.listen());
   }

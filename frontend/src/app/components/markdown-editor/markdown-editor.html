@@ -118,12 +118,10 @@
     </button>
 
     <span class="divider"></span>
-    <label class="markdown-editor__color-tool">
-      <span>{{ 'admin.markdown.v2.textColor' | i18n | async }}</span>
-      <input type="color" [value]="textColor()" [disabled]="isDisabled()"
-        (pointerdown)="rememberColorSelection()" (focus)="rememberColorSelection()"
-        (input)="applyTextColor($event)" />
-    </label>
+    <div class="markdown-editor__color-tool" (pointerdown)="rememberColorSelection()">
+      <app-composer-color-picker [label]="('admin.markdown.v2.textColor' | i18n | async) ?? ''"
+        [disabled]="isDisabled()" [value]="textColor()" (valueChange)="applyTextColor($event)" />
+    </div>
     <button type="button" [disabled]="isDisabled()"
       [attr.aria-label]="'admin.markdown.v2.clearColor' | i18n | async"
       (click)="removeTextColor()"><app-icon name="eraser" /></button>
