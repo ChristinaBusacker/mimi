@@ -274,6 +274,11 @@ export class PageRenderer {
 
   protected styleVars(styles: PageStyles): Record<string, string> {
     const result: Record<string, string> = {};
+    if (styles.textShadow === 'readability')
+      result['text-shadow'] = 'var(--text-shadow, 0px 0px 5px rgba(5, 2, 1, 0.51))';
+    else if (styles.textShadow === 'strong')
+      result['text-shadow'] = '0px 2px 9px rgba(5, 2, 1, 0.85)';
+    else if (styles.textShadow === 'none') result['text-shadow'] = 'none';
     if (styles.corners) {
       const c = styles.corners;
       result['border-radius'] = `${c.topLeft}px ${c.topRight}px ${c.bottomRight}px ${c.bottomLeft}px`;

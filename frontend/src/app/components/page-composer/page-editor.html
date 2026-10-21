@@ -583,7 +583,20 @@
             }
             @if (selected()?.kind === 'section' || selected()?.kind === 'row' || selected()?.kind === 'column') {
               <p class="composer__hint">{{ 'page.editor.design.global' | i18n | async }}</p>
-              @if (selected()?.kind !== 'row') {
+              <details class="composer__accordion" open>
+                <summary><app-icon name="palette" /> {{ 'page.editor.studio.presets' | i18n | async }}</summary>
+                <div class="composer__accordion-content composer__surface-presets">
+                  <button type="button" (click)="applySurfacePreset('none')">{{ 'page.editor.design.none' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('soft')">{{ 'page.editor.surface.soft' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('card')">{{ 'page.editor.surface.card' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('floating')">{{ 'page.editor.surface.floating' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('glow')">{{ 'page.editor.surface.glow' | i18n | async }}</button>
+                </div>
+              </details>
+              <details class="composer__accordion">
+                <summary><app-icon name="ruler" /> {{ 'page.editor.studio.spacing' | i18n | async }}</summary>
+                <div class="composer__accordion-content">
+                  @if (selected()?.kind !== 'row') {
               <div class="composer__design-group">
                 <label>{{ 'page.editor.design.spacing' | i18n | async }}</label>
                 <select [value]="node.styles.spacing ?? ''" (change)="setSpacing($event)">
@@ -593,7 +606,12 @@
                   <option value="large">{{ 'page.editor.design.large' | i18n | async }}</option>
                 </select>
               </div>
-              }
+                  }
+                </div>
+              </details>
+              <details class="composer__accordion" open>
+                <summary><app-icon name="paintbrush" /> {{ 'page.editor.studio.background' | i18n | async }}</summary>
+                <div class="composer__accordion-content">
               <div class="composer__design-group">
                 <label>{{ 'page.editor.design.backgroundType' | i18n | async }}</label>
                 <select [value]="node.styles.designBackground?.kind ?? (node.styles.background !== 'none' && node.styles.background ? 'legacy' : 'none')" (change)="setBackgroundMode($event)">
@@ -609,17 +627,18 @@
                 </select>
                 @switch (node.styles.designBackground?.kind) {
                   @case ('color') {
-                    <label>{{ 'page.editor.design.color' | i18n | async }}</label>
-                    <input type="color" [value]="backgroundValue('color')" (input)="changeBackgroundColor('color', $event)" />
+                    <app-composer-color-picker [label]="('page.editor.design.color' | i18n | async) ?? ''"
+                      [value]="node.styles.designBackground?.kind === 'color' ? node.styles.designBackground.color : '#000000ff'"
+                      (valueChange)="setBackgroundColor('color', $event)" />
                   }
                   @case ('gradient') {
                     <div class="composer__design-colors">
-                      <label>{{ 'page.editor.design.from' | i18n | async }}
-                        <input type="color" [value]="backgroundValue('from')" (input)="changeBackgroundColor('from', $event)" />
-                      </label>
-                      <label>{{ 'page.editor.design.to' | i18n | async }}
-                        <input type="color" [value]="backgroundValue('to')" (input)="changeBackgroundColor('to', $event)" />
-                      </label>
+                      <app-composer-color-picker [label]="('page.editor.design.from' | i18n | async) ?? ''"
+                        [value]="node.styles.designBackground?.kind === 'gradient' ? node.styles.designBackground.from : '#000000ff'"
+                        (valueChange)="setBackgroundColor('from', $event)" />
+                      <app-composer-color-picker [label]="('page.editor.design.to' | i18n | async) ?? ''"
+                        [value]="node.styles.designBackground?.kind === 'gradient' ? node.styles.designBackground.to : '#000000ff'"
+                        (valueChange)="setBackgroundColor('to', $event)" />
                     </div>
                     <label>{{ 'page.editor.design.angle' | i18n | async }}</label>
                     <select [value]="backgroundValue('angle')" (change)="setGradientAngle($event)">
@@ -647,39 +666,46 @@
                   }
                 }
               </div>
-              @if (node.styles.designBackground?.kind === 'color') {
-                <label class="composer__alpha-label">{{ 'page.editor.surface.opacity' | i18n | async }} {{ backgroundOpacity('color') }}%
-                  <input type="range" min="0" max="100" [value]="backgroundOpacity('color')" (input)="changeBackgroundOpacity('color', $event)" />
-                </label>
-              }
-              @if (node.styles.designBackground?.kind === 'gradient') {
-                <div class="composer__design-colors">
-                  <label>{{ 'page.editor.design.from' | i18n | async }} {{ backgroundOpacity('from') }}%
-                    <input type="range" min="0" max="100" [value]="backgroundOpacity('from')" (input)="changeBackgroundOpacity('from', $event)" />
-                  </label>
-                  <label>{{ 'page.editor.design.to' | i18n | async }} {{ backgroundOpacity('to') }}%
-                    <input type="range" min="0" max="100" [value]="backgroundOpacity('to')" (input)="changeBackgroundOpacity('to', $event)" />
-                  </label>
                 </div>
-              }
-              <div class="composer__design-group composer__surface-studio">
-                <h4>{{ 'page.editor.surface.presets' | i18n | async }}</h4>
-                <div class="composer__surface-presets">
-                  <button type="button" (click)="applySurfacePreset('none')">{{ 'page.editor.design.none' | i18n | async }}</button>
-                  <button type="button" (click)="applySurfacePreset('soft')">{{ 'page.editor.surface.soft' | i18n | async }}</button>
-                  <button type="button" (click)="applySurfacePreset('card')">{{ 'page.editor.surface.card' | i18n | async }}</button>
-                  <button type="button" (click)="applySurfacePreset('floating')">{{ 'page.editor.surface.floating' | i18n | async }}</button>
-                  <button type="button" (click)="applySurfacePreset('glow')">{{ 'page.editor.surface.glow' | i18n | async }}</button>
+              </details>
+              <details class="composer__accordion">
+                <summary><app-icon name="square-dashed" /> {{ 'page.editor.studio.borderCorners' | i18n | async }}</summary>
+                <div class="composer__accordion-content composer__surface-studio">
+                <div class="composer__studio-heading">
+                  <h4>{{ 'page.editor.surface.corners' | i18n | async }}</h4>
+                  <button type="button" class="composer__lock" [class.is-active]="cornerLinks().has('all')"
+                    [attr.aria-pressed]="cornerLinks().has('all')" (click)="toggleCornerLock('all')">
+                    <app-icon [name]="cornerLinks().has('all') ? 'lock' : 'lock-open'" />
+                    {{ 'page.editor.studio.allCorners' | i18n | async }}
+                  </button>
                 </div>
-                <h4>{{ 'page.editor.surface.corners' | i18n | async }}</h4>
-                <div class="composer__surface-grid">
-                  @for (corner of cornerKeys; track corner) {
-                    <label>{{ ('page.editor.surface.' + corner) | i18n | async }}
-                      <input type="number" min="0" max="160" [value]="cornerValue(corner)" (change)="setCorner(corner, $event)" />
-                    </label>
-                  }
+                <div class="composer__corners">
+                  <label class="composer__corner--tl">{{ 'page.editor.surface.topLeft' | i18n | async }}
+                    <input type="number" min="0" max="160" [value]="cornerValue('topLeft')" (change)="setCorner('topLeft', $event)" /></label>
+                  <button class="composer__corner-link composer__corner-link--top" type="button"
+                    [class.is-active]="cornerLinks().has('top') || cornerLinks().has('all')"
+                    [attr.aria-pressed]="cornerLinks().has('top') || cornerLinks().has('all')"
+                    (click)="toggleCornerLock('top')" [title]="'page.editor.studio.top' | i18n | async"><app-icon name="link" /></button>
+                  <label class="composer__corner--tr">{{ 'page.editor.surface.topRight' | i18n | async }}
+                    <input type="number" min="0" max="160" [value]="cornerValue('topRight')" (change)="setCorner('topRight', $event)" /></label>
+                  <button class="composer__corner-link composer__corner-link--left" type="button"
+                    [class.is-active]="cornerLinks().has('left') || cornerLinks().has('all')"
+                    [attr.aria-pressed]="cornerLinks().has('left') || cornerLinks().has('all')"
+                    (click)="toggleCornerLock('left')" [title]="'page.editor.studio.left' | i18n | async"><app-icon name="link" /></button>
+                  <div class="composer__corner-preview" [style.border-radius]="cornerValue('topLeft') + 'px ' + cornerValue('topRight') + 'px ' + cornerValue('bottomRight') + 'px ' + cornerValue('bottomLeft') + 'px'"></div>
+                  <button class="composer__corner-link composer__corner-link--right" type="button"
+                    [class.is-active]="cornerLinks().has('right') || cornerLinks().has('all')"
+                    [attr.aria-pressed]="cornerLinks().has('right') || cornerLinks().has('all')"
+                    (click)="toggleCornerLock('right')" [title]="'page.editor.studio.right' | i18n | async"><app-icon name="link" /></button>
+                  <label class="composer__corner--bl">{{ 'page.editor.surface.bottomLeft' | i18n | async }}
+                    <input type="number" min="0" max="160" [value]="cornerValue('bottomLeft')" (change)="setCorner('bottomLeft', $event)" /></label>
+                  <button class="composer__corner-link composer__corner-link--bottom" type="button"
+                    [class.is-active]="cornerLinks().has('bottom') || cornerLinks().has('all')"
+                    [attr.aria-pressed]="cornerLinks().has('bottom') || cornerLinks().has('all')"
+                    (click)="toggleCornerLock('bottom')" [title]="'page.editor.studio.bottom' | i18n | async"><app-icon name="link" /></button>
+                  <label class="composer__corner--br">{{ 'page.editor.surface.bottomRight' | i18n | async }}
+                    <input type="number" min="0" max="160" [value]="cornerValue('bottomRight')" (change)="setCorner('bottomRight', $event)" /></label>
                 </div>
-                <button type="button" class="composer__surface-secondary" (click)="linkCorners()">{{ 'page.editor.surface.linkCorners' | i18n | async }}</button>
                 <label class="composer__surface-toggle">
                   <input type="checkbox" [checked]="!!node.styles.border" (change)="setBorderEnabled($event)" />
                   {{ 'page.editor.surface.border' | i18n | async }}
@@ -696,31 +722,56 @@
                         <option value="dotted">{{ 'page.editor.surface.dotted' | i18n | async }}</option>
                       </select>
                     </label>
-                    <label>{{ 'page.editor.design.color' | i18n | async }}
-                      <input type="color" [value]="border.color.slice(0, 7)" (input)="setBorderColor($event)" />
-                    </label>
-                    <label>{{ 'page.editor.surface.opacity' | i18n | async }} {{ opacity(border.color) }}%
-                      <input type="range" min="0" max="100" [value]="opacity(border.color)" (input)="setSurfaceOpacity('border', $event)" />
-                    </label>
+                    <app-composer-color-picker [label]="('page.editor.design.color' | i18n | async) ?? ''"
+                      [value]="border.color" (valueChange)="setBorderColor($event)" />
                   </div>
                 }
-                <label class="composer__surface-toggle">
-                  <input type="checkbox" [checked]="!!node.styles.shadow" (change)="setShadowEnabled($event)" />
-                  {{ 'page.editor.surface.shadow' | i18n | async }}
-                </label>
-                @if (node.styles.shadow; as shadow) {
-                  <div class="composer__surface-grid">
-                    <label>X <input type="number" min="-96" max="96" [value]="shadow.x" (change)="setShadowNumber('x', $event)" /></label>
-                    <label>Y <input type="number" min="-96" max="96" [value]="shadow.y" (change)="setShadowNumber('y', $event)" /></label>
-                    <label>{{ 'page.editor.surface.blur' | i18n | async }} <input type="number" min="0" max="160" [value]="shadow.blur" (change)="setShadowNumber('blur', $event)" /></label>
-                    <label>{{ 'page.editor.surface.spread' | i18n | async }} <input type="number" min="-96" max="96" [value]="shadow.spread" (change)="setShadowNumber('spread', $event)" /></label>
-                    <label>{{ 'page.editor.design.color' | i18n | async }} <input type="color" [value]="shadow.color.slice(0, 7)" (input)="setShadowColor($event)" /></label>
-                    <label>{{ 'page.editor.surface.opacity' | i18n | async }} {{ opacity(shadow.color) }}%
-                      <input type="range" min="0" max="100" [value]="opacity(shadow.color)" (input)="setSurfaceOpacity('shadow', $event)" />
-                    </label>
+                </div>
+              </details>
+              <details class="composer__accordion">
+                <summary><app-icon name="layers" /> {{ 'page.editor.studio.boxShadow' | i18n | async }}</summary>
+                <div class="composer__accordion-content">
+                  <div class="composer__shadow-presets">
+                    @for (preset of shadowPresets; track preset) {
+                      <button type="button" [class.is-active]="shadowPreset() === preset"
+                        [attr.aria-pressed]="shadowPreset() === preset" (click)="applyShadowPreset(preset)">
+                        <span class="composer__shadow-swatch" [style.box-shadow]="shadowPreview(preset)"></span>
+                        {{ ('page.editor.studio.shadow.' + preset) | i18n | async }}
+                      </button>
+                    }
                   </div>
-                }
-              </div>
+                  @if (node.styles.shadow; as shadow) {
+                    <details class="composer__shadow-custom" [open]="shadowPreset() === 'custom'">
+                      <summary>{{ 'page.editor.studio.fineTune' | i18n | async }}</summary>
+                      <div class="composer__surface-grid">
+                        <label>X <input type="number" min="-96" max="96" [value]="shadow.x" (change)="setShadowNumber('x', $event)" /></label>
+                        <label>Y <input type="number" min="-96" max="96" [value]="shadow.y" (change)="setShadowNumber('y', $event)" /></label>
+                        <label>{{ 'page.editor.surface.blur' | i18n | async }} <input type="number" min="0" max="160" [value]="shadow.blur" (change)="setShadowNumber('blur', $event)" /></label>
+                        <label>{{ 'page.editor.surface.spread' | i18n | async }} <input type="number" min="-96" max="96" [value]="shadow.spread" (change)="setShadowNumber('spread', $event)" /></label>
+                      </div>
+                      <app-composer-color-picker [label]="('page.editor.design.color' | i18n | async) ?? ''"
+                        [value]="shadow.color" (valueChange)="setShadowColor($event)" />
+                    </details>
+                  }
+                </div>
+              </details>
+            } @else if (selectedBlock()?.type === 'text') {
+              <details class="composer__accordion" open>
+                <summary><app-icon name="type" /> {{ 'page.editor.studio.typography' | i18n | async }}</summary>
+                <div class="composer__accordion-content">
+                  <app-composer-color-picker [label]="('page.editor.studio.textColor' | i18n | async) ?? ''"
+                    [value]="textColor()" (valueChange)="setTextColor($event)" />
+                  <button type="button" class="composer__surface-secondary" (click)="resetTextColor()">
+                    {{ 'page.editor.design.none' | i18n | async }}</button>
+                  <label>{{ 'page.editor.studio.textShadow' | i18n | async }}
+                    <select [value]="selectedBlock()?.styles?.textShadow ?? 'none'" (change)="setTextShadow($event)">
+                      <option value="none">{{ 'page.editor.design.none' | i18n | async }}</option>
+                      <option value="readability">{{ 'page.editor.studio.readability' | i18n | async }}</option>
+                      <option value="strong">{{ 'page.editor.design.strong' | i18n | async }}</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
             } @else {
               <p class="composer__hint">{{ 'page.editor.design.managed' | i18n | async }}</p>
             }

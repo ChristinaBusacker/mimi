@@ -43,6 +43,8 @@ export interface PageStyles extends PageStyleValues {
   /** Spacing is for sections and columns; surface styling is also available on rows. */
   spacing?: ComposerSpacing;
   designBackground?: ComposerBackground;
+  /** Text blocks only: readability shadows follow the global --text-shadow token. */
+  textShadow?: 'none' | 'readability' | 'strong';
   corners?: ComposerCorners;
   border?: ComposerBorder;
   shadow?: ComposerShadow;

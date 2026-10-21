@@ -99,11 +99,7 @@ function styleValues(data: Record<string, unknown>, defaults: boolean): PageStyl
     if (defaults || data[key] !== undefined) result[key] = number(data[key], max, fallback);
   }
   for (const key of ['backgroundColor', 'textColor'] as const) {
-    if (data[key] !== undefined) {
-      const value = string(data[key], 7);
-      if (!HEX_COLOR.test(value)) invalid('invalid hex color');
-      result[key] = value.toLowerCase();
-    }
+    if (data[key] !== undefined) result[key] = surfaceColor(data[key]);
   }
   return result;
 }
@@ -141,9 +137,14 @@ function backgroundDesign(value: unknown): ComposerBackground {
   return invalid('unsupported background kind');
 }
 
-function styles(value: unknown, allowDesign = false): PageStyles {
+function styles(value: unknown, allowDesign = false, allowTextShadow = false): PageStyles {
   const data = value === undefined ? {} : record(value);
   const result = styleValues(data, true);
+  if (data['textShadow'] !== undefined) {
+    if (!allowTextShadow || !['none', 'readability', 'strong'].includes(String(data['textShadow'])))
+      invalid('invalid text shadow');
+    result.textShadow = data['textShadow'] as 'none' | 'readability' | 'strong';
+  }
   if (
     data['corners'] !== undefined ||
     data['border'] !== undefined ||
@@ -207,8 +208,8 @@ function styles(value: unknown, allowDesign = false): PageStyles {
   }
   return result;
 }
-function node(value: Record<string, unknown>, allowDesign = false): PageNode {
-  return { id: id(value['id']), styles: styles(value['styles'], allowDesign) };
+function node(value: Record<string, unknown>, allowDesign = false, allowTextShadow = false): PageNode {
+  return { id: id(value['id']), styles: styles(value['styles'], allowDesign, allowTextShadow) };
 }
 function assetId(value: unknown): string {
   const valueString = string(value, 36);
@@ -240,7 +241,7 @@ function cardItem(value: unknown): PageCardItem {
 }
 function block(value: unknown): PageBlock {
   const data = record(value);
-  const base = node(data);
+  const base = node(data, false, data['type'] === 'text');
   switch (data['type']) {
     case 'text':
       return { ...base, type: 'text', markdown: localized(data['markdown']) };

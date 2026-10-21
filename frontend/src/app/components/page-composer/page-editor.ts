@@ -13,6 +13,7 @@ import type {
   RowLayout,
 } from '@shared/content/page-document';
 import { PAGE_ROW_LAYOUTS, PAGE_ROW_OPTIONS } from '@shared/content/page-layouts';
+import { ComposerColorPicker } from './composer-color-picker';
 import { AsyncPipe } from '@angular/common';
 import { ElementRef, HostListener, afterNextRender, viewChild } from '@angular/core';
 import { AssetLibrary } from '../asset-library/asset-library';
@@ -38,6 +39,21 @@ import { insertPageItem, movePageItem } from './page-editor-operations';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
+type CornerKey = keyof ComposerCorners;
+type CornerLink = 'all' | 'top' | 'right' | 'bottom' | 'left';
+type ShadowPreset = 'none' | 'soft' | 'card' | 'floating' | 'deep' | 'glow';
+const CORNER_PAIRS: Record<Exclude<CornerLink, 'all'>, readonly [CornerKey, CornerKey]> = {
+  top: ['topLeft', 'topRight'], right: ['topRight', 'bottomRight'],
+  bottom: ['bottomLeft', 'bottomRight'], left: ['topLeft', 'bottomLeft'],
+};
+const SHADOW_PRESETS: Record<ShadowPreset, PageStyles['shadow'] | undefined> = {
+  none: undefined,
+  soft: { x: 0, y: 3, blur: 12, spread: 0, color: '#0502012b' },
+  card: { x: 0, y: 7, blur: 22, spread: 0, color: '#0502014a' },
+  floating: { x: 0, y: 16, blur: 36, spread: 0, color: '#05020170' },
+  deep: { x: 0, y: 24, blur: 45, spread: 0, color: '#050201a0' },
+  glow: { x: 0, y: 0, blur: 25, spread: 0, color: '#da8dbbbf' },
+};
 const initialStyles = (): PageStyles => ({
   background: 'none',
   padding: 0,
@@ -87,6 +103,7 @@ const makeBlock = (kind: BlockKind): PageBlock => {
     Icon,
     MarkdownEditor,
     PageRenderer,
+    ComposerColorPicker,
     ReactiveFormsModule,
     AssetLibrary,
   ],
@@ -361,21 +378,54 @@ export class PageEditor {
   private withOpacity(color: string, alpha: number): string {
     return `${color.slice(0, 7)}${Math.round(alpha / 100 * 255).toString(16).padStart(2, '0')}`;
   }
-  protected readonly cornerKeys: readonly (keyof ComposerCorners)[] = ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'];
-  protected cornerValue(key: keyof ComposerCorners): number {
+  protected readonly cornerKeys: readonly CornerKey[] = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
+  protected readonly cornerLinkKeys: readonly CornerLink[] = ['all', 'top', 'right', 'bottom', 'left'];
+  protected readonly cornerLinks = signal<ReadonlySet<CornerLink>>(new Set());
+  protected cornerValue(key: CornerKey): number {
     return this.active()?.styles.corners?.[key] ?? this.active()?.styles.radius ?? 0;
   }
-  protected setCorner(key: keyof ComposerCorners, event: Event): void {
+  private linkedCorners(key: CornerKey, links: ReadonlySet<CornerLink>): Set<CornerKey> {
+    if (links.has('all')) return new Set(this.cornerKeys);
+    const group = new Set<CornerKey>([key]);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const side of ['top', 'right', 'bottom', 'left'] as const) {
+        if (!links.has(side)) continue;
+        const [a, b] = CORNER_PAIRS[side];
+        if (group.has(a) !== group.has(b)) {
+          group.add(a); group.add(b); changed = true;
+        }
+      }
+    }
+    return group;
+  }
+  protected setCorner(key: CornerKey, event: Event): void {
     const value = Math.min(160, Math.max(0, Number(this.value(event)) || 0));
+    const linked = this.linkedCorners(key, this.cornerLinks());
     this.changeSelected((node) => {
-      const current = node.styles.corners;
       const uniform = node.styles.radius ?? 0;
-      node.styles.corners = { topLeft: uniform, topRight: uniform, bottomRight: uniform, bottomLeft: uniform, ...current, [key]: value };
+      const corners = { topLeft: uniform, topRight: uniform, bottomRight: uniform, bottomLeft: uniform, ...node.styles.corners };
+      for (const corner of linked) corners[corner] = value;
+      node.styles.corners = corners;
     });
   }
-  protected linkCorners(): void {
-    const value = this.cornerValue('topLeft');
-    this.changeSelected((node) => { node.styles.corners = { topLeft: value, topRight: value, bottomRight: value, bottomLeft: value }; });
+  protected toggleCornerLock(link: CornerLink): void {
+    const next = new Set(this.cornerLinks());
+    if (next.has(link)) next.delete(link);
+    else if (link === 'all') { next.clear(); next.add('all'); }
+    else { next.delete('all'); next.add(link); }
+    this.cornerLinks.set(next);
+    if (!next.has(link)) return;
+    const anchor: CornerKey = link === 'all' ? 'topLeft' : CORNER_PAIRS[link][0];
+    const linked = this.linkedCorners(anchor, next);
+    const value = this.cornerValue(anchor);
+    this.changeSelected((node) => {
+      const uniform = node.styles.radius ?? 0;
+      const corners = { topLeft: uniform, topRight: uniform, bottomRight: uniform, bottomLeft: uniform, ...node.styles.corners };
+      for (const corner of linked) corners[corner] = value;
+      node.styles.corners = corners;
+    });
   }
   protected setBorderEnabled(event: Event): void {
     const enabled = (event.target as HTMLInputElement).checked;
@@ -390,8 +440,8 @@ export class PageEditor {
     if (value !== 'solid' && value !== 'dashed' && value !== 'dotted') return;
     this.changeSelected((node) => { if (node.styles.border) node.styles.border.style = value; });
   }
-  protected setBorderColor(event: Event): void { this.changeSurfaceColor('border', event); }
-  protected setShadowColor(event: Event): void { this.changeSurfaceColor('shadow', event); }
+  protected setBorderColor(value: string): void { this.changeSurfaceColor('border', value); }
+  protected setShadowColor(value: string): void { this.changeSurfaceColor('shadow', value); }
   protected setSurfaceOpacity(kind: 'border' | 'shadow', event: Event): void {
     const alpha = this.alpha(this.value(event));
     this.changeSelected((node) => {
@@ -399,12 +449,35 @@ export class PageEditor {
       if (style) style.color = this.withOpacity(style.color, alpha);
     });
   }
-  private changeSurfaceColor(kind: 'border' | 'shadow', event: Event): void {
-    const color = this.value(event);
-    if (!/^#[0-9a-f]{6}$/i.test(color)) return;
+  private changeSurfaceColor(kind: 'border' | 'shadow', color: string): void {
+    if (!/^#[0-9a-f]{8}$/i.test(color)) return;
     this.changeSelected((node) => {
       const style = node.styles[kind];
-      if (style) style.color = color.toLowerCase() + style.color.slice(7);
+      if (style) style.color = color.toLowerCase();
+    });
+  }
+  protected setBackgroundColor(field: 'color' | 'from' | 'to', color: string): void {
+    if (!/^#[0-9a-f]{8}$/i.test(color)) return;
+    this.changeSelected((node) => {
+      const design = node.styles.designBackground;
+      if (design?.kind === 'color' && field === 'color') design.color = color.toLowerCase();
+      if (design?.kind === 'gradient' && field === 'from') design.from = color.toLowerCase();
+      if (design?.kind === 'gradient' && field === 'to') design.to = color.toLowerCase();
+    });
+  }
+  protected textColor(): string { return this.selectedBlock()?.styles.textColor ?? '#ffffffff'; }
+  protected setTextColor(color: string): void {
+    if (!/^#[0-9a-f]{8}$/i.test(color)) return;
+    this.changeSelected((node) => { if ('type' in node && node.type === 'text') node.styles.textColor = color; });
+  }
+  protected resetTextColor(): void {
+    this.changeSelected((node) => { if ('type' in node && node.type === 'text') delete node.styles.textColor; });
+  }
+  protected setTextShadow(event: Event): void {
+    const value = this.value(event);
+    if (!['none', 'readability', 'strong'].includes(value)) return;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'text') node.styles.textShadow = value as 'none' | 'readability' | 'strong';
     });
   }
   protected setShadowEnabled(event: Event): void {
@@ -415,6 +488,28 @@ export class PageEditor {
     const n = Number(this.value(event)) || 0;
     const value = field === 'blur' ? Math.max(0, Math.min(160, n)) : Math.max(-96, Math.min(96, n));
     this.changeSelected((node) => { if (node.styles.shadow) node.styles.shadow[field] = value; });
+  }
+  protected readonly shadowPresets: readonly ShadowPreset[] = ['none', 'soft', 'card', 'floating', 'deep', 'glow'];
+  protected shadowPreset(): ShadowPreset | 'custom' {
+    const value = this.active()?.styles.shadow;
+    if (!value) return 'none';
+    for (const preset of this.shadowPresets) {
+      const candidate = SHADOW_PRESETS[preset];
+      if (candidate && (Object.keys(candidate) as (keyof NonNullable<typeof candidate>)[])
+          .every((key) => value[key] === candidate[key])) return preset;
+    }
+    return 'custom';
+  }
+  protected shadowPreview(preset: ShadowPreset): string {
+    const s = SHADOW_PRESETS[preset];
+    return s ? `${s.x}px ${s.y}px ${s.blur}px ${s.spread}px ${s.color}` : 'none';
+  }
+  protected applyShadowPreset(preset: ShadowPreset): void {
+    this.changeSelected((node) => {
+      const value = SHADOW_PRESETS[preset];
+      if (value) node.styles.shadow = { ...value };
+      else delete node.styles.shadow;
+    });
   }
   protected applySurfacePreset(name: 'none' | 'soft' | 'card' | 'floating' | 'glow'): void {
     this.changeSelected((node) => {
@@ -459,16 +554,7 @@ export class PageEditor {
     });
   }
 
-  protected changeBackgroundColor(field: 'color' | 'from' | 'to', event: Event): void {
-    const color = this.value(event);
-    if (!/^#[0-9a-f]{6}$/i.test(color)) return;
-    this.changeSelected((node) => {
-      const design = node.styles.designBackground;
-      if (design?.kind === 'color' && field === 'color') design.color = color.toLowerCase() + design.color.slice(7);
-      if (design?.kind === 'gradient' && field === 'from') design.from = color.toLowerCase() + design.from.slice(7);
-      if (design?.kind === 'gradient' && field === 'to') design.to = color.toLowerCase() + design.to.slice(7);
-    });
-  }
+  // RGB and opacity now update together through ComposerColorPicker.
 
   protected setGradientAngle(event: Event): void {
     const angle = Number(this.value(event));
@@ -566,6 +652,7 @@ export class PageEditor {
     return this.selected()?.id === id;
   }
   protected inspect(kind: Selection['kind'], id: string): void {
+    if (this.selected()?.id !== id) this.cornerLinks.set(new Set());
     this.selected.set({ kind, id });
     this.inspectorTab.set(kind === 'block' ? 'content' : 'design');
   }

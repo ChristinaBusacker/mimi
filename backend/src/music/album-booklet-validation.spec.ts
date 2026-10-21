@@ -160,4 +160,16 @@ describe('Album booklet document validation', () => {
     malformed.sections[0].rows[0].styles.border!.color = 'red; background: url(javascript:evil)';
     expect(() => validateAlbumBooklet(malformed)).toThrow(BadRequestException);
   });
+
+  it('supports a readable text shadow and rejects text shadow on containers', () => {
+    const input = document('1');
+    const textBlock = input.sections[0].rows[0].columns[0].blocks[0];
+    textBlock.styles = { ...textBlock.styles, textShadow: 'readability', textColor: '#ffe0d988' };
+    const result = validateAlbumBooklet(input);
+    expect(result.sections[0].rows[0].columns[0].blocks[0].styles.textShadow).toBe('readability');
+    expect(result.sections[0].rows[0].columns[0].blocks[0].styles.textColor).toBe('#ffe0d988');
+    const invalid = structuredClone(input);
+    invalid.sections[0].rows[0].styles.textShadow = 'strong';
+    expect(() => validateAlbumBooklet(invalid)).toThrow(BadRequestException);
+  });
 });

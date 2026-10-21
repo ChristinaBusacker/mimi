@@ -1,0 +1,109 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.studio.presets",
+      "de": "Designvorlagen",
+      "en": "Design presets"
+    },
+    {
+      "key": "page.editor.studio.spacing",
+      "de": "Größe & Abstände",
+      "en": "Sizing & spacing"
+    },
+    {
+      "key": "page.editor.studio.background",
+      "de": "Hintergrund",
+      "en": "Background"
+    },
+    {
+      "key": "page.editor.studio.borderCorners",
+      "de": "Rahmen & Ecken",
+      "en": "Border & corners"
+    },
+    {
+      "key": "page.editor.studio.boxShadow",
+      "de": "Box-Shadow",
+      "en": "Box shadow"
+    },
+    {
+      "key": "page.editor.studio.typography",
+      "de": "Typografie",
+      "en": "Typography"
+    },
+    {
+      "key": "page.editor.studio.allCorners",
+      "de": "Alle koppeln",
+      "en": "Link all"
+    },
+    {
+      "key": "page.editor.studio.top",
+      "de": "Oben koppeln",
+      "en": "Link top"
+    },
+    {
+      "key": "page.editor.studio.bottom",
+      "de": "Unten koppeln",
+      "en": "Link bottom"
+    },
+    {
+      "key": "page.editor.studio.left",
+      "de": "Links koppeln",
+      "en": "Link left"
+    },
+    {
+      "key": "page.editor.studio.right",
+      "de": "Rechts koppeln",
+      "en": "Link right"
+    },
+    {
+      "key": "page.editor.studio.fineTune",
+      "de": "Feineinstellungen",
+      "en": "Fine-tuning"
+    },
+    {
+      "key": "page.editor.studio.textColor",
+      "de": "Schriftfarbe",
+      "en": "Text color"
+    },
+    {
+      "key": "page.editor.studio.textShadow",
+      "de": "Textschatten",
+      "en": "Text shadow"
+    },
+    {
+      "key": "page.editor.studio.readability",
+      "de": "Lesbarkeit",
+      "en": "Readability"
+    },
+    {
+      "key": "page.editor.studio.shadow.none",
+      "de": "Keiner",
+      "en": "None"
+    },
+    {
+      "key": "page.editor.studio.shadow.soft",
+      "de": "Dezent",
+      "en": "Soft"
+    },
+    {
+      "key": "page.editor.studio.shadow.card",
+      "de": "Karte",
+      "en": "Card"
+    },
+    {
+      "key": "page.editor.studio.shadow.floating",
+      "de": "Schwebend",
+      "en": "Floating"
+    },
+    {
+      "key": "page.editor.studio.shadow.deep",
+      "de": "Tief",
+      "en": "Deep"
+    },
+    {
+      "key": "page.editor.studio.shadow.glow",
+      "de": "Leuchten",
+      "en": "Glow"
+    }
+  ]
+}
