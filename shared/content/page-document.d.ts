@@ -8,6 +8,24 @@ export type RowLayout =
   '1' | '1-1' | '1-2' | '2-1' | '1-3' | '3-1' | '1-1-1' | '1-1-1-1' | '2-1-1' | '1-2-1' | '1-1-2';
 export type PageSurface = 'none' | 'glass' | 'solid' | 'accent';
 export type ComposerSpacing = 'small' | 'standard' | 'large';
+export interface ComposerCorners {
+  topLeft: number;
+  topRight: number;
+  bottomRight: number;
+  bottomLeft: number;
+}
+export interface ComposerBorder {
+  width: number;
+  style: 'solid' | 'dashed' | 'dotted';
+  color: string;
+}
+export interface ComposerShadow {
+  x: number;
+  y: number;
+  blur: number;
+  spread: number;
+  color: string;
+}
 export type ComposerBackground =
   | { kind: 'color'; color: string }
   | { kind: 'gradient'; from: string; to: string; angle: 0 | 45 | 90 | 135 | 180 }
@@ -22,9 +40,12 @@ export interface PageStyleValues {
   align?: 'left' | 'center' | 'right';
 }
 export interface PageStyles extends PageStyleValues {
-  /** Only sections and columns may define an editorial background or spacing. */
+  /** Spacing is for sections and columns; surface styling is also available on rows. */
   spacing?: ComposerSpacing;
   designBackground?: ComposerBackground;
+  corners?: ComposerCorners;
+  border?: ComposerBorder;
+  shadow?: ComposerShadow;
   responsive?: {
     tablet?: PageStyleValues;
     mobile?: PageStyleValues;

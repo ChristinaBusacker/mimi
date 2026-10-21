@@ -1,0 +1,109 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.surface.presets",
+      "de": "Design-Vorlagen",
+      "en": "Design presets"
+    },
+    {
+      "key": "page.editor.surface.soft",
+      "de": "Dezent",
+      "en": "Soft"
+    },
+    {
+      "key": "page.editor.surface.card",
+      "de": "Karte",
+      "en": "Card"
+    },
+    {
+      "key": "page.editor.surface.floating",
+      "de": "Schwebend",
+      "en": "Floating"
+    },
+    {
+      "key": "page.editor.surface.glow",
+      "de": "Leuchtend",
+      "en": "Glow"
+    },
+    {
+      "key": "page.editor.surface.corners",
+      "de": "Ecken (px)",
+      "en": "Corners (px)"
+    },
+    {
+      "key": "page.editor.surface.topLeft",
+      "de": "Oben links",
+      "en": "Top left"
+    },
+    {
+      "key": "page.editor.surface.topRight",
+      "de": "Oben rechts",
+      "en": "Top right"
+    },
+    {
+      "key": "page.editor.surface.bottomRight",
+      "de": "Unten rechts",
+      "en": "Bottom right"
+    },
+    {
+      "key": "page.editor.surface.bottomLeft",
+      "de": "Unten links",
+      "en": "Bottom left"
+    },
+    {
+      "key": "page.editor.surface.linkCorners",
+      "de": "Alle Ecken angleichen",
+      "en": "Match all corners"
+    },
+    {
+      "key": "page.editor.surface.border",
+      "de": "Rahmen aktivieren",
+      "en": "Enable border"
+    },
+    {
+      "key": "page.editor.surface.width",
+      "de": "Stärke (px)",
+      "en": "Width (px)"
+    },
+    {
+      "key": "page.editor.surface.borderStyle",
+      "de": "Linienstil",
+      "en": "Line style"
+    },
+    {
+      "key": "page.editor.surface.opacity",
+      "de": "Deckkraft",
+      "en": "Opacity"
+    },
+    {
+      "key": "page.editor.surface.shadow",
+      "de": "Schatten aktivieren",
+      "en": "Enable shadow"
+    },
+    {
+      "key": "page.editor.surface.blur",
+      "de": "Weichzeichnung",
+      "en": "Blur"
+    },
+    {
+      "key": "page.editor.surface.spread",
+      "de": "Ausdehnung",
+      "en": "Spread"
+    },
+    {
+      "key": "page.editor.surface.solid",
+      "de": "Durchgezogen",
+      "en": "Solid"
+    },
+    {
+      "key": "page.editor.surface.dashed",
+      "de": "Gestrichelt",
+      "en": "Dashed"
+    },
+    {
+      "key": "page.editor.surface.dotted",
+      "de": "Gepunktet",
+      "en": "Dotted"
+    }
+  ]
+}

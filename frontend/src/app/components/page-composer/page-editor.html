@@ -581,8 +581,9 @@
                 </select>
               </div>
             }
-            @if (selected()?.kind === 'section' || selected()?.kind === 'column') {
+            @if (selected()?.kind === 'section' || selected()?.kind === 'row' || selected()?.kind === 'column') {
               <p class="composer__hint">{{ 'page.editor.design.global' | i18n | async }}</p>
+              @if (selected()?.kind !== 'row') {
               <div class="composer__design-group">
                 <label>{{ 'page.editor.design.spacing' | i18n | async }}</label>
                 <select [value]="node.styles.spacing ?? ''" (change)="setSpacing($event)">
@@ -592,6 +593,7 @@
                   <option value="large">{{ 'page.editor.design.large' | i18n | async }}</option>
                 </select>
               </div>
+              }
               <div class="composer__design-group">
                 <label>{{ 'page.editor.design.backgroundType' | i18n | async }}</label>
                 <select [value]="node.styles.designBackground?.kind ?? (node.styles.background !== 'none' && node.styles.background ? 'legacy' : 'none')" (change)="setBackgroundMode($event)">
@@ -601,7 +603,9 @@
                   }
                   <option value="color">{{ 'page.editor.design.color' | i18n | async }}</option>
                   <option value="gradient">{{ 'page.editor.design.gradient' | i18n | async }}</option>
-                  <option value="image">{{ 'page.editor.design.image' | i18n | async }}</option>
+                  @if (selected()?.kind !== 'row') {
+                    <option value="image">{{ 'page.editor.design.image' | i18n | async }}</option>
+                  }
                 </select>
                 @switch (node.styles.designBackground?.kind) {
                   @case ('color') {
@@ -641,6 +645,80 @@
                       <option value="strong">{{ 'page.editor.design.strong' | i18n | async }}</option>
                     </select>
                   }
+                }
+              </div>
+              @if (node.styles.designBackground?.kind === 'color') {
+                <label class="composer__alpha-label">{{ 'page.editor.surface.opacity' | i18n | async }} {{ backgroundOpacity('color') }}%
+                  <input type="range" min="0" max="100" [value]="backgroundOpacity('color')" (input)="changeBackgroundOpacity('color', $event)" />
+                </label>
+              }
+              @if (node.styles.designBackground?.kind === 'gradient') {
+                <div class="composer__design-colors">
+                  <label>{{ 'page.editor.design.from' | i18n | async }} {{ backgroundOpacity('from') }}%
+                    <input type="range" min="0" max="100" [value]="backgroundOpacity('from')" (input)="changeBackgroundOpacity('from', $event)" />
+                  </label>
+                  <label>{{ 'page.editor.design.to' | i18n | async }} {{ backgroundOpacity('to') }}%
+                    <input type="range" min="0" max="100" [value]="backgroundOpacity('to')" (input)="changeBackgroundOpacity('to', $event)" />
+                  </label>
+                </div>
+              }
+              <div class="composer__design-group composer__surface-studio">
+                <h4>{{ 'page.editor.surface.presets' | i18n | async }}</h4>
+                <div class="composer__surface-presets">
+                  <button type="button" (click)="applySurfacePreset('none')">{{ 'page.editor.design.none' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('soft')">{{ 'page.editor.surface.soft' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('card')">{{ 'page.editor.surface.card' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('floating')">{{ 'page.editor.surface.floating' | i18n | async }}</button>
+                  <button type="button" (click)="applySurfacePreset('glow')">{{ 'page.editor.surface.glow' | i18n | async }}</button>
+                </div>
+                <h4>{{ 'page.editor.surface.corners' | i18n | async }}</h4>
+                <div class="composer__surface-grid">
+                  @for (corner of cornerKeys; track corner) {
+                    <label>{{ ('page.editor.surface.' + corner) | i18n | async }}
+                      <input type="number" min="0" max="160" [value]="cornerValue(corner)" (change)="setCorner(corner, $event)" />
+                    </label>
+                  }
+                </div>
+                <button type="button" class="composer__surface-secondary" (click)="linkCorners()">{{ 'page.editor.surface.linkCorners' | i18n | async }}</button>
+                <label class="composer__surface-toggle">
+                  <input type="checkbox" [checked]="!!node.styles.border" (change)="setBorderEnabled($event)" />
+                  {{ 'page.editor.surface.border' | i18n | async }}
+                </label>
+                @if (node.styles.border; as border) {
+                  <div class="composer__surface-grid">
+                    <label>{{ 'page.editor.surface.width' | i18n | async }}
+                      <input type="number" min="0" max="12" [value]="border.width" (change)="setBorderNumber($event)" />
+                    </label>
+                    <label>{{ 'page.editor.surface.borderStyle' | i18n | async }}
+                      <select [value]="border.style" (change)="setBorderStyle($event)">
+                        <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
+                        <option value="dashed">{{ 'page.editor.surface.dashed' | i18n | async }}</option>
+                        <option value="dotted">{{ 'page.editor.surface.dotted' | i18n | async }}</option>
+                      </select>
+                    </label>
+                    <label>{{ 'page.editor.design.color' | i18n | async }}
+                      <input type="color" [value]="border.color.slice(0, 7)" (input)="setBorderColor($event)" />
+                    </label>
+                    <label>{{ 'page.editor.surface.opacity' | i18n | async }} {{ opacity(border.color) }}%
+                      <input type="range" min="0" max="100" [value]="opacity(border.color)" (input)="setSurfaceOpacity('border', $event)" />
+                    </label>
+                  </div>
+                }
+                <label class="composer__surface-toggle">
+                  <input type="checkbox" [checked]="!!node.styles.shadow" (change)="setShadowEnabled($event)" />
+                  {{ 'page.editor.surface.shadow' | i18n | async }}
+                </label>
+                @if (node.styles.shadow; as shadow) {
+                  <div class="composer__surface-grid">
+                    <label>X <input type="number" min="-96" max="96" [value]="shadow.x" (change)="setShadowNumber('x', $event)" /></label>
+                    <label>Y <input type="number" min="-96" max="96" [value]="shadow.y" (change)="setShadowNumber('y', $event)" /></label>
+                    <label>{{ 'page.editor.surface.blur' | i18n | async }} <input type="number" min="0" max="160" [value]="shadow.blur" (change)="setShadowNumber('blur', $event)" /></label>
+                    <label>{{ 'page.editor.surface.spread' | i18n | async }} <input type="number" min="-96" max="96" [value]="shadow.spread" (change)="setShadowNumber('spread', $event)" /></label>
+                    <label>{{ 'page.editor.design.color' | i18n | async }} <input type="color" [value]="shadow.color.slice(0, 7)" (input)="setShadowColor($event)" /></label>
+                    <label>{{ 'page.editor.surface.opacity' | i18n | async }} {{ opacity(shadow.color) }}%
+                      <input type="range" min="0" max="100" [value]="opacity(shadow.color)" (input)="setSurfaceOpacity('shadow', $event)" />
+                    </label>
+                  </div>
                 }
               </div>
             } @else {

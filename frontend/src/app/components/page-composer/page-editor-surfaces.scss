@@ -1,0 +1,21 @@
+.composer__surface-studio {
+  h4 { margin: 10px 0 0; font-size: .82rem; color: var(--color-text); }
+  input[type='range'] { accent-color: var(--composer-accent); padding: 0; }
+  .composer__surface-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px;
+    label { display: grid; gap: 5px; min-width: 0; font-size: .78rem; }
+    input, select { min-width: 0; }
+  }
+  .composer__surface-presets {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 6px;
+    button { border-radius: 8px; padding: 8px; min-height: 36px; background: #423149; color: inherit;
+      border: 1px solid #795d87; font: inherit; font-size: .75rem; cursor: pointer; }
+    button:hover, button:focus-visible { background: #604265; border-color: #eaa8ce; }
+  }
+  .composer__surface-secondary { background: transparent; border: 1px solid #886d93; border-radius: 8px;
+    padding: 8px; color: inherit; text-align: center; cursor: pointer; }
+  .composer__surface-toggle { display: flex; gap: 10px; align-items: center; font-weight: 700;
+    input[type='checkbox'] { width: 17px; height: 17px; accent-color: var(--composer-accent); }
+  }
+}
+.composer__alpha-label { display: grid; gap: 6px; }

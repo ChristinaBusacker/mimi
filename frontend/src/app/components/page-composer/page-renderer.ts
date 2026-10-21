@@ -274,6 +274,20 @@ export class PageRenderer {
 
   protected styleVars(styles: PageStyles): Record<string, string> {
     const result: Record<string, string> = {};
+    if (styles.corners) {
+      const c = styles.corners;
+      result['border-radius'] = `${c.topLeft}px ${c.topRight}px ${c.bottomRight}px ${c.bottomLeft}px`;
+    }
+    if (styles.border) {
+      result['border'] = `${styles.border.width}px ${styles.border.style} ${styles.border.color}`;
+    }
+    if (styles.shadow) {
+      const s = styles.shadow;
+      result['box-shadow'] = `${s.x}px ${s.y}px ${s.blur}px ${s.spread}px ${s.color}`;
+    }
+    // A node's own design must not leak down via inherited CSS custom properties.
+    result['--pc-design-color'] = styles.designBackground?.kind === 'color'
+      ? styles.designBackground.color : styles.designBackground ? 'transparent' : 'var(--pc-background-color, transparent)';
     if (styles.spacing) result['--pc-padding'] = `var(--composer-section-${styles.spacing})`;
     // Always reset these per node: CSS variables otherwise leak into descendants.
     result['--pc-design-image'] = styles.designBackground

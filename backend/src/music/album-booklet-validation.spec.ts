@@ -146,4 +146,18 @@ describe('Album booklet document validation', () => {
     if (block.type === 'albumCredits') block.entries[0].name = 'x'.repeat(121);
     expect(() => validateAlbumBooklet(invalidCredit)).toThrow(BadRequestException);
   });
+  it('retains transparent surface controls on rows and validates colors', () => {
+    const source = document('1');
+    const rowStyles = source.sections[0].rows[0].styles;
+    rowStyles.designBackground = { kind: 'gradient', from: '#11223344', to: '#abcdefcc', angle: 90 };
+    rowStyles.corners = { topLeft: 3, topRight: 6, bottomRight: 9, bottomLeft: 12 };
+    rowStyles.border = { width: 2, style: 'dashed', color: '#ffffff88' };
+    rowStyles.shadow = { x: -4, y: 8, blur: 24, spread: -2, color: '#03040a55' };
+    const parsed = validateAlbumBooklet(source);
+    expect(parsed.sections[0].rows[0].styles).toEqual(rowStyles);
+
+    const malformed = structuredClone(source);
+    malformed.sections[0].rows[0].styles.border!.color = 'red; background: url(javascript:evil)';
+    expect(() => validateAlbumBooklet(malformed)).toThrow(BadRequestException);
+  });
 });

@@ -3,6 +3,7 @@ import type { AlbumBookletContext } from '@shared/content/album-booklet-context'
 import type {
   PageBlock,
   ComposerSpacing,
+  ComposerCorners,
   PageColumn,
   PageDocument,
   PageNode,
@@ -326,13 +327,107 @@ export class PageEditor {
   protected backgroundValue(field: 'color' | 'from' | 'to' | 'angle' | 'position' | 'overlay'): string {
     const design = this.active()?.styles.designBackground;
     if (!design) return '';
-    if (design.kind === 'color') return field === 'color' ? design.color : '';
+    if (design.kind === 'color') return field === 'color' ? design.color.slice(0, 7) : '';
     if (design.kind === 'gradient') {
-      if (field === 'from') return design.from;
-      if (field === 'to') return design.to;
+      if (field === 'from') return design.from.slice(0, 7);
+      if (field === 'to') return design.to.slice(0, 7);
       return field === 'angle' ? String(design.angle) : '';
     }
     return field === 'position' ? design.position : field === 'overlay' ? design.overlay : '';
+  }
+
+  protected backgroundOpacity(field: 'color' | 'from' | 'to'): number {
+    const design = this.active()?.styles.designBackground;
+    const color = design?.kind === 'color' && field === 'color' ? design.color
+      : design?.kind === 'gradient' && field === 'from' ? design.from
+      : design?.kind === 'gradient' && field === 'to' ? design.to : '#000000ff';
+    return this.opacity(color);
+  }
+
+  protected changeBackgroundOpacity(field: 'color' | 'from' | 'to', event: Event): void {
+    const alpha = this.alpha(this.value(event));
+    this.changeSelected((node) => {
+      const design = node.styles.designBackground;
+      if (design?.kind === 'color' && field === 'color') design.color = this.withOpacity(design.color, alpha);
+      if (design?.kind === 'gradient' && field === 'from') design.from = this.withOpacity(design.from, alpha);
+      if (design?.kind === 'gradient' && field === 'to') design.to = this.withOpacity(design.to, alpha);
+    });
+  }
+
+  protected opacity(hex: string): number {
+    return hex.length === 9 ? Math.round(parseInt(hex.slice(7), 16) / 255 * 100) : 100;
+  }
+  private alpha(value: string): number { return Math.max(0, Math.min(100, Math.round(Number(value) || 0))); }
+  private withOpacity(color: string, alpha: number): string {
+    return `${color.slice(0, 7)}${Math.round(alpha / 100 * 255).toString(16).padStart(2, '0')}`;
+  }
+  protected readonly cornerKeys: readonly (keyof ComposerCorners)[] = ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'];
+  protected cornerValue(key: keyof ComposerCorners): number {
+    return this.active()?.styles.corners?.[key] ?? this.active()?.styles.radius ?? 0;
+  }
+  protected setCorner(key: keyof ComposerCorners, event: Event): void {
+    const value = Math.min(160, Math.max(0, Number(this.value(event)) || 0));
+    this.changeSelected((node) => {
+      const current = node.styles.corners;
+      const uniform = node.styles.radius ?? 0;
+      node.styles.corners = { topLeft: uniform, topRight: uniform, bottomRight: uniform, bottomLeft: uniform, ...current, [key]: value };
+    });
+  }
+  protected linkCorners(): void {
+    const value = this.cornerValue('topLeft');
+    this.changeSelected((node) => { node.styles.corners = { topLeft: value, topRight: value, bottomRight: value, bottomLeft: value }; });
+  }
+  protected setBorderEnabled(event: Event): void {
+    const enabled = (event.target as HTMLInputElement).checked;
+    this.changeSelected((node) => { if (enabled) node.styles.border = { width: 1, style: 'solid', color: '#ecadd0c0' }; else delete node.styles.border; });
+  }
+  protected setBorderNumber(event: Event): void {
+    const value = Math.min(12, Math.max(0, Number(this.value(event)) || 0));
+    this.changeSelected((node) => { if (node.styles.border) node.styles.border.width = value; });
+  }
+  protected setBorderStyle(event: Event): void {
+    const value = this.value(event);
+    if (value !== 'solid' && value !== 'dashed' && value !== 'dotted') return;
+    this.changeSelected((node) => { if (node.styles.border) node.styles.border.style = value; });
+  }
+  protected setBorderColor(event: Event): void { this.changeSurfaceColor('border', event); }
+  protected setShadowColor(event: Event): void { this.changeSurfaceColor('shadow', event); }
+  protected setSurfaceOpacity(kind: 'border' | 'shadow', event: Event): void {
+    const alpha = this.alpha(this.value(event));
+    this.changeSelected((node) => {
+      const style = node.styles[kind];
+      if (style) style.color = this.withOpacity(style.color, alpha);
+    });
+  }
+  private changeSurfaceColor(kind: 'border' | 'shadow', event: Event): void {
+    const color = this.value(event);
+    if (!/^#[0-9a-f]{6}$/i.test(color)) return;
+    this.changeSelected((node) => {
+      const style = node.styles[kind];
+      if (style) style.color = color.toLowerCase() + style.color.slice(7);
+    });
+  }
+  protected setShadowEnabled(event: Event): void {
+    const enabled = (event.target as HTMLInputElement).checked;
+    this.changeSelected((node) => { if (enabled) node.styles.shadow = { x: 0, y: 12, blur: 28, spread: 0, color: '#10061466' }; else delete node.styles.shadow; });
+  }
+  protected setShadowNumber(field: 'x' | 'y' | 'blur' | 'spread', event: Event): void {
+    const n = Number(this.value(event)) || 0;
+    const value = field === 'blur' ? Math.max(0, Math.min(160, n)) : Math.max(-96, Math.min(96, n));
+    this.changeSelected((node) => { if (node.styles.shadow) node.styles.shadow[field] = value; });
+  }
+  protected applySurfacePreset(name: 'none' | 'soft' | 'card' | 'floating' | 'glow'): void {
+    this.changeSelected((node) => {
+      delete node.styles.corners; delete node.styles.border; delete node.styles.shadow;
+      if (name === 'none') { delete node.styles.designBackground; delete node.styles.backgroundColor; node.styles.background = 'none'; node.styles.radius = 0; return; }
+      node.styles.background = 'none';
+      const radius = name === 'soft' ? 12 : name === 'card' ? 18 : name === 'floating' ? 24 : 20;
+      node.styles.corners = { topLeft: radius, topRight: radius, bottomRight: radius, bottomLeft: radius };
+      node.styles.designBackground = { kind: 'color', color: name === 'glow' ? '#da8dbb28' : '#33223d99' };
+      if (name !== 'soft') node.styles.border = { width: 1, style: 'solid', color: '#eca9d255' };
+      if (name === 'floating') node.styles.shadow = { x: 0, y: 16, blur: 40, spread: 0, color: '#09030b88' };
+      if (name === 'glow') node.styles.shadow = { x: 0, y: 0, blur: 28, spread: 1, color: '#ed93df77' };
+    });
   }
 
   protected setSpacing(event: Event): void {
@@ -354,7 +449,7 @@ export class PageEditor {
     }
     if (!['none', 'color', 'gradient'].includes(kind)) return;
     const selection = this.selected();
-    if (selection?.kind !== 'section' && selection?.kind !== 'column') return;
+    if (selection?.kind !== 'section' && selection?.kind !== 'column' && selection?.kind !== 'row') return;
     this.changeSelected((node) => {
       node.styles.background = 'none';
       delete node.styles.backgroundColor;
@@ -369,9 +464,9 @@ export class PageEditor {
     if (!/^#[0-9a-f]{6}$/i.test(color)) return;
     this.changeSelected((node) => {
       const design = node.styles.designBackground;
-      if (design?.kind === 'color' && field === 'color') design.color = color.toLowerCase();
-      if (design?.kind === 'gradient' && field === 'from') design.from = color.toLowerCase();
-      if (design?.kind === 'gradient' && field === 'to') design.to = color.toLowerCase();
+      if (design?.kind === 'color' && field === 'color') design.color = color.toLowerCase() + design.color.slice(7);
+      if (design?.kind === 'gradient' && field === 'from') design.from = color.toLowerCase() + design.from.slice(7);
+      if (design?.kind === 'gradient' && field === 'to') design.to = color.toLowerCase() + design.to.slice(7);
     });
   }
 

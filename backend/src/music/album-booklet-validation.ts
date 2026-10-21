@@ -66,12 +66,24 @@ function localized(value: unknown): LocalizedText {
 }
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+const SURFACE_COLOR = /^#[0-9a-f]{6}(?:[0-9a-f]{2})?$/i;
+function surfaceColor(value: unknown): string {
+  const color = string(value, 9);
+  if (!SURFACE_COLOR.test(color)) invalid('invalid surface color');
+  return color.toLowerCase();
+}
+function offset(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < -96 || value > 96)
+    invalid('invalid shadow offset');
+  return value;
+}
 
 function styleValues(data: Record<string, unknown>, defaults: boolean): PageStyles {
   const result: PageStyles = {};
   if (defaults || data['background'] !== undefined) {
     const value = data['background'] ?? 'none';
-    if (!['none', 'glass', 'solid', 'accent'].includes(String(value))) invalid('invalid background preset');
+    if (!['none', 'glass', 'solid', 'accent'].includes(String(value)))
+      invalid('invalid background preset');
     result.background = value as PageStyles['background'];
   }
   if (defaults || data['align'] !== undefined) {
@@ -80,7 +92,9 @@ function styleValues(data: Record<string, unknown>, defaults: boolean): PageStyl
     result.align = value as PageStyles['align'];
   }
   for (const [key, max, fallback] of [
-    ['padding', 96, 0], ['gap', 64, 16], ['radius', 48, 0],
+    ['padding', 96, 0],
+    ['gap', 64, 16],
+    ['radius', 48, 0],
   ] as const) {
     if (defaults || data[key] !== undefined) result[key] = number(data[key], max, fallback);
   }
@@ -97,24 +111,32 @@ function styleValues(data: Record<string, unknown>, defaults: boolean): PageStyl
 function backgroundDesign(value: unknown): ComposerBackground {
   const data = record(value);
   const kind = data['kind'];
-  const color = (value: unknown): string => {
-    const result = string(value, 7);
-    if (!HEX_COLOR.test(result)) invalid('invalid background color');
-    return result.toLowerCase();
-  };
+  const color = surfaceColor;
   if (kind === 'color') return { kind, color: color(data['color']) };
   if (kind === 'gradient') {
     const angle = data['angle'];
     if (![0, 45, 90, 135, 180].includes(angle as number)) invalid('invalid gradient angle');
-    return { kind, from: color(data['from']), to: color(data['to']), angle: angle as 0 | 45 | 90 | 135 | 180 };
+    return {
+      kind,
+      from: color(data['from']),
+      to: color(data['to']),
+      angle: angle as 0 | 45 | 90 | 135 | 180,
+    };
   }
   if (kind === 'image') {
     const position = data['position'];
     const overlay = data['overlay'];
-    if (!['center', 'top', 'bottom'].includes(String(position)) ||
-        !['none', 'soft', 'strong'].includes(String(overlay))) invalid('invalid image background');
-    return { kind, assetId: assetId(data['assetId']), position: position as 'center' | 'top' | 'bottom',
-      overlay: overlay as 'none' | 'soft' | 'strong' };
+    if (
+      !['center', 'top', 'bottom'].includes(String(position)) ||
+      !['none', 'soft', 'strong'].includes(String(overlay))
+    )
+      invalid('invalid image background');
+    return {
+      kind,
+      assetId: assetId(data['assetId']),
+      position: position as 'center' | 'top' | 'bottom',
+      overlay: overlay as 'none' | 'soft' | 'strong',
+    };
   }
   return invalid('unsupported background kind');
 }
@@ -122,11 +144,48 @@ function backgroundDesign(value: unknown): ComposerBackground {
 function styles(value: unknown, allowDesign = false): PageStyles {
   const data = value === undefined ? {} : record(value);
   const result = styleValues(data, true);
+  if (
+    data['corners'] !== undefined ||
+    data['border'] !== undefined ||
+    data['shadow'] !== undefined
+  ) {
+    if (!allowDesign) invalid('surface controls are only valid on sections, rows and columns');
+    if (data['corners'] !== undefined) {
+      const corners = record(data['corners']);
+      result.corners = {
+        topLeft: number(corners['topLeft'], 160, 0),
+        topRight: number(corners['topRight'], 160, 0),
+        bottomRight: number(corners['bottomRight'], 160, 0),
+        bottomLeft: number(corners['bottomLeft'], 160, 0),
+      };
+    }
+    if (data['border'] !== undefined) {
+      const border = record(data['border']);
+      if (!['solid', 'dashed', 'dotted'].includes(String(border['style'])))
+        invalid('invalid border style');
+      result.border = {
+        width: number(border['width'], 12, 0),
+        style: border['style'] as 'solid' | 'dashed' | 'dotted',
+        color: surfaceColor(border['color']),
+      };
+    }
+    if (data['shadow'] !== undefined) {
+      const shadow = record(data['shadow']);
+      result.shadow = {
+        x: offset(shadow['x']),
+        y: offset(shadow['y']),
+        blur: number(shadow['blur'], 160, 0),
+        spread: offset(shadow['spread']),
+        color: surfaceColor(shadow['color']),
+      };
+    }
+  }
   if (data['spacing'] !== undefined || data['designBackground'] !== undefined) {
-    if (!allowDesign) invalid('design controls are only valid on sections and columns');
+    if (!allowDesign) invalid('design controls are only valid on sections, rows and columns');
     if (data['spacing'] !== undefined) {
       const spacing = data['spacing'];
-      if (!['small', 'standard', 'large'].includes(String(spacing))) invalid('invalid spacing preset');
+      if (!['small', 'standard', 'large'].includes(String(spacing)))
+        invalid('invalid spacing preset');
       result.spacing = spacing as PageStyles['spacing'];
     }
     if (data['designBackground'] !== undefined)
@@ -194,14 +253,23 @@ function block(value: unknown): PageBlock {
       };
     case 'gallery': {
       const layout = data['layout'];
-      if (layout !== undefined &&
-          !['grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'].includes(String(layout)))
+      if (
+        layout !== undefined &&
+        !['grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'].includes(
+          String(layout),
+        )
+      )
         invalid('invalid gallery layout');
       // Previously published filmstrips are displayed as ordinary galleries.
       const normalized = layout === 'filmstrip' ? 'grid' : layout;
       return {
-        ...base, type: 'gallery',
-        ...(normalized === undefined ? {} : { layout: normalized as 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic' }),
+        ...base,
+        type: 'gallery',
+        ...(normalized === undefined
+          ? {}
+          : {
+              layout: normalized as 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic',
+            }),
         items: list(data['items'], 36).map(galleryItem),
       };
     }
@@ -236,7 +304,9 @@ function column(value: unknown): PageColumn {
     invalid('invalid column content alignment');
   return {
     ...node(data, true),
-    ...(contentAlign === undefined ? {} : { contentAlign: contentAlign as 'start' | 'center' | 'end' }),
+    ...(contentAlign === undefined
+      ? {}
+      : { contentAlign: contentAlign as 'start' | 'center' | 'end' }),
     blocks: list(data['blocks'], 36).map(block),
   };
 }
@@ -249,7 +319,7 @@ function row(value: unknown): PageRow {
   const columns = list(data['columns'], 4).map(column);
   if (columns.length !== ROW_LAYOUT_COLUMN_COUNTS[typed])
     invalid('column count does not match layout');
-  return { ...node(data), layout: typed, columns };
+  return { ...node(data, true), layout: typed, columns };
 }
 function section(value: unknown): PageSection {
   const data = record(value);
