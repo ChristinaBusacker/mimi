@@ -21,13 +21,14 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Editor } from '@tiptap/core';
 import { Markdown } from '@tiptap/markdown';
-import { NodeSelection } from '@tiptap/pm/state';
+import { EditorState, NodeSelection } from '@tiptap/pm/state';
 import StarterKit from '@tiptap/starter-kit';
 
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { AssetLibrary } from '../asset-library/asset-library';
 import { ComposerColorPicker } from '../page-composer/composer-color-picker';
 import { Icon } from '../icon/icon';
+import { normalizeMarkdownDocument } from './normalize-markdown-document';
 import { AssetImage, imageDisplayMode, mediaWidth } from './asset-image.extension';
 import type { ImageDisplayMode } from './asset-image.extension';
 import { MarkdownTextColor } from './text-color.extension';
@@ -126,6 +127,9 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
       return;
     }
 
+    // Tiptap/Markdown must not receive an empty document tree. The visible
+    // empty field is one valid paragraph, not a doc with zero block children.
+    const isEmpty = this.value === '';
     const editor = new Editor({
       element,
       extensions: [
@@ -154,8 +158,8 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
           },
         }),
       ],
-      content: this.value,
-      contentType: 'markdown',
+      content: isEmpty ? { type: 'doc', content: [{ type: 'paragraph' }] } : this.value,
+      contentType: isEmpty ? 'html' : 'markdown',
       editable: !this.disabled(),
       editorProps: {
         attributes: {
@@ -166,6 +170,10 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
         },
       },
       onUpdate: ({ editor: currentEditor }) => {
+        // Markdown's HTML/token conversion can yield a visible, but invalid,
+        // ProseMirror tree. Selection and image-resize operations then crash
+        // later with "Called contentMatchAt on a node with invalid content".
+        this.ensureValidDocument(currentEditor);
         this.value = currentEditor.getMarkdown();
         this.onChange(this.value);
         this.bumpRevision();
@@ -184,7 +192,22 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
       },
     });
 
+    this.ensureValidDocument(editor);
     this.editor.set(editor);
+  }
+
+  /** Rebuild only schema-invalid trees, retaining text marks and asset attrs. */
+  private ensureValidDocument(editor: Editor): void {
+    const document = editor.state.doc;
+    const valid = normalizeMarkdownDocument(document);
+    if (valid === document) return;
+    // Commands like setContent() create transactions against the old invalid
+    // tree and can throw before replacing it. Switch to a checked EditorState.
+    editor.view.updateState(EditorState.create({
+      schema: editor.schema,
+      doc: valid,
+      plugins: editor.state.plugins,
+    }));
   }
 
   ngOnDestroy(): void {
@@ -195,12 +218,20 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
     this.value = value ?? '';
 
     const editor = this.editor();
-
-    if (editor && editor.getMarkdown() !== this.value) {
-      editor.commands.setContent(this.value, {
-        contentType: 'markdown',
-        emitUpdate: false,
-      });
+    if (!editor) return;
+    this.ensureValidDocument(editor);
+    if (editor.getMarkdown() !== this.value) {
+      if (this.value === '') {
+        editor.commands.setContent({ type: 'doc', content: [{ type: 'paragraph' }] }, {
+          emitUpdate: false,
+        });
+      } else {
+        editor.commands.setContent(this.value, {
+          contentType: 'markdown',
+          emitUpdate: false,
+        });
+      }
+      this.ensureValidDocument(editor);
     }
   }
 
