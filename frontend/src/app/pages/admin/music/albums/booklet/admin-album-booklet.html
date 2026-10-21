@@ -38,6 +38,7 @@
     <p>{{ 'admin.music.loading' | i18n | async }}</p>
   } @else if (album()) {
     <app-page-editor
+      profile="album"
       [document]="document()"
       [assets]="images()"
       [album]="albumContext()"

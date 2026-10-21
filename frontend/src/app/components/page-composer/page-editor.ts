@@ -8,6 +8,7 @@ import type {
   ComposerBoxEdges,
   PageColumn,
   PageDocument,
+  PageComposerProfile,
   PageNode,
   PageRow,
   PageSection,
@@ -129,6 +130,8 @@ const makeBlock = (kind: BlockKind): PageBlock => {
   styleUrl: './page-editor.scss',
 })
 export class PageEditor {
+  /** Defaults to static-page editing; album callers must opt in explicitly. */
+  readonly profile = input<PageComposerProfile>('standard');
   readonly album = input<AlbumBookletContext | null>(null);
   readonly document = input.required<PageDocument>();
   protected readonly bookletColors = computed(() => collectBookletColors(this.document()));
@@ -771,17 +774,13 @@ export class PageEditor {
   protected readonly outlineOpen = signal(false);
   protected readonly addTarget = signal<CanvasInsert | null>(null);
   protected readonly inlineTextId = signal<string | null>(null);
-  protected readonly blockKinds: readonly BlockKind[] = [
-    'text',
-    'image',
-    'gallery',
-    'slider',
-    'cardCarousel',
-    'spacer',
-    'albumDetails',
-    'albumTracks',
-    'albumCredits',
-  ];
+  /** Block choices depend on the document context, not on the presence of album data. */
+  protected readonly blockKinds = computed<readonly BlockKind[]>(() =>
+    this.profile() === 'album'
+      ? ['text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer',
+          'albumDetails', 'albumTracks', 'albumCredits']
+      : ['text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer'],
+  );
   protected readonly device = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
   protected readonly inspectorTab = signal<'content' | 'design' | 'advanced'>('content');
   protected readonly breakpoint = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -1092,6 +1091,8 @@ export class PageEditor {
     this.inspect('section', section.id);
   }
   protected addBlock(columnId: string, type: BlockKind, index?: number): void {
+    // Also enforce the profile at the action boundary (not only in the palette).
+    if (!this.blockKinds().includes(type)) return;
     if (
       type === 'albumTracks' &&
       this.document().sections.some((section) =>

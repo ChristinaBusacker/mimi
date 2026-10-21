@@ -1,5 +1,7 @@
 /** Persisted editorial content. Business metadata stays outside this document. */
 export type PageLocale = 'de' | 'en';
+/** Feature scope for the reusable composer; album blocks are not valid on static pages. */
+export type PageComposerProfile = 'standard' | 'album';
 export interface LocalizedText {
   de: string;
   en: string;
