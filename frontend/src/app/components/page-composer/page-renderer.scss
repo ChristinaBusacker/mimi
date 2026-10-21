@@ -44,7 +44,9 @@
   gap: var(--pc-gap, 16px);
 }
 // Keep maxWidthContent's centering when no explicit margin was set.
-.page-document__row { margin-inline: var(--pc-row-inline, auto); }
+.page-document__row {
+  margin-inline: var(--pc-row-inline, auto);
+}
 .page-document__section,
 .page-document__block {
   min-width: 0;
@@ -72,38 +74,103 @@
 // _ngcontent attribute, so normal emulated-scoped selectors never match them.
 // Keep these rules restricted to THIS renderer's host with :host ::ng-deep.
 :host ::ng-deep .page-document__markdown {
-  :first-child { margin-top: 0; }
-  :last-child { margin-bottom: 0; }
-  a { color: #f1b4da; }
+  :first-child {
+    margin-top: 0;
+  }
+  :last-child {
+    margin-bottom: 0;
+  }
+  a {
+    color: #f1b4da;
+  }
   // h1-h6 keep inheriting the body color until a distinct color is selected.
-  h1, h2, h3, h4, h5, h6 { color: var(--pc-heading-color, inherit); }
-  h5 { font-size: 1.1em; font-weight: 600; letter-spacing: .04em; }
-  h6 { font-size: .74em; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
-  img { max-width: 100%; height: auto; }
-  img.content-media { display: block; margin-block: 12px; }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--pc-heading-color, inherit);
+  }
+  h5 {
+    font-size: 1.1em;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  h6 {
+    font-size: 0.74em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  img.content-media {
+    display: block;
+    margin-block: 12px;
+  }
   // Legacy content retains its original float/alignment without a mode class.
-  img.media-left { float: left; margin-right: 14px; }
-  img.media-right { float: right; margin-left: 14px; }
-  img.media-center { margin-inline: auto; }
+  img.media-left {
+    float: left;
+    margin-right: 14px;
+  }
+  img.media-right {
+    float: right;
+    margin-left: 14px;
+  }
+  img.media-center {
+    margin-inline: auto;
+  }
   // Explicit modes must win against the legacy float rules above.
   img.content-media.media-mode-inline {
-    display: inline-block; vertical-align: middle; float: none; clear: none; margin: 0 .25em;
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+    clear: none;
+    margin: 0 0.25em;
   }
   img.content-media.media-mode-block {
-    display: block; float: none; clear: both; margin-block: 14px;
+    display: block;
+    float: none;
+    clear: both;
+    margin-block: 14px;
   }
-  img.content-media.media-mode-block.media-left { margin-left: 0; margin-right: auto; }
-  img.content-media.media-mode-block.media-right { margin-left: auto; margin-right: 0; }
-  img.content-media.media-mode-block.media-center { margin-inline: auto; }
-  img.content-media.media-mode-wrap { display: block; }
-  img.size-small:not([style]) { width: min(100%, 240px); }
-  img.size-medium:not([style]) { width: min(100%, 360px); }
-  img.size-large:not([style]) { width: min(100%, 560px); }
-  img.size-full:not([style]) { width: 100%; }
+  img.content-media.media-mode-block.media-left {
+    margin-left: 0;
+    margin-right: auto;
+  }
+  img.content-media.media-mode-block.media-right {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  img.content-media.media-mode-block.media-center {
+    margin-inline: auto;
+  }
+  img.content-media.media-mode-wrap {
+    display: block;
+  }
+  img.size-small:not([style]) {
+    width: min(100%, 240px);
+  }
+  img.size-medium:not([style]) {
+    width: min(100%, 360px);
+  }
+  img.size-large:not([style]) {
+    width: min(100%, 560px);
+  }
+  img.size-full:not([style]) {
+    width: 100%;
+  }
 }
 @media (max-width: 580px) {
   :host ::ng-deep .page-document__markdown {
-    img.media-left, img.media-right { float: none; margin-inline: auto; }
+    img.media-left,
+    img.media-right {
+      float: none;
+      margin-inline: auto;
+    }
   }
 }
 .page-document__image {
@@ -111,11 +178,30 @@
   max-width: 100%;
   height: auto;
   border-radius: 8px;
+  width: 100%;
 }
 .page-document__gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
   gap: 12px;
+}
+/* An automatic layout keeps one and two images from appearing as tiny thumbnails. */
+.page-document__gallery--auto[data-count='1'] { grid-template-columns: minmax(0, 1fr); }
+.page-document__gallery--auto[data-count='1'] img { aspect-ratio: 16 / 9; }
+.page-document__gallery--auto[data-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.page-document__gallery--auto[data-count='3'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.page-document__gallery--auto[data-count='3'] > :first-child { grid-row: span 2; }
+.page-document__gallery--auto[data-count='3'] > :first-child img { height: 100%; aspect-ratio: auto; }
+.page-document__gallery--auto[data-count='4'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.page-document__gallery--auto[data-count='5'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.page-document__gallery--auto[data-count='5'] > :first-child { grid-column: span 2; }
+.page-document__gallery--auto[data-count='6'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@container page-composer (max-width: 580px) {
+  .page-document__gallery--auto[data-count] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .page-document__gallery--auto[data-count='1'] { grid-template-columns: minmax(0, 1fr); }
+  .page-document__gallery--auto[data-count='3'] > :first-child,
+  .page-document__gallery--auto[data-count='5'] > :first-child { grid-column: 1 / -1; grid-row: auto; }
+  .page-document__gallery--auto[data-count='3'] > :first-child img { height: auto; aspect-ratio: 16 / 9; }
 }
 .page-document__gallery-item {
   position: relative;
@@ -284,7 +370,9 @@
     color: var(--pc-tablet-text-color, var(--pc-text-color, inherit));
     background-color: var(--pc-tablet-background-color, var(--pc-background-color));
   }
-  .page-document__row { margin-inline: var(--pc-tablet-row-inline, var(--pc-row-inline, auto)); }
+  .page-document__row {
+    margin-inline: var(--pc-tablet-row-inline, var(--pc-row-inline, auto));
+  }
   .page-document__rows,
   .page-document__row,
   .page-document__column {
@@ -303,7 +391,9 @@
       var(--pc-tablet-background-color, var(--pc-background-color))
     );
   }
-  .page-document__row { margin-inline: var(--pc-mobile-row-inline, var(--pc-tablet-row-inline, auto)); }
+  .page-document__row {
+    margin-inline: var(--pc-mobile-row-inline, var(--pc-tablet-row-inline, auto));
+  }
   .page-document__rows,
   .page-document__row,
   .page-document__column {

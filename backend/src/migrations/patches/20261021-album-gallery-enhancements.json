@@ -1,0 +1,49 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.albumEnhance.colors",
+      "de": "Farben",
+      "en": "Colors"
+    },
+    {
+      "key": "page.editor.albumEnhance.textColor",
+      "de": "Schriftfarbe",
+      "en": "Text color"
+    },
+    {
+      "key": "page.editor.albumEnhance.backgroundColor",
+      "de": "Hintergrundfarbe",
+      "en": "Background color"
+    },
+    {
+      "key": "page.editor.albumEnhance.iconColor",
+      "de": "Icon-Farbe",
+      "en": "Icon color"
+    },
+    {
+      "key": "page.editor.albumEnhance.subtitleColor",
+      "de": "Untertitel-Farbe",
+      "en": "Subtitle color"
+    },
+    {
+      "key": "page.editor.albumEnhance.reset",
+      "de": "Standard wiederherstellen",
+      "en": "Restore default"
+    },
+    {
+      "key": "page.editor.albumEnhance.galleryAuto",
+      "de": "Automatisch nach Bildanzahl",
+      "en": "Automatic by image count"
+    },
+    {
+      "key": "page.editor.albumEnhance.perView",
+      "de": "Bilder pro Ansicht",
+      "en": "Images per view"
+    },
+    {
+      "key": "page.editor.albumEnhance.bullets",
+      "de": "Navigationspunkte anzeigen",
+      "en": "Show pagination dots"
+    }
+  ]
+}

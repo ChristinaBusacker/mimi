@@ -30,3 +30,16 @@
     </button>
   </div>
 </div>
+@if (showBullets() && bulletCount() > 1) {
+  <nav class="carousel__bullets" aria-label="Carousel pagination">
+    @for (index of bulletIndices(); track index) {
+      <button
+        type="button"
+        [class.is-active]="currentSlide() === index"
+        [attr.aria-current]="currentSlide() === index ? 'true' : null"
+        [attr.aria-label]="'Bild ' + (index + 1)"
+        (click)="selectSlide(index)"
+      ></button>
+    }
+  </nav>
+}

@@ -443,6 +443,7 @@
                   <h3>{{ 'page.editor.block.gallery' | i18n | async }}</h3>
                   <label>{{ 'page.editor.gallery.layout' | i18n | async }}</label>
                   <select [value]="block.layout ?? 'grid'" (change)="setGalleryLayout($event)">
+                    <option value="auto">{{ 'page.editor.albumEnhance.galleryAuto' | i18n | async }}</option>
                     <option value="grid">{{ 'page.editor.gallery.grid' | i18n | async }}</option>
                     <option value="featured">
                       {{ 'page.editor.gallery.featured' | i18n | async }}
@@ -503,6 +504,16 @@
                 }
                 @case ('slider') {
                   <h3>{{ 'page.editor.block.slider' | i18n | async }}</h3>
+                  <label>{{ 'page.editor.albumEnhance.perView' | i18n | async }}</label>
+                  <select [value]="block.perView ?? 1.5" (change)="setSliderPerView($event)">
+                    @for (value of [1, 1.5, 2, 2.5, 3, 4]; track value) {
+                      <option [value]="value">{{ value }}</option>
+                    }
+                  </select>
+                  <label class="composer__album-toggle">
+                    <input type="checkbox" [checked]="block.showBullets ?? false" (change)="setSliderBullets($event)" />
+                    {{ 'page.editor.albumEnhance.bullets' | i18n | async }}
+                  </label>
                   @for (image of block.items; track image.id) {
                     <div class="composer__gallery-item">
                       <img [src]="imageUrl(image.assetId)" alt="" />
@@ -1135,6 +1146,37 @@
                         (valueChange)="setShadowColor($event)"
                       />
                     </details>
+                  }
+                </div>
+              </details>
+            } @else if (selectedBlock()?.type === 'albumDetails' || selectedBlock()?.type === 'albumTracks' || selectedBlock()?.type === 'albumCredits') {
+              <details class="composer__accordion" open>
+                <summary><app-icon name="palette" class="white" />
+                  {{ 'page.editor.albumEnhance.colors' | i18n | async }}</summary>
+                <div class="composer__accordion-content">
+                  @for (field of ['textColor', 'backgroundColor']; track field) {
+                    <div class="composer__album-palette-field">
+                      <app-composer-color-picker
+                        [label]="('page.editor.albumEnhance.' + field | i18n | async) ?? field"
+                        [value]="albumPaletteColor($any(field))"
+                        (valueChange)="albumPaletteSet($any(field), $event)" />
+                      <button type="button" class="composer__surface-secondary"
+                        (click)="albumPaletteReset($any(field))">
+                        {{ 'page.editor.albumEnhance.reset' | i18n | async }}</button>
+                    </div>
+                  }
+                  @if (selectedBlock()?.type === 'albumDetails') {
+                    @for (field of ['iconColor', 'subtitleColor']; track field) {
+                      <div class="composer__album-palette-field">
+                        <app-composer-color-picker
+                          [label]="('page.editor.albumEnhance.' + field | i18n | async) ?? field"
+                          [value]="albumPaletteColor($any(field))"
+                          (valueChange)="albumPaletteSet($any(field), $event)" />
+                        <button type="button" class="composer__surface-secondary"
+                          (click)="albumPaletteReset($any(field))">
+                          {{ 'page.editor.albumEnhance.reset' | i18n | async }}</button>
+                      </div>
+                    }
                   }
                 </div>
               </details>

@@ -33,6 +33,7 @@ import { PageInlineMarkdown } from './page-inline-markdown';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { MusicLibraryPlayer } from '../music-library-player/music-library-player';
 import { LightboxService } from '../lightbox/lightbox.service';
+import { MusicPlaybackService } from '../../core/music/music-playback.service';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import { ResponsiveImageService } from '../../core/assets/responsive-image.service';
 
@@ -92,6 +93,7 @@ export class PageRenderer {
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly lightbox = inject(LightboxService);
   private readonly sanitizer = inject(DomSanitizer);
+  protected readonly playback = inject(MusicPlaybackService);
   protected readonly imageSources = inject(ResponsiveImageService);
   private readonly markdown = new MarkdownIt({ html: false, linkify: false, breaks: false });
 
@@ -152,6 +154,11 @@ export class PageRenderer {
   }
 
   protected readonly cardBreakpoints = { 1000: { perView: 2 }, 700: { perView: 1 } };
+  protected readonly sliderBreakpoints = { 600: { perView: 1 } };
+  protected galleryCount(count: number): number { return Math.min(6, count); }
+  protected isTrackPlaying(id: string): boolean {
+    return this.playback.playing() && this.playback.activeTrack()?.id === id;
+  }
 
   protected externalLink(href: string): boolean {
     return /^https?:\/\//i.test(href);

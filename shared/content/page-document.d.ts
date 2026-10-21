@@ -83,16 +83,26 @@ export interface PageGalleryItem {
   assetId: string;
   alt: LocalizedText;
 }
+/** Optional palette for the album widgets; missing fields retain the original theme. */
+export interface PageAlbumPalette {
+  backgroundColor?: string;
+  textColor?: string;
+  iconColor?: string;
+  subtitleColor?: string;
+}
 export interface PageGalleryBlock extends PageNode {
   type: 'gallery';
-  /** Existing galleries default to the regular grid. */
-  layout?: 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic';
+  /** Automatic layout follows the number of images; older layouts are unchanged. */
+  layout?: 'auto' | 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic';
   items: PageGalleryItem[];
 }
 /** Full-size images in the existing Glide carousel, independent of gallery presets. */
 export interface PageSliderBlock extends PageNode {
   type: 'slider';
   items: PageGalleryItem[];
+  /** Fractional slide counts are supported by Glide. Defaults to 1.5. */
+  perView?: number;
+  showBullets?: boolean;
 }
 export interface PageCardItem {
   id: string;
@@ -114,10 +124,12 @@ export interface PageSpacerBlock extends PageNode {
 /** Uses the album context, not a second copy of the album metadata. */
 export interface PageAlbumDetailsBlock extends PageNode {
   type: 'albumDetails';
+  palette?: PageAlbumPalette;
 }
 /** Renders the existing music player on published album pages. */
 export interface PageAlbumTracksBlock extends PageNode {
   type: 'albumTracks';
+  palette?: PageAlbumPalette;
 }
 export interface PageAlbumCredit {
   name: string;
@@ -126,6 +138,7 @@ export interface PageAlbumCredit {
 /** Editorial credits until the album administration has a dedicated credit model. */
 export interface PageAlbumCreditsBlock extends PageNode {
   type: 'albumCredits';
+  palette?: PageAlbumPalette;
   heading: LocalizedText;
   entries: PageAlbumCredit[];
 }

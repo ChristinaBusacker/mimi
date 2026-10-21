@@ -1,4 +1,5 @@
 import type {
+  PageAlbumPalette,
   PageBlock,
   ComposerBackground,
   PageCardItem,
@@ -255,6 +256,18 @@ function cardItem(value: unknown): PageCardItem {
     href,
   };
 }
+function albumPalette(value: unknown, details = false): PageAlbumPalette {
+  const data = record(value);
+  const result: PageAlbumPalette = {};
+  const allowed = details
+    ? ['backgroundColor', 'textColor', 'iconColor', 'subtitleColor']
+    : ['backgroundColor', 'textColor'];
+  for (const key of Object.keys(data)) {
+    if (!allowed.includes(key)) invalid('unsupported album color field');
+    result[key as keyof PageAlbumPalette] = surfaceColor(data[key]);
+  }
+  return result;
+}
 function block(value: unknown): PageBlock {
   const data = record(value);
   const base = node(data, false, data['type'] === 'text');
@@ -272,7 +285,7 @@ function block(value: unknown): PageBlock {
       const layout = data['layout'];
       if (
         layout !== undefined &&
-        !['grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'].includes(
+        !['auto', 'grid', 'featured', 'featuredRight', 'panorama', 'mosaic', 'filmstrip'].includes(
           String(layout),
         )
       )
@@ -285,25 +298,37 @@ function block(value: unknown): PageBlock {
         ...(normalized === undefined
           ? {}
           : {
-              layout: normalized as 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic',
+              layout: normalized as 'auto' | 'grid' | 'featured' | 'featuredRight' | 'panorama' | 'mosaic',
             }),
         items: list(data['items'], 36).map(galleryItem),
       };
     }
-    case 'slider':
-      return { ...base, type: 'slider', items: list(data['items'], 36).map(galleryItem) };
+    case 'slider': {
+      const perView = data['perView'];
+      if (perView !== undefined && (typeof perView !== 'number' || ![1, 1.5, 2, 2.5, 3, 4].includes(perView)))
+        invalid('invalid slider perView');
+      if (data['showBullets'] !== undefined && typeof data['showBullets'] !== 'boolean')
+        invalid('invalid slider pagination');
+      return { ...base, type: 'slider', items: list(data['items'], 36).map(galleryItem),
+        ...(perView === undefined ? {} : { perView: perView as number }),
+        ...(data['showBullets'] === undefined ? {} : { showBullets: data['showBullets'] as boolean }),
+      };
+    }
     case 'cardCarousel':
       return { ...base, type: 'cardCarousel', items: list(data['items'], 24).map(cardItem) };
     case 'spacer':
       return { ...base, type: 'spacer', height: number(data['height'], 240, 32) };
     case 'albumDetails':
-      return { ...base, type: 'albumDetails' };
+      return { ...base, type: 'albumDetails',
+        ...(data['palette'] === undefined ? {} : { palette: albumPalette(data['palette'], true) }) };
     case 'albumTracks':
-      return { ...base, type: 'albumTracks' };
+      return { ...base, type: 'albumTracks',
+        ...(data['palette'] === undefined ? {} : { palette: albumPalette(data['palette']) }) };
     case 'albumCredits':
       return {
         ...base,
         type: 'albumCredits',
+        ...(data['palette'] === undefined ? {} : { palette: albumPalette(data['palette']) }),
         heading: localized(data['heading']),
         entries: list(data['entries'], 40).map((entry) => {
           const credit = record(entry);

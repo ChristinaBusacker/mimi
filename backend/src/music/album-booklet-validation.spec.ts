@@ -181,6 +181,34 @@ describe('Album booklet document validation', () => {
     expect(() => validateAlbumBooklet(input)).toThrow(BadRequestException);
   });
 
+  it('validates album palettes, slider options and automatic galleries', () => {
+    const input = document('1');
+    const blocks = input.sections[0].rows[0].columns[0].blocks;
+    blocks.splice(0, blocks.length,
+      { id: 'details', type: 'albumDetails', styles: {}, palette: {
+        textColor: '#ffeeddff', backgroundColor: '#24152aaa', iconColor: '#daaabbff', subtitleColor: '#eeccdd99' } },
+      { id: 'tracks', type: 'albumTracks', styles: {}, palette: { backgroundColor: '#11223344' } },
+      { id: 'credits', type: 'albumCredits', styles: {}, heading: { de: 'Credits', en: 'Credits' },
+        entries: [], palette: { textColor: '#abcdef88' } },
+      { id: 'slider', type: 'slider', styles: {}, items: [], perView: 1.5, showBullets: true },
+      { id: 'gallery', type: 'gallery', styles: {}, items: [], layout: 'auto' },
+    );
+    const parsed = validateAlbumBooklet(input).sections[0].rows[0].columns[0].blocks;
+    expect(parsed[0]).toMatchObject({ type: 'albumDetails', palette: { iconColor: '#daaabbff' } });
+    expect(parsed[1]).toMatchObject({ type: 'albumTracks', palette: { backgroundColor: '#11223344' } });
+    expect(parsed[2]).toMatchObject({ type: 'albumCredits', palette: { textColor: '#abcdef88' } });
+    expect(parsed[3]).toMatchObject({ type: 'slider', perView: 1.5, showBullets: true });
+    expect(parsed[4]).toMatchObject({ type: 'gallery', layout: 'auto' });
+    const bad = structuredClone(input);
+    const slider = bad.sections[0].rows[0].columns[0].blocks[3];
+    if (slider.type === 'slider') slider.perView = 5;
+    expect(() => validateAlbumBooklet(bad)).toThrow(BadRequestException);
+    const badColor = structuredClone(input);
+    const details = badColor.sections[0].rows[0].columns[0].blocks[0];
+    if (details.type === 'albumDetails') details.palette!.iconColor = 'red';
+    expect(() => validateAlbumBooklet(badColor)).toThrow(BadRequestException);
+  });
+
   it('supports a readable text shadow and rejects text shadow on containers', () => {
     const input = document('1');
     const textBlock = input.sections[0].rows[0].columns[0].blocks[0];

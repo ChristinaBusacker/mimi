@@ -75,7 +75,7 @@
 .composer__canvas {
   display: grid;
   gap: 18px;
-  padding: clamp(12px, 2vw, 26px);
+  padding: 0;
   min-width: 0;
   background: linear-gradient(160deg, #271b33, #1b1828);
 }
@@ -1227,7 +1227,9 @@
   border-radius: 0;
   --composer-sticky-top: 0px;
 }
-.composer--fullscreen .composer__toolbar { top: 0; }
+.composer--fullscreen .composer__toolbar {
+  top: 0;
+}
 .composer--fullscreen .composer__outline,
 .composer--fullscreen .composer__inspector {
   top: var(--composer-toolbar-height);

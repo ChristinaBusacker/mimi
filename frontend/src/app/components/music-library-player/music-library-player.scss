@@ -8,10 +8,14 @@
 .player {
   @include framed;
 
-  background: linear-gradient(180deg, rgb(45 24 42 / 96%), rgb(28 18 27 / 98%));
-  color: var(--color-text);
+  background: var(--pc-album-bg, linear-gradient(180deg, rgb(45 24 42 / 96%), rgb(28 18 27 / 98%)));
+  color: var(--pc-album-text, var(--color-text));
   position: relative;
   border: none;
+
+  .list li.is-playing { outline: 1px solid var(--pc-album-text, var(--color-primary));
+    outline-offset: -1px; background: color-mix(in srgb, var(--pc-album-text, var(--color-primary)) 12%, transparent); }
+  .list li.is-playing .track-title strong { color: var(--pc-album-text, var(--color-primary)); }
 
   audio {
     display: none;

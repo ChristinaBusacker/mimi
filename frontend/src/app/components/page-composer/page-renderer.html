@@ -306,6 +306,8 @@
                         }
                         <div
                           class="page-document__gallery"
+                          [class.page-document__gallery--auto]="block.layout === 'auto'"
+                          [attr.data-count]="block.layout === 'auto' ? galleryCount(block.items.length) : null"
                           [class.page-document__gallery--featured]="
                             block.layout === 'featured' && block.items.length >= 3
                           "
@@ -355,7 +357,7 @@
                             </div>
                           }
                         } @else if (studio()) {
-                          <div class="page-document__slider-preview">
+                          <div class="page-document__slider-preview" [style.--slider-per-view]="block.perView ?? 1.5">
                             @for (item of block.items; track item.id) {
                               <img
                                 [src]="image(item.assetId)"
@@ -366,6 +368,13 @@
                               />
                             }
                           </div>
+                          @if (block.showBullets && block.items.length > 1) {
+                            <div class="page-document__slider-preview-bullets" aria-hidden="true">
+                              @for (item of block.items; track item.id) {
+                                <span [class.is-active]="$first"></span>
+                              }
+                            </div>
+                          }
                         } @else if (block.items.length === 1) {
                           <button
                             type="button"
@@ -382,8 +391,11 @@
                           </button>
                         } @else {
                           <app-carousel
-                            [perView]="1"
+                            [perView]="block.perView ?? 1.5"
                             [gap]="12"
+                            [breakpoints]="sliderBreakpoints"
+                            [showBullets]="block.showBullets ?? false"
+                            [bulletCount]="block.items.length"
                             [previousLabel]="('page.editor.slider.previous' | i18n | async) ?? ''"
                             [nextLabel]="('page.editor.slider.next' | i18n | async) ?? ''"
                           >
@@ -494,7 +506,11 @@
                       }
                       @case ('albumDetails') {
                         @if (album(); as entry) {
-                          <div class="page-document__album-details">
+                          <div class="page-document__album-details"
+                            [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
+                            [style.--pc-album-text]="block.palette?.textColor ?? null"
+                            [style.--pc-album-icon]="block.palette?.iconColor ?? null"
+                            [style.--pc-album-subtitle]="block.palette?.subtitleColor ?? null">
                             @if (albumDate(entry.releasedAt); as date) {
                               <div class="page-document__album-fact">
                                 <app-icon name="music" />
@@ -553,20 +569,27 @@
                       @case ('albumTracks') {
                         @if (album(); as entry) {
                           @if (studio()) {
-                            <div class="page-document__album-tracklist">
+                            <div class="page-document__album-tracklist"
+                              [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
+                              [style.--pc-album-text]="block.palette?.textColor ?? null">
                               <h3>{{ 'page.editor.album.tracklist' | i18n | async }}</h3>
                               @for (track of entry.tracks; track track.id) {
-                                <div class="page-document__album-track">
+                                <div class="page-document__album-track" [class.is-playing]="isTrackPlaying(track.id)">
                                   <span>{{ track.trackNumber ?? $index + 1 }}</span>
                                   <strong>{{ track.title }}</strong>
                                   <span>{{ albumDuration(track.durationSeconds) }}</span>
+                                  <span class="page-document__album-track-action" aria-hidden="true">
+                                    <app-icon [name]="isTrackPlaying(track.id) ? 'pause' : 'play'" />
+                                  </span>
                                 </div>
                               } @empty {
                                 <p>{{ 'music.page.noTracks' | i18n | async }}</p>
                               }
                             </div>
                           } @else if (entry.tracks.length) {
-                            <app-music-library-player [tracks]="entry.tracks" [locale]="locale()" />
+                            <app-music-library-player [tracks]="entry.tracks" [locale]="locale()"
+                              [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
+                              [style.--pc-album-text]="block.palette?.textColor ?? null" />
                           } @else {
                             <p>{{ 'music.page.noTracks' | i18n | async }}</p>
                           }
@@ -580,7 +603,9 @@
                         @let credits =
                           block.entries.length ? block.entries : (album()?.editorial.credits ?? []);
                         @if (credits.length || studio()) {
-                          <section class="page-document__album-credits">
+                          <section class="page-document__album-credits"
+                            [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
+                            [style.--pc-album-text]="block.palette?.textColor ?? null">
                             <h3>{{ block.heading[locale()] || block.heading.de }}</h3>
                             <dl>
                               @for (credit of credits; track $index) {

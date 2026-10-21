@@ -7,9 +7,9 @@
   padding: clamp(18px, 2.6vw, 30px);
   border: 1px solid rgb(255 255 255 / 16%);
   border-radius: 14px;
-  background: rgb(20 14 32 / 45%);
+  background: var(--pc-album-bg, rgb(20 14 32 / 45%));
   backdrop-filter: blur(12px);
-  color: #fff5fa;
+  color: var(--pc-album-text, #fff5fa);
 }
 .page-document__album-fact {
   display: flex;
@@ -22,7 +22,7 @@
   width: 22px;
   height: 22px;
   flex: 0 0 auto;
-  color: #df9cbd;
+  color: var(--pc-album-icon, #df9cbd);
 }
 .page-document__album-fact span {
   display: grid;
@@ -34,7 +34,7 @@
   font-weight: 650;
 }
 .page-document__album-fact small {
-  color: #e2c8db;
+  color: var(--pc-album-subtitle, #e2c8db);
   font-size: 0.66rem;
   font-weight: 750;
   letter-spacing: 0.08em;
@@ -45,8 +45,8 @@
   padding: clamp(18px, 3vw, 36px);
   border: 1px solid rgb(255 255 255 / 15%);
   border-radius: 16px;
-  background: rgb(18 11 30 / 38%);
-  color: #fff5fa;
+  background: var(--pc-album-bg, rgb(18 11 30 / 38%));
+  color: var(--pc-album-text, #fff5fa);
 }
 .page-document__album-tracklist h3,
 .page-document__album-credits h3 {
@@ -55,7 +55,7 @@
 }
 .page-document__album-track {
   display: grid;
-  grid-template-columns: 2.5em minmax(0, 1fr) auto;
+  grid-template-columns: 2.5em minmax(0, 1fr) auto auto;
   gap: 14px;
   align-items: center;
   padding: 12px 0;
@@ -70,6 +70,13 @@
   font-weight: 600;
   overflow-wrap: anywhere;
 }
+.page-document__album-track.is-playing {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 8px;
+  padding-inline: 8px;
+}
+.page-document__album-track-action { display: inline-flex; align-items: center; opacity: .75; }
+.page-document__album-track-action app-icon { width: 17px; height: 17px; }
 .page-document__album-credits dl {
   display: grid;
   gap: 0;

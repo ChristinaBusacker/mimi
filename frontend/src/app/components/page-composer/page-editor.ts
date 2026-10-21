@@ -1,6 +1,7 @@
 import type { Asset } from '@shared/assets/asset';
 import type { AlbumBookletContext } from '@shared/content/album-booklet-context';
 import type {
+  PageAlbumPalette,
   PageBlock,
   ComposerSpacing,
   ComposerCorners,
@@ -90,9 +91,9 @@ const makeBlock = (kind: BlockKind): PageBlock => {
     case 'image':
       return { ...base, type: kind, assetId: null, alt: { de: '', en: '' } };
     case 'gallery':
-      return { ...base, type: kind, layout: 'grid', items: [] };
+      return { ...base, type: kind, layout: 'auto', items: [] };
     case 'slider':
-      return { ...base, type: kind, items: [] };
+      return { ...base, type: kind, items: [], perView: 1.5, showBullets: false };
     case 'cardCarousel':
       return { ...base, type: kind, items: [] };
     case 'spacer':
@@ -1094,6 +1095,7 @@ export class PageEditor {
   protected setGalleryLayout(event: Event): void {
     const layout = this.value(event);
     if (
+      layout !== 'auto' &&
       layout !== 'grid' &&
       layout !== 'featured' &&
       layout !== 'featuredRight' &&
@@ -1103,6 +1105,47 @@ export class PageEditor {
       return;
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'gallery') node.layout = layout;
+    });
+  }
+  protected setSliderPerView(event: Event): void {
+    const value = Number(this.value(event));
+    if (![1, 1.5, 2, 2.5, 3, 4].includes(value)) return;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'slider') node.perView = value;
+    });
+  }
+  protected setSliderBullets(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'slider') node.showBullets = checked;
+    });
+  }
+  protected albumPaletteColor(field: keyof PageAlbumPalette): string {
+    const block = this.selectedBlock();
+    if (!block || !['albumDetails', 'albumTracks', 'albumCredits'].includes(block.type)) return '#ffffffff';
+    if ('palette' in block && block.palette?.[field]) return block.palette[field]!;
+    if (field === 'backgroundColor') return '#140e2073';
+    if (field === 'iconColor') return '#df9cbdff';
+    if (field === 'subtitleColor') return '#e2c8dbff';
+    return '#fff5faff';
+  }
+  protected albumPaletteSet(field: keyof PageAlbumPalette, color: string): void {
+    if (!/^#[a-f0-9]{8}$/i.test(color)) return;
+    this.changeSelected((node) => {
+      if (!('type' in node) ||
+          (node.type !== 'albumDetails' && node.type !== 'albumTracks' && node.type !== 'albumCredits')) return;
+      if (node.type !== 'albumDetails' && (field === 'iconColor' || field === 'subtitleColor')) return;
+      (node.palette ??= {})[field] = color.toLowerCase();
+    });
+  }
+  protected albumPaletteReset(field: keyof PageAlbumPalette): void {
+    this.changeSelected((node) => {
+      if (!('type' in node) ||
+          (node.type !== 'albumDetails' && node.type !== 'albumTracks' && node.type !== 'albumCredits')) return;
+      if (node.palette) {
+        delete node.palette[field];
+        if (!Object.keys(node.palette).length) delete node.palette;
+      }
     });
   }
   protected setColumnAlignment(event: Event): void {

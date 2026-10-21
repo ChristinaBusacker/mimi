@@ -8,6 +8,8 @@ import {
   afterNextRender,
   inject,
   input,
+  computed,
+  signal,
   viewChild,
 } from '@angular/core';
 
@@ -18,6 +20,9 @@ export type CarouselBreakpoints = Record<number, CarouselBreakpoint>;
 interface GlideInstance {
   destroy(): unknown;
   go(pattern: string): unknown;
+  on(event: string, callback: () => void): unknown;
+  index: number;
+  mount(): GlideInstance;
 }
 
 @Component({
@@ -31,6 +36,12 @@ export class Carousel {
   readonly gap = input(16);
   readonly peek = input<GlideOptions['peek']>(0);
   readonly breakpoints = input<CarouselBreakpoints>({});
+  readonly showBullets = input(false);
+  readonly bulletCount = input(0);
+  protected readonly bulletIndices = computed(() =>
+    Array.from({ length: this.bulletCount() }, (_, i) => i),
+  );
+  protected readonly currentSlide = signal(0);
   readonly previousLabel = input.required<string>();
   readonly nextLabel = input.required<string>();
 
@@ -57,13 +68,16 @@ export class Carousel {
   protected next(): void {
     this.glide?.go('>');
   }
+  protected selectSlide(index: number): void {
+    this.glide?.go(`=${index}`);
+  }
 
   private async mount(): Promise<void> {
     const { default: Glide } = await import('@glidejs/glide');
 
     this.glide?.destroy();
 
-    this.glide = new Glide(this.root().nativeElement, {
+    const glide = new Glide(this.root().nativeElement, {
       type: 'carousel',
       perView: this.perView(),
       gap: this.gap(),
@@ -71,7 +85,10 @@ export class Carousel {
       keyboard: true,
       animationDuration: 360,
       breakpoints: this.toGlideBreakpoints(this.breakpoints()),
-    }).mount();
+    }) as unknown as GlideInstance;
+    glide.on('run.after', () => this.currentSlide.set(glide.index));
+    this.glide = glide.mount();
+    this.currentSlide.set(glide.index);
   }
 
   private toGlideBreakpoints(breakpoints: CarouselBreakpoints): Record<string, CarouselBreakpoint> {
