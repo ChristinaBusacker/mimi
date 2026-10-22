@@ -6,6 +6,7 @@ import { blogAuthorResolver } from './pages/blog/author/blog-author.resolver';
 import { blogDataResolver } from './pages/blog/blog.resolver';
 import { blogPostResolver } from './pages/blog/post/blog-post.resolver';
 import { contributorGuard } from './core/auth/contributor.guard';
+import { unsavedPageGuard } from './core/pages/unsaved-page.guard';
 import { gamingDataResolver } from './pages/gaming/gaming.resolver';
 import { homeDataResolver } from './pages/home/home.resolver';
 import { musicAlbumResolver } from './pages/music/album/music-album.resolver';
@@ -185,6 +186,19 @@ export const routes: Routes = [
         canActivate: [adminGuard],
         loadComponent: () =>
           import('./pages/admin/media/admin-media').then((module) => module.AdminMedia),
+      },
+      {
+        path: 'pages',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/admin/pages/admin-pages').then((module) => module.AdminPages),
+      },
+      {
+        path: 'pages/:id',
+        canActivate: [adminGuard],
+        canDeactivate: [unsavedPageGuard],
+        loadComponent: () =>
+          import('./pages/admin/pages/editor/admin-page-editor').then((module) => module.AdminPageEditor),
       },
       {
         path: 'music',

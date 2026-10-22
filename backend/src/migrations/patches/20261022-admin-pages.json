@@ -1,0 +1,229 @@
+{
+  "localizations": [
+    {
+      "key": "admin.pages.title",
+      "de": "Seitenverwaltung",
+      "en": "Page management"
+    },
+    {
+      "key": "admin.nav.pages",
+      "de": "Seiten",
+      "en": "Pages"
+    },
+    {
+      "key": "admin.pages.description",
+      "de": "Systemseiten und individuelle Seiten verwalten. Änderungen werden erst mit dem Veröffentlichen öffentlich.",
+      "en": "Manage system and custom pages. Changes go live only when published."
+    },
+    {
+      "key": "admin.pages.new",
+      "de": "Neue Seite",
+      "en": "New page"
+    },
+    {
+      "key": "admin.pages.createTitle",
+      "de": "Individuelle Seite erstellen",
+      "en": "Create a custom page"
+    },
+    {
+      "key": "admin.pages.slug",
+      "de": "URL-Slug",
+      "en": "URL slug"
+    },
+    {
+      "key": "admin.pages.slugHint",
+      "de": "Nur Kleinbuchstaben, Zahlen und Bindestriche. Der Slug ist nach dem Erstellen unveränderlich.",
+      "en": "Lowercase letters, numbers and hyphens only. The slug cannot be changed after creation."
+    },
+    {
+      "key": "admin.pages.titleDe",
+      "de": "Seitentitel (Deutsch)",
+      "en": "Page title (German)"
+    },
+    {
+      "key": "admin.pages.titleEn",
+      "de": "Seitentitel (Englisch)",
+      "en": "Page title (English)"
+    },
+    {
+      "key": "admin.pages.create",
+      "de": "Seite erstellen",
+      "en": "Create page"
+    },
+    {
+      "key": "admin.pages.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.pages.loading",
+      "de": "Seiten werden geladen …",
+      "en": "Loading pages…"
+    },
+    {
+      "key": "admin.pages.empty",
+      "de": "Noch keine Seiten vorhanden.",
+      "en": "No pages found."
+    },
+    {
+      "key": "admin.pages.system",
+      "de": "Systemseite",
+      "en": "System page"
+    },
+    {
+      "key": "admin.pages.custom",
+      "de": "Individuelle Seite",
+      "en": "Custom page"
+    },
+    {
+      "key": "admin.pages.published",
+      "de": "Veröffentlicht",
+      "en": "Published"
+    },
+    {
+      "key": "admin.pages.unpublished",
+      "de": "Noch nicht veröffentlicht",
+      "en": "Not published yet"
+    },
+    {
+      "key": "admin.pages.edit",
+      "de": "Bearbeiten",
+      "en": "Edit"
+    },
+    {
+      "key": "admin.pages.delete",
+      "de": "Löschen",
+      "en": "Delete"
+    },
+    {
+      "key": "admin.pages.deleteWarning",
+      "de": "Diese Seite wirklich endgültig löschen? Auch veröffentlichte Inhalte werden entfernt.",
+      "en": "Permanently delete this page? Published content will also be removed."
+    },
+    {
+      "key": "admin.pages.confirmDelete",
+      "de": "Ja, endgültig löschen",
+      "en": "Yes, permanently delete"
+    },
+    {
+      "key": "admin.pages.back",
+      "de": "Zur Seitenübersicht",
+      "en": "Back to pages"
+    },
+    {
+      "key": "admin.pages.editTitle",
+      "de": "Seite bearbeiten",
+      "en": "Edit page"
+    },
+    {
+      "key": "admin.pages.save",
+      "de": "Entwurf speichern",
+      "en": "Save draft"
+    },
+    {
+      "key": "admin.pages.publish",
+      "de": "Veröffentlichen",
+      "en": "Publish"
+    },
+    {
+      "key": "admin.pages.unsaved",
+      "de": "Es gibt ungespeicherte Änderungen.",
+      "en": "There are unsaved changes."
+    },
+    {
+      "key": "admin.pages.metadata",
+      "de": "Seiteneinstellungen und SEO",
+      "en": "Page settings and SEO"
+    },
+    {
+      "key": "admin.pages.metadataHint",
+      "de": "Der Slug bleibt unverändert. SEO-Daten werden mit dem Seiteninhalt veröffentlicht.",
+      "en": "The slug cannot be changed. SEO metadata is published together with page content."
+    },
+    {
+      "key": "admin.pages.german",
+      "de": "Deutsch",
+      "en": "German"
+    },
+    {
+      "key": "admin.pages.english",
+      "de": "Englisch",
+      "en": "English"
+    },
+    {
+      "key": "admin.pages.pageTitle",
+      "de": "Seitentitel",
+      "en": "Page title"
+    },
+    {
+      "key": "admin.pages.seoTitle",
+      "de": "SEO-Titel",
+      "en": "SEO title"
+    },
+    {
+      "key": "admin.pages.seoDescription",
+      "de": "SEO-Beschreibung",
+      "en": "SEO description"
+    },
+    {
+      "key": "admin.pages.indexable",
+      "de": "Suchmaschinen dürfen diese Seite indexieren",
+      "en": "Allow search engines to index this page"
+    },
+    {
+      "key": "admin.pages.seoImage",
+      "de": "SEO-/Social-Media-Bild",
+      "en": "SEO/social image"
+    },
+    {
+      "key": "admin.pages.selectImage",
+      "de": "Bild wählen",
+      "en": "Select image"
+    },
+    {
+      "key": "admin.pages.notice.saved",
+      "de": "Entwurf gespeichert. Die öffentliche Seite ist unverändert.",
+      "en": "Draft saved. The public page is unchanged."
+    },
+    {
+      "key": "admin.pages.notice.published",
+      "de": "Seite veröffentlicht. Die öffentliche Darstellung folgt mit dem nächsten Frontend-Patch.",
+      "en": "Page published. Public rendering will follow in the next frontend patch."
+    },
+    {
+      "key": "admin.pages.error.load",
+      "de": "Seiten konnten nicht geladen werden.",
+      "en": "Could not load pages."
+    },
+    {
+      "key": "admin.pages.error.save",
+      "de": "Speichern fehlgeschlagen. Bitte Änderungen prüfen und erneut versuchen.",
+      "en": "Save failed. Please review changes and try again."
+    },
+    {
+      "key": "admin.pages.error.delete",
+      "de": "Die Seite konnte nicht gelöscht werden.",
+      "en": "Could not delete this page."
+    },
+    {
+      "key": "admin.pages.error.conflict",
+      "de": "Der Slug ist bereits vergeben oder durch das System reserviert.",
+      "en": "This slug is already used or reserved."
+    },
+    {
+      "key": "admin.pages.error.validation",
+      "de": "Bitte die Pflichtfelder und maximalen Textlängen prüfen.",
+      "en": "Please check required fields and text length limits."
+    },
+    {
+      "key": "admin.pages.error.empty",
+      "de": "Zum Veröffentlichen muss die Seite mindestens einen Abschnitt haben.",
+      "en": "The page must have at least one section before publishing."
+    },
+    {
+      "key": "admin.pages.pendingPublication",
+      "de": "Gespeicherte Änderungen warten auf Veröffentlichung",
+      "en": "Saved changes are awaiting publication"
+    }
+  ]
+}

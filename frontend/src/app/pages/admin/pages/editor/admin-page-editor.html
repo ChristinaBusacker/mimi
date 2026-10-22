@@ -1,0 +1,78 @@
+<section class="admin-page-editor">
+  <header class="admin-page-editor__header">
+    <div>
+      <a routerLink="/admin/pages">← {{ 'admin.pages.back' | i18n | async }}</a>
+      <h1>{{ 'admin.pages.editTitle' | i18n | async }}</h1>
+      @if (page(); as current) {
+        <p>/{{ current.slug }} · {{ (current.kind === 'system' ? 'admin.pages.system' : 'admin.pages.custom') | i18n | async }}</p>
+        <p>{{ (current.hasPublished ? 'admin.pages.published' : 'admin.pages.unpublished') | i18n | async }}</p>
+        @if (pendingPublication()) { <p>{{ 'admin.pages.pendingPublication' | i18n | async }}</p> }
+      }
+    </div>
+    <div class="admin-page-editor__actions">
+      <button type="button" [disabled]="loading() || working() || !metadata()" (click)="save()">
+        {{ 'admin.pages.save' | i18n | async }}
+      </button>
+      <button type="button" class="admin-page-editor__primary" [disabled]="!canPublish()" (click)="save(true)">
+        {{ 'admin.pages.publish' | i18n | async }}
+      </button>
+    </div>
+  </header>
+
+  @if (error(); as key) { <p class="admin-page-editor__error" role="alert">{{ key | i18n | async }}</p> }
+  @if (notice(); as key) { <p class="admin-page-editor__notice" role="status">{{ key | i18n | async }}</p> }
+  @if (dirty()) { <p class="admin-page-editor__unsaved">{{ 'admin.pages.unsaved' | i18n | async }}</p> }
+  @if (loading()) {
+    <p>{{ 'admin.pages.loading' | i18n | async }}</p>
+  } @else if (metadata(); as meta) {
+    <fieldset class="admin-page-editor__metadata" [disabled]="working()">
+      <legend>{{ 'admin.pages.metadata' | i18n | async }}</legend>
+      <p>{{ 'admin.pages.metadataHint' | i18n | async }}</p>
+      <div class="admin-page-editor__locales">
+        @for (locale of locales; track locale) {
+          <div class="admin-page-editor__locale">
+            <h2>{{ (locale === 'de' ? 'admin.pages.german' : 'admin.pages.english') | i18n | async }}</h2>
+            <label>
+              {{ 'admin.pages.pageTitle' | i18n | async }}
+              <input type="text" required maxlength="160" [value]="meta.title[locale]" (input)="setText('title', locale, $event)" />
+            </label>
+            <label>
+              {{ 'admin.pages.seoTitle' | i18n | async }}
+              <input type="text" maxlength="160" [value]="meta.seoTitle[locale]" (input)="setText('seoTitle', locale, $event)" />
+            </label>
+            <label>
+              {{ 'admin.pages.seoDescription' | i18n | async }}
+              <textarea rows="3" maxlength="500" [value]="meta.seoDescription[locale]" (input)="setText('seoDescription', locale, $event)"></textarea>
+            </label>
+          </div>
+        }
+      </div>
+      <label class="admin-page-editor__checkbox">
+        <input type="checkbox" [checked]="meta.indexable" (change)="setIndexable($event)" />
+        {{ 'admin.pages.indexable' | i18n | async }}
+      </label>
+      <app-asset-picker
+        type="image"
+        [label]="('admin.pages.seoImage' | i18n | async) || ''"
+        [buttonLabel]="('admin.pages.selectImage' | i18n | async) || ''"
+        [assets]="images()"
+        [ngModel]="meta.seoImageAssetId ?? ''"
+        [ngModelOptions]="{ standalone: true }"
+        (ngModelChange)="setSeoImage($event)"
+        (assetUploaded)="upsertImage($event)"
+        (assetUpdated)="upsertImage($event)"
+        (assetDeleted)="removeImage($event)"
+      />
+    </fieldset>
+
+    <div class="admin-page-editor__composer" [class.is-busy]="working()" [attr.aria-busy]="working()">
+      <app-page-editor
+        profile="standard"
+        [document]="document()"
+        [assets]="images()"
+        (documentChange)="updateDocument($event)"
+        (saveRequest)="save($event)"
+      />
+    </div>
+  }
+</section>

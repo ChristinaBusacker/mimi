@@ -1,0 +1,24 @@
+:host { display: block; min-width: 0; }
+.admin-page-editor { display: grid; gap: 1.25rem; }
+.admin-page-editor__header { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem; }
+.admin-page-editor__header h1 { margin: .4rem 0; }
+.admin-page-editor__header p { margin: .25rem 0; opacity: .75; }
+.admin-page-editor__header a { color: var(--color-secondary); }
+.admin-page-editor__actions { display: flex; gap: .7rem; flex-wrap: wrap; }
+.admin-page-editor__actions button { font: inherit; border: 1px solid var(--color-secondary); border-radius: 9px; padding: .7rem 1rem; color: var(--color-text); background: var(--color-surface-translucent); cursor: pointer; }
+.admin-page-editor__actions .admin-page-editor__primary { background: var(--color-primary); }
+.admin-page-editor__actions button:disabled { opacity: .45; cursor: not-allowed; }
+.admin-page-editor__metadata { min-width: 0; display: grid; gap: 1rem; padding: 1.25rem; border: 1px solid var(--color-secondary); border-radius: 12px; }
+.admin-page-editor__metadata legend { padding: 0 .5rem; font-weight: 700; }
+.admin-page-editor__metadata p { margin: 0; opacity: .8; }
+.admin-page-editor__locales { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 1.5rem; }
+.admin-page-editor__locale { display: grid; gap: .85rem; }
+.admin-page-editor__locale h2 { margin: 0; font-size: 1.15rem; }
+.admin-page-editor__locale label { display: grid; gap: .4rem; }
+.admin-page-editor__locale input, .admin-page-editor__locale textarea { box-sizing: border-box; min-width: 0; width: 100%; padding: .65rem; border: 1px solid var(--color-secondary); border-radius: 8px; color: var(--color-text); background: var(--color-surface-translucent); }
+.admin-page-editor__checkbox { display: flex; align-items: center; gap: .7rem; }
+.admin-page-editor__composer { min-width: 0; }
+.admin-page-editor__composer.is-busy { pointer-events: none; opacity: .7; }
+.admin-page-editor__error { color: #ffadb7; font-weight: 700; }
+.admin-page-editor__notice { color: #9ee6c1; font-weight: 700; }
+.admin-page-editor__unsaved { color: #f2c4dd; font-weight: 700; }

@@ -1,0 +1,79 @@
+<section class="admin-pages">
+  <header class="admin-pages__header">
+    <div>
+      <h1>{{ 'admin.pages.title' | i18n | async }}</h1>
+      <p>{{ 'admin.pages.description' | i18n | async }}</p>
+    </div>
+    <button type="button" [disabled]="working()" (click)="creating.set(!creating())">
+      {{ 'admin.pages.new' | i18n | async }}
+    </button>
+  </header>
+
+  @if (error(); as key) { <p class="admin-pages__error" role="alert">{{ key | i18n | async }}</p> }
+
+  @if (creating()) {
+    <form class="admin-pages__create" (submit)="$event.preventDefault(); create()">
+      <h2>{{ 'admin.pages.createTitle' | i18n | async }}</h2>
+      <label>
+        {{ 'admin.pages.slug' | i18n | async }}
+        <input name="slug" required maxlength="160" pattern="[a-z0-9]+(-[a-z0-9]+)*"
+          [value]="slug()" (input)="setField('slug', $event)" placeholder="my-page" />
+      </label>
+      <p class="admin-pages__hint">{{ 'admin.pages.slugHint' | i18n | async }}</p>
+      <div class="admin-pages__locales">
+        <label>
+          {{ 'admin.pages.titleDe' | i18n | async }}
+          <input name="titleDe" required maxlength="160" [value]="titleDe()" (input)="setField('titleDe', $event)" />
+        </label>
+        <label>
+          {{ 'admin.pages.titleEn' | i18n | async }}
+          <input name="titleEn" required maxlength="160" [value]="titleEn()" (input)="setField('titleEn', $event)" />
+        </label>
+      </div>
+      <div class="admin-pages__actions">
+        <button type="submit" [disabled]="!canCreate()">{{ 'admin.pages.create' | i18n | async }}</button>
+        <button type="button" (click)="creating.set(false)">{{ 'admin.pages.cancel' | i18n | async }}</button>
+      </div>
+    </form>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.pages.loading' | i18n | async }}</p>
+  } @else if (!pages().length) {
+    <p>{{ 'admin.pages.empty' | i18n | async }}</p>
+  } @else {
+    <div class="admin-pages__list">
+      @for (page of pages(); track page.id) {
+        <article class="admin-pages__item">
+          <div class="admin-pages__details">
+            <strong>{{ page.draftMetadata.title.de || page.slug }}</strong>
+            <span>/{{ page.slug }}</span>
+            <small>
+              {{ (page.kind === 'system' ? 'admin.pages.system' : 'admin.pages.custom') | i18n | async }}
+              · {{ (page.hasPublished ? 'admin.pages.published' : 'admin.pages.unpublished') | i18n | async }}
+              @if (page.publishedAt) { · {{ page.publishedAt | date:'mediumDate' }} }
+            </small>
+          </div>
+          <div class="admin-pages__actions">
+            <a [routerLink]="['/admin/pages', page.id]">{{ 'admin.pages.edit' | i18n | async }}</a>
+            @if (page.kind === 'custom') {
+              @if (confirmingId() === page.id) {
+                <span>{{ 'admin.pages.deleteWarning' | i18n | async }}</span>
+                <button type="button" [disabled]="working()" (click)="deletePage(page)">
+                  {{ 'admin.pages.confirmDelete' | i18n | async }}
+                </button>
+                <button type="button" (click)="confirmingId.set(null)">
+                  {{ 'admin.pages.cancel' | i18n | async }}
+                </button>
+              } @else {
+                <button type="button" [disabled]="working()" (click)="confirmingId.set(page.id)">
+                  {{ 'admin.pages.delete' | i18n | async }}
+                </button>
+              }
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

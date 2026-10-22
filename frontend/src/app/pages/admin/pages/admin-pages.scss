@@ -1,0 +1,17 @@
+:host { display: block; min-width: 0; }
+.admin-pages { display: grid; gap: 1.5rem; }
+.admin-pages__header, .admin-pages__item { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.admin-pages h1, .admin-pages h2 { margin: 0 0 .4rem; }
+.admin-pages p { margin: 0; }
+.admin-pages__create, .admin-pages__item { padding: 1.2rem; background: var(--color-surface-translucent); border: 1px solid var(--color-secondary); border-radius: 12px; }
+.admin-pages__create { display: grid; gap: 1rem; }
+.admin-pages__locales { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
+.admin-pages label { display: grid; gap: .45rem; }
+.admin-pages input { width: 100%; min-width: 0; padding: .7rem; border-radius: 8px; border: 1px solid var(--color-secondary); color: var(--color-text); background: var(--color-surface-translucent); }
+.admin-pages__details { display: grid; gap: .25rem; overflow-wrap: anywhere; }
+.admin-pages__details small, .admin-pages__details span, .admin-pages__hint { opacity: .76; }
+.admin-pages__list { display: grid; gap: .75rem; }
+.admin-pages__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.admin-pages__actions a, .admin-pages button { font: inherit; padding: .55rem .85rem; border: 1px solid var(--color-secondary); border-radius: 8px; cursor: pointer; color: var(--color-text); background: var(--color-surface-translucent); text-decoration: none; }
+.admin-pages button:disabled { opacity: .45; cursor: not-allowed; }
+.admin-pages__error { color: #ffadb7; font-weight: 600; }
