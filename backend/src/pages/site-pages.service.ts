@@ -16,6 +16,13 @@ import { CreateSitePageDto, SitePageMetadataDto } from './dto/site-page.dto';
 import { SitePageEntry } from './entities/site-page.entry';
 import { collectSitePageAssets } from './site-page-assets';
 
+/** Single-segment Angular routes that must not be shadowed by custom pages. */
+const RESERVED_PUBLIC_SLUGS = new Set([
+  'about', 'gaming', 'music', 'blog', 'impressum', 'datenschutz',
+  'kontakt', 'unterstuetzen', 'community', 'account', 'admin',
+  'videos', '404',
+]);
+
 @Injectable()
 export class SitePagesService {
   constructor(
@@ -51,8 +58,8 @@ export class SitePagesService {
 
   async create(dto: CreateSitePageDto): Promise<SitePageAdmin> {
     // System identities are seeded by the schema migration, not created by an API caller.
-    if (['about', 'impressum', 'datenschutz'].includes(dto.slug))
-      throw new ConflictException('This slug is reserved for a system page.');
+    if (RESERVED_PUBLIC_SLUGS.has(dto.slug))
+      throw new ConflictException('This slug is reserved for an existing route or system page.');
     try {
       const page = await this.dataSource.transaction(async (manager) => {
         const repository = manager.getRepository(SitePageEntry);

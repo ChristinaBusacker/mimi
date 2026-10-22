@@ -11,6 +11,7 @@ import { gamingDataResolver } from './pages/gaming/gaming.resolver';
 import { homeDataResolver } from './pages/home/home.resolver';
 import { musicAlbumResolver } from './pages/music/album/music-album.resolver';
 import { musicDataResolver } from './pages/music/music.resolver';
+import { sitePageResolver } from './pages/site-page/site-page.resolver';
 
 export const routes: Routes = [
   {
@@ -283,6 +284,13 @@ export const routes: Routes = [
           ),
       },
     ],
+  },
+  {
+    // Existing explicit routes always take precedence over custom page slugs.
+    path: ':slug',
+    loadComponent: () =>
+      import('./pages/site-page/site-page').then((module) => module.SitePage),
+    resolve: { data: sitePageResolver },
   },
   {
     path: '**',

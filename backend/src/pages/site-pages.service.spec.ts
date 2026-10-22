@@ -64,6 +64,13 @@ describe('site page publication', () => {
     await expect(service.publish(page.uuid)).rejects.toThrow(BadRequestException);
   });
 
+  it.each(['music', 'admin', 'about', 'impressum', 'datenschutz', 'community'])(
+    'rejects custom pages shadowing the public /%s route', async (slug) => {
+      const { service } = setup();
+      await expect(service.create({ slug, metadata })).rejects.toThrow();
+    },
+  );
+
   it('prevents deleting a protected system page', async () => {
     const { page, service } = setup('system');
     await expect(service.delete(page.uuid)).rejects.toThrow(ForbiddenException);

@@ -1,4 +1,5 @@
 import type { SeoStaticPageKey } from '@shared/seo/seo';
+import type { SitePagePublic } from '@shared/content/site-page';
 
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Injectable, REQUEST, inject } from '@angular/core';
@@ -228,6 +229,13 @@ export class SeoService {
     const routePath = route.routeConfig?.path ?? '';
     const canonicalPath = this.currentPath();
 
+    if (routePath === ':slug') {
+      const page = route.data['data'] as SitePagePublic | null | undefined;
+      if (page) this.applyPublishedSitePage(page, language);
+      else this.applyUnknownPage(language, canonicalPath);
+      return;
+    }
+
     if (routePath === 'blog/:slug') {
       const data = route.data['data'] as BlogPostPageData | undefined;
 
@@ -338,6 +346,36 @@ export class SeoService {
       canonicalPath,
       language,
       schema,
+    });
+  }
+
+  /** Use published metadata only. Draft edits never affect public SEO or indexing. */
+  private applyPublishedSitePage(page: SitePagePublic, language: Language): void {
+    const metadata = page.metadata;
+    const heading = metadata.title[language].trim() || metadata.title.de.trim();
+    const title = metadata.seoTitle[language].trim() || heading;
+    const description = metadata.seoDescription[language].trim();
+    const canonicalPath = `/${encodeURIComponent(page.slug)}`;
+    const canonicalUrl = this.absoluteUrl(canonicalPath);
+    const imageAssetId = metadata.seoImageAssetId;
+
+    this.applyDocument({
+      title,
+      description,
+      canonicalPath,
+      language,
+      indexable: metadata.indexable,
+      imagePath: imageAssetId ? assetSocialImagePath(imageAssetId) : undefined,
+      imageAlt: heading,
+      socialImageAsset: Boolean(imageAssetId),
+      schema: [
+        ...this.baseSchema(language),
+        this.webPageSchema(canonicalUrl, title, description, language),
+        this.breadcrumbSchema([
+          this.homeBreadcrumb(language),
+          { name: heading, url: canonicalUrl },
+        ]),
+      ],
     });
   }
 
