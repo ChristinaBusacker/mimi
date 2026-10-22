@@ -41,17 +41,11 @@ import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import type { PageStyleValues } from '@shared/content/page-document';
 import { insertPageItem, movePageItem } from './page-editor-operations';
 import { collectBookletColors } from './page-document-colors';
+import { pageComposerBlockKinds } from './page-composer-block-kinds';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
 
-// Keep the template's iterable API stable; a signal function cannot be iterated by @for.
-const STANDARD_BLOCK_KINDS: readonly BlockKind[] = [
-  'text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer',
-];
-const ALBUM_BLOCK_KINDS: readonly BlockKind[] = [
-  ...STANDARD_BLOCK_KINDS, 'albumDetails', 'albumTracks', 'albumCredits',
-];
 type CornerKey = keyof ComposerCorners;
 type CornerLink = 'all' | 'top' | 'right' | 'bottom' | 'left';
 type ShadowPreset = 'none' | 'soft' | 'card' | 'floating' | 'deep' | 'glow';
@@ -784,7 +778,7 @@ export class PageEditor {
   protected readonly inlineTextId = signal<string | null>(null);
   /** Always expose an iterable to the template; the active profile remains reactive. */
   protected get blockKinds(): readonly BlockKind[] {
-    return this.profile() === 'album' ? ALBUM_BLOCK_KINDS : STANDARD_BLOCK_KINDS;
+    return pageComposerBlockKinds(this.profile(), this.album() !== null);
   }
   protected readonly device = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
   protected readonly inspectorTab = signal<'content' | 'design' | 'advanced'>('content');

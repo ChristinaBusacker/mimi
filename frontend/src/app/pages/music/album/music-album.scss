@@ -20,12 +20,7 @@
 }
 
 .booklet__hero {
-  display: grid;
-  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1fr);
-  align-items: center;
   gap: clamp(32px, 7vw, 110px);
-  min-height: clamp(440px, 50vh, 750px);
-  @include maxWidthContent;
   position: relative;
   isolation: isolate;
 }
@@ -37,7 +32,6 @@
   z-index: -1;
   inset: 0;
   overflow: hidden;
-  border-radius: 20px;
   pointer-events: none;
 }
 .booklet__hero-art img {
@@ -51,8 +45,17 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgb(14 9 25 / 48%), rgb(14 9 25 / 38%)),
+  background:
+    linear-gradient(90deg, rgb(14 9 25 / 48%), rgb(14 9 25 / 38%)),
     linear-gradient(0deg, #171321 0%, transparent 35%, transparent 72%, #171321 100%);
+}
+
+.booklet__details {
+  @include maxWidthContent;
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1fr);
+  align-items: center;
+  padding-top: 10vh;
 }
 
 .booklet__cover {
@@ -84,7 +87,7 @@
 
 .booklet__intro {
   min-width: 0;
-  text-shadow: 0 2px 18px rgb(0 0 0 / 20%);
+  text-shadow: var(--text-shadow);
 }
 
 .booklet__eyebrow {
@@ -151,13 +154,15 @@
 @include compact-layout {
   .booklet {
     gap: 55px;
-    padding: 100px 20px 75px;
   }
 
   .booklet__hero {
+    min-height: 0;
+  }
+
+  .booklet__details {
     grid-template-columns: minmax(0, 1fr);
     gap: 28px;
-    min-height: 0;
   }
 
   .booklet__cover {
@@ -175,9 +180,6 @@
 }
 
 @media (max-width: 480px) {
-  .booklet {
-    padding-inline: 12px;
-  }
   .booklet__cover {
     width: min(100%, 270px);
   }

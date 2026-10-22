@@ -14,35 +14,42 @@
         <img [src]="assetUrl(heroAssetId)" alt="" fetchpriority="high" />
       </div>
     }
-    <div class="booklet__cover">
-      @if (album.coverAssetId) {
-        <img
-          [src]="assetUrl(album.coverAssetId)"
-          [alt]="album.title"
-          style="view-transition-name: booklet-cover"
-        />
-      } @else {
-        <div class="booklet__placeholder">
-          <app-icon name="music" class="secondary" />
-        </div>
-      }
-    </div>
 
-    <div class="booklet__intro">
-      <span class="booklet__eyebrow">{{ 'music.album.label' | i18n | async }}</span>
-      <h1>{{ album.title }}</h1>
-      @if (formatReleaseDate(album.releasedAt, albumData.locale); as releaseDate) {
-        <p class="booklet__date">{{ 'music.page.released' | i18n | async }} {{ releaseDate }}</p>
-      }
-      <p class="booklet__count">
-        {{ album.tracks.length }} {{ 'music.album.tracks' | i18n | async }}
-      </p>
+    <div class="booklet__details">
+      <div class="booklet__cover">
+        @if (album.coverAssetId) {
+          <img
+            [src]="assetUrl(album.coverAssetId)"
+            [alt]="album.title"
+            style="view-transition-name: booklet-cover"
+          />
+        } @else {
+          <div class="booklet__placeholder">
+            <app-icon name="music" class="secondary" />
+          </div>
+        }
+      </div>
+
+      <div class="booklet__intro">
+        <span class="booklet__eyebrow">{{ 'music.album.label' | i18n | async }}</span>
+        <h1>{{ album.title }}</h1>
+        @if (formatReleaseDate(album.releasedAt, albumData.locale); as releaseDate) {
+          <p class="booklet__date">{{ 'music.page.released' | i18n | async }} {{ releaseDate }}</p>
+        }
+        <p class="booklet__count">
+          {{ album.tracks.length }} {{ 'music.album.tracks' | i18n | async }}
+        </p>
+      </div>
     </div>
   </header>
 
   @if (album.booklet; as customBooklet) {
     @if (customBooklet.sections.length > 0) {
-      <app-page-renderer [document]="customBooklet" [locale]="albumData.locale" [album]="bookletContext()" />
+      <app-page-renderer
+        [document]="customBooklet"
+        [locale]="albumData.locale"
+        [album]="bookletContext()"
+      />
     } @else if (album.contentHtml) {
       <section class="booklet__story" [attr.aria-label]="'music.album.label' | i18n | async">
         <app-rendered-content [sanitizedHtml]="album.contentHtml" />
@@ -55,12 +62,12 @@
   }
 
   @if (!hasEmbeddedPlayer()) {
-  <section class="booklet__tracks" [attr.aria-label]="'music.library.title' | i18n | async">
-    @if (tracks().length) {
-      <app-music-library-player [tracks]="tracks()" [locale]="albumData.locale" />
-    } @else {
-      <p>{{ 'music.page.noTracks' | i18n | async }}</p>
-    }
-  </section>
+    <section class="booklet__tracks" [attr.aria-label]="'music.library.title' | i18n | async">
+      @if (tracks().length) {
+        <app-music-library-player [tracks]="tracks()" [locale]="albumData.locale" />
+      } @else {
+        <p>{{ 'music.page.noTracks' | i18n | async }}</p>
+      }
+    </section>
   }
 </article>

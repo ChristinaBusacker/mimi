@@ -1,30 +1,12 @@
 import type { AlbumBookletContext } from '@shared/content/album-booklet-context';
-import type {
-  MusicAlbumReference,
-  MusicTrackListItem,
-} from '@shared/music/music';
+import type { MusicAlbumReference, MusicTrackListItem } from '@shared/music/music';
 
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-} from '@angular/core';
-import {
-  toObservable,
-  toSignal,
-} from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
-import {
-  combineLatest,
-  distinctUntilChanged,
-  map,
-  of,
-  switchMap,
-} from 'rxjs';
+import { combineLatest, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 
 import { Icon } from '../../../components/icon/icon';
 import { PageRenderer } from '../../../components/page-composer/page-renderer';
@@ -41,76 +23,40 @@ import {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    Icon,
-    I18nPipe,
-    MusicLibraryPlayer,
-    PageRenderer,
-    RenderedContent,
-  ],
+  imports: [AsyncPipe, Icon, I18nPipe, MusicLibraryPlayer, PageRenderer, RenderedContent],
   selector: 'app-music-album',
   styleUrl: './music-album.scss',
   templateUrl: './music-album.html',
 })
 export class MusicAlbumPage {
-  private readonly route =
-    inject(ActivatedRoute);
-  private readonly store =
-    inject(Store);
-  private readonly music =
-    inject(MusicPublicService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly store = inject(Store);
+  private readonly music = inject(MusicPublicService);
   private readonly albumSelection = inject(AlbumSelectionService);
 
-  private readonly initialData =
-    this.route.snapshot.data[
-      'data'
-    ] as MusicAlbumPageData;
+  private readonly initialData = this.route.snapshot.data['data'] as MusicAlbumPageData;
 
-  private readonly language =
-    this.store.selectSignal(
-      I18nState.language,
-    );
+  private readonly language = this.store.selectSignal(I18nState.language);
 
   protected readonly data = toSignal(
     combineLatest([
       this.route.paramMap.pipe(
-        map((params) =>
-          params.get('slug'),
-        ),
+        map((params) => params.get('slug')),
         distinctUntilChanged(),
       ),
-      toObservable(
-        this.language,
-      ).pipe(
-        distinctUntilChanged(),
-      ),
+      toObservable(this.language).pipe(distinctUntilChanged()),
     ]).pipe(
-      switchMap(
-        ([slug, locale]) => {
-          if (!slug) {
-            return of(
-              this.initialData,
-            );
-          }
+      switchMap(([slug, locale]) => {
+        if (!slug) {
+          return of(this.initialData);
+        }
 
-          if (
-            slug ===
-              this.initialData.album.slug &&
-            locale ===
-              this.initialData.locale
-          ) {
-            return of(
-              this.initialData,
-            );
-          }
+        if (slug === this.initialData.album.slug && locale === this.initialData.locale) {
+          return of(this.initialData);
+        }
 
-          return this.music.getAlbumPage(
-            slug,
-            locale,
-          );
-        },
-      ),
+        return this.music.getAlbumPage(slug, locale);
+      }),
     ),
     {
       initialValue: this.initialData,
@@ -123,27 +69,20 @@ export class MusicAlbumPage {
     });
   }
 
-  protected readonly tracks =
-    computed<
-      MusicTrackListItem[]
-    >(() => {
-      const album =
-        this.data().album;
-      const reference: MusicAlbumReference = {
-        id: album.id,
-        slug: album.slug,
-        title: album.title,
-        coverAssetId:
-          album.coverAssetId,
-      };
+  protected readonly tracks = computed<MusicTrackListItem[]>(() => {
+    const album = this.data().album;
+    const reference: MusicAlbumReference = {
+      id: album.id,
+      slug: album.slug,
+      title: album.title,
+      coverAssetId: album.coverAssetId,
+    };
 
-      return album.tracks.map(
-        (track) => ({
-          ...track,
-          album: reference,
-        }),
-      );
-    });
+    return album.tracks.map((track) => ({
+      ...track,
+      album: reference,
+    }));
+  });
 
   protected readonly bookletContext = computed<AlbumBookletContext>(() => ({
     title: this.data().album.title,
@@ -153,41 +92,28 @@ export class MusicAlbumPage {
     tracks: this.tracks(),
   }));
 
-  protected readonly hasEmbeddedPlayer = computed(() =>
-    this.data().album.booklet?.sections.some((section) =>
-      section.rows.some((row) => row.columns.some((column) =>
-        column.blocks.some((block) => block.type === 'albumTracks'),
-      )),
-    ) ?? false,
+  protected readonly hasEmbeddedPlayer = computed(
+    () =>
+      this.data().album.booklet?.sections.some((section) =>
+        section.rows.some((row) =>
+          row.columns.some((column) => column.blocks.some((block) => block.type === 'albumTracks')),
+        ),
+      ) ?? false,
   );
 
-  protected assetUrl(
-    assetId: string,
-  ): string {
+  protected assetUrl(assetId: string): string {
     return `/api/assets/${assetId}`;
   }
 
-  protected formatReleaseDate(
-    value: string | null,
-    locale: Language,
-  ): string | null {
+  protected formatReleaseDate(value: string | null, locale: Language): string | null {
     if (!value) {
       return null;
     }
 
-    return new Intl.DateTimeFormat(
-      locale === 'de'
-        ? 'de-DE'
-        : 'en-US',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: '2-digit',
-      },
-    ).format(
-      new Date(
-        `${value}T00:00:00`,
-      ),
-    );
+    return new Intl.DateTimeFormat(locale === 'de' ? 'de-DE' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: '2-digit',
+    }).format(new Date(`${value}T00:00:00`));
   }
 }
