@@ -72,6 +72,7 @@ const EXPECTED_TABLES = [
   'password_reset_tokens',
   'push_subscriptions',
   'schema_migrations',
+  'site_pages',
   'user_achievements',
   'user_titles',
   'users',

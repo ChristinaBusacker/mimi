@@ -21,6 +21,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PushModule } from './push/push.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SeoModule } from './seo/seo.module';
+import { SitePagesModule } from './pages/site-pages.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { SeoModule } from './seo/seo.module';
     IntegrationsModule,
     GamingModule,
     MusicModule,
+    SitePagesModule,
     NotificationsModule,
     PushModule,
     SeoModule,

@@ -28,6 +28,7 @@ import { assetImageEditsMigration } from '../assets/asset-image-edits.schema-mig
 import { assetFoldersMigration } from '../assets/asset-folders.schema-migration';
 import { assetReplacementMigration } from '../assets/asset-replacement.schema-migration';
 import { seoEditorialMetadataMigration } from '../seo/seo-editorial-metadata.schema-migration';
+import { sitePagesSchemaMigration } from '../pages/site-pages.schema-migration';
 
 interface SchemaMigration {
   name: string;
@@ -542,6 +543,7 @@ const migrations: readonly SchemaMigration[] = [
   assetFoldersMigration,
   assetImageEditsMigration,
   assetReplacementMigration,
+  sitePagesSchemaMigration,
 ];
 
 export async function runSchemaMigrations(

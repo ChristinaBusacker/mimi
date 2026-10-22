@@ -13,7 +13,8 @@ export type AssetUsageOwnerType =
   | 'blogPost'
   | 'musicAlbum'
   | 'musicAlbumBooklet'
-  | 'musicTrack';
+  | 'musicTrack'
+  | 'sitePage';
 
 @Index(
   'IDX_asset_usages_owner',
