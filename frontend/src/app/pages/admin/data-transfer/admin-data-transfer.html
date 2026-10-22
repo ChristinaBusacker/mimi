@@ -6,6 +6,27 @@
     </div>
   </header>
 
+  <section class="admin-data-transfer__bundle" aria-label="Composer archive">
+    <div>
+      <h2>{{ 'admin.composerArchive.title' | i18n | async }}</h2>
+      <p>{{ 'admin.composerArchive.description' | i18n | async }}</p>
+      <div class="admin-data-transfer__archive-actions">
+        @for (scope of archiveOptions; track scope) {
+          <app-button class="secondary round"
+            [disabled]="archiveScope() !== null || busyType() !== null || exportingBundle()"
+            (click)="exportComposer(scope)">
+            {{ (archiveScope() === scope ? 'admin.composerArchive.exporting' : 'admin.composerArchive.' + scope) | i18n | async }}
+          </app-button>
+        }
+      </div>
+      @if (archiveError()) {
+        <p role="alert" class="admin-data-transfer__status--error">
+          {{ 'admin.composerArchive.failed' | i18n | async }}
+        </p>
+      }
+    </div>
+  </section>
+
   @if (loading()) {
     <p class="admin-data-transfer__status">
       {{ 'admin.dataTransfer.status.loading' | i18n | async }}

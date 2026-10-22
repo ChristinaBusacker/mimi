@@ -18,6 +18,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { Button } from '../../../components/button/button';
 import { AdminDataTransferService } from '../../../core/data-transfer/admin-data-transfer.service';
+import { ComposerArchiveClient, type ComposerArchiveScope } from '../../../core/data-transfer/composer-archive.service';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { LanguageService } from '../../../core/i18n/language.service';
 
@@ -64,11 +65,15 @@ interface DataTransferError {
 export class AdminDataTransfer implements OnInit {
   private readonly dataTransfer =
     inject(AdminDataTransferService);
+  private readonly composerArchive = inject(ComposerArchiveClient);
   private readonly language =
     inject(LanguageService);
   private readonly document =
     inject(DOCUMENT);
 
+  protected readonly archiveOptions: readonly ComposerArchiveScope[] = ['all', 'pages', 'booklets'];
+  protected readonly archiveScope = signal<ComposerArchiveScope | null>(null);
+  protected readonly archiveError = signal(false);
   protected readonly loading = signal(true);
   protected readonly availableTypes =
     signal<string[]>([]);
@@ -297,6 +302,30 @@ export class AdminDataTransfer implements OnInit {
       });
     } finally {
       this.busyType.set(null);
+    }
+  }
+
+  protected async exportComposer(scope: ComposerArchiveScope): Promise<void> {
+    if (this.archiveScope() !== null || this.exportingBundle() || this.busyType() !== null) return;
+    this.archiveScope.set(scope);
+    this.archiveError.set(false);
+    try {
+      const blob = await firstValueFrom(this.composerArchive.export(scope));
+      const win = this.document.defaultView;
+      if (!win) return;
+      const url = win.URL.createObjectURL(blob);
+      const link = this.document.createElement('a');
+      link.href = url;
+      link.download = `mimi-composer-${scope}-${this.dateStamp()}.zip`;
+      link.hidden = true;
+      this.document.body.append(link);
+      link.click();
+      link.remove();
+      win.URL.revokeObjectURL(url);
+    } catch {
+      this.archiveError.set(true);
+    } finally {
+      this.archiveScope.set(null);
     }
   }
 

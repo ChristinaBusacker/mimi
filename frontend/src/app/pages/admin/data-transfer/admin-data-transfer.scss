@@ -45,6 +45,13 @@
   padding: var(--spacing-md);
 }
 
+.admin-data-transfer__archive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-md);
+}
+
 .admin-data-transfer__cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

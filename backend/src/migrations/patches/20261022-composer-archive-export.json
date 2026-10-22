@@ -1,0 +1,11 @@
+{
+  "localizations": [
+    { "key": "admin.composerArchive.title", "de": "Composer-Archiv (ZIP)", "en": "Composer archive (ZIP)" },
+    { "key": "admin.composerArchive.description", "de": "Entwürfe, veröffentlichte Versionen und referenzierte Originalbilder als ZIP exportieren. Das bestehende Einstellungs-Backup bleibt unverändert. Der Import folgt separat.", "en": "Export drafts, published versions and referenced original images as ZIP. The existing settings backup remains unchanged. Import will follow separately." },
+    { "key": "admin.composerArchive.all", "de": "Alle Seiten und Booklets", "en": "All pages and booklets" },
+    { "key": "admin.composerArchive.pages", "de": "Nur Seiten", "en": "Pages only" },
+    { "key": "admin.composerArchive.booklets", "de": "Nur Album-Booklets", "en": "Album booklets only" },
+    { "key": "admin.composerArchive.exporting", "de": "ZIP wird erstellt …", "en": "Preparing ZIP…" },
+    { "key": "admin.composerArchive.failed", "de": "Der Composer-Export ist fehlgeschlagen. Prüfe, ob alle verwendeten Dateien vorhanden sind und das Archiv unter 512 MiB bleibt.", "en": "Composer export failed. Check that all referenced files exist and the archive stays below 512 MiB." }
+  ]
+}
