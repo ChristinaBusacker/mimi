@@ -290,7 +290,7 @@
               </div>
             } @else {
               <div class="composer__block-palette">
-                @for (kind of blockKinds(); track kind) {
+                @for (kind of blockKinds; track kind) {
                   <button type="button" (click)="insertBlock(target.parentId, kind, target.index)">
                     <app-icon [name]="blockIcon(kind)" class="white" />
                     {{ 'page.editor.block.' + kind | i18n | async }}

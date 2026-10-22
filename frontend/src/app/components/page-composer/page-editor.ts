@@ -44,6 +44,14 @@ import { collectBookletColors } from './page-document-colors';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
+
+// Keep the template's iterable API stable; a signal function cannot be iterated by @for.
+const STANDARD_BLOCK_KINDS: readonly BlockKind[] = [
+  'text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer',
+];
+const ALBUM_BLOCK_KINDS: readonly BlockKind[] = [
+  ...STANDARD_BLOCK_KINDS, 'albumDetails', 'albumTracks', 'albumCredits',
+];
 type CornerKey = keyof ComposerCorners;
 type CornerLink = 'all' | 'top' | 'right' | 'bottom' | 'left';
 type ShadowPreset = 'none' | 'soft' | 'card' | 'floating' | 'deep' | 'glow';
@@ -774,13 +782,10 @@ export class PageEditor {
   protected readonly outlineOpen = signal(false);
   protected readonly addTarget = signal<CanvasInsert | null>(null);
   protected readonly inlineTextId = signal<string | null>(null);
-  /** Block choices depend on the document context, not on the presence of album data. */
-  protected readonly blockKinds = computed<readonly BlockKind[]>(() =>
-    this.profile() === 'album'
-      ? ['text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer',
-          'albumDetails', 'albumTracks', 'albumCredits']
-      : ['text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer'],
-  );
+  /** Always expose an iterable to the template; the active profile remains reactive. */
+  protected get blockKinds(): readonly BlockKind[] {
+    return this.profile() === 'album' ? ALBUM_BLOCK_KINDS : STANDARD_BLOCK_KINDS;
+  }
   protected readonly device = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
   protected readonly inspectorTab = signal<'content' | 'design' | 'advanced'>('content');
   protected readonly breakpoint = signal<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -1092,7 +1097,7 @@ export class PageEditor {
   }
   protected addBlock(columnId: string, type: BlockKind, index?: number): void {
     // Also enforce the profile at the action boundary (not only in the palette).
-    if (!this.blockKinds().includes(type)) return;
+    if (!this.blockKinds.includes(type)) return;
     if (
       type === 'albumTracks' &&
       this.document().sections.some((section) =>
