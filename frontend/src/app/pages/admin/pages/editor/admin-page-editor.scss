@@ -3,6 +3,13 @@
 .admin-page-editor__header { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem; }
 .admin-page-editor__header h1 { margin: .4rem 0; }
 .admin-page-editor__header p { margin: .25rem 0; opacity: .75; }
+.admin-page-editor__header .admin-page-editor__system-notice {
+  max-width: 70ch;
+  padding: .65rem .85rem;
+  border-left: 3px solid var(--color-secondary);
+  background: rgb(255 255 255 / 5%);
+  opacity: 1;
+}
 .admin-page-editor__header a { color: var(--color-secondary); }
 .admin-page-editor__actions { display: flex; gap: .7rem; flex-wrap: wrap; }
 .admin-page-editor__actions button { font: inherit; border: 1px solid var(--color-secondary); border-radius: 9px; padding: .7rem 1rem; color: var(--color-text); background: var(--color-surface-translucent); cursor: pointer; }

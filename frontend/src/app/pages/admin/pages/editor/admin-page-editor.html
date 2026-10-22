@@ -7,6 +7,11 @@
         <p>/{{ current.slug }} · {{ (current.kind === 'system' ? 'admin.pages.system' : 'admin.pages.custom') | i18n | async }}</p>
         <p>{{ (current.hasPublished ? 'admin.pages.published' : 'admin.pages.unpublished') | i18n | async }}</p>
         @if (pendingPublication()) { <p>{{ 'admin.pages.pendingPublication' | i18n | async }}</p> }
+        @if (current.kind === 'system') {
+          <p class="admin-page-editor__system-notice" role="note">
+            {{ 'admin.pages.systemPublishingHint' | i18n | async }}
+          </p>
+        }
       }
     </div>
     <div class="admin-page-editor__actions">

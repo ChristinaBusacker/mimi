@@ -12,6 +12,7 @@ import { homeDataResolver } from './pages/home/home.resolver';
 import { musicAlbumResolver } from './pages/music/album/music-album.resolver';
 import { musicDataResolver } from './pages/music/music.resolver';
 import { sitePageResolver } from './pages/site-page/site-page.resolver';
+import { systemSitePageResolver } from './pages/system-page/system-page.resolver';
 
 export const routes: Routes = [
   {
@@ -23,7 +24,10 @@ export const routes: Routes = [
   },
   {
     path: 'about',
-    loadComponent: () => import('./pages/about/about').then((module) => module.About),
+    data: { systemSlug: 'about' },
+    loadComponent: () =>
+      import('./pages/system-page/system-page').then((module) => module.SystemPage),
+    resolve: { data: systemSitePageResolver },
   },
   {
     path: 'gaming',
@@ -73,12 +77,17 @@ export const routes: Routes = [
   },
   {
     path: 'impressum',
+    data: { systemSlug: 'impressum' },
     loadComponent: () =>
-      import('./pages/legal-notice/legal-notice').then((module) => module.LegalNotice),
+      import('./pages/system-page/system-page').then((module) => module.SystemPage),
+    resolve: { data: systemSitePageResolver },
   },
   {
     path: 'datenschutz',
-    loadComponent: () => import('./pages/privacy/privacy').then((module) => module.Privacy),
+    data: { systemSlug: 'datenschutz' },
+    loadComponent: () =>
+      import('./pages/system-page/system-page').then((module) => module.SystemPage),
+    resolve: { data: systemSitePageResolver },
   },
   {
     path: 'kontakt',

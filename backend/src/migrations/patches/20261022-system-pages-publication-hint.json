@@ -1,0 +1,9 @@
+{
+  "localizations": [
+    {
+      "key": "admin.pages.systemPublishingHint",
+      "de": "Die bisherige öffentliche Seite bleibt erhalten, bis du eine neue Composer-Version veröffentlichst. Mit der Veröffentlichung ersetzt sie den bisherigen Inhalt. Prüfe Impressum und Datenschutz vor dem Veröffentlichen vollständig.",
+      "en": "The existing public page stays in place until you publish a new Composer version. Publishing replaces the previous content. Review the legal notice and privacy policy in full before publishing."
+    }
+  ]
+}

@@ -236,6 +236,15 @@ export class SeoService {
       return;
     }
 
+    // Existing system URLs retain their legacy SEO until their Composer page is published.
+    if (route.data['systemSlug']) {
+      const page = route.data['data'] as SitePagePublic | null | undefined;
+      if (page) {
+        this.applyPublishedSitePage(page, language);
+        return;
+      }
+    }
+
     if (routePath === 'blog/:slug') {
       const data = route.data['data'] as BlogPostPageData | undefined;
 
