@@ -40,6 +40,7 @@ import { LightboxService } from '../lightbox/lightbox.service';
 import { MusicPlaybackService } from '../../core/music/music-playback.service';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import { ResponsiveImageService } from '../../core/assets/responsive-image.service';
+import { PAGE_STYLE_DEFAULTS, pageTextColorVars } from './page-style-defaults';
 
 export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
 export type CanvasMoveKind = 'section' | 'row' | 'block';
@@ -462,7 +463,7 @@ export class PageRenderer {
     return styles.designBackground?.kind === 'image' && styles.designBackground.parallax === true;
   }
 
-  protected styleVars(styles: PageStyles): Record<string, string> {
+  protected styleVars(styles: PageStyles, isPage = false): Record<string, string> {
     const result: Record<string, string> = {};
     if (styles.textShadow === 'readability')
       result['text-shadow'] = 'var(--text-shadow, 0px 0px 5px rgba(5, 2, 1, 0.51))';
@@ -516,13 +517,13 @@ export class PageRenderer {
       }
     };
     const base: PageStyleValues = {
-      background: styles.background ?? 'none',
+      background: styles.background ?? PAGE_STYLE_DEFAULTS.background,
       backgroundColor: styles.backgroundColor,
       textColor: styles.textColor,
-      padding: styles.padding ?? 0,
-      gap: styles.gap ?? 16,
-      radius: styles.radius ?? 0,
-      align: styles.align ?? 'left',
+      padding: styles.padding ?? PAGE_STYLE_DEFAULTS.padding,
+      gap: styles.gap ?? PAGE_STYLE_DEFAULTS.gap,
+      radius: styles.radius ?? PAGE_STYLE_DEFAULTS.radius,
+      align: styles.align ?? PAGE_STYLE_DEFAULTS.align,
     };
     const keys = ['padding', 'gap', 'radius', 'align', 'text-color', 'background-color'] as const;
     const css = (values: PageStyleValues, key: (typeof keys)[number]): string | undefined => {
@@ -541,7 +542,11 @@ export class PageRenderer {
           return values.background !== undefined || values.backgroundColor ? bg(values) : undefined;
       }
     };
+    // Text color follows the nearest explicitly styled ancestor at each breakpoint.
+    // The root establishes the same white default shown by the Composer inspector.
+    Object.assign(result, pageTextColorVars(styles, isPage));
     for (const key of keys) {
+      if (key === 'text-color') continue;
       result[`--pc-${key}`] = css(base, key) ?? 'inherit';
       result[`--pc-tablet-${key}`] =
         css(styles.responsive?.tablet ?? {}, key) ?? `var(--pc-${key})`;

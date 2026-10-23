@@ -11,7 +11,8 @@
 .page-document {
   display: grid;
   min-width: 0;
-  color: inherit;
+  // Matches the editor picker when a document has no explicit text color.
+  color: #fff;
 }
 .page-document__rows,
 .page-document__column {

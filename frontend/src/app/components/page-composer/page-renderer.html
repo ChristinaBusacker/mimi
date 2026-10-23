@@ -3,7 +3,7 @@
   [class]="surface(document().styles)"
   [class.page-document__node--editable]="editable()"
   [class.is-selected]="selectedId() === document().id"
-  [ngStyle]="styleVars(document().styles)"
+  [ngStyle]="styleVars(document().styles, true)"
   [attr.data-editor-kind]="editable() ? 'page' : null"
   [attr.data-editor-id]="editable() ? document().id : null"
   (click)="choose($event, 'page', document().id)"

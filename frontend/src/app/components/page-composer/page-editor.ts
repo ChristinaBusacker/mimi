@@ -42,6 +42,7 @@ import type { PageStyleValues } from '@shared/content/page-document';
 import { insertPageItem, movePageItem } from './page-editor-operations';
 import { collectBookletColors } from './page-document-colors';
 import { pageComposerBlockKinds } from './page-composer-block-kinds';
+import { PAGE_STYLE_DEFAULTS, effectiveBlockTextColor } from './page-style-defaults';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
@@ -63,13 +64,7 @@ const SHADOW_PRESETS: Record<ShadowPreset, PageStyles['shadow'] | undefined> = {
   deep: { x: 0, y: 24, blur: 45, spread: 0, color: '#050201a0' },
   glow: { x: 0, y: 0, blur: 25, spread: 0, color: '#da8dbbbf' },
 };
-const initialStyles = (): PageStyles => ({
-  background: 'none',
-  padding: 0,
-  gap: 16,
-  radius: 0,
-  align: 'left',
-});
+const initialStyles = (): PageStyles => ({ ...PAGE_STYLE_DEFAULTS });
 const node = (): PageNode => ({ id: crypto.randomUUID(), styles: initialStyles() });
 const makeColumn = (): PageColumn => ({
   ...node(),
@@ -560,11 +555,11 @@ export class PageEditor {
     });
   }
   protected textColor(): string {
-    return this.selectedBlock()?.styles.textColor ?? '#ffffffff';
+    const block = this.selectedBlock();
+    return effectiveBlockTextColor(this.document(), block?.id ?? '', this.breakpoint());
   }
   protected headingColor(): string {
-    const styles = this.selectedBlock()?.styles;
-    return styles?.headingColor ?? styles?.textColor ?? '#ffffffff';
+    return this.selectedBlock()?.styles.headingColor ?? this.textColor();
   }
   protected setHeadingColor(color: string): void {
     if (!/^#[0-9a-f]{8}$/i.test(color)) return;
@@ -595,13 +590,22 @@ export class PageEditor {
   }
   protected setTextColor(color: string): void {
     if (!/^#[0-9a-f]{8}$/i.test(color)) return;
+    const breakpoint = this.breakpoint();
     this.changeSelected((node) => {
-      if ('type' in node && node.type === 'text') node.styles.textColor = color;
+      if (!('type' in node) || node.type !== 'text') return;
+      const target: PageStyleValues = breakpoint === 'desktop'
+        ? node.styles
+        : ((node.styles.responsive ??= {})[breakpoint] ??= {});
+      target.textColor = color.toLowerCase();
     });
   }
   protected resetTextColor(): void {
+    const breakpoint = this.breakpoint();
     this.changeSelected((node) => {
-      if ('type' in node && node.type === 'text') delete node.styles.textColor;
+      if (!('type' in node) || node.type !== 'text') return;
+      if (breakpoint === 'desktop') delete node.styles.textColor;
+      else if (node.styles.responsive?.[breakpoint])
+        delete node.styles.responsive[breakpoint].textColor;
     });
   }
   protected setTextShadow(event: Event): void {
