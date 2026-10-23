@@ -50,3 +50,37 @@ export function installMimiTextColor(markdown: InstanceType<typeof MarkdownIt>):
   };
   markdown.renderer.rules['mimi_text_color_close'] = (): string => '</span>';
 }
+
+/** Renders the exact alignment markers emitted by MimiAlignedParagraph. */
+export function installMimiParagraphAlignment(markdown: InstanceType<typeof MarkdownIt>): void {
+  markdown.block.ruler.before('paragraph', 'mimiParagraphAlignment',
+    (state, startLine, endLine, silent): boolean => {
+      const start = state.bMarks[startLine] + state.tShift[startLine];
+      const begin = state.src.slice(start, state.eMarks[startLine]);
+      const match = /^:::align-(center|right)\s*$/.exec(begin);
+      if (!match) return false;
+      let close = startLine + 1;
+      while (close < endLine && close - startLine <= 30) {
+        const index = state.bMarks[close] + state.tShift[close];
+        const line = state.src.slice(index, state.eMarks[close]);
+        if (line === ':::') break;
+        if (!line.trim()) return false; // One paragraph per alignment marker.
+        close++;
+      }
+      if (close >= endLine || close - startLine > 30) return false;
+      if (silent) return true;
+      const text = Array.from({ length: close - startLine - 1 }, (_, offset) => {
+        const line = startLine + offset + 1;
+        return state.src.slice(state.bMarks[line] + state.tShift[line], state.eMarks[line]);
+      }).join('\n');
+      if (!text.trim()) return false;
+      const open = state.push('paragraph_open', 'p', 1);
+      open.attrSet('style', `text-align:${match[1]}`);
+      const inline = state.push('inline', '', 0);
+      inline.content = text;
+      inline.children = [];
+      state.push('paragraph_close', 'p', -1);
+      state.line = close + 1;
+      return true;
+    });
+}

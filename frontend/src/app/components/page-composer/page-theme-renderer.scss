@@ -1,4 +1,11 @@
 /* Scoped to themed documents. Legacy documents keep their previous typography. */
+:host ::ng-deep .page-document__markdown {
+  font-family: var(--pc-block-font-body, inherit);
+}
+:host ::ng-deep .page-document__markdown :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--pc-block-font-heading, inherit);
+}
+
 .page-document--themed {
   font-family: var(--pc-theme-font-body);
   font-size: var(--pc-theme-active-size-body, var(--pc-theme-size-body));
@@ -23,7 +30,7 @@
   h4,
   h5,
   h6 {
-    font-family: var(--pc-theme-font-heading);
+    font-family: var(--pc-block-font-heading, var(--pc-theme-font-heading));
     color: var(--pc-heading-color, var(--pc-theme-color-heading));
   }
   h1 {

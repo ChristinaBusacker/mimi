@@ -11,20 +11,25 @@ import { ColorPickerDirective } from 'ngx-color-picker';
   imports: [ColorPickerDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <span class="color-picker__label">{{ label() }}</span>
+    @if (!swatchOnly()) {
+      <span class="color-picker__label">{{ label() }}</span>
+    }
     <button
       #trigger
       type="button"
       class="color-picker__trigger"
+      [class.color-picker__trigger--swatch-only]="swatchOnly()"
       [disabled]="disabled()"
-      [attr.aria-label]="label()"
+      [attr.aria-label]="label() || ('Farbe ' + normalized())"
       [attr.aria-expanded]="isOpen()"
-      [title]="label()"
+      [title]="label() || normalized()"
       (click)="togglePicker()"
     >
       <span class="color-picker__checker"><span [style.background]="normalized()"></span></span>
-      <code>{{ normalized() }}</code>
-      <span aria-hidden="true">▾</span>
+      @if (!swatchOnly()) {
+        <code>{{ normalized() }}</code>
+        <span aria-hidden="true">▾</span>
+      }
     </button>
     <!-- Popover is promoted to the browser top layer, escaping sticky/scroll containers. -->
     <div #popover popover="auto" class="color-picker__popover"
@@ -82,6 +87,17 @@ import { ColorPickerDirective } from 'ngx-color-picker';
         color: #f6d6eb;
         background: #211928;
         border: 1px solid #795c81;
+      }
+      .color-picker__trigger--swatch-only {
+        width: 42px;
+        min-width: 42px;
+        height: 36px;
+        padding: 3px;
+        justify-content: center;
+      }
+      .color-picker__trigger--swatch-only .color-picker__checker {
+        width: 32px;
+        flex-basis: 32px;
       }
       .color-picker__trigger:focus-visible {
         outline: 2px solid #d68cbd;
@@ -179,6 +195,8 @@ export class ComposerColorPicker {
 
   readonly disabled = input<boolean>(false);
   readonly value = input.required<string>();
+  /** Toolbar-only compact swatch; other uses retain the full RGBA field. */
+  readonly swatchOnly = input(false);
   readonly label = input('Color');
   readonly valueChange = output<string>();
   /** null: ordinary picker defaults; []: no colors used in this booklet yet. */

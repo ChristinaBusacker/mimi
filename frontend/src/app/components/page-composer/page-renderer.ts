@@ -30,7 +30,7 @@ import { RouterLink } from '@angular/router';
 import type { SafeHtml } from '@angular/platform-browser';
 import MarkdownIt from 'markdown-it';
 import sanitizeHtml from 'sanitize-html';
-import { installMimiTextColor, parseMimiMediaTitle } from '@shared/content/mimi-markdown-rendering';
+import { installMimiTextColor, installMimiParagraphAlignment, parseMimiMediaTitle } from '@shared/content/mimi-markdown-rendering';
 import { installMimiInlineControls } from '@shared/content/mimi-inline-controls';
 import { Icon } from '../icon/icon';
 import { Carousel } from '../carousel/carousel';
@@ -43,7 +43,7 @@ import { LightboxService } from '../lightbox/lightbox.service';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import { ResponsiveImageService } from '../../core/assets/responsive-image.service';
 import { PAGE_STYLE_DEFAULTS, pageTextColorVars } from './page-style-defaults';
-import { pageThemeVars } from './page-theme';
+import { PAGE_THEME_FONTS, pageThemeVars } from './page-theme';
 
 export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
 export type CanvasMoveKind = 'section' | 'row' | 'block';
@@ -113,6 +113,7 @@ export class PageRenderer {
     afterNextRender(() => this.initParallax());
     afterEveryRender(() => this.scheduleParallax?.());
     installMimiTextColor(this.markdown);
+    installMimiParagraphAlignment(this.markdown);
     installMimiInlineControls(this.markdown);
     this.markdown.renderer.rules['image'] = (tokens, index): string => {
       const token = tokens[index];
@@ -400,6 +401,7 @@ export class PageRenderer {
         ...sanitizeHtml.defaults.allowedAttributes,
         a: ['href', 'title', 'class', 'target', 'rel'],
         img: ['src', 'srcset', 'sizes', 'alt', 'loading', 'class', 'style'],
+        p: ['style'],
         svg: ['class', 'viewBox', 'width', 'height', 'style', 'role', 'aria-label'],
         path: ['d', 'fill'],
         span: ['style'],
@@ -423,6 +425,7 @@ export class PageRenderer {
       },
       allowedStyles: {
         span: { color: [/^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/i] },
+        p: { 'text-align': [/^(?:left|center|right)$/] },
         svg: { color: [/^#[a-f0-9]{8}$/i] },
         img: {
           width: [/^(?:100|[1-9]\d?)%$/],
@@ -501,6 +504,13 @@ export class PageRenderer {
   /** Existing album blocks keep their legacy palette until a shared surface overrides it. */
   protected blockStyleVars(block: PageBlock): Record<string, string> {
     const vars = this.styleVars(block.styles);
+    if (block.type === 'text') {
+      for (const field of ['fontBody', 'fontHeading'] as const) {
+        const font = PAGE_THEME_FONTS.find((entry) => entry.id === block.styles[field]);
+        const name = field === 'fontBody' ? 'body' : 'heading';
+        vars[`--pc-block-font-${name}`] = font?.css ?? `var(--pc-theme-font-${name}, inherit)`;
+      }
+    }
     if (block.type !== 'albumDetails' && block.type !== 'albumTracks' && block.type !== 'albumCredits')
       return vars;
     const { styles, palette } = block;

@@ -163,6 +163,13 @@ function backgroundDesign(value: unknown): ComposerBackground {
 function styles(value: unknown, allowDesign = false, allowTextShadow = false): PageStyles {
   const data = value === undefined ? {} : record(value);
   const result = styleValues(data, true);
+  for (const font of ['fontBody', 'fontHeading'] as const) {
+    if (data[font] !== undefined) {
+      if (!allowTextShadow || typeof data[font] !== 'string' || !/^[a-z][a-z0-9-]{0,63}$/.test(data[font]))
+        invalid('invalid text block font ID');
+      result[font] = data[font] as string;
+    }
+  }
   if (data['headingColor'] !== undefined) {
     if (!allowTextShadow) invalid('heading color is only valid on text blocks');
     result.headingColor = surfaceColor(data['headingColor']);
@@ -341,7 +348,7 @@ function controlAppearance(value: unknown, accordion = false): Record<string, un
 }
 function block(value: unknown): PageBlock {
   const data = record(value);
-  const decoratedBlock = ['albumDetails', 'albumTracks', 'albumCredits', 'button', 'accordion', 'icon']
+  const decoratedBlock = ['albumDetails', 'albumTracks', 'albumCredits', 'button', 'accordion', 'icon', 'text']
     .includes(String(data['type']));
   const base = node(data, decoratedBlock, data['type'] === 'text');
   switch (data['type']) {

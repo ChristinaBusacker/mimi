@@ -59,6 +59,9 @@ export interface PageStyles extends PageStyleValues {
   designBackground?: ComposerBackground;
   /** Text blocks only: readability shadows follow the global --text-shadow token. */
   textShadow?: 'none' | 'readability' | 'strong';
+  /** Text-block typography overrides; IDs reference the same JSON font registry as PageTheme. */
+  fontBody?: string;
+  fontHeading?: string;
   /** Optional heading override; without it h1-h6 inherit the body text color. */
   headingColor?: string;
   corners?: ComposerCorners;

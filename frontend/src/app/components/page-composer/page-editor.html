@@ -432,6 +432,7 @@
                   <h3>{{ 'page.editor.block.text' | i18n | async }}</h3>
                   <app-markdown-editor
                     [suggestedColors]="bookletColors()"
+                    [defaultTextColor]="textColor()"
                     [formControl]="markdownControl"
                     [assets]="assets()"
                     [label]="('page.editor.content' | i18n | async) ?? ''"
@@ -1224,6 +1225,7 @@
               selected()?.kind === 'section' ||
               selected()?.kind === 'row' ||
               selected()?.kind === 'column' ||
+              selectedBlock()?.type === 'text' ||
               selectedBlock()?.type === 'albumDetails' ||
               selectedBlock()?.type === 'albumTracks' ||
               selectedBlock()?.type === 'albumCredits'
@@ -1655,6 +1657,55 @@
                   }
                 </div>
               </details>
+              @if (selectedBlock()?.type === 'text') {
+              <details class="composer__accordion" open>
+                <summary>
+                  <app-icon name="type" class="white" />
+                  {{ 'page.editor.studio.typography' | i18n | async }}
+                </summary>
+                <div class="composer__accordion-content">
+                  <label>{{ 'page.editor.textFont.body' | i18n | async }}</label>
+                  <select [value]="node.styles.fontBody ?? ''" (change)="setTextBlockFont('fontBody', $event)">
+                    <option value="">{{ 'page.editor.textFont.inherit' | i18n | async }}</option>
+                    @for (font of themeFonts; track font.id) {
+                      <option [value]="font.id">{{ font.label }}</option>
+                    }
+                  </select>
+                  <label>{{ 'page.editor.textFont.heading' | i18n | async }}</label>
+                  <select [value]="node.styles.fontHeading ?? ''" (change)="setTextBlockFont('fontHeading', $event)">
+                    <option value="">{{ 'page.editor.textFont.inherit' | i18n | async }}</option>
+                    @for (font of themeFonts; track font.id) {
+                      <option [value]="font.id">{{ font.label }}</option>
+                    }
+                  </select>
+                  <app-composer-color-picker
+                    [suggestedColors]="bookletColors()"
+                    [label]="('page.editor.studio.textColor' | i18n | async) ?? ''"
+                    [value]="textColor()"
+                    (valueChange)="setTextColor($event)"
+                  />
+                  <app-composer-color-picker
+                    [suggestedColors]="bookletColors()"
+                    [label]="('page.editor.box.headingColor' | i18n | async) ?? 'Überschriftenfarbe'"
+                    [value]="headingColor()"
+                    (valueChange)="setHeadingColor($event)"
+                  />
+                  <button type="button" class="composer__surface-secondary" (click)="resetHeadingColor()">
+                    {{ 'page.editor.box.inheritHeadings' | i18n | async }}
+                  </button>
+                  <button type="button" class="composer__surface-secondary" (click)="resetTextColor()">
+                    {{ 'page.editor.design.none' | i18n | async }}
+                  </button>
+                  <label>{{ 'page.editor.studio.textShadow' | i18n | async }}
+                    <select [value]="node.styles.textShadow ?? 'none'" (change)="setTextShadow($event)">
+                      <option value="none">{{ 'page.editor.design.none' | i18n | async }}</option>
+                      <option value="readability">{{ 'page.editor.studio.readability' | i18n | async }}</option>
+                      <option value="strong">{{ 'page.editor.design.strong' | i18n | async }}</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
+              }
             } @else if (
               selectedBlock()?.type === 'albumDetails' ||
               selectedBlock()?.type === 'albumTracks' ||
@@ -1702,58 +1753,6 @@
                       </div>
                     }
                   }
-                </div>
-              </details>
-            } @else if (selectedBlock()?.type === 'text') {
-              <details class="composer__accordion" open>
-                <summary>
-                  <app-icon name="type" class="white" />
-                  {{ 'page.editor.studio.typography' | i18n | async }}
-                </summary>
-                <div class="composer__accordion-content">
-                  <app-composer-color-picker
-                    [suggestedColors]="bookletColors()"
-                    [label]="('page.editor.studio.textColor' | i18n | async) ?? ''"
-                    [value]="textColor()"
-                    (valueChange)="setTextColor($event)"
-                  />
-                  <app-composer-color-picker
-                    [suggestedColors]="bookletColors()"
-                    [label]="
-                      ('page.editor.box.headingColor' | i18n | async) ?? 'Überschriftenfarbe'
-                    "
-                    [value]="headingColor()"
-                    (valueChange)="setHeadingColor($event)"
-                  />
-                  <button
-                    type="button"
-                    class="composer__surface-secondary"
-                    (click)="resetHeadingColor()"
-                  >
-                    {{ 'page.editor.box.inheritHeadings' | i18n | async }}
-                  </button>
-                  <button
-                    type="button"
-                    class="composer__surface-secondary"
-                    (click)="resetTextColor()"
-                  >
-                    {{ 'page.editor.design.none' | i18n | async }}
-                  </button>
-                  <label
-                    >{{ 'page.editor.studio.textShadow' | i18n | async }}
-                    <select
-                      [value]="selectedBlock()?.styles?.textShadow ?? 'none'"
-                      (change)="setTextShadow($event)"
-                    >
-                      <option value="none">{{ 'page.editor.design.none' | i18n | async }}</option>
-                      <option value="readability">
-                        {{ 'page.editor.studio.readability' | i18n | async }}
-                      </option>
-                      <option value="strong">
-                        {{ 'page.editor.design.strong' | i18n | async }}
-                      </option>
-                    </select>
-                  </label>
                 </div>
               </details>
             } @else if (

@@ -127,12 +127,35 @@
     </button>
 
     <span class="divider"></span>
+    <div class="markdown-editor__align-tools" role="group"
+      [attr.aria-label]="'admin.markdown.align.group' | i18n | async">
+      <button type="button" [disabled]="isDisabled() || blockType() !== 'paragraph'"
+        [class.active]="paragraphAlignment() === 'left'"
+        [attr.aria-pressed]="paragraphAlignment() === 'left'"
+        [attr.aria-label]="'admin.markdown.align.left' | i18n | async"
+        [title]="'admin.markdown.align.left' | i18n | async"
+        (click)="setParagraphAlignment('left')"><span class="markdown-editor__align-glyph align-left" aria-hidden="true"><i></i><i></i><i></i></span></button>
+      <button type="button" [disabled]="isDisabled() || blockType() !== 'paragraph'"
+        [class.active]="paragraphAlignment() === 'center'"
+        [attr.aria-pressed]="paragraphAlignment() === 'center'"
+        [attr.aria-label]="'admin.markdown.align.center' | i18n | async"
+        [title]="'admin.markdown.align.center' | i18n | async"
+        (click)="setParagraphAlignment('center')"><span class="markdown-editor__align-glyph align-center" aria-hidden="true"><i></i><i></i><i></i></span></button>
+      <button type="button" [disabled]="isDisabled() || blockType() !== 'paragraph'"
+        [class.active]="paragraphAlignment() === 'right'"
+        [attr.aria-pressed]="paragraphAlignment() === 'right'"
+        [attr.aria-label]="'admin.markdown.align.right' | i18n | async"
+        [title]="'admin.markdown.align.right' | i18n | async"
+        (click)="setParagraphAlignment('right')"><span class="markdown-editor__align-glyph align-right" aria-hidden="true"><i></i><i></i><i></i></span></button>
+    </div>
+    <span class="divider"></span>
     <div class="markdown-editor__color-tool" (pointerdown)="rememberColorSelection()">
       <app-composer-color-picker
         [label]="''"
+        [swatchOnly]="true"
         [suggestedColors]="suggestedColors()"
         [disabled]="isDisabled()"
-        [value]="textColor()"
+        [value]="selectionColor()"
         (valueChange)="applyTextColor($event)"
       />
     </div>

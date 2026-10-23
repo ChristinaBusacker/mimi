@@ -24,6 +24,7 @@ import { Markdown } from '@tiptap/markdown';
 import { EditorState, NodeSelection } from '@tiptap/pm/state';
 import StarterKit from '@tiptap/starter-kit';
 
+import { MimiAlignedParagraph, type ParagraphAlignment } from './paragraph-alignment.extension';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { AssetLibrary } from '../asset-library/asset-library';
 import { ComposerColorPicker } from '../page-composer/composer-color-picker';
@@ -76,6 +77,8 @@ const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,20}$/;
 })
 export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAccessor {
   readonly suggestedColors = input<readonly string[] | null>(null);
+  /** Inherited color from the Composer text block when no inline mark exists. */
+  readonly defaultTextColor = input('#ffffffff');
   private readonly platformId = inject(PLATFORM_ID);
   private readonly editorHost = viewChild<ElementRef<HTMLElement>>('editorHost');
   private readonly settingsDialog = viewChild<ElementRef<HTMLDialogElement>>('settingsDialog');
@@ -109,6 +112,13 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
   protected readonly imageWidth = signal<number | null>(null);
   protected readonly imageDisplayMode = signal<ImageDisplayMode | null>(null);
   protected readonly textColor = signal('#f8d7eb');
+  /** Reads the selected text mark, falling back to the inherited block color. */
+  protected readonly selectionColor = computed(() => {
+    this.revision();
+    const color = this.editor()?.getAttributes('mimiTextColor')['color'];
+    return typeof color === 'string' && /^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/i.test(color)
+      ? color : this.defaultTextColor();
+  });
   protected readonly youtubeValue = signal('');
   protected readonly youtubeAlignment = signal<ContentMediaAlignment>('center');
   protected readonly youtubeSize = signal<ContentMediaSize>('large');
@@ -145,6 +155,7 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
       element,
       extensions: [
         StarterKit.configure({
+          paragraph: false,
           code: {},
           codeBlock: {},
           heading: {
@@ -160,6 +171,7 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
         MarkdownUnderline,
         MarkdownStrike,
         MarkdownTextColor,
+        MimiAlignedParagraph,
         AssetImage,
         YoutubeEmbed,
         MimiInlineControls,
@@ -411,6 +423,19 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
   protected isCodeActive(): boolean {
     this.revision();
     return this.editor()?.isActive('code') ?? false;
+  }
+
+  /** Applies to the current paragraph only, including the containing selection range. */
+  protected paragraphAlignment(): ParagraphAlignment {
+    this.revision();
+    const value = this.editor()?.getAttributes('paragraph')['textAlign'];
+    return value === 'center' || value === 'right' ? value : 'left';
+  }
+
+  protected setParagraphAlignment(value: ParagraphAlignment): void {
+    const editor = this.editor();
+    if (!editor || this.disabled() || !editor.isActive('paragraph')) return;
+    editor.chain().focus().updateAttributes('paragraph', { textAlign: value }).run();
   }
 
   protected toggleCode(): void {

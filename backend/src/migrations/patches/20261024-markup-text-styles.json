@@ -1,0 +1,39 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.textFont.body",
+      "de": "Fließtext-Schriftart",
+      "en": "Body font"
+    },
+    {
+      "key": "page.editor.textFont.heading",
+      "de": "Überschriften-Schriftart",
+      "en": "Heading font"
+    },
+    {
+      "key": "page.editor.textFont.inherit",
+      "de": "Seitenstandard übernehmen",
+      "en": "Inherit page default"
+    },
+    {
+      "key": "admin.markdown.align.group",
+      "de": "Absatzausrichtung",
+      "en": "Paragraph alignment"
+    },
+    {
+      "key": "admin.markdown.align.left",
+      "de": "Absatz linksbündig",
+      "en": "Align paragraph left"
+    },
+    {
+      "key": "admin.markdown.align.center",
+      "de": "Absatz zentrieren",
+      "en": "Center paragraph"
+    },
+    {
+      "key": "admin.markdown.align.right",
+      "de": "Absatz rechtsbündig",
+      "en": "Align paragraph right"
+    }
+  ]
+}

@@ -35,12 +35,20 @@ describe('Album Composer surface styling', () => {
       expect(() => validatePageDocument(doc(block), 'standard')).toThrow(/album blocks/);
     }
   });
-  it('rejects unsupported border values and design controls on ordinary blocks', () => {
+  it('preserves surface styling and font overrides on text blocks', () => {
+    const decorated = { ...surface, fontBody: 'open-sans', fontHeading: 'system-serif' };
+    const text = { id: 'text', type: 'text' as const,
+      styles: decorated, markdown: { de: 'Text', en: 'Text' } };
+    const validated = validatePageDocument(doc(text), 'album');
+    expect(validated.sections[0].rows[0].columns[0].blocks[0].styles).toEqual(decorated);
+  });
+  it('rejects unsupported borders and unsafe font identifiers', () => {
     const malformed = doc({ id: 'details', type: 'albumDetails', styles: {
       ...surface, border: { width: 14, style: 'solid', color: '#ffffff' },
     } });
     expect(() => validatePageDocument(malformed, 'album')).toThrow(/Invalid page document/);
     expect(() => validatePageDocument(doc({ id: 'text', type: 'text',
-      styles: surface, markdown: { de: 'Text', en: 'Text' } }), 'album')).toThrow(/surface controls/);
+      styles: { ...base, fontBody: 'url(javascript:bad)' },
+      markdown: { de: 'Text', en: 'Text' } }), 'album')).toThrow(/invalid text block font ID/);
   });
 });

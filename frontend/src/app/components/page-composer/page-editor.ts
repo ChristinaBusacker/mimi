@@ -658,6 +658,15 @@ export class PageEditor {
         delete node.styles.responsive[breakpoint].textColor;
     });
   }
+  protected setTextBlockFont(kind: 'fontBody' | 'fontHeading', event: Event): void {
+    const id = this.value(event);
+    if (id !== '' && !this.themeFonts.some((font) => font.id === id)) return;
+    this.changeSelected((node) => {
+      if (!('type' in node) || node.type !== 'text') return;
+      if (id) node.styles[kind] = id;
+      else delete node.styles[kind];
+    });
+  }
   protected setTextShadow(event: Event): void {
     const value = this.value(event);
     if (!['none', 'readability', 'strong'].includes(value)) return;
