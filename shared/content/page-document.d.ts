@@ -161,8 +161,25 @@ export interface PageRow extends PageNode {
 export interface PageSection extends PageNode {
   rows: PageRow[];
 }
+export type PageThemeSizeKey = 'body' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'small' | 'label';
+export type PageThemeColorKey = 'text' | 'heading' | 'link' | 'accent' | 'background';
+export type PageThemeSizes = Record<PageThemeSizeKey, number>;
+/** Values are validated; font IDs resolve via the frontend's editable font registry. */
+export interface PageTheme {
+  fontBody?: string;
+  fontHeading?: string;
+  fontAccent?: string;
+  colors?: Partial<Record<PageThemeColorKey, string>>;
+  sizes?: Partial<PageThemeSizes>;
+  responsive?: { tablet?: Partial<PageThemeSizes>; mobile?: Partial<PageThemeSizes> };
+  lineHeight?: number;
+  letterSpacing?: number;
+  contentMaxWidth?: number;
+  readingMaxWidth?: number;
+}
 export interface PageDocument extends PageNode {
   schemaVersion: 1;
+  theme?: PageTheme;
   sections: PageSection[];
 }
 export interface PagePublication {

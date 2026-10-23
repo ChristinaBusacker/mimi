@@ -41,6 +41,7 @@ import { MusicPlaybackService } from '../../core/music/music-playback.service';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import { ResponsiveImageService } from '../../core/assets/responsive-image.service';
 import { PAGE_STYLE_DEFAULTS, pageTextColorVars } from './page-style-defaults';
+import { pageThemeVars } from './page-theme';
 
 export type CanvasKind = 'page' | 'section' | 'row' | 'column' | 'block';
 export type CanvasMoveKind = 'section' | 'row' | 'block';
@@ -463,6 +464,18 @@ export class PageRenderer {
     return styles.designBackground?.kind === 'image' && styles.designBackground.parallax === true;
   }
 
+  protected documentStyleVars(): Record<string, string> {
+    const document = this.document();
+    const theme = document.theme;
+    const result = { ...this.styleVars(document.styles, true), ...pageThemeVars(theme) };
+    if (theme && !document.styles.textColor && theme.colors?.text)
+      result['--pc-text-color'] = theme.colors.text;
+    if (theme?.colors?.background && !document.styles.designBackground &&
+        !document.styles.backgroundColor && (!document.styles.background || document.styles.background === 'none'))
+      result['--pc-design-color'] = theme.colors.background;
+    return result;
+  }
+
   protected styleVars(styles: PageStyles, isPage = false): Record<string, string> {
     const result: Record<string, string> = {};
     if (styles.textShadow === 'readability')
@@ -483,7 +496,7 @@ export class PageRenderer {
       result['box-shadow'] = `${s.x}px ${s.y}px ${s.blur}px ${s.spread}px ${s.color}`;
     }
     // Heading overrides are local to the text block. Inherit its normal text color otherwise.
-    result['--pc-heading-color'] = styles.headingColor ?? 'inherit';
+    result['--pc-heading-color'] = styles.headingColor ?? 'var(--pc-theme-color-heading, inherit)';
     // A node's own design must not leak down via inherited CSS custom properties.
     result['--pc-design-color'] =
       styles.designBackground?.kind === 'color'

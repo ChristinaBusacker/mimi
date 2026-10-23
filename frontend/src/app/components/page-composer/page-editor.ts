@@ -43,6 +43,11 @@ import { insertPageItem, movePageItem } from './page-editor-operations';
 import { collectBookletColors } from './page-document-colors';
 import { pageComposerBlockKinds } from './page-composer-block-kinds';
 import { PAGE_STYLE_DEFAULTS, effectiveBlockTextColor } from './page-style-defaults';
+import type { PageTheme, PageThemeSizeKey, PageThemeColorKey } from '@shared/content/page-document';
+import {
+  PAGE_THEME_FONTS, PAGE_THEME_PRESETS, PAGE_THEME_SIZE_KEYS, PAGE_THEME_COLOR_KEYS,
+  defaultPageTheme, pageThemeWithDefaults, parsePageTheme,
+} from './page-theme';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
 type BlockKind = PageBlock['type'];
@@ -132,6 +137,12 @@ export class PageEditor {
   readonly album = input<AlbumBookletContext | null>(null);
   readonly document = input.required<PageDocument>();
   protected readonly bookletColors = computed(() => collectBookletColors(this.document()));
+  protected readonly themeFonts = PAGE_THEME_FONTS;
+  protected readonly themePresets = PAGE_THEME_PRESETS;
+  protected readonly themeSizeKeys = PAGE_THEME_SIZE_KEYS;
+  protected readonly themeColorKeys = PAGE_THEME_COLOR_KEYS;
+  protected readonly themeJson = signal('');
+  protected readonly themeJsonError = signal('');
   readonly assets = input<readonly Asset[]>([]);
   readonly coverAssetId = input<string | null>(null);
   protected readonly coverUrl = computed(() => {
@@ -1405,6 +1416,83 @@ export class PageEditor {
       element instanceof HTMLTextAreaElement
       ? element.value
       : '';
+  }
+
+  protected themeValue(): PageTheme {
+    return pageThemeWithDefaults(this.document().theme);
+  }
+  protected themeSize(key: PageThemeSizeKey): number {
+    const theme = this.themeValue();
+    return (this.breakpoint() === 'desktop'
+      ? theme.sizes?.[key]
+      : this.breakpoint() === 'tablet'
+        ? theme.responsive?.tablet?.[key] ?? theme.sizes?.[key]
+        : theme.responsive?.mobile?.[key] ?? theme.responsive?.tablet?.[key] ?? theme.sizes?.[key]) ?? 16;
+  }
+  private updateTheme(change: (theme: PageTheme) => void): void {
+    const theme = pageThemeWithDefaults(this.document().theme);
+    change(theme);
+    try {
+      const validated = parsePageTheme(theme);
+      this.change((doc) => { doc.theme = validated; });
+      this.themeJsonError.set('');
+    } catch (error) {
+      this.themeJsonError.set(error instanceof Error ? error.message : 'Invalid theme');
+    }
+  }
+  protected setThemeFont(field: 'fontBody' | 'fontHeading' | 'fontAccent', event: Event): void {
+    const id = this.value(event);
+    this.updateTheme((theme) => { theme[field] = id; });
+  }
+  protected setThemeColor(field: PageThemeColorKey, color: string): void {
+    this.updateTheme((theme) => { (theme.colors ??= {})[field] = color; });
+  }
+  protected setThemeSize(field: PageThemeSizeKey, event: Event): void {
+    const raw = this.value(event);
+    if (!raw.trim()) return;
+    const size = Number(raw);
+    const view = this.breakpoint();
+    this.updateTheme((theme) => {
+      if (view === 'desktop') (theme.sizes ??= {})[field] = size;
+      else (theme.responsive ??= {})[view] = { ...(theme.responsive?.[view] ?? {}), [field]: size };
+    });
+  }
+  protected setThemeNumber(field: 'lineHeight' | 'letterSpacing' | 'contentMaxWidth' | 'readingMaxWidth', event: Event): void {
+    const raw = this.value(event);
+    if (!raw.trim()) return;
+    this.updateTheme((theme) => { theme[field] = Number(raw); });
+  }
+  protected applyThemePreset(event: Event): void {
+    const preset = PAGE_THEME_PRESETS.find((item) => item.id === this.value(event));
+    if (!preset) return;
+    try {
+      const theme = parsePageTheme({ ...defaultPageTheme(), ...preset.overrides,
+        colors: { ...defaultPageTheme().colors, ...('colors' in preset.overrides ? preset.overrides.colors : {}) } });
+      this.change((doc) => { doc.theme = theme; });
+    } catch (error) {
+      this.themeJsonError.set(error instanceof Error ? error.message : 'Invalid preset');
+    }
+  }
+  protected openThemeJson(): void {
+    this.themeJson.set(JSON.stringify(this.themeValue(), null, 2));
+    this.themeJsonError.set('');
+    this.inspectorTab.set('advanced');
+  }
+  protected setThemeJsonDraft(event: Event): void {
+    this.themeJson.set(this.value(event));
+  }
+  protected applyThemeJson(): void {
+    try {
+      const theme = parsePageTheme(JSON.parse(this.themeJson()) as unknown);
+      this.change((doc) => { doc.theme = theme; });
+      this.themeJsonError.set('');
+    } catch (error) {
+      this.themeJsonError.set(error instanceof Error ? error.message : 'Invalid JSON');
+    }
+  }
+  protected removeTheme(): void {
+    this.change((doc) => { delete doc.theme; });
+    this.themeJsonError.set('');
   }
 
   private changeSelected(

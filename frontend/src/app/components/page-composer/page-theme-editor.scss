@@ -1,0 +1,16 @@
+.composer__theme {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgb(238 175 207 / 28%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 4%);
+  > h4 { margin: 0; }
+  label { display: grid; gap: 5px; font-size: 0.78rem; }
+  select, input, textarea { width: 100%; min-width: 0; }
+  textarea { min-height: 220px; font-family: ui-monospace, monospace; font-size: 0.76rem; }
+  .composer__theme-sizes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .composer__theme-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .composer__theme-error { color: #ffb2c8; overflow-wrap: anywhere; }
+}

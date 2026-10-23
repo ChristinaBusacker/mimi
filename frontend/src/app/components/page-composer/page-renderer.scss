@@ -1,6 +1,7 @@
 @use './composer-variables';
 @use './page-album-blocks';
 @use './page-carousel-blocks';
+@use './page-theme-renderer';
 @use 'mixins' as *;
 
 :host {

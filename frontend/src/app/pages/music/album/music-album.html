@@ -1,7 +1,7 @@
 @let albumData = data();
 @let album = albumData.album;
 
-<article class="booklet">
+<article class="booklet" [class.booklet--themed]="!!album.booklet?.theme" [ngStyle]="bookletThemeVars()">
   <div class="booklet__backdrop booklet-world" aria-hidden="true">
     @if (album.coverAssetId) {
       <img class="booklet-world__artwork" [src]="assetUrl(album.coverAssetId)" alt="" />

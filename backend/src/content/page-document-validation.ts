@@ -13,6 +13,9 @@ import type {
   PageStyles,
   LocalizedText,
   RowLayout,
+  PageTheme,
+  PageThemeSizes,
+  PageThemeSizeKey,
 } from '@shared/content/page-document';
 import { BadRequestException } from '@nestjs/common';
 
@@ -375,6 +378,62 @@ function section(value: unknown): PageSection {
   return { ...node(data, true), rows: list(data['rows'], 30).map(row) };
 }
 
+function validateTheme(value: unknown): PageTheme {
+  const data = record(value);
+  const allowed = ['fontBody', 'fontHeading', 'fontAccent', 'colors', 'sizes', 'responsive',
+    'lineHeight', 'letterSpacing', 'contentMaxWidth', 'readingMaxWidth'];
+  if (Object.keys(data).some((key) => !allowed.includes(key))) invalid('unknown theme property');
+  const theme: PageTheme = {};
+  for (const key of ['fontBody', 'fontHeading', 'fontAccent'] as const) {
+    if (data[key] === undefined) continue;
+    const value = data[key];
+    if (typeof value !== 'string' || !/^[a-z][a-z0-9-]{0,39}$/.test(value))
+      invalid('invalid font ID');
+    theme[key] = value;
+  }
+  const bounded = (value: unknown, min: number, max: number): number => {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value < min || value > max)
+      invalid('invalid theme number');
+    return value;
+  };
+  const sizeKeys = ['body', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'small', 'label'] as const;
+  const themeSizes = (value: unknown): Partial<PageThemeSizes> => {
+    const input = record(value);
+    const sizes: Partial<PageThemeSizes> = {};
+    for (const key of Object.keys(input)) {
+      if (!sizeKeys.includes(key as PageThemeSizeKey)) invalid('unknown theme size');
+      const min = key === 'h1' ? 16 : key.startsWith('h') ? 12 : 10;
+      const max = key === 'h1' ? 128 : key.startsWith('h') ? 100 : 40;
+      sizes[key as PageThemeSizeKey] = bounded(input[key], min, max);
+    }
+    return sizes;
+  };
+  if (data['sizes'] !== undefined) theme.sizes = themeSizes(data['sizes']);
+  if (data['responsive'] !== undefined) {
+    const input = record(data['responsive']);
+    if (Object.keys(input).some((key) => key !== 'tablet' && key !== 'mobile'))
+      invalid('unknown theme breakpoint');
+    theme.responsive = {};
+    if (input['tablet'] !== undefined) theme.responsive.tablet = themeSizes(input['tablet']);
+    if (input['mobile'] !== undefined) theme.responsive.mobile = themeSizes(input['mobile']);
+  }
+  if (data['colors'] !== undefined) {
+    const colors = record(data['colors']);
+    const keys = ['text', 'heading', 'link', 'accent', 'background'] as const;
+    if (Object.keys(colors).some((key) => !keys.includes(key as typeof keys[number])))
+      invalid('unknown theme color');
+    theme.colors = {};
+    for (const key of keys) if (colors[key] !== undefined) theme.colors[key] = surfaceColor(colors[key]);
+  }
+  for (const [key, min, max] of [
+    ['lineHeight', 1, 3], ['letterSpacing', -2, 12],
+    ['contentMaxWidth', 320, 2400], ['readingMaxWidth', 320, 1600],
+  ] as const) {
+    if (data[key] !== undefined) theme[key] = bounded(data[key], min, max);
+  }
+  return theme;
+}
+
 /** Canonicalize all input. No arbitrary CSS, URLs or HTML reach the public renderer. */
 export function validatePageDocument(
   value: unknown,
@@ -386,6 +445,7 @@ export function validatePageDocument(
   const result: PageDocument = {
     ...node(data),
     schemaVersion: 1,
+    ...(data['theme'] === undefined ? {} : { theme: validateTheme(data['theme']) }),
     sections: list(data['sections'], 30).map(section),
   };
   const ids = new Set<string>();

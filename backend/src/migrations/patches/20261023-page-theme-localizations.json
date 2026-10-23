@@ -1,0 +1,114 @@
+{
+  "localizations": [
+    {
+      "key": "page.theme.title",
+      "de": "Seitendesign",
+      "en": "Page theme"
+    },
+    {
+      "key": "page.theme.intro",
+      "de": "Schriftarten, Farben und Größen für die ganze Seite. Untergeordnete Blöcke dürfen Werte überschreiben.",
+      "en": "Fonts, colors and sizes for this page. Individual blocks can override them."
+    },
+    {
+      "key": "page.theme.preset",
+      "de": "Designvorlage",
+      "en": "Theme preset"
+    },
+    {
+      "key": "page.theme.fontBody",
+      "de": "Fließtext-Schrift",
+      "en": "Body font"
+    },
+    {
+      "key": "page.theme.fontHeading",
+      "de": "Überschriften-Schrift",
+      "en": "Heading font"
+    },
+    {
+      "key": "page.theme.fontAccent",
+      "de": "Akzentschrift",
+      "en": "Accent font"
+    },
+    {
+      "key": "page.theme.fontSizes",
+      "de": "Schriftgrößen (px)",
+      "en": "Font sizes (px)"
+    },
+    {
+      "key": "page.theme.text",
+      "de": "Textfarbe",
+      "en": "Text color"
+    },
+    {
+      "key": "page.theme.heading",
+      "de": "Überschriftenfarbe",
+      "en": "Heading color"
+    },
+    {
+      "key": "page.theme.link",
+      "de": "Linkfarbe",
+      "en": "Link color"
+    },
+    {
+      "key": "page.theme.accent",
+      "de": "Akzentfarbe",
+      "en": "Accent color"
+    },
+    {
+      "key": "page.theme.lineHeight",
+      "de": "Zeilenhöhe",
+      "en": "Line height"
+    },
+    {
+      "key": "page.theme.letterSpacing",
+      "de": "Buchstabenabstand (px)",
+      "en": "Letter spacing (px)"
+    },
+    {
+      "key": "page.theme.contentMaxWidth",
+      "de": "Maximale Inhaltsbreite (px)",
+      "en": "Maximum content width (px)"
+    },
+    {
+      "key": "page.theme.readingMaxWidth",
+      "de": "Maximale Lesebreite (px)",
+      "en": "Maximum reading width (px)"
+    },
+    {
+      "key": "page.theme.editJson",
+      "de": "Theme als JSON bearbeiten",
+      "en": "Edit theme as JSON"
+    },
+    {
+      "key": "page.theme.applyJson",
+      "de": "JSON anwenden",
+      "en": "Apply JSON"
+    },
+    {
+      "key": "page.theme.reset",
+      "de": "Theme entfernen (Standarddarstellung)",
+      "en": "Remove theme (default layout)"
+    },
+    {
+      "key": "page.theme.jsonHint",
+      "de": "Nur geprüfte Schrift-IDs und Styles werden übernommen.",
+      "en": "Only validated font IDs and styles will be applied."
+    },
+    {
+      "key": "page.theme.empty",
+      "de": "Noch kein eigenes Theme. Eine Vorlage auswählen oder Werte bearbeiten.",
+      "en": "No custom theme yet. Choose a preset or edit values."
+    },
+    {
+      "key": "page.theme.breakpointNote",
+      "de": "Größen gelten für die oben gewählte Vorschaugröße.",
+      "en": "Sizes apply to the selected preview breakpoint."
+    },
+    {
+      "key": "page.theme.background",
+      "de": "Seitenhintergrund",
+      "en": "Page background"
+    }
+  ]
+}

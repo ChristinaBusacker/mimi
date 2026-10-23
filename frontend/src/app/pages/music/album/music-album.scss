@@ -1,5 +1,32 @@
 @use 'mixins' as *;
 
+.booklet--themed {
+  color: var(--pc-theme-color-text);
+  font-family: var(--pc-theme-font-body);
+  font-size: var(--pc-theme-size-body);
+  line-height: var(--pc-theme-line-height);
+  letter-spacing: var(--pc-theme-letter-spacing);
+  background-color: var(--pc-theme-color-background, transparent);
+  .booklet__intro h1 {
+    color: var(--pc-theme-color-heading);
+    font-family: var(--pc-theme-font-heading);
+    font-size: var(--pc-theme-size-h1);
+  }
+  .booklet__intro .booklet__eyebrow {
+    color: var(--pc-theme-color-accent);
+    font-family: var(--pc-theme-font-accent);
+  }
+}
+@media (max-width: 900px) {
+  .booklet--themed { font-size: var(--pc-theme-tablet-size-body); }
+  .booklet--themed .booklet__intro h1 { font-size: var(--pc-theme-tablet-size-h1); }
+}
+@media (max-width: 580px) {
+  .booklet--themed { font-size: var(--pc-theme-mobile-size-body); }
+  .booklet--themed .booklet__intro h1 { font-size: var(--pc-theme-mobile-size-h1); }
+}
+
+
 :host {
   display: block;
   min-height: 100dvh;

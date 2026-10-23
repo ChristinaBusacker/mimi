@@ -1,0 +1,105 @@
+{
+  "fonts": [
+    {
+      "id": "open-sans",
+      "label": "Open Sans",
+      "css": "'Open Sans', sans-serif"
+    },
+    {
+      "id": "emilys-candy",
+      "label": "Emily's Candy",
+      "css": "'EmilysCandy', cursive"
+    },
+    {
+      "id": "momo-trust",
+      "label": "Momo Trust Display",
+      "css": "'MomoTrustDisplay', sans-serif"
+    },
+    {
+      "id": "more-sugar",
+      "label": "More Sugar",
+      "css": "'More Sugar', cursive"
+    },
+    {
+      "id": "sue-ellen",
+      "label": "Sue Ellen Francisco",
+      "css": "'Sue Ellen Francisco', cursive"
+    },
+    {
+      "id": "coiny",
+      "label": "Coiny",
+      "css": "'coiny-regular', sans-serif"
+    },
+    {
+      "id": "system-sans",
+      "label": "System Sans",
+      "css": "system-ui, sans-serif"
+    },
+    {
+      "id": "system-serif",
+      "label": "System Serif",
+      "css": "Georgia, serif"
+    }
+  ],
+  "defaults": {
+    "fontBody": "open-sans",
+    "fontHeading": "emilys-candy",
+    "fontAccent": "sue-ellen",
+    "colors": {
+      "text": "#ffffffff",
+      "heading": "#ffffffff",
+      "link": "#f1b4daff",
+      "accent": "#da8dbbff",
+      "background": "#00000000"
+    },
+    "sizes": {
+      "body": 16,
+      "h1": 48,
+      "h2": 42,
+      "h3": 28,
+      "h4": 20,
+      "h5": 18,
+      "h6": 13,
+      "small": 13,
+      "label": 12
+    },
+    "lineHeight": 1.65,
+    "letterSpacing": 0,
+    "contentMaxWidth": 1200,
+    "readingMaxWidth": 720
+  },
+  "presets": [
+    {
+      "id": "mimi",
+      "label": "Mimishow Standard",
+      "overrides": {}
+    },
+    {
+      "id": "editorial",
+      "label": "Dark Editorial",
+      "overrides": {
+        "fontHeading": "system-serif",
+        "colors": {
+          "text": "#f5eaf2ff",
+          "heading": "#ffe9f4ff",
+          "accent": "#f2a3ccff"
+        },
+        "lineHeight": 1.8
+      }
+    },
+    {
+      "id": "light",
+      "label": "Light Editorial",
+      "overrides": {
+        "fontHeading": "system-serif",
+        "colors": {
+          "text": "#32263cff",
+          "heading": "#22152fff",
+          "link": "#84305fff",
+          "accent": "#923c74ff",
+          "background": "#fff7faff"
+        }
+      }
+    }
+  ]
+}
