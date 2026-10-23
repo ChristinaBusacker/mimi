@@ -689,11 +689,20 @@
                      <div class="composer__accordion-content">
                        @for (field of ['backgroundColor','hoverBackgroundColor','textColor','borderColor']; track field) {
                          <div class="composer__control-color">
-                           <app-composer-color-picker [suggestedColors]="bookletColors()"
-                             [label]="('page.blocks.appearance.' + field | i18n | async) ?? field"
-                             [value]="controlColor(field)" (valueChange)="setControlColor($any(field), $event)" />
-                           <button type="button" class="composer__control-reset" (click)="resetControlColor($any(field))"
-                             [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"><app-icon name="rotate-ccw" /></button>
+                          @if (hasControlColor(field)) {
+                            <app-composer-color-picker [suggestedColors]="bookletColors()"
+                              [label]="('page.blocks.appearance.' + field | i18n | async) ?? field"
+                              [value]="controlColor(field)" (valueChange)="setControlColor($any(field), $event)" />
+                            <button type="button" class="composer__control-reset" (click)="resetControlColor($any(field))"
+                              [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"><app-icon name="rotate-ccw" /></button>
+                          } @else {
+                            <div class="composer__control-inherited">
+                              <span>{{ 'page.blocks.appearance.' + field | i18n | async }}: {{ 'page.blocks.styles.inherited' | i18n | async }}</span>
+                              <button type="button" class="composer__control-button" (click)="activateControlColor(field)">
+                                {{ 'page.blocks.appearance.override' | i18n | async }}
+                              </button>
+                            </div>
+                          }
                          </div>
                        }
                        <div class="composer__control-numbers">
@@ -753,13 +762,22 @@
                          <div class="composer__accordion-content">
                            @for (field of ['headerBackgroundColor','headerColor','backgroundColor','textColor','borderColor']; track field) {
                              <div class="composer__control-color">
-                               <app-composer-color-picker
-                                 [suggestedColors]="bookletColors()"
-                                 [label]="('page.blocks.appearance.' + field | i18n | async) ?? field"
-                                 [value]="controlColor(field, item.id)"
-                                 (valueChange)="setControlColor($any(field), $event, item.id)" />
-                               <button type="button" class="composer__control-reset" (click)="resetControlColor($any(field), item.id)"
-                                 [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"><app-icon name="rotate-ccw" /></button>
+                              @if (hasControlColor(field, item.id)) {
+                                <app-composer-color-picker
+                                  [suggestedColors]="bookletColors()"
+                                  [label]="('page.blocks.appearance.' + field | i18n | async) ?? field"
+                                  [value]="controlColor(field, item.id)"
+                                  (valueChange)="setControlColor($any(field), $event, item.id)" />
+                                <button type="button" class="composer__control-reset" (click)="resetControlColor($any(field), item.id)"
+                                  [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"><app-icon name="rotate-ccw" /></button>
+                              } @else {
+                                <div class="composer__control-inherited">
+                                  <span>{{ 'page.blocks.appearance.' + field | i18n | async }}: {{ 'page.blocks.styles.inherited' | i18n | async }}</span>
+                                  <button type="button" class="composer__control-button" (click)="activateControlColor(field, item.id)">
+                                    {{ 'page.blocks.appearance.override' | i18n | async }}
+                                  </button>
+                                </div>
+                              }
                              </div>
                            }
                            <div class="composer__control-numbers">

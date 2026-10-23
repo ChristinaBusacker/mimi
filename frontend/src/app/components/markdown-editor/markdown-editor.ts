@@ -34,8 +34,10 @@ import type { ImageDisplayMode } from './asset-image.extension';
 import { MarkdownTextColor } from './text-color.extension';
 import { MarkdownStrike, MarkdownUnderline } from './text-decoration-marks.extension';
 import { YoutubeEmbed } from './youtube-embed.extension';
+import { MimiInlineControls } from './mimi-inline-controls.extension';
+import { MIMI_INLINE_ICONS, readMimiInline, serializeMimiInline, type MimiInlineControl } from '@shared/content/mimi-inline-controls';
 
-type EditorDialog = 'link' | 'image' | 'youtube';
+type EditorDialog = 'link' | 'image' | 'youtube' | 'inlineIcon' | 'inlineButton';
 
 type EditableMedia = 'image' | 'youtube';
 
@@ -91,6 +93,14 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
   protected readonly dialogType = signal<EditorDialog | null>(null);
   protected readonly editingMedia = signal<EditableMedia | null>(null);
   protected readonly editingLink = signal(false);
+  protected readonly editingInline = signal(false);
+  protected readonly inlineIcons = MIMI_INLINE_ICONS;
+  protected readonly inlineIconName = signal('heart');
+  protected readonly inlineIconSize = signal(24);
+  protected readonly inlineIconColor = signal('#ed9fcaff');
+  protected readonly inlineButtonLabel = signal('Mehr erfahren');
+  protected readonly inlineButtonHref = signal('/music');
+  protected readonly inlineButtonVariant = signal<'primary' | 'secondary' | 'outline'>('primary');
   protected readonly linkUrl = signal('');
   protected readonly imageAssetId = signal('');
   protected readonly imageAlt = signal('');
@@ -152,6 +162,7 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
         MarkdownTextColor,
         AssetImage,
         YoutubeEmbed,
+        MimiInlineControls,
         Markdown.configure({
           markedOptions: {
             breaks: false,
@@ -392,6 +403,11 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
     return this.selectedNodeAttributes(this.editor(), 'youtubeEmbed') !== null;
   }
 
+  protected isInlineSelected(kind: 'icon' | 'button'): boolean {
+    this.revision();
+    return this.selectedNodeAttributes(this.editor(), 'mimiInlineControl')?.['kind'] === kind;
+  }
+
   protected isCodeActive(): boolean {
     this.revision();
     return this.editor()?.isActive('code') ?? false;
@@ -459,6 +475,8 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
       if (!this.loadSelectedImage()) {
         this.resetImageForm();
       }
+    } else if (dialog === 'inlineIcon' || dialog === 'inlineButton') {
+      this.editingInline.set(this.loadSelectedInline(dialog === 'inlineIcon' ? 'icon' : 'button'));
     } else if (!this.loadSelectedYoutube()) {
       this.resetYoutubeForm();
     }
@@ -492,8 +510,46 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
     this.dialogType.set(null);
     this.editingMedia.set(null);
     this.editingLink.set(false);
+    this.editingInline.set(false);
     this.errorKey.set(null);
     this.storedSelection = null;
+  }
+
+  protected setInlineValue(field: 'name' | 'size' | 'color' | 'label' | 'href' | 'variant', event: Event): void {
+    const value = this.readControlValue(event);
+    if (field === 'name') this.inlineIconName.set(value);
+    else if (field === 'size') this.inlineIconSize.set(Number(value));
+    else if (field === 'color') this.inlineIconColor.set(/^#[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() + 'ff' : value);
+    else if (field === 'label') this.inlineButtonLabel.set(value);
+    else if (field === 'href') this.inlineButtonHref.set(value);
+    else if (value === 'primary' || value === 'secondary' || value === 'outline') this.inlineButtonVariant.set(value);
+  }
+
+  protected saveInline(): void {
+    const kind = this.dialogType();
+    const editor = this.editor();
+    if (!editor || (kind !== 'inlineIcon' && kind !== 'inlineButton')) return;
+    const proposed: MimiInlineControl = kind === 'inlineIcon'
+      ? { kind: 'icon', name: this.inlineIconName(), size: this.inlineIconSize(), color: this.inlineIconColor() }
+      : { kind: 'button', label: this.inlineButtonLabel().trim(), href: this.inlineButtonHref().trim(), variant: this.inlineButtonVariant() };
+    // Round-trip through the same parser used by public and backend renderers.
+    const value = readMimiInline(serializeMimiInline(proposed))?.widget;
+    if (!value) { this.errorKey.set('admin.markdown.inlineInvalid'); return; }
+    this.restoreSelection(editor);
+    if (this.editingInline() && this.selectedNodeAttributes(editor, 'mimiInlineControl'))
+      editor.chain().focus().updateAttributes('mimiInlineControl', value).run();
+    else editor.chain().focus().insertContent({ type: 'mimiInlineControl', attrs: value }).run();
+    this.closeDialog();
+  }
+
+  protected removeInline(): void {
+    const editor = this.editor();
+    if (!editor) return;
+    this.restoreSelection(editor);
+    if (this.selectedNodeAttributes(editor, 'mimiInlineControl')) {
+      editor.chain().focus().deleteSelection().run();
+      this.closeDialog();
+    }
   }
 
   protected setLinkUrl(event: Event): void {
@@ -808,6 +864,22 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
     return true;
   }
 
+  private loadSelectedInline(kind: 'icon' | 'button'): boolean {
+    const attrs = this.selectedNodeAttributes(this.editor(), 'mimiInlineControl');
+    if (attrs?.['kind'] !== kind) return false;
+    if (kind === 'icon') {
+      if (typeof attrs['name'] === 'string') this.inlineIconName.set(attrs['name']);
+      if (typeof attrs['size'] === 'number') this.inlineIconSize.set(attrs['size']);
+      if (typeof attrs['color'] === 'string') this.inlineIconColor.set(attrs['color']);
+    } else {
+      if (typeof attrs['label'] === 'string') this.inlineButtonLabel.set(attrs['label']);
+      if (typeof attrs['href'] === 'string') this.inlineButtonHref.set(attrs['href']);
+      if (attrs['variant'] === 'primary' || attrs['variant'] === 'secondary' || attrs['variant'] === 'outline')
+        this.inlineButtonVariant.set(attrs['variant']);
+    }
+    return true;
+  }
+
   private loadSelectedYoutube(): boolean {
     const attrs = this.selectedNodeAttributes(this.editor(), 'youtubeEmbed');
 
@@ -825,7 +897,7 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
 
   private selectedNodeAttributes(
     editor: Editor | null,
-    nodeName: 'assetImage' | 'youtubeEmbed',
+    nodeName: 'assetImage' | 'youtubeEmbed' | 'mimiInlineControl',
   ): Record<string, unknown> | null {
     if (!editor) {
       return null;

@@ -1410,31 +1410,45 @@ export class PageEditor {
   }
 
   protected readonly controlShadows = ['none', 'soft', 'card', 'floating', 'glow'] as const;
-  protected controlColor(field: string, id?: string): string {
+  private controlAppearance(field: string, id?: string): Record<string, unknown> | undefined {
     const block = this.selectedBlock();
-    if (!block || (block.type !== 'button' && block.type !== 'accordion')) return '#00000000';
-    const appearance =
-      block.type === 'button'
-        ? block.appearance
-        : block.items.find((item) => item.id === id)?.appearance;
-    const value = (appearance as unknown as Record<string, unknown> | undefined)?.[field];
-    return typeof value === 'string' ? value : '#00000000';
+    if (!block || (block.type !== 'button' && block.type !== 'accordion')) return undefined;
+    const appearance = block.type === 'button'
+      ? block.appearance : block.items.find((item) => item.id === id)?.appearance;
+    return appearance as Record<string, unknown> | undefined;
+  }
+  protected hasControlColor(field: string, id?: string): boolean {
+    return typeof this.controlAppearance(field, id)?.[field] === 'string';
+  }
+  /** Values are only displayed after an explicit override, never as fake inherited values. */
+  protected controlColor(field: string, id?: string): string {
+    const value = this.controlAppearance(field, id)?.[field];
+    return typeof value === 'string' ? value : this.controlSuggestedColor(field, id);
+  }
+  protected controlSuggestedColor(field: string, id?: string): string {
+    const block = this.selectedBlock();
+    if (field === 'textColor' || field === 'headerColor') return '#fff5faff';
+    if (field === 'borderColor') return '#d89ac0ff';
+    if (field === 'hoverBackgroundColor') return '#a85c8eff';
+    if (field === 'headerBackgroundColor') return '#4b3553ff';
+    if (block?.type === 'accordion' && id) return '#33243dff';
+    if (block?.type === 'button' && block.variant === 'secondary') return '#53354dff';
+    return '#87476fff';
+  }
+  protected activateControlColor(field: string, id?: string): void {
+    this.setControlColor(field as 'backgroundColor', this.controlSuggestedColor(field, id), id ?? null);
   }
   protected controlNumber(field: string, id?: string): number {
     const block = this.selectedBlock();
-    if (!block || (block.type !== 'button' && block.type !== 'accordion')) return 0;
-    const appearance =
-      block.type === 'button'
-        ? block.appearance
-        : block.items.find((item) => item.id === id)?.appearance;
-    const value = (appearance as unknown as Record<string, unknown> | undefined)?.[field];
-    return typeof value === 'number'
-      ? value
-      : field === 'radius'
-        ? 10
-        : field === 'fontSize'
-          ? 16
-          : 0;
+    const value = this.controlAppearance(field, id)?.[field];
+    if (typeof value === 'number') return value;
+    if (field === 'radius') return 10;
+    if (field === 'borderWidth') return 1;
+    const size = block?.type === 'button' ? block.size : 'medium';
+    if (field === 'fontSize') return size === 'small' ? 14 : size === 'large' ? 18 : 16;
+    if (field === 'paddingX') return size === 'small' ? 13 : size === 'large' ? 27 : 20;
+    if (field === 'paddingY') return size === 'small' ? 6 : size === 'large' ? 13 : 10;
+    return 0;
   }
   private updateAppearance(
     id: string | null,

@@ -31,6 +31,7 @@ import type { SafeHtml } from '@angular/platform-browser';
 import MarkdownIt from 'markdown-it';
 import sanitizeHtml from 'sanitize-html';
 import { installMimiTextColor, parseMimiMediaTitle } from '@shared/content/mimi-markdown-rendering';
+import { installMimiInlineControls } from '@shared/content/mimi-inline-controls';
 import { Icon } from '../icon/icon';
 import { Carousel } from '../carousel/carousel';
 import { CarouselSlide } from '../carousel/carousel-slide.directive';
@@ -112,6 +113,7 @@ export class PageRenderer {
     afterNextRender(() => this.initParallax());
     afterEveryRender(() => this.scheduleParallax?.());
     installMimiTextColor(this.markdown);
+    installMimiInlineControls(this.markdown);
     this.markdown.renderer.rules['image'] = (tokens, index): string => {
       const token = tokens[index];
       const match = ASSET.exec(token.attrGet('src')?.toString() ?? '');
@@ -392,13 +394,19 @@ export class PageRenderer {
     // Only MarkdownIt-generated markup reaches this whitelist. Never trust raw editor HTML.
     const generated = this.markdown.render(content);
     const clean = sanitizeHtml(generated, {
-      allowedTags: [...sanitizeHtml.defaults.allowedTags, 'img', 'span'],
+      parser: { lowerCaseAttributeNames: false },
+      allowedTags: [...sanitizeHtml.defaults.allowedTags, 'img', 'span', 'svg', 'path'],
       allowedAttributes: {
         ...sanitizeHtml.defaults.allowedAttributes,
+        a: ['href', 'title', 'class', 'target', 'rel'],
         img: ['src', 'srcset', 'sizes', 'alt', 'loading', 'class', 'style'],
+        svg: ['class', 'viewBox', 'width', 'height', 'style', 'role', 'aria-label'],
+        path: ['d', 'fill'],
         span: ['style'],
       },
       allowedClasses: {
+        a: ['mimi-inline-button', 'mimi-inline-button--primary', 'mimi-inline-button--secondary', 'mimi-inline-button--outline'],
+        svg: ['mimi-inline-icon'],
         img: [
           'content-media',
           'media-left',
@@ -415,6 +423,7 @@ export class PageRenderer {
       },
       allowedStyles: {
         span: { color: [/^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/i] },
+        svg: { color: [/^#[a-f0-9]{8}$/i] },
         img: {
           width: [/^(?:100|[1-9]\d?)%$/],
           'max-width': [/^100%$/],

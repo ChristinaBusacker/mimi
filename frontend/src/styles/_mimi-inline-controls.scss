@@ -1,0 +1,26 @@
+/* Also applies to server-rendered album, blog and track Markdown. */
+.mimi-inline-icon { display: inline-block; vertical-align: -0.17em; fill: currentColor; max-width: 100%; }
+.mimi-inline-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 2.2em; padding: .35em .95em; margin: 0 .13em;
+  border: 1px solid #d89ac0; border-radius: .65em;
+  background: #87476f; color: #fff5fa; font-weight: 700;
+  text-decoration: none; line-height: 1.35; vertical-align: middle;
+  transition: background 150ms ease;
+}
+.mimi-inline-button:hover { background: #a85c8e; color: #fff; }
+.mimi-inline-button:focus-visible { outline: 2px solid #ffd2e7; outline-offset: 3px; }
+.mimi-inline-button--secondary { background: #53354d; border-color: #c68ba9; }
+.mimi-inline-button--outline { background: transparent; color: inherit; border-color: currentColor; }
+.mimi-inline-button--outline:hover { background: #c68ba933; color: inherit; }
+/* Tiptap atoms behave like editable images, not plain pasted text. */
+.markdown-editor__inline-widget {
+  display: inline-flex; align-items: center; vertical-align: middle;
+  max-width: 100%; margin: 2px 3px; padding: 2px;
+  border: 1px dashed #ba8da8; border-radius: 6px;
+  cursor: pointer; user-select: none;
+}
+.markdown-editor__inline-widget.ProseMirror-selectednode {
+  outline: 2px solid #f4afd3; outline-offset: 2px;
+  background: #c886ac22;
+}

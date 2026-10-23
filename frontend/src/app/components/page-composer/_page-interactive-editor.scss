@@ -10,6 +10,8 @@
 .composer__control-button--danger { border-color: #bd7798; background: #522b43; }
 .composer__control-button--add { width: 100%; background: #704565; }
 .composer__control-color { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; align-items: end; }
+.composer__control-inherited { display: grid; gap: 7px; font-size: .85rem; opacity: .9; }
+.composer__control-inherited .composer__control-button { justify-self: start; }
 .composer__control-reset { display: grid; place-items: center; min-width: 34px; min-height: 34px; padding: 6px;
   border: 1px solid #825d83; border-radius: 8px; background: #453046; cursor: pointer; }
 .composer__control-reset app-icon { width: 18px; fill: #fff0f8; }

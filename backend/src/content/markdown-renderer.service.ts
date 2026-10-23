@@ -3,6 +3,7 @@ import type {
   ContentMediaSize,
 } from '@shared/content/content-media';
 import { installMimiTextColor, parseMimiMediaTitle, MIMI_MEDIA_TITLE } from './mimi-markdown-rendering';
+import { installMimiInlineControls } from './mimi-inline-controls';
 
 import { Injectable } from '@nestjs/common';
 import MarkdownIt from 'markdown-it';
@@ -44,6 +45,7 @@ export class MarkdownRendererService {
   constructor() {
     this.configureUnderline();
     installMimiTextColor(this.markdown);
+    installMimiInlineControls(this.markdown);
     this.configureAssetImages();
     this.configureYouTubeBlocks();
   }
@@ -86,12 +88,20 @@ export class MarkdownRendererService {
         'source',
         'div',
         'iframe',
+        'svg',
+        'path',
       ],
+      parser: { lowerCaseAttributeNames: false },
       allowedAttributes: {
         a: [
           'href',
           'title',
+          'class',
+          'target',
+          'rel',
         ],
+        svg: ['class', 'viewBox', 'width', 'height', 'style', 'role', 'aria-label'],
+        path: ['d', 'fill'],
         img: [
           'src',
           'alt',
@@ -117,12 +127,15 @@ export class MarkdownRendererService {
       },
       allowedStyles: {
         span: { color: [/^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/i] },
+        svg: { color: [/^#[a-f0-9]{8}$/i] },
         picture: {
           width: [/^(?:100|[1-9]\d?)%$/],
           'max-width': [/^100%$/],
         },
       },
       allowedClasses: {
+        a: ['mimi-inline-button', 'mimi-inline-button--primary', 'mimi-inline-button--secondary', 'mimi-inline-button--outline'],
+        svg: ['mimi-inline-icon'],
         picture: [
           'content-media',
           'media-left',

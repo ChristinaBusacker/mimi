@@ -125,6 +125,8 @@
   h5,
   h6 {
     color: var(--pc-heading-color, inherit);
+    padding: 0;
+    margin: 0;
   }
   h5 {
     font-size: 1.1em;

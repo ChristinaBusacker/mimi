@@ -160,6 +160,14 @@
     >
       <app-icon name="youtube" class="white" />
     </button>
+    <button type="button" [disabled]="isDisabled()"
+      [class.active]="dialogType() === 'inlineIcon' || isInlineSelected('icon')"
+      [attr.aria-label]="'admin.markdown.inlineIcon' | i18n | async"
+      (click)="openDialog('inlineIcon')"><app-icon name="heart" class="white" /></button>
+    <button type="button" [disabled]="isDisabled()"
+      [class.active]="dialogType() === 'inlineButton' || isInlineSelected('button')"
+      [attr.aria-label]="'admin.markdown.inlineButton' | i18n | async"
+      (click)="openDialog('inlineButton')"><app-icon name="link" class="white" /></button>
 
     <span class="spacer"></span>
 
@@ -203,6 +211,8 @@
             @case ('youtube') {
               {{ 'admin.markdown.youtubeDialogTitle' | i18n | async }}
             }
+            @case ('inlineIcon') { {{ 'admin.markdown.inlineIconTitle' | i18n | async }} }
+            @case ('inlineButton') { {{ 'admin.markdown.inlineButtonTitle' | i18n | async }} }
           }
         </h2>
 
@@ -406,6 +416,46 @@
           <button type="button" (click)="closeDialog()">
             {{ 'admin.markdown.close' | i18n | async }}
           </button>
+        </div>
+      }
+
+      @if (dialogType() === 'inlineIcon') {
+        <label>{{ 'admin.markdown.inlineIconName' | i18n | async }}
+          <select [value]="inlineIconName()" (change)="setInlineValue('name', $event)">
+            @for (name of inlineIcons; track name) { <option [value]="name">{{ name }}</option> }
+          </select>
+        </label>
+        <label>{{ 'admin.markdown.inlineSize' | i18n | async }}
+          <input type="number" min="12" max="96" [value]="inlineIconSize()" (input)="setInlineValue('size', $event)" />
+        </label>
+        <label>{{ 'admin.markdown.inlineColor' | i18n | async }}
+          <input type="color" [value]="inlineIconColor().slice(0,7)"
+            (input)="setInlineValue('color', $event)" />
+        </label>
+        <div class="dialog-actions">
+          <button type="button" class="primary" (click)="saveInline()">{{ 'admin.markdown.inlineSave' | i18n | async }}</button>
+          @if (editingInline()) { <button type="button" (click)="removeInline()">{{ 'admin.markdown.removeFromContent' | i18n | async }}</button> }
+          <button type="button" (click)="closeDialog()">{{ 'admin.markdown.close' | i18n | async }}</button>
+        </div>
+      }
+      @if (dialogType() === 'inlineButton') {
+        <label>{{ 'admin.markdown.inlineLabel' | i18n | async }}
+          <input type="text" maxlength="160" [value]="inlineButtonLabel()" (input)="setInlineValue('label', $event)" />
+        </label>
+        <label>{{ 'admin.markdown.inlineDestination' | i18n | async }}
+          <input type="text" maxlength="800" [value]="inlineButtonHref()" (input)="setInlineValue('href', $event)" />
+        </label>
+        <label>{{ 'admin.markdown.inlineVariant' | i18n | async }}
+          <select [value]="inlineButtonVariant()" (change)="setInlineValue('variant', $event)">
+            @for (variant of ['primary', 'secondary', 'outline']; track variant) {
+              <option [value]="variant">{{ 'page.blocks.button.' + variant | i18n | async }}</option>
+            }
+          </select>
+        </label>
+        <div class="dialog-actions">
+          <button type="button" class="primary" (click)="saveInline()">{{ 'admin.markdown.inlineSave' | i18n | async }}</button>
+          @if (editingInline()) { <button type="button" (click)="removeInline()">{{ 'admin.markdown.removeFromContent' | i18n | async }}</button> }
+          <button type="button" (click)="closeDialog()">{{ 'admin.markdown.close' | i18n | async }}</button>
         </div>
       }
 

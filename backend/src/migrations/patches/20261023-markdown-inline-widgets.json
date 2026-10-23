@@ -1,0 +1,119 @@
+{
+  "localizations": [
+    {
+      "key": "admin.markdown.inlineIcon",
+      "de": "Icon einfügen",
+      "en": "Insert icon"
+    },
+    {
+      "key": "admin.markdown.inlineButton",
+      "de": "Button einfügen",
+      "en": "Insert button"
+    },
+    {
+      "key": "admin.markdown.inlineIconTitle",
+      "de": "Inline-Icon bearbeiten",
+      "en": "Edit inline icon"
+    },
+    {
+      "key": "admin.markdown.inlineButtonTitle",
+      "de": "Inline-Button bearbeiten",
+      "en": "Edit inline button"
+    },
+    {
+      "key": "admin.markdown.inlineIconName",
+      "de": "Symbol",
+      "en": "Icon"
+    },
+    {
+      "key": "admin.markdown.inlineSize",
+      "de": "Größe (px)",
+      "en": "Size (px)"
+    },
+    {
+      "key": "admin.markdown.inlineColor",
+      "de": "Icon-Farbe",
+      "en": "Icon color"
+    },
+    {
+      "key": "admin.markdown.inlineLabel",
+      "de": "Button-Text",
+      "en": "Button text"
+    },
+    {
+      "key": "admin.markdown.inlineDestination",
+      "de": "Ziel (interner Pfad oder HTTPS)",
+      "en": "Destination (internal path or HTTPS)"
+    },
+    {
+      "key": "admin.markdown.inlineVariant",
+      "de": "Button-Stil",
+      "en": "Button style"
+    },
+    {
+      "key": "admin.markdown.inlineInvalid",
+      "de": "Bitte gültige Einstellungen und eine sichere Ziel-URL eingeben.",
+      "en": "Enter valid settings and a secure destination URL."
+    },
+    {
+      "key": "admin.markdown.inlineSave",
+      "de": "Einfügen / Aktualisieren",
+      "en": "Insert / update"
+    },
+    {
+      "key": "page.blocks.styles.inherited",
+      "de": "Standard / geerbt",
+      "en": "Default / inherited"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    },
+    {
+      "key": "page.blocks.appearance.override",
+      "de": "Farbe überschreiben",
+      "en": "Override color"
+    }
+  ]
+}
