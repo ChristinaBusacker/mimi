@@ -1,0 +1,12 @@
+{
+  "localizations": [
+    { "key": "music.player.v2.shuffle", "de": "Zufällige Reihenfolge", "en": "Shuffle" },
+    { "key": "music.player.v2.repeat.off", "de": "Wiederholung aus", "en": "Repeat off" },
+    { "key": "music.player.v2.repeat.all", "de": "Alle Titel wiederholen", "en": "Repeat all" },
+    { "key": "music.player.v2.repeat.one", "de": "Aktuellen Titel wiederholen", "en": "Repeat current track" },
+    { "key": "music.player.v2.queue", "de": "Warteschlange", "en": "Queue" },
+    { "key": "music.player.v2.info", "de": "Informationen zum Song", "en": "Track information" },
+    { "key": "music.player.v2.close", "de": "Fenster schließen", "en": "Close panel" },
+    { "key": "music.player.v2.mobileExpand", "de": "Weitere Player-Steuerung aufklappen oder schließen", "en": "Expand or collapse player controls" }
+  ]
+}

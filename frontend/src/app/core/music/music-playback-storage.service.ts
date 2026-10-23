@@ -7,6 +7,8 @@ export interface SavedMusicPlayback {
   positionSeconds: number;
   volume: number;
   queueTrackIds?: string[];
+  shuffleEnabled?: boolean;
+  repeatMode?: 'off' | 'all' | 'one';
 }
 
 const STORAGE_KEY = 'music.playback.v1';
@@ -49,6 +51,9 @@ export class MusicPlaybackStorageService {
       positionSeconds: item['positionSeconds'],
       volume: item['volume'],
       ...(queueTrackIds ? { queueTrackIds } : {}),
+      ...(typeof item['shuffleEnabled'] === 'boolean' ? { shuffleEnabled: item['shuffleEnabled'] } : {}),
+      ...(['off', 'all', 'one'].includes(String(item['repeatMode']))
+        ? { repeatMode: item['repeatMode'] as 'off' | 'all' | 'one' } : {}),
     };
   }
 

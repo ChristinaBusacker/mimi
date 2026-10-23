@@ -44,6 +44,16 @@ describe('MusicPlaybackStorageService', () => {
     expect(service.read()).toEqual(stored);
   });
 
+  it('restores shuffle and repeat without rejecting older saved states', () => {
+    stored = { trackId: 'track-1', positionSeconds: 3, volume: 0.4,
+      shuffleEnabled: true, repeatMode: 'one' };
+    expect(service.read()?.shuffleEnabled).toBe(true);
+    expect(service.read()?.repeatMode).toBe('one');
+    stored = { trackId: 'track-1', positionSeconds: 3, volume: 0.4,
+      shuffleEnabled: 'yes', repeatMode: 'strange' };
+    expect(service.read()).toEqual({ trackId: 'track-1', positionSeconds: 3, volume: 0.4 });
+  });
+
   it('saves the last selected track and its progress', () => {
     const value = { trackId: 'track-2', positionSeconds: 45, volume: 0.5 };
     service.save(value);

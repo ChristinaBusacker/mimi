@@ -1,5 +1,7 @@
 @use 'mixins' as *;
 @use './music-library-player-extras';
+// The root-level player owns playback, volume and progress on every route.
+.player .now-playing .time-control, .player .now-playing .external, .player .now-playing .volume { display: none !important; }
 
 :host {
   display: block;

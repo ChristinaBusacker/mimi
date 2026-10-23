@@ -7,7 +7,7 @@ import { Background } from './components/background/background';
 import { BookletNavigation } from './components/booklet-navigation/booklet-navigation';
 import { ConsentBanner } from './components/consent-banner/consent-banner';
 import { Footer } from './components/footer/footer';
-import { GlobalMusicPlayer } from './components/global-music-player/global-music-player';
+import { GlobalMusicPlayer } from './components/global-music-player-v2/global-music-player-v2';
 import { Header } from './components/header/header';
 import { Lightbox } from './components/lightbox/lightbox';
 import { PwaUpdateBanner } from './components/pwa-update-banner/pwa-update-banner';

@@ -13,9 +13,17 @@
     z-index: 99;
   }
 
-  // The floating transport must never obscure the final page controls.
+  // Reserve space for the fixed global transport, including mobile safe areas.
   &:has(app-global-music-player.is-visible:not(.is-collapsed)) {
-    padding-bottom: 110px;
+    padding-bottom: calc(105px + env(safe-area-inset-bottom));
+  }
+  @media (max-width: 820px) {
+    &:has(app-global-music-player.is-visible:not(.is-collapsed)) {
+      padding-bottom: calc(74px + env(safe-area-inset-bottom));
+    }
+    &:has(app-global-music-player.is-visible.is-expanded) {
+      padding-bottom: calc(196px + env(safe-area-inset-bottom));
+    }
   }
 
   @include compact-layout {

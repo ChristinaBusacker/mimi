@@ -32,7 +32,17 @@ export class MusicPlaybackService {
   readonly currentTime = signal(this.saved?.positionSeconds ?? 0);
   readonly volume = signal(this.saved?.volume ?? 0.8);
   readonly fullPlayerCount = signal(0);
-
+  readonly shuffle = signal(this.saved?.shuffleEnabled ?? false);
+  readonly repeat = signal<'off' | 'all' | 'one'>(this.saved?.repeatMode ?? 'off');
+  private readonly shuffledIds = signal<readonly string[]>([]);
+  readonly orderedQueue = computed(() => {
+    const tracks = this.queue();
+    if (!this.shuffle()) return tracks;
+    const byId = new Map(tracks.map((track) => [track.id, track]));
+    const ids = this.shuffledIds();
+    return [...ids.map((id) => byId.get(id)).filter((item): item is MusicTrackListItem => !!item),
+      ...tracks.filter((item) => !ids.includes(item.id))];
+  });
   readonly previousTrack = computed(() => this.adjacent(-1));
   readonly nextTrack = computed(() => this.adjacent(1));
 
@@ -87,6 +97,7 @@ export class MusicPlaybackService {
 
     const playable = (sourceQueue ?? [track]).filter((item) => item.previewAssetId !== null);
     this.queue.set(playable.some((item) => item.id === track.id) ? playable : [track]);
+    this.makeShuffleOrder(track.id);
     this.pendingPosition = null;
     this.selectTrack(track, 0);
     await this.resume();
@@ -133,6 +144,26 @@ export class MusicPlaybackService {
     this.pendingPosition = null;
     this.selectTrack(track, 0);
     await this.resume();
+  }
+
+  toggleShuffle(): void {
+    this.shuffle.update((enabled) => !enabled);
+    if (this.shuffle()) this.makeShuffleOrder(this.activeTrack()?.id);
+    this.persist();
+  }
+
+  cycleRepeat(): void {
+    this.repeat.update((mode) => mode === 'off' ? 'all' : mode === 'all' ? 'one' : 'off');
+    this.persist();
+  }
+
+  private makeShuffleOrder(activeId?: string): void {
+    const ids = this.queue().map((item) => item.id).filter((id) => id !== activeId);
+    for (let i = ids.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [ids[i], ids[j]] = [ids[j], ids[i]];
+    }
+    this.shuffledIds.set(activeId ? [activeId, ...ids] : ids);
   }
 
   setVolume(value: number): void {
@@ -184,6 +215,7 @@ export class MusicPlaybackService {
       this.queue.set(savedQueue.some((item) => item.id === track.id)
         ? savedQueue
         : data.tracks.filter((item) => item.previewAssetId !== null));
+      if (this.shuffle()) this.makeShuffleOrder(track.id);
       this.activeTrack.set(track);
       this.currentTime.set(saved.positionSeconds);
       this.pendingPosition = saved.positionSeconds;
@@ -212,9 +244,13 @@ export class MusicPlaybackService {
   private adjacent(direction: -1 | 1): MusicTrackListItem | null {
     const active = this.activeTrack();
     if (!active) return null;
-    const tracks = this.queue();
+    const tracks = this.orderedQueue();
     const index = tracks.findIndex((item) => item.id === active.id);
-    return tracks[index + direction] ?? null;
+    if (index < 0) return null;
+    const nextIndex = index + direction;
+    if (nextIndex >= 0 && nextIndex < tracks.length) return tracks[nextIndex];
+    return this.repeat() === 'all' && tracks.length > 1
+      ? tracks[(nextIndex + tracks.length) % tracks.length] : null;
   }
 
   private ensureAudio(): HTMLAudioElement {
@@ -248,7 +284,10 @@ export class MusicPlaybackService {
       }
     });
     audio.addEventListener('ended', () => {
-      if (this.nextTrack()) {
+      if (this.repeat() === 'one') {
+        this.seekTo(0);
+        void this.resume();
+      } else if (this.nextTrack()) {
         void this.playAdjacent(1);
       } else {
         audio.currentTime = 0;
@@ -271,6 +310,8 @@ export class MusicPlaybackService {
       positionSeconds: this.currentTime(),
       volume: this.volume(),
       queueTrackIds: this.queue().map((item) => item.id),
+      shuffleEnabled: this.shuffle(),
+      repeatMode: this.repeat(),
     });
     this.lastSavedAt = Date.now();
     this.updateMediaPosition();
