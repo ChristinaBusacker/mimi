@@ -1,0 +1,144 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.block.button",
+      "de": "Button",
+      "en": "Button"
+    },
+    {
+      "key": "page.editor.block.accordion",
+      "de": "Akkordeon",
+      "en": "Accordion"
+    },
+    {
+      "key": "page.editor.block.icon",
+      "de": "Icon",
+      "en": "Icon"
+    },
+    {
+      "key": "page.blocks.button.label",
+      "de": "Beschriftung",
+      "en": "Label"
+    },
+    {
+      "key": "page.blocks.button.destination",
+      "de": "Ziel-URL (intern oder HTTPS)",
+      "en": "Destination (internal or HTTPS)"
+    },
+    {
+      "key": "page.blocks.button.invalidUrl",
+      "de": "Ungültiger Link: nur interne Pfade oder HTTPS-Adressen erlaubt.",
+      "en": "Invalid link: only internal paths or HTTPS addresses allowed."
+    },
+    {
+      "key": "page.blocks.button.variant",
+      "de": "Variante",
+      "en": "Variant"
+    },
+    {
+      "key": "page.blocks.button.size",
+      "de": "Größe",
+      "en": "Size"
+    },
+    {
+      "key": "page.blocks.button.primary",
+      "de": "Primär",
+      "en": "Primary"
+    },
+    {
+      "key": "page.blocks.button.secondary",
+      "de": "Sekundär",
+      "en": "Secondary"
+    },
+    {
+      "key": "page.blocks.button.outline",
+      "de": "Kontur",
+      "en": "Outline"
+    },
+    {
+      "key": "page.blocks.button.small",
+      "de": "Klein",
+      "en": "Small"
+    },
+    {
+      "key": "page.blocks.button.medium",
+      "de": "Mittel",
+      "en": "Medium"
+    },
+    {
+      "key": "page.blocks.button.large",
+      "de": "Groß",
+      "en": "Large"
+    },
+    {
+      "key": "page.blocks.button.icon",
+      "de": "Icon (optional)",
+      "en": "Icon (optional)"
+    },
+    {
+      "key": "page.blocks.button.iconPosition",
+      "de": "Icon-Position",
+      "en": "Icon position"
+    },
+    {
+      "key": "page.blocks.button.start",
+      "de": "Links",
+      "en": "Left"
+    },
+    {
+      "key": "page.blocks.button.end",
+      "de": "Rechts",
+      "en": "Right"
+    },
+    {
+      "key": "page.blocks.button.newTab",
+      "de": "In neuem Tab öffnen",
+      "en": "Open in new tab"
+    },
+    {
+      "key": "page.blocks.accordion.multiple",
+      "de": "Mehrere Einträge gleichzeitig öffnen",
+      "en": "Allow multiple open items"
+    },
+    {
+      "key": "page.blocks.accordion.title",
+      "de": "Titel",
+      "en": "Title"
+    },
+    {
+      "key": "page.blocks.accordion.body",
+      "de": "Inhalt (Markdown)",
+      "en": "Content (Markdown)"
+    },
+    {
+      "key": "page.blocks.accordion.defaultOpen",
+      "de": "Standardmäßig geöffnet",
+      "en": "Open by default"
+    },
+    {
+      "key": "page.blocks.accordion.add",
+      "de": "Eintrag hinzufügen",
+      "en": "Add item"
+    },
+    {
+      "key": "page.blocks.accordion.empty",
+      "de": "Noch keine Einträge.",
+      "en": "No items yet."
+    },
+    {
+      "key": "page.blocks.icon.select",
+      "de": "Icon auswählen",
+      "en": "Choose icon"
+    },
+    {
+      "key": "page.blocks.icon.size",
+      "de": "Icon-Größe in Pixeln",
+      "en": "Icon size in pixels"
+    },
+    {
+      "key": "page.blocks.icon.ariaLabel",
+      "de": "Beschreibung für Screenreader (optional)",
+      "en": "Description for screen readers (optional)"
+    }
+  ]
+}

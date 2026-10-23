@@ -26,6 +26,7 @@ import {
   signal,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
 import type { SafeHtml } from '@angular/platform-browser';
 import MarkdownIt from 'markdown-it';
 import sanitizeHtml from 'sanitize-html';
@@ -89,6 +90,7 @@ const ASSET = /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
     Icon,
     Carousel,
     CarouselSlide,
+    RouterLink,
     PageInlineMarkdown,
     AlbumTrackList,
   ],
@@ -172,6 +174,10 @@ export class PageRenderer {
   }
   protected externalLink(href: string): boolean {
     return /^https?:\/\//i.test(href);
+  }
+  protected composerActionClick(event: MouseEvent): void {
+    // Inside the editor or its preview, clicking must never navigate away.
+    if (this.studio() || this.editable()) event.preventDefault();
   }
 
   protected openGalleryItem(

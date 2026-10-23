@@ -125,6 +125,35 @@ export interface PageSpacerBlock extends PageNode {
   type: 'spacer';
   height: number;
 }
+/** A localized navigation action. Destinations are internal paths or HTTPS URLs. */
+export interface PageButtonBlock extends PageNode {
+  type: 'button';
+  label: LocalizedText;
+  href: string;
+  variant: 'primary' | 'secondary' | 'outline';
+  size: 'small' | 'medium' | 'large';
+  icon?: string | null;
+  iconPosition?: 'start' | 'end';
+  newTab?: boolean;
+}
+export interface PageAccordionItem {
+  id: string;
+  title: LocalizedText;
+  /** Markdown, rendered through the existing sanitized content pipeline. */
+  body: LocalizedText;
+  defaultOpen?: boolean;
+}
+export interface PageAccordionBlock extends PageNode {
+  type: 'accordion';
+  items: PageAccordionItem[];
+  allowMultiple?: boolean;
+}
+export interface PageIconBlock extends PageNode {
+  type: 'icon';
+  name: string;
+  size: number;
+  ariaLabel: LocalizedText;
+}
 /** Uses the album context, not a second copy of the album metadata. */
 export interface PageAlbumDetailsBlock extends PageNode {
   type: 'albumDetails';
@@ -147,7 +176,7 @@ export interface PageAlbumCreditsBlock extends PageNode {
   entries: PageAlbumCredit[];
 }
 export type PageBlock = PageTextBlock | PageImageBlock | PageGalleryBlock | PageSpacerBlock
-  | PageSliderBlock | PageCardCarouselBlock
+  | PageSliderBlock | PageCardCarouselBlock | PageButtonBlock | PageAccordionBlock | PageIconBlock
   | PageAlbumDetailsBlock | PageAlbumTracksBlock | PageAlbumCreditsBlock;
 export interface PageColumn extends PageNode {
   /** Vertical position of the blocks in a stretched column. Defaults to start. */

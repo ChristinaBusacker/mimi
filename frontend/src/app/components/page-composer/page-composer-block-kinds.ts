@@ -3,7 +3,7 @@ import type { PageBlock, PageComposerProfile } from '@shared/content/page-docume
 type BlockKind = PageBlock['type'];
 
 const STANDARD_BLOCK_KINDS: readonly BlockKind[] = [
-  'text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer',
+  'text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer', 'button', 'accordion', 'icon',
 ];
 const ALBUM_BLOCK_KINDS: readonly BlockKind[] = [
   ...STANDARD_BLOCK_KINDS, 'albumDetails', 'albumTracks', 'albumCredits',

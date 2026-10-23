@@ -42,6 +42,7 @@ import type { PageStyleValues } from '@shared/content/page-document';
 import { insertPageItem, movePageItem } from './page-editor-operations';
 import { collectBookletColors } from './page-document-colors';
 import { pageComposerBlockKinds } from './page-composer-block-kinds';
+import { PAGE_COMPOSER_ICONS, validComposerDestination } from './page-interactive-blocks';
 import { PAGE_STYLE_DEFAULTS, effectiveBlockTextColor } from './page-style-defaults';
 import type { PageTheme, PageThemeSizeKey, PageThemeColorKey } from '@shared/content/page-document';
 import {
@@ -104,6 +105,13 @@ const makeBlock = (kind: BlockKind): PageBlock => {
       return { ...base, type: kind, items: [] };
     case 'spacer':
       return { ...base, type: kind, height: 48 };
+    case 'button':
+      return { ...base, type: kind, label: { de: 'Mehr erfahren', en: 'Learn more' },
+        href: '', variant: 'primary', size: 'medium', icon: null, iconPosition: 'start', newTab: false };
+    case 'accordion':
+      return { ...base, type: kind, items: [], allowMultiple: false };
+    case 'icon':
+      return { ...base, type: kind, name: 'heart', size: 48, ariaLabel: { de: '', en: '' } };
     case 'albumDetails':
       return { ...base, type: kind };
     case 'albumTracks':
@@ -795,6 +803,8 @@ export class PageEditor {
   }
 
   protected readonly layouts = PAGE_ROW_OPTIONS;
+  protected readonly composerIcons = PAGE_COMPOSER_ICONS;
+  protected readonly linkError = signal(false);
   protected readonly locale = signal<'de' | 'en'>('de');
   protected readonly preview = signal(false);
   protected readonly outlineOpen = signal(false);
@@ -993,6 +1003,12 @@ export class PageEditor {
         return 'layout-template';
       case 'spacer':
         return 'spacer';
+      case 'button':
+        return 'link';
+      case 'accordion':
+        return 'list-checked';
+      case 'icon':
+        return 'heart';
       case 'albumDetails':
         return 'music';
       case 'albumTracks':
@@ -1244,6 +1260,147 @@ export class PageEditor {
       }
     });
   }
+  protected interactiveTextColor(): string {
+    const block = this.selectedBlock();
+    return block ? effectiveBlockTextColor(this.document(), block.id, this.breakpoint()) : '#ffffffff';
+  }
+  protected interactiveBackgroundColor(): string {
+    const design = this.selectedBlock()?.styles.designBackground;
+    return design?.kind === 'color' ? design.color : '#00000000';
+  }
+  protected setInteractiveTextColor(color: string): void {
+    if (!/^#[0-9a-f]{8}$/i.test(color)) return;
+    const breakpoint = this.breakpoint();
+    this.changeSelected((node) => {
+      if (!('type' in node) || !['button', 'accordion', 'icon'].includes(node.type)) return;
+      const target: PageStyleValues = breakpoint === 'desktop' ? node.styles
+        : ((node.styles.responsive ??= {})[breakpoint] ??= {});
+      target.textColor = color.toLowerCase();
+    });
+  }
+  protected setInteractiveBackgroundColor(color: string): void {
+    if (!/^#[0-9a-f]{8}$/i.test(color)) return;
+    this.changeSelected((node) => {
+      if (!('type' in node) || !['button', 'accordion', 'icon'].includes(node.type)) return;
+      node.styles.background = 'none';
+      node.styles.designBackground = { kind: 'color', color: color.toLowerCase() };
+    });
+  }
+  protected interactiveRadius(): number {
+    const styles = this.selectedBlock()?.styles;
+    if (!styles) return 0;
+    const breakpoint = this.breakpoint();
+    return breakpoint === 'desktop' ? (styles.radius ?? 0)
+      : (styles.responsive?.[breakpoint]?.radius ?? styles.radius ?? 0);
+  }
+  protected setInteractiveRadius(event: Event): void {
+    const radius = Number(this.value(event));
+    if (!Number.isInteger(radius) || radius < 0 || radius > 48) return;
+    const breakpoint = this.breakpoint();
+    this.changeSelected((node) => {
+      if (!('type' in node) || !['button', 'accordion', 'icon'].includes(node.type)) return;
+      const target: PageStyleValues = breakpoint === 'desktop' ? node.styles
+        : ((node.styles.responsive ??= {})[breakpoint] ??= {});
+      target.radius = radius;
+      if (breakpoint === 'desktop') delete node.styles.corners;
+    });
+  }
+  protected editInteractiveText(field: 'label' | 'ariaLabel', event: Event): void {
+    const text = this.value(event).slice(0, 160);
+    this.changeSelected((node) => {
+      if (!('type' in node)) return;
+      if (node.type === 'button' && field === 'label') node.label[this.locale()] = text;
+      if (node.type === 'icon' && field === 'ariaLabel') node.ariaLabel[this.locale()] = text;
+    });
+  }
+  protected editButtonLink(event: Event): void {
+    const href = this.value(event).trim();
+    this.linkError.set(!validComposerDestination(href));
+    if (this.linkError()) return;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'button') node.href = href;
+    });
+  }
+  protected editButtonOption(field: 'variant' | 'size' | 'icon' | 'iconPosition', event: Event): void {
+    const value = this.value(event);
+    this.changeSelected((node) => {
+      if (!('type' in node) || node.type !== 'button') return;
+      if (field === 'variant' && ['primary', 'secondary', 'outline'].includes(value))
+        node.variant = value as typeof node.variant;
+      if (field === 'size' && ['small', 'medium', 'large'].includes(value))
+        node.size = value as typeof node.size;
+      if (field === 'icon' && (!value || PAGE_COMPOSER_ICONS.some((icon) => icon === value)))
+        node.icon = value || null;
+      if (field === 'iconPosition' && ['start', 'end'].includes(value))
+        node.iconPosition = value as 'start' | 'end';
+    });
+  }
+  protected editButtonNewTab(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'button') node.newTab = checked;
+    });
+  }
+  protected addAccordionItem(): void {
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'accordion' && node.items.length < 20)
+        node.items.push({ id: crypto.randomUUID(), title: { de: '', en: '' },
+          body: { de: '', en: '' }, defaultOpen: false });
+    });
+  }
+  protected editAccordionItem(index: number, field: 'title' | 'body', event: Event): void {
+    const value = this.value(event).slice(0, field === 'title' ? 160 : 4000);
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'accordion' && node.items[index])
+        node.items[index][field][this.locale()] = value;
+    });
+  }
+  protected toggleAccordionOpen(index: number, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'accordion' && node.items[index]) {
+        if (checked && !node.allowMultiple) node.items.forEach((item) => item.defaultOpen = false);
+        node.items[index].defaultOpen = checked;
+      }
+    });
+  }
+  protected setAccordionMultiple(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'accordion') {
+        node.allowMultiple = checked;
+        if (!checked) node.items.forEach((item, index) => {
+          if (index > 0) item.defaultOpen = false;
+        });
+      }
+    });
+  }
+  protected moveAccordionItem(index: number, offset: number): void {
+    this.changeSelected((node) => {
+      if (!('type' in node) || node.type !== 'accordion') return;
+      const target = index + offset;
+      if (target < 0 || target >= node.items.length) return;
+      [node.items[index], node.items[target]] = [node.items[target], node.items[index]];
+    });
+  }
+  protected removeAccordionItem(index: number): void {
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'accordion') node.items.splice(index, 1);
+    });
+  }
+  protected editIconName(name: string): void {
+    if (!PAGE_COMPOSER_ICONS.some((icon) => icon === name)) return;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'icon') node.name = name;
+    });
+  }
+  protected editIconSize(event: Event): void {
+    const size = Number(this.value(event));
+    if (!Number.isInteger(size) || size < 16 || size > 128) return;
+    this.changeSelected((node) => {
+      if ('type' in node && node.type === 'icon') node.size = size;
+    });
+  }
   protected addCard(): void {
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'cardCarousel' && node.items.length < 24) {
@@ -1375,7 +1532,7 @@ export class PageEditor {
           if ('blocks' in value) value.blocks.forEach(freshen);
           if (
             'type' in value &&
-            (value.type === 'gallery' || value.type === 'slider' || value.type === 'cardCarousel')
+            (value.type === 'gallery' || value.type === 'slider' || value.type === 'cardCarousel' || value.type === 'accordion')
           )
             for (const item of value.items) item.id = crypto.randomUUID();
         };

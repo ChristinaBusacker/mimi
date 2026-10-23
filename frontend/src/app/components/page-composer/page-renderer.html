@@ -511,6 +511,49 @@
                           </app-carousel>
                         }
                       }
+                      @case ('button') {
+                        <div class="page-document__action-wrap">
+                          <a class="page-document__action" [class.page-document__action--secondary]="block.variant === 'secondary'"
+                            [class.page-document__action--outline]="block.variant === 'outline'"
+                            [class.page-document__action--small]="block.size === 'small'"
+                            [class.page-document__action--large]="block.size === 'large'"
+                            [routerLink]="block.href.startsWith('/') && !studio() && !editable() ? block.href : null"
+                            [attr.href]="block.href && !block.href.startsWith('/') ? block.href : null"
+                            [attr.target]="block.href && block.newTab ? '_blank' : null"
+                            [attr.rel]="block.href && block.newTab ? 'noopener noreferrer' : null"
+                            (click)="composerActionClick($event)">
+                            @if (block.icon && (block.iconPosition ?? 'start') === 'start') {
+                              <app-icon [name]="block.icon" aria-hidden="true" />
+                            }
+                            <span>{{ block.label[locale()] || block.label.de }}</span>
+                            @if (block.icon && block.iconPosition === 'end') {
+                              <app-icon [name]="block.icon" aria-hidden="true" />
+                            }
+                          </a>
+                        </div>
+                      }
+                      @case ('accordion') {
+                        <div class="page-document__accordions">
+                          @for (item of block.items; track item.id) {
+                            <details class="page-document__accordion-item"
+                              [attr.name]="block.allowMultiple ? null : block.id"
+                              [attr.open]="item.defaultOpen ? '' : null">
+                              <summary>{{ item.title[locale()] || item.title.de }}</summary>
+                              <div class="page-document__markdown"
+                                [innerHTML]="html(item.body[locale()] || item.body.de)"></div>
+                            </details>
+                          } @empty {
+                            @if (studio()) { <p class="page-document__empty">{{ 'page.blocks.accordion.empty' | i18n | async }}</p> }
+                          }
+                        </div>
+                      }
+                      @case ('icon') {
+                        <div class="page-document__icon" [attr.role]="block.ariaLabel[locale()] || block.ariaLabel.de ? 'img' : null"
+                          [attr.aria-label]="block.ariaLabel[locale()] || block.ariaLabel.de || null"
+                          [attr.aria-hidden]="block.ariaLabel[locale()] || block.ariaLabel.de ? null : 'true'">
+                          <app-icon [name]="block.name" [style.width.px]="block.size" aria-hidden="true" />
+                        </div>
+                      }
                       @case ('spacer') {
                         <div aria-hidden="true" [style.height.px]="block.height"></div>
                       }

@@ -5,7 +5,7 @@ describe('Page composer block palette', () => {
 
   it('keeps album-specific elements out of normal pages', () => {
     const kinds = pageComposerBlockKinds('standard', false);
-    expect(kinds).toEqual(['text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer']);
+    expect(kinds).toEqual(['text', 'image', 'gallery', 'slider', 'cardCarousel', 'spacer', 'button', 'accordion', 'icon']);
     for (const kind of albumBlocks) expect(kinds).not.toContain(kind);
   });
 

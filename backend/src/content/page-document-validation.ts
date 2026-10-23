@@ -278,10 +278,32 @@ function albumPalette(value: unknown, details = false): PageAlbumPalette {
   }
   return result;
 }
+const COMPOSER_ICONS = new Set([
+  'arrow', 'arrow2', 'check', 'circle', 'community', 'deezer', 'folder', 'gallery',
+  'heart', 'images', 'link', 'list-checked', 'list-numbered', 'lock', 'lock-open',
+  'music', 'news', 'palette', 'play', 'plus', 'quote', 'search', 'spotify', 'twitch', 'youtube',
+]);
+function composerHref(value: unknown): string {
+  const href = string(value, 800);
+  if (!href) return href;
+  if (/[<>]/.test(href) || href.includes(String.fromCharCode(92)) || Array.from(href).some((ch) => /\s/.test(ch))) invalid('invalid button destination');
+  if (href.startsWith('/') && !href.startsWith('//')) return href;
+  try {
+    const url = new URL(href);
+    if (url.protocol === 'https:' && url.hostname && !url.username && !url.password) return href;
+  } catch { /* invalid URL */ }
+  return invalid('invalid button destination');
+}
+function composerIcon(value: unknown): string {
+  const name = string(value, 40);
+  if (!COMPOSER_ICONS.has(name)) invalid('invalid composer icon');
+  return name;
+}
 function block(value: unknown): PageBlock {
   const data = record(value);
-  const albumBlock = data['type'] === 'albumDetails' || data['type'] === 'albumTracks' || data['type'] === 'albumCredits';
-  const base = node(data, albumBlock, data['type'] === 'text');
+  const decoratedBlock = ['albumDetails', 'albumTracks', 'albumCredits', 'button', 'accordion', 'icon']
+    .includes(String(data['type']));
+  const base = node(data, decoratedBlock, data['type'] === 'text');
   switch (data['type']) {
     case 'text':
       return { ...base, type: 'text', markdown: localized(data['markdown']) };
@@ -329,6 +351,49 @@ function block(value: unknown): PageBlock {
       return { ...base, type: 'cardCarousel', items: list(data['items'], 24).map(cardItem) };
     case 'spacer':
       return { ...base, type: 'spacer', height: number(data['height'], 240, 32) };
+    case 'button': {
+      const variant = data['variant'];
+      const size = data['size'];
+      const placement = data['iconPosition'];
+      if (!['primary', 'secondary', 'outline'].includes(String(variant))) invalid('invalid button variant');
+      if (!['small', 'medium', 'large'].includes(String(size))) invalid('invalid button size');
+      if (placement !== undefined && !['start', 'end'].includes(String(placement)))
+        invalid('invalid button icon position');
+      if (data['newTab'] !== undefined && typeof data['newTab'] !== 'boolean') invalid('invalid new-tab flag');
+      const label = localized(data['label']);
+      if (label.de.length > 160 || label.en.length > 160) invalid('button label too long');
+      return { ...base, type: 'button', label, href: composerHref(data['href']),
+        variant: variant as 'primary' | 'secondary' | 'outline', size: size as 'small' | 'medium' | 'large',
+        ...(data['icon'] === undefined ? {} : { icon: data['icon'] === null ? null : composerIcon(data['icon']) }),
+        ...(placement === undefined ? {} : { iconPosition: placement as 'start' | 'end' }),
+        ...(data['newTab'] === undefined ? {} : { newTab: data['newTab'] as boolean }) };
+    }
+    case 'accordion': {
+      if (data['allowMultiple'] !== undefined && typeof data['allowMultiple'] !== 'boolean')
+        invalid('invalid accordion multiple setting');
+      const items = list(data['items'], 20).map((value) => {
+        const entry = record(value);
+        if (entry['defaultOpen'] !== undefined && typeof entry['defaultOpen'] !== 'boolean')
+          invalid('invalid accordion open flag');
+        const title = localized(entry['title']);
+        const body = localized(entry['body']);
+        if (title.de.length > 160 || title.en.length > 160 ||
+            body.de.length > 4000 || body.en.length > 4000) invalid('accordion content too long');
+        return { id: id(entry['id']), title, body,
+          ...(entry['defaultOpen'] === undefined ? {} : { defaultOpen: entry['defaultOpen'] as boolean }) };
+      });
+      if (!data['allowMultiple'] && items.filter((entry) => entry.defaultOpen).length > 1)
+        invalid('single-open accordion has multiple defaults');
+      return { ...base, type: 'accordion', items,
+        ...(data['allowMultiple'] === undefined ? {} : { allowMultiple: data['allowMultiple'] as boolean }) };
+    }
+    case 'icon': {
+      const ariaLabel = localized(data['ariaLabel']);
+      if (ariaLabel.de.length > 160 || ariaLabel.en.length > 160) invalid('icon label too long');
+      const size = number(data['size'], 128, 48);
+      if (!Number.isInteger(size) || size < 16) invalid('invalid icon size');
+      return { ...base, type: 'icon', name: composerIcon(data['name']), size, ariaLabel };
+    }
     case 'albumDetails':
       return { ...base, type: 'albumDetails',
         ...(data['palette'] === undefined ? {} : { palette: albumPalette(data['palette'], true) }) };
@@ -467,7 +532,7 @@ export function validatePageDocument(
           if (profile === 'standard' &&
               (b.type === 'albumDetails' || b.type === 'albumTracks' || b.type === 'albumCredits'))
             invalid('album blocks are not allowed on standard pages');
-          if (b.type === 'gallery' || b.type === 'slider' || b.type === 'cardCarousel')
+          if (b.type === 'gallery' || b.type === 'slider' || b.type === 'cardCarousel' || b.type === 'accordion')
             for (const item of b.items) add(item.id);
           if (b.type === 'albumTracks' && ++albumPlayers > 1)
             invalid('only one album track player is allowed');

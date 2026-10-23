@@ -648,6 +648,85 @@
                     {{ 'page.editor.card.add' | i18n | async }}
                   </button>
                 }
+                @case ('button') {
+                  <h3>{{ 'page.editor.block.button' | i18n | async }}</h3>
+                  <label>{{ 'page.blocks.button.label' | i18n | async }}</label>
+                  <input maxlength="160" [value]="block.label[locale()]" (input)="editInteractiveText('label', $event)" />
+                  <label>{{ 'page.blocks.button.destination' | i18n | async }}</label>
+                  <input maxlength="800" placeholder="/music oder https://..."
+                    [value]="block.href" (change)="editButtonLink($event)" />
+                  @if (linkError()) {
+                    <p role="alert" class="composer__hint">{{ 'page.blocks.button.invalidUrl' | i18n | async }}</p>
+                  }
+                  <label>{{ 'page.blocks.button.variant' | i18n | async }}</label>
+                  <select [value]="block.variant" (change)="editButtonOption('variant', $event)">
+                    @for (kind of ['primary', 'secondary', 'outline']; track kind) {
+                      <option [value]="kind">{{ 'page.blocks.button.' + kind | i18n | async }}</option>
+                    }
+                  </select>
+                  <label>{{ 'page.blocks.button.size' | i18n | async }}</label>
+                  <select [value]="block.size" (change)="editButtonOption('size', $event)">
+                    @for (size of ['small', 'medium', 'large']; track size) {
+                      <option [value]="size">{{ 'page.blocks.button.' + size | i18n | async }}</option>
+                    }
+                  </select>
+                  <label>{{ 'page.blocks.button.icon' | i18n | async }}</label>
+                  <select [value]="block.icon ?? ''" (change)="editButtonOption('icon', $event)">
+                    <option value="">{{ 'page.editor.design.none' | i18n | async }}</option>
+                    @for (icon of composerIcons; track icon) {
+                      <option [value]="icon">{{ icon }}</option>
+                    }
+                  </select>
+                  <label>{{ 'page.blocks.button.iconPosition' | i18n | async }}</label>
+                  <select [value]="block.iconPosition ?? 'start'" (change)="editButtonOption('iconPosition', $event)">
+                    <option value="start">{{ 'page.blocks.button.start' | i18n | async }}</option>
+                    <option value="end">{{ 'page.blocks.button.end' | i18n | async }}</option>
+                  </select>
+                  <label class="composer__album-toggle"><input type="checkbox" [checked]="block.newTab ?? false"
+                    (change)="editButtonNewTab($event)" />{{ 'page.blocks.button.newTab' | i18n | async }}</label>
+                }
+                @case ('accordion') {
+                  <h3>{{ 'page.editor.block.accordion' | i18n | async }}</h3>
+                  <label class="composer__album-toggle"><input type="checkbox" [checked]="block.allowMultiple ?? false"
+                    (change)="setAccordionMultiple($event)" />{{ 'page.blocks.accordion.multiple' | i18n | async }}</label>
+                  @for (item of block.items; track item.id; let index = $index) {
+                    <fieldset class="composer__accordion-item-editor">
+                      <legend>{{ index + 1 }}</legend>
+                      <label>{{ 'page.blocks.accordion.title' | i18n | async }}</label>
+                      <input maxlength="160" [value]="item.title[locale()]"
+                        (change)="editAccordionItem(index, 'title', $event)" />
+                      <label>{{ 'page.blocks.accordion.body' | i18n | async }}</label>
+                      <textarea rows="5" maxlength="4000" [value]="item.body[locale()]"
+                        (change)="editAccordionItem(index, 'body', $event)"></textarea>
+                      <label class="composer__album-toggle"><input type="checkbox" [checked]="item.defaultOpen ?? false"
+                        (change)="toggleAccordionOpen(index, $event)" />{{ 'page.blocks.accordion.defaultOpen' | i18n | async }}</label>
+                      <div class="composer__accordion-item-actions">
+                        <button type="button" [disabled]="$first" (click)="moveAccordionItem(index, -1)"
+                          [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
+                        <button type="button" [disabled]="$last" (click)="moveAccordionItem(index, 1)"
+                          [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
+                        <button type="button" (click)="removeAccordionItem(index)">{{ 'page.editor.remove' | i18n | async }}</button>
+                      </div>
+                    </fieldset>
+                  }
+                  <button type="button" [disabled]="block.items.length >= 20"
+                    (click)="addAccordionItem()">{{ 'page.blocks.accordion.add' | i18n | async }}</button>
+                }
+                @case ('icon') {
+                  <h3>{{ 'page.editor.block.icon' | i18n | async }}</h3>
+                  <div class="composer__icon-picker" role="group" [attr.aria-label]="'page.blocks.icon.select' | i18n | async">
+                    @for (icon of composerIcons; track icon) {
+                      <button type="button" [class.is-active]="block.name === icon"
+                        [attr.aria-pressed]="block.name === icon" [attr.aria-label]="icon"
+                        (click)="editIconName(icon)"><app-icon [name]="icon" /></button>
+                    }
+                  </div>
+                  <label>{{ 'page.blocks.icon.size' | i18n | async }}</label>
+                  <input type="number" min="16" max="128" [value]="block.size" (change)="editIconSize($event)" />
+                  <label>{{ 'page.blocks.icon.ariaLabel' | i18n | async }}</label>
+                  <input maxlength="160" [value]="block.ariaLabel[locale()]"
+                    (change)="editInteractiveText('ariaLabel', $event)" />
+                }
                 @case ('albumDetails') {
                   <p class="composer__hint">{{ 'page.editor.album.autoDetails' | i18n | async }}</p>
                 }
@@ -1342,6 +1421,49 @@
                       </option>
                     </select>
                   </label>
+                </div>
+              </details>
+            } @else if (
+              selectedBlock()?.type === 'button' || selectedBlock()?.type === 'accordion' ||
+              selectedBlock()?.type === 'icon'
+            ) {
+              <details class="composer__accordion" open>
+                <summary><app-icon name="paintbrush" class="white" />{{ 'page.editor.studio.presets' | i18n | async }}</summary>
+                <div class="composer__accordion-content composer__surface-presets">
+                  @for (preset of ['none', 'soft', 'card', 'floating', 'glow']; track preset) {
+                    <button type="button" (click)="applySurfacePreset($any(preset))">
+                      {{ (preset === 'none' ? 'page.editor.design.none' : 'page.editor.surface.' + preset) | i18n | async }}
+                    </button>
+                  }
+                </div>
+                <div class="composer__accordion-content">
+                  <app-composer-color-picker [suggestedColors]="bookletColors()"
+                    [label]="('page.editor.studio.textColor' | i18n | async) ?? ''"
+                    [value]="interactiveTextColor()" (valueChange)="setInteractiveTextColor($event)" />
+                  <app-composer-color-picker [suggestedColors]="bookletColors()"
+                    [label]="('page.blocks.styles.background' | i18n | async) ?? ''"
+                    [value]="interactiveBackgroundColor()" (valueChange)="setInteractiveBackgroundColor($event)" />
+                  <label>{{ 'page.blocks.styles.radius' | i18n | async }}
+                    <input type="number" min="0" max="48"
+                      [value]="interactiveRadius()" (change)="setInteractiveRadius($event)" />
+                  </label>
+                  <label class="composer__surface-toggle">
+                    <input type="checkbox" [checked]="!!selectedBlock()?.styles?.border"
+                      (change)="setBorderEnabled($event)" />{{ 'page.editor.surface.border' | i18n | async }}
+                  </label>
+                  @if (selectedBlock()?.styles?.border; as border) {
+                    <label>{{ 'page.editor.surface.width' | i18n | async }}
+                      <input type="number" min="0" max="12" [value]="border.width" (change)="setBorderNumber($event)" />
+                    </label>
+                    <select [value]="border.style" (change)="setBorderStyle($event)">
+                      <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
+                      <option value="dashed">{{ 'page.editor.surface.dashed' | i18n | async }}</option>
+                      <option value="dotted">{{ 'page.editor.surface.dotted' | i18n | async }}</option>
+                    </select>
+                    <app-composer-color-picker [suggestedColors]="bookletColors()"
+                      [label]="('page.editor.design.color' | i18n | async) ?? ''"
+                      [value]="border.color" (valueChange)="setBorderColor($event)" />
+                  }
                 </div>
               </details>
             } @else {

@@ -1,0 +1,11 @@
+.composer__accordion-item-editor { display: grid; gap: 10px; border: 1px solid #745077;
+  border-radius: 10px; padding: 12px; margin: 8px 0; min-width: 0; }
+.composer__accordion-item-editor input, .composer__accordion-item-editor textarea { width: 100%; min-width: 0; }
+.composer__accordion-item-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.composer__accordion-item-actions app-icon { width: 16px; }
+.composer__icon-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px;
+  max-height: 240px; overflow: auto; }
+.composer__icon-picker button { display: grid; place-items: center; min-height: 38px; border: 1px solid #705076;
+  background: #35243a; border-radius: 8px; fill: #fff; cursor: pointer; }
+.composer__icon-picker button.is-active { border-color: #e8add0; background: #744766; }
+.composer__icon-picker app-icon { width: 20px; }

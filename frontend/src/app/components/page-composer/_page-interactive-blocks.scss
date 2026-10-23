@@ -1,0 +1,22 @@
+.page-document__action-wrap,
+.page-document__icon { display: block; text-align: inherit; min-width: 0; }
+.page-document__action { display: inline-flex; align-items: center; gap: 9px; max-width: 100%;
+  min-height: 42px; padding: 10px 20px; border-radius: var(--pc-radius, 10px);
+  border: 1px solid var(--pc-theme-accent, #da8dbb); background: color-mix(in srgb, var(--pc-theme-accent, #da8dbb) 48%, #241122); color: inherit;
+  font-weight: 700; text-decoration: none; line-height: 1.25; transition: filter 120ms ease; }
+.page-document__action:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.page-document__action[href]:hover { filter: brightness(1.13); }
+.page-document__action:not([href]) { cursor: not-allowed; opacity: 0.55; }
+.page-document__action--secondary { background: rgb(218 141 187 / 18%); color: inherit; border-color: currentColor; }
+.page-document__action--outline { background: transparent; color: inherit; border-color: currentColor; }
+.page-document__action--small { min-height: 34px; padding: 6px 13px; font-size: 0.86em; }
+.page-document__action--large { min-height: 50px; padding: 13px 27px; font-size: 1.12em; }
+.page-document__action app-icon { width: 19px; flex: 0 0 19px; fill: currentColor; }
+.page-document__accordions { display: grid; gap: 10px; }
+.page-document__accordion-item { border: 1px solid rgb(255 255 255 / 22%); border-radius: 10px;
+  background: rgb(255 255 255 / 5%); overflow: hidden; }
+.page-document__accordion-item > summary { cursor: pointer; padding: 15px 18px; font-weight: 700; }
+.page-document__accordion-item > summary:focus-visible { outline: 2px solid var(--pc-theme-accent, #da8dbb); outline-offset: -3px; }
+.page-document__accordion-item[open] > summary { border-bottom: 1px solid rgb(255 255 255 / 15%); }
+.page-document__accordion-item > .page-document__markdown { padding: 15px 18px; }
+.page-document__icon app-icon { display: inline-flex; flex: 0 0 auto; height: auto; aspect-ratio: 1; fill: currentColor; color: inherit; }

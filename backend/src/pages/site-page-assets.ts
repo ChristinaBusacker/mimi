@@ -32,8 +32,11 @@ export function collectSitePageAssets(
               for (const item of block.items) add(item.assetId);
             } else if (block.type === 'cardCarousel') {
               for (const item of block.items) add(item.assetId);
-            } else if (block.type === 'text') {
-              for (const value of [block.markdown.de, block.markdown.en]) {
+            } else if (block.type === 'text' || block.type === 'accordion') {
+              const markdowns = block.type === 'text'
+                ? [block.markdown.de, block.markdown.en]
+                : block.items.flatMap((entry) => [entry.body.de, entry.body.en]);
+              for (const value of markdowns) {
                 for (const match of value.matchAll(ASSET_REFERENCE)) add(match[1]);
               }
             }
