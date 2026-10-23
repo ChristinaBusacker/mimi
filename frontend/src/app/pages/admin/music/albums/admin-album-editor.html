@@ -24,18 +24,15 @@
           {{
             (publishingTracks()
               ? 'admin.music.albumTracks.publishingAll'
-              : 'admin.music.albumTracks.publishAll')
+              : 'admin.music.albumTracks.publishAll'
+            )
               | i18n
               | async
           }}
         </app-button>
       }
 
-      <app-button
-        class="primary round"
-        [disabled]="loading() || saving()"
-        (click)="save()"
-      >
+      <app-button class="primary round" [disabled]="loading() || saving()" (click)="save()">
         {{ 'admin.music.save' | i18n | async }}
       </app-button>
 
@@ -86,6 +83,8 @@
             <input type="date" formControlName="releasedAt" />
           </label>
 
+          <div></div>
+
           <app-asset-picker
             type="image"
             formControlName="coverAssetId"
@@ -109,7 +108,9 @@
 
       <fieldset class="album-editorial">
         <legend>{{ 'admin.music.editorial.title' | i18n | async }}</legend>
-        <p class="album-editorial__description">{{ 'admin.music.editorial.description' | i18n | async }}</p>
+        <p class="album-editorial__description">
+          {{ 'admin.music.editorial.description' | i18n | async }}
+        </p>
         <div class="admin-editor__grid">
           <label>
             <span>{{ 'admin.music.editorial.genreDe' | i18n | async }}</span>
@@ -138,23 +139,103 @@
           <div class="album-editorial__credit">
             <label>
               <span>{{ 'admin.music.editorial.creditName' | i18n | async }}</span>
-              <input type="text" maxlength="120" [value]="credit.name" (input)="updateAlbumCredit(index, 'name', $event)" />
+              <input
+                type="text"
+                maxlength="120"
+                [value]="credit.name"
+                (input)="updateAlbumCredit(index, 'name', $event)"
+              />
             </label>
             <label>
               <span>{{ 'admin.music.editorial.creditRoleDe' | i18n | async }}</span>
-              <input type="text" maxlength="100" [value]="credit.role.de" (input)="updateAlbumCredit(index, 'de', $event)" />
+              <input
+                type="text"
+                maxlength="100"
+                [value]="credit.role.de"
+                (input)="updateAlbumCredit(index, 'de', $event)"
+              />
             </label>
             <label>
               <span>{{ 'admin.music.editorial.creditRoleEn' | i18n | async }}</span>
-              <input type="text" maxlength="100" [value]="credit.role.en" (input)="updateAlbumCredit(index, 'en', $event)" />
+              <input
+                type="text"
+                maxlength="100"
+                [value]="credit.role.en"
+                (input)="updateAlbumCredit(index, 'en', $event)"
+              />
             </label>
-            <button type="button" class="album-editorial__remove" (click)="removeAlbumCredit(index)">
+            <button
+              type="button"
+              class="album-editorial__remove"
+              (click)="removeAlbumCredit(index)"
+            >
               {{ 'admin.music.editorial.removeCredit' | i18n | async }}
             </button>
           </div>
         } @empty {
-          <p class="album-editorial__description">{{ 'admin.music.editorial.noCredits' | i18n | async }}</p>
+          <p class="album-editorial__description">
+            {{ 'admin.music.editorial.noCredits' | i18n | async }}
+          </p>
         }
+      </fieldset>
+
+      <fieldset>
+        <legend>{{ 'admin.music.albumMeta.title' | i18n | async }}</legend>
+        <p class="album-editorial__description">
+          {{ 'admin.music.albumMeta.description' | i18n | async }}
+        </p>
+        <div class="admin-editor__grid">
+          <label>
+            <span>{{ 'admin.music.albumMeta.spotify' | i18n | async }}</span>
+            <input
+              type="url"
+              formControlName="spotifyUrl"
+              maxlength="500"
+              placeholder="https://open.spotify.com/album/..."
+            />
+          </label>
+          <label>
+            <span>{{ 'admin.music.albumMeta.deezer' | i18n | async }}</span>
+            <input
+              type="url"
+              formControlName="deezerUrl"
+              maxlength="500"
+              placeholder="https://www.deezer.com/album/..."
+            />
+          </label>
+          <label>
+            <span>{{ 'admin.music.albumMeta.support' | i18n | async }}</span>
+            <input
+              type="text"
+              formControlName="supportUrl"
+              maxlength="500"
+              placeholder="/unterstuetzen"
+            />
+          </label>
+        </div>
+        <div class="admin-editor__grid">
+          <label>
+            <span>{{ 'admin.music.albumMeta.tagsDe' | i18n | async }}</span>
+            <input
+              type="text"
+              formControlName="tagsDe"
+              maxlength="800"
+              [attr.aria-describedby]="'album-tags-hint'"
+            />
+          </label>
+          <label>
+            <span>{{ 'admin.music.albumMeta.tagsEn' | i18n | async }}</span>
+            <input
+              type="text"
+              formControlName="tagsEn"
+              maxlength="800"
+              [attr.aria-describedby]="'album-tags-hint'"
+            />
+          </label>
+        </div>
+        <p id="album-tags-hint" class="album-editorial__description">
+          {{ 'admin.music.albumMeta.tagsHint' | i18n | async }}
+        </p>
       </fieldset>
 
       <fieldset>
@@ -200,11 +281,7 @@
 
             @if (trackUploading()) {
               <p class="admin-album-tracks__progress">
-                {{
-                  'admin.music.albumTracks.uploading'
-                    | i18n
-                    | async
-                }}
+                {{ 'admin.music.albumTracks.uploading' | i18n | async }}
                 {{ trackUploadCurrent() }}/{{ trackUploadTotal() }}
               </p>
             }
@@ -216,19 +293,13 @@
             }
 
             @if (trackErrorKey(); as trackError) {
-              <p
-                class="admin-editor__message admin-editor__message--error"
-                role="alert"
-              >
+              <p class="admin-editor__message admin-editor__message--error" role="alert">
                 {{ trackError | i18n | async }}
               </p>
             }
 
             @if (trackMessageKey(); as trackMessage) {
-              <p
-                class="admin-editor__message"
-                role="status"
-              >
+              <p class="admin-editor__message" role="status">
                 {{ trackMessage | i18n | async }}
               </p>
             }
@@ -243,12 +314,7 @@
                     (drop)="dropTrack($event, index)"
                     (dragend)="endTrackDrag()"
                   >
-                    <span
-                      class="admin-album-tracks__handle"
-                      aria-hidden="true"
-                    >
-                      ⠿
-                    </span>
+                    <span class="admin-album-tracks__handle" aria-hidden="true"> ⠿ </span>
 
                     <span class="admin-album-tracks__number">
                       {{ index + 1 }}
@@ -261,7 +327,7 @@
                       <span>
                         {{ formatDuration(track.previewDurationSeconds) }}
                         ·
-                        {{ ('admin.music.status.' + track.status) | i18n | async }}
+                        {{ 'admin.music.status.' + track.status | i18n | async }}
                       </span>
                     </div>
 

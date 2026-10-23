@@ -1,0 +1,49 @@
+{
+  "localizations": [
+    {
+      "key": "admin.music.albumMeta.title",
+      "de": "Album-Links und Tags",
+      "en": "Album links and tags"
+    },
+    {
+      "key": "admin.music.albumMeta.description",
+      "de": "Links und Schlagwörter gehören zum Album und stehen später auch dem Booklet zur Verfügung.",
+      "en": "Links and keywords belong to the album and will also be available to the booklet."
+    },
+    {
+      "key": "admin.music.albumMeta.spotify",
+      "de": "Spotify-Albumlink (HTTPS)",
+      "en": "Spotify album link (HTTPS)"
+    },
+    {
+      "key": "admin.music.albumMeta.deezer",
+      "de": "Deezer-Albumlink (HTTPS)",
+      "en": "Deezer album link (HTTPS)"
+    },
+    {
+      "key": "admin.music.albumMeta.support",
+      "de": "Support-Link (HTTPS oder interner Pfad)",
+      "en": "Support link (HTTPS or internal path)"
+    },
+    {
+      "key": "admin.music.albumMeta.tagsDe",
+      "de": "Tags (Deutsch)",
+      "en": "Tags (German)"
+    },
+    {
+      "key": "admin.music.albumMeta.tagsEn",
+      "de": "Tags (Englisch)",
+      "en": "Tags (English)"
+    },
+    {
+      "key": "admin.music.albumMeta.tagsHint",
+      "de": "Kommagetrennt eingeben: höchstens 16 Tags je Sprache, je maximal 40 Zeichen. Doppelte Begriffe werden entfernt.",
+      "en": "Enter comma-separated tags: up to 16 per language and 40 characters per tag. Duplicates are removed."
+    },
+    {
+      "key": "admin.music.albumMeta.tagsInvalid",
+      "de": "Ungültige Tags: maximal 16 pro Sprache, jeweils höchstens 40 Zeichen und keine Zeilenumbrüche.",
+      "en": "Invalid tags: maximum 16 per language, at most 40 characters each, without line breaks."
+    }
+  ]
+}

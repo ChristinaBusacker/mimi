@@ -78,6 +78,25 @@ export class MusicAlbumCreditInputDto {
   role!: MusicAlbumLocalizedTextInputDto;
 }
 
+/** Tag limits match the album editor, independently for each language. */
+export class MusicAlbumTagsInputDto {
+  @IsArray()
+  @ArrayMaxSize(16)
+  @ArrayUnique()
+  @IsString({ each: true })
+  @MaxLength(40, { each: true })
+  @Matches(/\S/, { each: true })
+  de!: string[];
+
+  @IsArray()
+  @ArrayMaxSize(16)
+  @ArrayUnique()
+  @IsString({ each: true })
+  @MaxLength(40, { each: true })
+  @Matches(/\S/, { each: true })
+  en!: string[];
+}
+
 export class MusicAlbumEditorialInputDto {
   @IsDefined()
   @IsObject()
@@ -101,6 +120,28 @@ export class MusicAlbumEditorialInputDto {
   @IsOptional()
   @IsUUID()
   heroAssetId?: string | null;
+
+  @IsOptional()
+  @MaxLength(500)
+  @IsUrl({ require_protocol: true, protocols: ['https'] })
+  spotifyUrl?: string | null;
+
+  @IsOptional()
+  @MaxLength(500)
+  @IsUrl({ require_protocol: true, protocols: ['https'] })
+  deezerUrl?: string | null;
+
+  /** Support may link to the internal support page or to an HTTPS provider. */
+  @IsOptional()
+  @MaxLength(500)
+  @Matches(/^(?:https:\/\/\S+|\/(?!\/)\S+)$/)
+  supportUrl?: string | null;
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => MusicAlbumTagsInputDto)
+  tags?: MusicAlbumTagsInputDto;
 }
 
 export class SaveAlbumBookletDto {

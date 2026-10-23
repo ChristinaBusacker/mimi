@@ -36,6 +36,7 @@ import { MarkdownEditor } from '../../../../components/markdown-editor/markdown-
 import { AdminAssetsService } from '../../../../core/assets/admin-assets.service';
 import { I18nPipe } from '../../../../core/i18n/i18n.pipe';
 import { AdminMusicService } from '../../../../core/music/admin-music.service';
+import { formatAlbumTags, parseAlbumTags } from './album-tags';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -110,6 +111,11 @@ export class AdminAlbumEditor implements OnInit {
     genreEn: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
     moodDe: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
     moodEn: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(100)] }),
+    spotifyUrl: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(500), Validators.pattern(/^https:\/\/\S+$/)] }),
+    deezerUrl: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(500), Validators.pattern(/^https:\/\/\S+$/)] }),
+    supportUrl: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(500), Validators.pattern(/^(?:https:\/\/\S+|\/(?!\/)\S+)$/)] }),
+    tagsDe: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(800)] }),
+    tagsEn: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(800)] }),
     status: new FormControl<MusicPublicationStatus>(
       'draft',
       {
@@ -630,6 +636,13 @@ export class AdminAlbumEditor implements OnInit {
       return null;
     }
 
+    const tagsDe = parseAlbumTags(value.tagsDe);
+    const tagsEn = parseAlbumTags(value.tagsEn);
+    if (!tagsDe || !tagsEn) {
+      this.errorKey.set('admin.music.albumMeta.tagsInvalid');
+      return null;
+    }
+
     if (englishContent && !englishTitle) {
       this.errorKey.set(
         'admin.music.editor.englishTitleRequired',
@@ -648,6 +661,10 @@ export class AdminAlbumEditor implements OnInit {
         heroAssetId: value.heroAssetId || null,
         genre: { de: value.genreDe.trim(), en: value.genreEn.trim() },
         mood: { de: value.moodDe.trim(), en: value.moodEn.trim() },
+        spotifyUrl: value.spotifyUrl.trim() || null,
+        deezerUrl: value.deezerUrl.trim() || null,
+        supportUrl: value.supportUrl.trim() || null,
+        tags: { de: tagsDe, en: tagsEn },
         credits,
       },
       status: value.status,
@@ -683,6 +700,11 @@ export class AdminAlbumEditor implements OnInit {
       genreEn: album.editorial.genre.en,
       moodDe: album.editorial.mood.de,
       moodEn: album.editorial.mood.en,
+      spotifyUrl: album.editorial.spotifyUrl ?? '',
+      deezerUrl: album.editorial.deezerUrl ?? '',
+      supportUrl: album.editorial.supportUrl ?? '',
+      tagsDe: formatAlbumTags(album.editorial.tags?.de ?? []),
+      tagsEn: formatAlbumTags(album.editorial.tags?.en ?? []),
       status: album.status,
       titleDe:
         album.translations.de.title,

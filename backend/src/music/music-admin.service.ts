@@ -200,7 +200,9 @@ export class MusicAdminService {
         slug: dto.slug,
         coverAssetId: dto.coverAssetId,
         releasedAt: dto.releasedAt,
-        editorial: dto.editorial ?? album.editorial,
+        // Retain future/optional metadata when a legacy client sends only old fields.
+        // Explicit null (clear link) and empty tag arrays are still respected.
+        editorial: dto.editorial ? { ...album.editorial, ...dto.editorial } : album.editorial,
         status: dto.status,
         publishedAt:
           dto.status === 'published'

@@ -7,12 +7,22 @@ export interface MusicAlbumCredit {
   name: string;
   role: LocalizedText;
 }
+/** Language-specific, editorial tags. These are not document blocks. */
+export interface MusicAlbumTags {
+  de: string[];
+  en: string[];
+}
 export interface MusicAlbumEditorial {
   genre: LocalizedText;
   mood: LocalizedText;
   credits: MusicAlbumCredit[];
   /** Optional wide background behind the album cover and title. */
   heroAssetId?: string | null;
+  /** Older albums legitimately omit these new metadata fields. */
+  spotifyUrl?: string | null;
+  deezerUrl?: string | null;
+  supportUrl?: string | null;
+  tags?: MusicAlbumTags;
 }
 
 export interface MusicAlbumSummary {
