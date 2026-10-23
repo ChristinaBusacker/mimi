@@ -32,6 +32,7 @@ import {
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Background } from '../background/background';
 import { Icon } from '../icon/icon';
 import { MarkdownEditor } from '../markdown-editor/markdown-editor';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
@@ -148,6 +149,7 @@ const makeBlock = (kind: BlockKind): PageBlock => {
     Icon,
     MarkdownEditor,
     PageRenderer,
+    Background,
     ComposerColorPicker,
     ComposerBoxControl,
     ReactiveFormsModule,

@@ -1,14 +1,17 @@
 @if (page(); as entry) {
   <article class="site-page">
-    <header class="site-page__header">
-      <h1>{{ entry.metadata.title[language()] || entry.metadata.title.de }}</h1>
-    </header>
     <app-page-renderer [document]="entry.document" [locale]="language()" />
   </article>
 } @else {
   @switch (slug) {
-    @case ('about') { <app-about /> }
-    @case ('impressum') { <app-legal-notice /> }
-    @case ('datenschutz') { <app-privacy /> }
+    @case ('about') {
+      <app-about />
+    }
+    @case ('impressum') {
+      <app-legal-notice />
+    }
+    @case ('datenschutz') {
+      <app-privacy />
+    }
   }
 }

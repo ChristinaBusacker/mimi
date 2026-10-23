@@ -705,6 +705,29 @@
 .composer__device--mobile {
   max-width: 390px;
 }
+/* Only standard pages receive the public app-background. The min-height matches
+   the viewport treatment of the public site, even for short Composer documents. */
+.composer__device--site-page {
+  min-height: 100dvh;
+  isolation: isolate;
+}
+/* app-background and its skyline/cloud/crystal children are fixed on the public
+   site. Paint containment gives those fixed children a LOCAL containing block:
+   no effects spill into the admin toolbar, outline or inspector. */
+.composer__device--site-page > app-background.composer__site-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  overflow: hidden;
+  contain: paint;
+  pointer-events: none;
+  margin: calc(-1 * clamp(22px, 3vw, 46px));
+}
+.composer__device--site-page > app-page-renderer {
+  position: relative;
+  z-index: 1;
+}
 .composer__device app-page-renderer {
   display: block;
   width: 100%;

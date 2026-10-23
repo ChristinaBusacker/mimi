@@ -1,8 +1,5 @@
 @if (page(); as entry) {
   <article class="site-page">
-    <header class="site-page__header">
-      <h1>{{ entry.metadata.title[language()] || entry.metadata.title.de }}</h1>
-    </header>
     <app-page-renderer [document]="entry.document" [locale]="language()" />
   </article>
 } @else {

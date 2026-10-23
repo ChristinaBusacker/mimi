@@ -223,20 +223,27 @@
     }
     <div class="composer__canvas-shell">
       <div class="composer__canvas" [class.composer__canvas--preview]="preview()">
-        <div class="booklet-world composer__booklet-world" aria-hidden="true">
-          @if (coverAssetId(); as cover) {
-            <img
-              class="booklet-world__artwork"
-              [src]="'/api/assets/' + cover + '/image/large/fallback'"
-              alt=""
-            />
-          }
-        </div>
+        @if (profile() === 'album' || album()) {
+          <div class="booklet-world composer__booklet-world" aria-hidden="true">
+            @if (coverAssetId(); as cover) {
+              <img
+                class="booklet-world__artwork"
+                [src]="'/api/assets/' + cover + '/image/large/fallback'"
+                alt=""
+              />
+            }
+          </div>
+        }
         <div
           class="composer__device"
           [class.composer__device--tablet]="device() === 'tablet'"
           [class.composer__device--mobile]="device() === 'mobile'"
+          [class.composer__device--site-page]="profile() === 'standard' && !album()"
         >
+          @if (profile() === 'standard' && !album()) {
+            <!-- Reuse the exact public background, but contain its fixed layers inside the device preview. -->
+            <app-background class="composer__site-background" aria-hidden="true" />
+          }
           <app-page-renderer
             [document]="document()"
             [album]="album()"
