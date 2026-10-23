@@ -19,6 +19,11 @@
         <app-icon name="layout-template" class="white" /> {{ 'page.editor.title' | i18n | async }}
       </button>
       <span class="composer__toolbar-divider"></span>
+      <app-composer-transfer
+        [profile]="profile()" [document]="document()" [target]="transferTarget()"
+        [unsaved]="transferUnsaved()" [disabled]="transferBusy()"
+        (documentImport)="importLayout($event)" (zipImported)="zipImported.emit()"
+      />
       <button
         type="button"
         class="composer__tool composer__save"

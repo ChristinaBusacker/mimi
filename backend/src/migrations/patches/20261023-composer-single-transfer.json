@@ -1,0 +1,129 @@
+{
+  "localizations": [
+    {
+      "key": "transfer.single.toolbar",
+      "de": "Import / Export",
+      "en": "Import / Export"
+    },
+    {
+      "key": "transfer.single.title",
+      "de": "Composer: Einzeldokument übertragen",
+      "en": "Composer: Transfer document"
+    },
+    {
+      "key": "transfer.single.close",
+      "de": "Schließen",
+      "en": "Close"
+    },
+    {
+      "key": "transfer.single.explanation",
+      "de": "Layout-JSON überträgt den aktuellen Editorstand ohne Dateien. ZIP überträgt den zuletzt gespeicherten Stand samt Assets.",
+      "en": "Layout JSON exports the current editor document without files. ZIP exports the saved snapshot and assets."
+    },
+    {
+      "key": "transfer.single.exportJson",
+      "de": "Layout als JSON",
+      "en": "Export layout JSON"
+    },
+    {
+      "key": "transfer.single.exportZip",
+      "de": "Gespeicherten Stand als ZIP",
+      "en": "Export saved ZIP"
+    },
+    {
+      "key": "transfer.single.zipHint",
+      "de": "Ungespeicherte Änderungen sind nicht im ZIP enthalten.",
+      "en": "Unsaved changes are not included in the ZIP."
+    },
+    {
+      "key": "transfer.single.choose",
+      "de": "JSON oder ZIP zum Import auswählen",
+      "en": "Choose a JSON or ZIP file"
+    },
+    {
+      "key": "transfer.single.preview",
+      "de": "Importvorschau",
+      "en": "Import preview"
+    },
+    {
+      "key": "transfer.single.previewJson",
+      "de": "Abschnitte im Layout",
+      "en": "Layout sections"
+    },
+    {
+      "key": "transfer.single.assets",
+      "de": "Assets",
+      "en": "assets"
+    },
+    {
+      "key": "transfer.single.jsonDraft",
+      "de": "JSON ersetzt nur den aktuellen Editorstand. Bitte anschließend Entwurf speichern.",
+      "en": "JSON replaces the current editor state only. Save the draft afterwards."
+    },
+    {
+      "key": "transfer.single.jsonAssets",
+      "de": "JSON enthält keine Bilder oder anderen Dateien. Externe Asset-IDs müssen auf dem Zielsystem bereits existieren.",
+      "en": "JSON contains no images or other files. Asset IDs from another system must already exist here."
+    },
+    {
+      "key": "transfer.single.error.invalidJson",
+      "de": "Die Datei enthält kein gültiges JSON.",
+      "en": "The file does not contain valid JSON."
+    },
+    {
+      "key": "transfer.single.zipDraft",
+      "de": "ZIP ersetzt ausschließlich den gespeicherten Entwurf dieser Seite. Veröffentlichte Inhalte bleiben unverändert.",
+      "en": "ZIP replaces only this page’s saved draft. Published content stays unchanged."
+    },
+    {
+      "key": "transfer.single.confirm",
+      "de": "Ich möchte den aktuellen Entwurf durch diesen Import ersetzen.",
+      "en": "I want to replace the current draft with this import."
+    },
+    {
+      "key": "transfer.single.import",
+      "de": "Import bestätigen",
+      "en": "Confirm import"
+    },
+    {
+      "key": "transfer.single.working",
+      "de": "Wird geprüft oder übertragen …",
+      "en": "Validating or transferring …"
+    },
+    {
+      "key": "transfer.single.error.extension",
+      "de": "Bitte eine JSON- oder ZIP-Datei auswählen.",
+      "en": "Please select a JSON or ZIP file."
+    },
+    {
+      "key": "transfer.single.error.jsonSize",
+      "de": "Layout-JSON darf höchstens 2 MiB groß sein.",
+      "en": "Layout JSON must not exceed 2 MiB."
+    },
+    {
+      "key": "transfer.single.error.zipSize",
+      "de": "ZIP-Archiv ist zu groß.",
+      "en": "ZIP archive is too large."
+    },
+    {
+      "key": "transfer.single.error.format",
+      "de": "Layoutformat, Version oder Seitentyp stimmen nicht überein.",
+      "en": "Layout format, version or page type does not match."
+    },
+    {
+      "key": "transfer.single.error.target",
+      "de": "Für diesen Composer ist kein ZIP-Ziel verfügbar.",
+      "en": "No ZIP target is available for this Composer."
+    },
+    {
+      "key": "transfer.single.error.conflict",
+      "de": "Archiv gehört nicht zu diesem Dokument oder enthält keine importierbare Version.",
+      "en": "The archive does not belong to this document or has no importable version."
+    },
+    {
+      "key": "transfer.single.error.unsaved",
+      "de": "Bitte ungespeicherte Änderungen zuerst speichern oder verwerfen.",
+      "en": "Save or discard unsaved changes first."
+    }
+  ]
+}

@@ -95,6 +95,22 @@ export class AdminAlbumBooklet implements OnInit {
     }
   }
 
+  protected async reloadImportedDraft(): Promise<void> {
+    this.working.set(true);
+    try {
+      const [booklet, images] = await firstValueFrom(forkJoin([
+        this.music.getBooklet(this.albumId), this.assetsService.getAll('image'),
+      ]));
+      if (booklet.draft) {
+        this.document.set(structuredClone(booklet.draft));
+        this.images.set(images);
+        this.dirty.set(false);
+        this.notice.set('saved');
+      }
+    } catch { this.notice.set('error'); }
+    finally { this.working.set(false); }
+  }
+
   protected updateDocument(next: PageDocument): void {
     this.document.set(next);
     this.dirty.set(true);

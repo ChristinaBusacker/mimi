@@ -41,6 +41,7 @@ type ArchiveAsset = {
 };
 type Archive = { exportedAt: string; documents: Snapshot[]; assets: ArchiveAsset[] };
 type Decision = ComposerImportDocument & { snapshot: Snapshot };
+export interface ComposerImportTarget { kind: 'page' | 'album-booklet'; id: string; }
 
 function bad(reason: string): never {
   throw new BadRequestException(`Composer-Import abgelehnt: ${reason}`);
@@ -104,8 +105,9 @@ export class ComposerArchiveImportService {
     private readonly music: MusicAdminService,
   ) {}
 
-  async preview(path: string, overwrite = false): Promise<ComposerImportPreview> {
+  async preview(path: string, overwrite = false, target?: ComposerImportTarget): Promise<ComposerImportPreview> {
     const { archive } = await this.inspect(path);
+    await this.assertTarget(archive.documents, target);
     const decisions = await this.plan(archive.documents, overwrite);
     const warnings = this.warnings(decisions);
     return {
@@ -115,9 +117,10 @@ export class ComposerArchiveImportService {
     };
   }
 
-  async import(path: string, overwrite = false): Promise<ComposerImportResult> {
+  async import(path: string, overwrite = false, target?: ComposerImportTarget): Promise<ComposerImportResult> {
     // Re-parse and verify the exact uploaded archive. Preview never authorizes future content.
     const { archive, zip } = await this.inspect(path);
+    await this.assertTarget(archive.documents, target);
     const decisions = await this.plan(archive.documents, overwrite);
     const selected = decisions.filter((item) => item.action === 'create' || item.action === 'replace-draft');
     const required = new Set<string>();
@@ -188,6 +191,22 @@ export class ComposerArchiveImportService {
       created, updated, skipped: decisions.length - selected.length,
       assetsCreated, assetsReused, warnings: this.warnings(decisions),
     };
+  }
+
+  private async assertTarget(documents: Snapshot[], target?: ComposerImportTarget): Promise<void> {
+    if (!target) return; // The existing multi-document importer is unaffected.
+    if (documents.length !== 1 || documents[0].kind !== target.kind)
+      bad('Einzelimport erwartet genau ein Dokument des gewählten Typs.');
+    const document = documents[0];
+    if (target.kind === 'page') {
+      const page = await this.pages.findOneBy({ uuid: target.id });
+      if (!page || document.slug !== page.slug || document.key !== page.key)
+        bad('Das Archiv gehört nicht zu dieser Seite.');
+    } else {
+      const album = await this.albums.findOneBy({ uuid: target.id });
+      if (!album || document.slug !== album.slug || document.key !== `album:${album.slug}`)
+        bad('Das Archiv gehört nicht zu diesem Album.');
+    }
   }
 
   private async inspect(path: string): Promise<{ archive: Archive; zip: ComposerZipReader }> {

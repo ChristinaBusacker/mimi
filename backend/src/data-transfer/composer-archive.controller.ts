@@ -9,7 +9,16 @@ import { AdminGuard } from '../auth/guards/admin.guard';
 import { SessionAuthGuard } from '../auth/guards/session-auth.guard';
 import { AUTH_SESSION_COOKIE } from '../auth/session-cookie';
 import { ComposerArchiveService, type ComposerArchiveScope } from './composer-archive.service';
-import { ComposerArchiveImportService } from './composer-archive-import.service';
+import { ComposerArchiveImportService, type ComposerImportTarget } from './composer-archive-import.service';
+import { validatePageDocument } from '../content/page-document-validation';
+
+function importTarget(kind?: string, id?: string): ComposerImportTarget | undefined {
+  if (kind === undefined && id === undefined) return undefined;
+  if ((kind !== 'page' && kind !== 'album-booklet') || !id ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(id))
+    throw new BadRequestException('Invalid single-document import target.');
+  return { kind, id };
+}
 
 @ApiTags('Composer archive')
 @ApiCookieAuth(AUTH_SESSION_COOKIE)
@@ -20,6 +29,20 @@ export class ComposerArchiveController {
     private readonly archive: ComposerArchiveService,
     private readonly importer: ComposerArchiveImportService,
   ) {}
+
+  @Post('validate-layout')
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 2 * 1024 * 1024, files: 1 } }))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Validate one Composer layout JSON without saving or publishing it' })
+  validateLayout(@UploadedFile() file?: { buffer: Buffer }, @Query('profile') profile?: string) {
+    if (profile !== 'standard' && profile !== 'album')
+      throw new BadRequestException('Unsupported Composer profile.');
+    if (!file?.buffer) throw new BadRequestException('Layout JSON file is required.');
+    let document: unknown;
+    try { document = JSON.parse(file.buffer.toString('utf8')) as unknown; }
+    catch { throw new BadRequestException('Invalid JSON document.'); }
+    return validatePageDocument(document, profile);
+  }
 
   @Get('export')
   @ApiOperation({ summary: 'Download versioned Composer ZIP with page/booklet snapshots and referenced original assets' })
@@ -46,9 +69,12 @@ export class ComposerArchiveController {
   }))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Verify a Composer ZIP archive and preview changes without importing' })
-  async preview(@UploadedFile() file?: { path: string }, @Query('overwrite') overwrite?: string) {
+  async preview(
+    @UploadedFile() file?: { path: string }, @Query('overwrite') overwrite?: string,
+    @Query('targetKind') targetKind?: string, @Query('targetId') targetId?: string,
+  ) {
     if (!file?.path) throw new BadRequestException('A ZIP file is required.');
-    try { return await this.importer.preview(file.path, overwrite === '1'); }
+    try { return await this.importer.preview(file.path, overwrite === '1', importTarget(targetKind, targetId)); }
     finally { await unlink(file.path).catch(() => undefined); }
   }
 
@@ -59,9 +85,12 @@ export class ComposerArchiveController {
   }))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Import Composer ZIP into drafts; never publish implicitly' })
-  async importArchive(@UploadedFile() file?: { path: string }, @Query('overwrite') overwrite?: string) {
+  async importArchive(
+    @UploadedFile() file?: { path: string }, @Query('overwrite') overwrite?: string,
+    @Query('targetKind') targetKind?: string, @Query('targetId') targetId?: string,
+  ) {
     if (!file?.path) throw new BadRequestException('A ZIP file is required.');
-    try { return await this.importer.import(file.path, overwrite === '1'); }
+    try { return await this.importer.import(file.path, overwrite === '1', importTarget(targetKind, targetId)); }
     finally { await unlink(file.path).catch(() => undefined); }
   }
 }

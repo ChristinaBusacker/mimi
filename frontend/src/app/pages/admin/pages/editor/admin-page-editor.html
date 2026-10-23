@@ -74,6 +74,9 @@
       <app-page-editor
         profile="standard"
         [document]="document()"
+        [transferTarget]="{ kind: 'page', id: pageId }"
+        [transferUnsaved]="dirty()" [transferBusy]="working()"
+        (zipImported)="reloadImportedDraft()"
         [assets]="images()"
         (documentChange)="updateDocument($event)"
         (saveRequest)="save($event)"

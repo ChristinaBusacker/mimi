@@ -119,6 +119,24 @@ export class AdminPageEditor implements OnInit {
     if (this.metadata()?.seoImageAssetId === id) this.setSeoImage('');
   }
 
+  protected async reloadImportedDraft(): Promise<void> {
+    this.working.set(true);
+    try {
+      const result = await firstValueFrom(forkJoin({
+        page: this.api.get(this.pageId), images: this.assetsApi.getAll('image'),
+      }));
+      this.page.set(result.page);
+      this.metadata.set(structuredClone(result.page.draftMetadata));
+      this.savedMetadata.set(structuredClone(result.page.draftMetadata));
+      const document = result.page.draft ?? result.page.published ?? emptySitePageDocument();
+      this.document.set(structuredClone(document));
+      this.savedDocument.set(structuredClone(document));
+      this.images.set(result.images);
+      this.notice.set('admin.pages.notice.saved');
+    } catch { this.error.set('admin.pages.error.load'); }
+    finally { this.working.set(false); }
+  }
+
   protected updateDocument(value: PageDocument): void {
     this.document.set(value);
     this.notice.set(null);

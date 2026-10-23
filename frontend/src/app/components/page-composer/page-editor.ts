@@ -36,6 +36,8 @@ import { Icon } from '../icon/icon';
 import { MarkdownEditor } from '../markdown-editor/markdown-editor';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
 import { PageRenderer } from './page-renderer';
+import { ComposerTransfer } from './composer-transfer';
+import type { ComposerSingleTarget } from '../../core/data-transfer/composer-archive.service';
 import type { CanvasInsert, CanvasMove, CanvasSelection } from './page-renderer';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import type { PageStyleValues } from '@shared/content/page-document';
@@ -149,6 +151,7 @@ const makeBlock = (kind: BlockKind): PageBlock => {
     ComposerBoxControl,
     ReactiveFormsModule,
     AssetLibrary,
+    ComposerTransfer,
   ],
   templateUrl: './page-editor.html',
   styleUrl: './page-editor.scss',
@@ -156,6 +159,10 @@ const makeBlock = (kind: BlockKind): PageBlock => {
 export class PageEditor {
   /** Defaults to static-page editing; album callers must opt in explicitly. */
   readonly profile = input<PageComposerProfile>('standard');
+  readonly transferTarget = input<ComposerSingleTarget | null>(null);
+  readonly transferUnsaved = input(false);
+  readonly transferBusy = input(false);
+  readonly zipImported = output<void>();
   readonly album = input<AlbumBookletContext | null>(null);
   readonly document = input.required<PageDocument>();
   protected readonly bookletColors = computed(() => collectBookletColors(this.document()));
@@ -174,6 +181,12 @@ export class PageEditor {
   readonly documentChange = output<PageDocument>();
   /** Request persistence from the parent; the editor never saves directly. */
   readonly saveRequest = output<boolean>();
+
+  protected importLayout(document: PageDocument): void {
+    this.selected.set(null);
+    this.boundMarkdownKey = null;
+    this.commit(document);
+  }
 
   private readonly workspace = viewChild<ElementRef<HTMLElement>>('workspace');
   private readonly imageLibrary = viewChild(AssetLibrary);
