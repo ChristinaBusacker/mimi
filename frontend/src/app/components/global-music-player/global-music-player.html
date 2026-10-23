@@ -18,12 +18,20 @@
         <div class="mini__content" id="global-music-controls">
           <div class="mini__track">
             @if (track.coverAssetId ?? track.album?.coverAssetId; as cover) {
-              <img class="mini__cover" [src]="assetUrl(cover)" [alt]="track.album?.title ?? track.title" />
+              <img
+                class="mini__cover"
+                [src]="assetUrl(cover)"
+                [alt]="track.album?.title ?? track.title"
+              />
             } @else {
               <app-icon name="music" class="mini__cover mini__placeholder" />
             }
             <div class="mini__text">
-              <span>{{ (playback.playing() ? 'music.player.nowPlaying' : 'music.library.selected') | i18n | async }}</span>
+              <span>{{
+                (playback.playing() ? 'music.player.nowPlaying' : 'music.library.selected')
+                  | i18n
+                  | async
+              }}</span>
               <strong [title]="track.title">{{ track.title }}</strong>
               @if (track.album; as album) {
                 <a [routerLink]="['/music/albums', album.slug]">{{ album.title }}</a>
@@ -37,11 +45,15 @@
               [disabled]="!playback.previousTrack()"
               [attr.aria-label]="'music.player.previous' | i18n | async"
               (click)="playback.playAdjacent(-1)"
-            >‹</button>
+            >
+              ‹
+            </button>
             <button
               class="mini__play"
               type="button"
-              [attr.aria-label]="(playback.playing() ? 'music.player.pause' : 'music.player.play') | i18n | async"
+              [attr.aria-label]="
+                (playback.playing() ? 'music.player.pause' : 'music.player.play') | i18n | async
+              "
               (click)="playback.toggle()"
             >
               <app-icon [name]="playback.playing() ? 'pause' : 'play'" />
@@ -52,7 +64,9 @@
               [disabled]="!playback.nextTrack()"
               [attr.aria-label]="'music.player.next' | i18n | async"
               (click)="playback.playAdjacent(1)"
-            >›</button>
+            >
+              ›
+            </button>
           </div>
           <div class="mini__seek">
             <input
@@ -62,10 +76,14 @@
               step="0.1"
               [value]="playback.currentTime()"
               [attr.aria-label]="'music.player.progress' | i18n | async"
-              [attr.aria-valuetext]="formatTime(playback.currentTime()) + ' / ' + formatTime(currentDuration())"
+              [attr.aria-valuetext]="
+                formatTime(playback.currentTime()) + ' / ' + formatTime(currentDuration())
+              "
               (input)="seek($event)"
             />
-            <span>{{ formatTime(playback.currentTime()) }} / {{ formatTime(currentDuration()) }}</span>
+            <span
+              >{{ formatTime(playback.currentTime()) }} / {{ formatTime(currentDuration()) }}</span
+            >
           </div>
           <button
             class="mini__collapse"
@@ -74,7 +92,9 @@
             [attr.aria-expanded]="true"
             aria-controls="global-music-controls"
             (click)="toggleCollapsed()"
-          >⌄</button>
+          >
+            ⌄
+          </button>
         </div>
       }
     </aside>

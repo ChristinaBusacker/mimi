@@ -13,16 +13,19 @@
     z-index: 99;
   }
 
-  // Reserve space for the fixed global transport, including mobile safe areas.
+  // Fixed player has a compact and a full state on both desktop and mobile.
+  &:has(app-global-music-player.is-visible) {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  }
   &:has(app-global-music-player.is-visible:not(.is-collapsed)) {
-    padding-bottom: calc(105px + env(safe-area-inset-bottom));
+    padding-bottom: calc(125px + env(safe-area-inset-bottom));
   }
   @media (max-width: 820px) {
-    &:has(app-global-music-player.is-visible:not(.is-collapsed)) {
-      padding-bottom: calc(74px + env(safe-area-inset-bottom));
+    &:has(app-global-music-player.is-visible) {
+      padding-bottom: calc(86px + env(safe-area-inset-bottom));
     }
     &:has(app-global-music-player.is-visible.is-expanded) {
-      padding-bottom: calc(196px + env(safe-area-inset-bottom));
+      padding-bottom: calc(215px + env(safe-area-inset-bottom));
     }
   }
 

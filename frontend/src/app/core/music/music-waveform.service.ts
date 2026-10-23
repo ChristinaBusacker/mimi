@@ -3,8 +3,9 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 
 import { LocalStorageService } from '../storage/local-storage.service';
 
-const STORAGE_KEY = 'music.waveform.v1';
-const BAR_COUNT = 96;
+const STORAGE_KEY = 'music.waveform.v2';
+export const WAVEFORM_SAMPLES = 512;
+const BAR_COUNT = WAVEFORM_SAMPLES;
 const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
 const MAX_CACHED_TRACKS = 32;
 
@@ -31,8 +32,23 @@ export function audioWaveform(buffer: AudioBuffer, count = BAR_COUNT): number[] 
   }
   const max = Math.max(...values);
   if (max === 0) return values.map(() => 0.06);
-  return values.map((value) => Math.min(1, Math.max(0.06, Math.sqrt(value / max))));
+  return values.map((value) => Math.min(1, Math.max(0.06, Math.pow(value / max, 0.85))));
 }
+
+/** Aggregate 512 actual audio measurements to the current physical width. */
+export function visibleWaveform(peaks: readonly number[], count: number): number[] {
+  if (!peaks.length || !Number.isFinite(count) || count <= 0) return [];
+  const size = Math.min(peaks.length, Math.max(1, Math.round(count)));
+  return Array.from({ length: size }, (_, index) => {
+    const from = Math.floor(index * peaks.length / size);
+    const to = Math.max(from + 1, Math.floor((index + 1) * peaks.length / size));
+    const section = peaks.slice(from, to);
+    const mean = section.reduce((sum, value) => sum + value, 0) / section.length;
+    const peak = Math.max(...section);
+    return Math.max(0.06, Math.min(1, mean * 0.75 + peak * 0.25));
+  });
+}
+
 
 @Injectable({ providedIn: 'root' })
 export class MusicWaveformService {

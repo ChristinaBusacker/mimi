@@ -1,107 +1,286 @@
 @if (playback.activeTrack(); as track) {
-  <aside class="player" [class.player--collapsed]="collapsed()" [class.player--expanded]="mobileExpanded()">
-    @if (collapsed()) {
-      <button class="player__reopen" type="button" [attr.aria-label]="'music.player.expand' | i18n | async"
-        (click)="toggleCollapsed()">
-        <app-icon name="music" />
-        @if (playback.playing()) { <span class="player__live" aria-hidden="true"></span> }
-      </button>
-    } @else {
-      <div class="player__content" id="global-music-controls">
-        <div class="player__track">
-          @if (track.coverAssetId ?? track.album?.coverAssetId; as cover) {
-            <img class="player__cover" [src]="assetUrl(cover)" [alt]="track.album?.title ?? track.title" />
+  <aside class="player" [class.player--compact]="compact()" [class.player--expanded]="!compact()">
+    <button
+      type="button"
+      class="player__tab"
+      [attr.aria-expanded]="!compact()"
+      aria-controls="global-music-controls"
+      [attr.aria-label]="
+        (compact() ? 'music.player.expand' : 'music.player.collapse') | i18n | async
+      "
+      (click)="toggleView()"
+    >
+      @if (compact()) {
+        <app-icon name="expand" class="white" />
+      } @else {
+        <app-icon name="minify" class="white" />
+      }
+    </button>
+    <div id="global-music-controls" class="player__content">
+      <div class="player__track">
+        @if (track.coverAssetId ?? track.album?.coverAssetId; as cover) {
+          <img
+            class="player__cover"
+            [src]="assetUrl(cover)"
+            [alt]="track.album?.title ?? track.title"
+          />
+        } @else {
+          <app-icon name="music" class="player__cover player__placeholder" />
+        }
+        <div class="player__identity">
+          <strong [title]="track.title">{{ track.title }}</strong>
+          @if (track.album; as album) {
+            <a [routerLink]="['/music/albums', album.slug]">Mimi · {{ album.title }}</a>
           } @else {
-            <app-icon name="music" class="player__cover player__placeholder" />
+            <span>Mimi</span>
           }
-          <div class="player__identity">
-            <strong [title]="track.title">{{ track.title }}</strong>
-            @if (track.album; as album) {
-              <a [routerLink]="['/music/albums', album.slug]">Mimi · {{ album.title }}</a>
-            } @else { <span>Mimi</span> }
-          </div>
         </div>
+        @if (!compact()) {
+          <div class="player__mobile-actions">
+            <button
+              type="button"
+              [class.is-active]="panel() === 'info'"
+              [attr.aria-expanded]="panel() === 'info'"
+              [attr.aria-label]="'music.player.v2.info' | i18n | async"
+              (click)="togglePanel('info')"
+            >
+              <span class="player__info-icon white" aria-hidden="true">ⓘ</span>
+            </button>
+            <button
+              type="button"
+              [class.is-active]="panel() === 'queue'"
+              [attr.aria-expanded]="panel() === 'queue'"
+              [attr.aria-label]="'music.player.v2.queue' | i18n | async"
+              (click)="togglePanel('queue')"
+            >
+              <app-icon name="playlist" class="white" />
+            </button>
+          </div>
+        }
+      </div>
 
+      @if (compact()) {
+        <button
+          type="button"
+          class="player__compact-play"
+          [attr.aria-label]="
+            (playback.playing() ? 'music.player.pause' : 'music.player.play') | i18n | async
+          "
+          (click)="playback.toggle()"
+        >
+          <app-icon [name]="playback.playing() ? 'pause' : 'play'" class="white" />
+        </button>
+      } @else {
         <div class="player__center">
           <div class="player__transport">
-            <button type="button" class="player__aux" [class.is-active]="playback.shuffle()"
-              [attr.aria-pressed]="playback.shuffle()" [attr.aria-label]="'music.player.v2.shuffle' | i18n | async"
-              (click)="playback.toggleShuffle()"><span aria-hidden="true">⇄</span></button>
-            <button type="button" class="player__skip" [disabled]="!playback.previousTrack()"
-              [attr.aria-label]="'music.player.previous' | i18n | async" (click)="playback.playAdjacent(-1)">
-              <span aria-hidden="true">|◀</span></button>
-            <button type="button" class="player__play" [attr.aria-label]="(playback.playing() ? 'music.player.pause' : 'music.player.play') | i18n | async"
-              (click)="playback.toggle()"><app-icon [name]="playback.playing() ? 'pause' : 'play'" /></button>
-            <button type="button" class="player__skip" [disabled]="!playback.nextTrack()"
-              [attr.aria-label]="'music.player.next' | i18n | async" (click)="playback.playAdjacent(1)">
-              <span aria-hidden="true">▶|</span></button>
-            <button type="button" class="player__aux" [class.is-active]="playback.repeat() !== 'off'"
+            <button
+              type="button"
+              class="player__aux"
+              [class.is-active]="playback.shuffle()"
+              [attr.aria-pressed]="playback.shuffle()"
+              [attr.aria-label]="'music.player.v2.shuffle' | i18n | async"
+              (click)="playback.toggleShuffle()"
+            >
+              <span aria-hidden="true">⇄</span>
+            </button>
+            <button
+              type="button"
+              class="player__skip"
+              [disabled]="!playback.previousTrack()"
+              [attr.aria-label]="'music.player.previous' | i18n | async"
+              (click)="playback.playAdjacent(-1)"
+            >
+              <span aria-hidden="true">|◀</span>
+            </button>
+            <button
+              type="button"
+              class="player__play"
+              [attr.aria-label]="
+                (playback.playing() ? 'music.player.pause' : 'music.player.play') | i18n | async
+              "
+              (click)="playback.toggle()"
+            >
+              <app-icon [name]="playback.playing() ? 'pause' : 'play'" />
+            </button>
+            <button
+              type="button"
+              class="player__skip"
+              [disabled]="!playback.nextTrack()"
+              [attr.aria-label]="'music.player.next' | i18n | async"
+              (click)="playback.playAdjacent(1)"
+            >
+              <span aria-hidden="true">▶|</span>
+            </button>
+            <button
+              type="button"
+              class="player__aux"
+              [class.is-active]="playback.repeat() !== 'off'"
               [attr.aria-label]="'music.player.v2.repeat.' + playback.repeat() | i18n | async"
-              (click)="playback.cycleRepeat()"><span aria-hidden="true">↻</span>
-              @if (playback.repeat() === 'one') { <small>1</small> }</button>
+              (click)="playback.cycleRepeat()"
+            >
+              <span aria-hidden="true">↻</span>
+              @if (playback.repeat() === 'one') {
+                <small>1</small>
+              }
+            </button>
           </div>
           <div class="player__timeline">
             <span class="player__timestamp">{{ formatTime(playback.currentTime()) }}</span>
-            <div class="player__waveform" [style.--played-percent]="playedPercent() + '%'">
-              @if (waveform(); as peaks) {
-                <div class="player__wavebars" aria-hidden="true">
-                  @for (peak of peaks; track $index) {
-                    <span class="player__bar" [class.player__bar--played]="($index / peaks.length * 100) < playedPercent()"
-                      [style.height.%]="(peak * 100)"></span>
+            <div
+              class="player__waveform"
+              #waveformElement
+              [style.--played-percent]="playedPercent() + '%'"
+            >
+              @if (waveBars().length) {
+                <svg
+                  class="player__wave-svg"
+                  [attr.viewBox]="waveViewBox()"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient
+                      id="mimi-player-wave-progress"
+                      gradientUnits="userSpaceOnUse"
+                      x1="0"
+                      y1="0"
+                      [attr.x2]="waveBars().length * 2.5"
+                      y2="0"
+                    >
+                      <stop [attr.offset]="playedPercent() + '%'" stop-color="#f7a9d1" />
+                      <stop [attr.offset]="playedPercent() + '%'" stop-color="#80596f" />
+                    </linearGradient>
+                  </defs>
+                  @for (peak of waveBars(); track $index; let i = $index) {
+                    <rect
+                      [attr.x]="i * 2.5"
+                      [attr.y]="20 - peak * 18"
+                      width="1.65"
+                      [attr.height]="peak * 36"
+                      rx="0.8"
+                      fill="url(#mimi-player-wave-progress)"
+                    />
                   }
-                </div>
-              } @else { <div class="player__fallback" aria-hidden="true"></div> }
-              <input type="range" min="0" [max]="currentDuration() || 1" step="0.1" [value]="playback.currentTime()"
-                [disabled]="!currentDuration()" [attr.aria-label]="'music.player.progress' | i18n | async"
-                [attr.aria-valuetext]="formatTime(playback.currentTime()) + ' / ' + formatTime(currentDuration())"
-                (input)="seek($event)" />
+                </svg>
+              } @else {
+                <div class="player__fallback" aria-hidden="true"></div>
+              }
+              <input
+                type="range"
+                min="0"
+                [max]="currentDuration() || 1"
+                step="0.1"
+                [value]="playback.currentTime()"
+                [disabled]="!currentDuration()"
+                [attr.aria-label]="'music.player.progress' | i18n | async"
+                [attr.aria-valuetext]="
+                  formatTime(playback.currentTime()) + ' / ' + formatTime(currentDuration())
+                "
+                (input)="seek($event)"
+              />
             </div>
             <span class="player__timestamp">{{ formatTime(currentDuration()) }}</span>
           </div>
         </div>
-
         <div class="player__extras">
-          <button type="button" [attr.aria-label]="(playback.volume() === 0 ? 'music.player.unmute' : 'music.player.mute') | i18n | async"
-            (click)="playback.volume() === 0 ? playback.unmute() : playback.mute()">
-            <app-icon [name]="playback.volume() === 0 ? 'mute' : 'volume'" /></button>
-          <input type="range" min="0" max="1" step="0.01" [value]="playback.volume()"
-            [attr.aria-label]="'music.player.volume' | i18n | async" (input)="volume($event)" />
-          <button type="button" [class.is-active]="panel() === 'info'" [attr.aria-expanded]="panel() === 'info'"
-            [attr.aria-label]="'music.player.v2.info' | i18n | async" (click)="togglePanel('info')">ⓘ</button>
-          <button type="button" [class.is-active]="panel() === 'queue'" [attr.aria-expanded]="panel() === 'queue'"
-            [attr.aria-label]="'music.player.v2.queue' | i18n | async" (click)="togglePanel('queue')"><app-icon name="list-numbered" /></button>
-          <button type="button" class="player__collapse" [attr.aria-label]="'music.player.collapse' | i18n | async"
-            (click)="toggleCollapsed()">⌄</button>
+          <div class="player__volume">
+            <button
+              type="button"
+              [attr.aria-label]="
+                (playback.volume() === 0 ? 'music.player.unmute' : 'music.player.mute')
+                  | i18n
+                  | async
+              "
+              (click)="playback.volume() === 0 ? playback.unmute() : playback.mute()"
+            >
+              <app-icon [name]="playback.volume() === 0 ? 'mute' : 'volume'" class="white" />
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              [value]="playback.volume()"
+              [attr.aria-label]="'music.player.volume' | i18n | async"
+              (input)="volume($event)"
+            />
+          </div>
+          <button
+            type="button"
+            [class.is-active]="panel() === 'info'"
+            [attr.aria-expanded]="panel() === 'info'"
+            [attr.aria-label]="'music.player.v2.info' | i18n | async"
+            (click)="togglePanel('info')"
+          >
+            <span class="player__info-icon white" aria-hidden="true">ⓘ</span>
+          </button>
+          <button
+            type="button"
+            [class.is-active]="panel() === 'queue'"
+            [attr.aria-expanded]="panel() === 'queue'"
+            [attr.aria-label]="'music.player.v2.queue' | i18n | async"
+            (click)="togglePanel('queue')"
+          >
+            <app-icon name="playlist" class="white" />
+          </button>
         </div>
-        <div class="player__mobile-controls">
-          <button type="button" [attr.aria-label]="(playback.playing() ? 'music.player.pause' : 'music.player.play') | i18n | async"
-            (click)="playback.toggle()"><app-icon [name]="playback.playing() ? 'pause' : 'play'" /></button>
-          <button type="button" [attr.aria-label]="'music.player.v2.mobileExpand' | i18n | async"
-            [attr.aria-expanded]="mobileExpanded()" (click)="toggleExpanded()">{{ mobileExpanded() ? '⌄' : '⌃' }}</button>
-        </div>
-      </div>
+      }
+    </div>
+    @if (!compact()) {
       @if (panel() === 'queue') {
         <section class="player__panel" [attr.aria-label]="'music.player.v2.queue' | i18n | async">
-          <header><strong>{{ 'music.player.v2.queue' | i18n | async }}</strong>
-            <button type="button" [attr.aria-label]="'music.player.v2.close' | i18n | async" (click)="togglePanel('queue')">×</button></header>
+          <header>
+            <strong>{{ 'music.player.v2.queue' | i18n | async }}</strong>
+            <button
+              type="button"
+              [attr.aria-label]="'music.player.v2.close' | i18n | async"
+              (click)="togglePanel('queue')"
+            >
+              ×
+            </button>
+          </header>
           <ol>
             @for (item of playback.orderedQueue(); track item.id) {
-              <li><button type="button" [class.is-active]="track.id === item.id" (click)="playQueued(item.id)">
-                {{ item.title }} <small>{{ item.album?.title ?? 'Mimi' }}</small></button></li>
+              <li>
+                <button
+                  type="button"
+                  [class.is-active]="track.id === item.id"
+                  (click)="playQueued(item.id)"
+                >
+                  {{ item.title }} <small>{{ item.album?.title ?? 'Mimi' }}</small>
+                </button>
+              </li>
             }
           </ol>
         </section>
       } @else if (panel() === 'info') {
         <section class="player__panel" [attr.aria-label]="'music.player.v2.info' | i18n | async">
-          <header><strong>{{ track.title }}</strong><button type="button" [attr.aria-label]="'music.player.v2.close' | i18n | async" (click)="togglePanel('info')">×</button></header>
-          @if (track.album; as album) { <a [routerLink]="['/music/albums', album.slug]">{{ album.title }}</a> }
-          @if (track.spotifyUrl) { <a [href]="track.spotifyUrl" target="_blank" rel="noopener noreferrer">Spotify ↗</a> }
-          @if (track.deezerUrl) { <a [href]="track.deezerUrl" target="_blank" rel="noopener noreferrer">Deezer ↗</a> }
+          <header>
+            <strong>{{ track.title }}</strong>
+            <button
+              type="button"
+              [attr.aria-label]="'music.player.v2.close' | i18n | async"
+              (click)="togglePanel('info')"
+            >
+              ×
+            </button>
+          </header>
+          @if (track.album; as album) {
+            <a [routerLink]="['/music/albums', album.slug]">{{ album.title }}</a>
+          }
+          @if (track.spotifyUrl) {
+            <a [href]="track.spotifyUrl" target="_blank" rel="noopener noreferrer">Spotify ↗</a>
+          }
+          @if (track.deezerUrl) {
+            <a [href]="track.deezerUrl" target="_blank" rel="noopener noreferrer">Deezer ↗</a>
+          }
           @if (track.supportUrl; as support) {
             @if (support.startsWith('/')) {
               <a [routerLink]="support">{{ 'music.support.action' | i18n | async }} ↗</a>
             } @else {
-              <a [href]="support" target="_blank" rel="noopener noreferrer">{{ 'music.support.action' | i18n | async }} ↗</a>
+              <a [href]="support" target="_blank" rel="noopener noreferrer"
+                >{{ 'music.support.action' | i18n | async }} ↗</a
+              >
             }
           }
         </section>
