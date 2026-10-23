@@ -1,0 +1,94 @@
+{
+  "localizations": [
+    {
+      "key": "admin.composerArchive.import.title",
+      "de": "Composer-Archiv importieren",
+      "en": "Import Composer archive"
+    },
+    {
+      "key": "admin.composerArchive.import.description",
+      "de": "ZIP prüfen, Konflikte ansehen und Dokumente als Entwürfe importieren. Veröffentlichte Inhalte werden nie überschrieben.",
+      "en": "Validate a ZIP, review conflicts, then import documents as drafts. Published content is never overwritten."
+    },
+    {
+      "key": "admin.composerArchive.import.choose",
+      "de": "ZIP-Datei auswählen",
+      "en": "Select ZIP file"
+    },
+    {
+      "key": "admin.composerArchive.import.overwrite",
+      "de": "Vorhandene Entwürfe überschreiben (auch Systemseiten und Booklets)",
+      "en": "Overwrite existing drafts (including system pages and booklets)"
+    },
+    {
+      "key": "admin.composerArchive.import.checking",
+      "de": "Archiv wird geprüft …",
+      "en": "Validating archive …"
+    },
+    {
+      "key": "admin.composerArchive.import.preview",
+      "de": "Importvorschau",
+      "en": "Import preview"
+    },
+    {
+      "key": "admin.composerArchive.import.documents",
+      "de": "Dokumente",
+      "en": "documents"
+    },
+    {
+      "key": "admin.composerArchive.import.neverPublish",
+      "de": "Der Import veröffentlicht keine Inhalte. Bestehende Live-Versionen bleiben unverändert.",
+      "en": "Import never publishes content. Existing live versions remain unchanged."
+    },
+    {
+      "key": "admin.composerArchive.import.confirm",
+      "de": "Entwürfe importieren",
+      "en": "Import drafts"
+    },
+    {
+      "key": "admin.composerArchive.import.cancel",
+      "de": "Abbrechen",
+      "en": "Cancel"
+    },
+    {
+      "key": "admin.composerArchive.import.done",
+      "de": "Import abgeschlossen",
+      "en": "Import completed"
+    },
+    {
+      "key": "admin.composerArchive.import.skipped",
+      "de": "übersprungen",
+      "en": "skipped"
+    },
+    {
+      "key": "admin.composerArchive.import.action.create",
+      "de": "Neue Seite als Entwurf anlegen",
+      "en": "Create page draft"
+    },
+    {
+      "key": "admin.composerArchive.import.action.replace-draft",
+      "de": "Vorhandenen Entwurf ersetzen",
+      "en": "Replace existing draft"
+    },
+    {
+      "key": "admin.composerArchive.import.action.skip-existing",
+      "de": "Vorhandenes Dokument überspringen",
+      "en": "Skip existing document"
+    },
+    {
+      "key": "admin.composerArchive.import.action.missing-album",
+      "de": "Zielalbum fehlt, wird übersprungen",
+      "en": "Target album missing, skipped"
+    },
+    {
+      "key": "admin.composerArchive.import.action.conflict",
+      "de": "Slug-Konflikt, wird übersprungen",
+      "en": "Slug conflict, skipped"
+    },
+    {
+      "key": "admin.composerArchive.import.action.empty",
+      "de": "Kein Composer-Inhalt, wird übersprungen",
+      "en": "No Composer content, skipped"
+    }
+  ]
+}

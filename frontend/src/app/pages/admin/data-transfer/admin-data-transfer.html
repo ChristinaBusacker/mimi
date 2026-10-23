@@ -24,6 +24,59 @@
           {{ message }}
         </p>
       }
+      <div class="admin-data-transfer__composer-import">
+        <h3>{{ 'admin.composerArchive.import.title' | i18n | async }}</h3>
+        <p>{{ 'admin.composerArchive.import.description' | i18n | async }}</p>
+        <input #composerZip type="file" accept=".zip,application/zip" hidden
+          (change)="selectComposerArchive($event)" />
+        <app-button class="secondary round"
+          [disabled]="archiveImportBusy() || archiveScope() !== null"
+          (click)="composerZip.click()">
+          {{ 'admin.composerArchive.import.choose' | i18n | async }}
+        </app-button>
+        @if (archiveFile(); as file) {
+          <p><strong>{{ file.name }}</strong></p>
+          <label class="admin-data-transfer__composer-checkbox">
+            <input type="checkbox" [checked]="archiveOverwrite()" [disabled]="archiveImportBusy()"
+              (change)="toggleArchiveOverwrite($event)" />
+            {{ 'admin.composerArchive.import.overwrite' | i18n | async }}
+          </label>
+        }
+        @if (archiveImportBusy()) { <p>{{ 'admin.composerArchive.import.checking' | i18n | async }}</p> }
+        @if (archiveImportError(); as message) { <p role="alert" class="admin-data-transfer__status--error">{{ message }}</p> }
+        @if (archivePreview(); as preview) {
+          <h4>{{ 'admin.composerArchive.import.preview' | i18n | async }}</h4>
+          <p>{{ preview.documents.length }} {{ 'admin.composerArchive.import.documents' | i18n | async }},
+             {{ preview.assetCount }} Assets</p>
+          <ul class="admin-data-transfer__composer-list">
+            @for (document of preview.documents; track document.key) {
+              <li><strong>{{ document.slug }}</strong> ({{ document.kind }}):
+                {{ ('admin.composerArchive.import.action.' + document.action) | i18n | async }}
+                @if (document.reason) { ({{ document.reason }}) }
+              </li>
+            }
+          </ul>
+          @for (warning of preview.warnings; track warning) { <p>{{ warning }}</p> }
+          <p><strong>{{ 'admin.composerArchive.import.neverPublish' | i18n | async }}</strong></p>
+          <div class="admin-data-transfer__archive-actions">
+            <app-button class="primary round" [disabled]="archiveImportBusy()"
+              (click)="confirmComposerImport()">
+              {{ 'admin.composerArchive.import.confirm' | i18n | async }}
+            </app-button>
+            <app-button class="secondary round" (click)="cancelComposerImport()">
+              {{ 'admin.composerArchive.import.cancel' | i18n | async }}
+            </app-button>
+          </div>
+        }
+        @if (archiveImportResult(); as result) {
+          <p role="status">
+            {{ 'admin.composerArchive.import.done' | i18n | async }}:
+            {{ result.created }} {{ 'admin.dataTransfer.preview.created' | i18n | async }},
+            {{ result.updated }} {{ 'admin.dataTransfer.preview.updated' | i18n | async }},
+            {{ result.skipped }} {{ 'admin.composerArchive.import.skipped' | i18n | async }}.
+          </p>
+        }
+      </div>
     </div>
   </section>
 

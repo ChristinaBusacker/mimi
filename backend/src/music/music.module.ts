@@ -35,6 +35,6 @@ import { MusicService } from './music.service';
     MusicService,
     MusicAdminService,
   ],
-  exports: [MusicService],
+  exports: [MusicService, MusicAdminService],
 })
 export class MusicModule {}

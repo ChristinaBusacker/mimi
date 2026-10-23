@@ -52,6 +52,12 @@
   margin-top: var(--spacing-md);
 }
 
+.admin-data-transfer__composer-import { display: grid; gap: var(--spacing-xs); margin-top: var(--spacing-md); }
+.admin-data-transfer__composer-import h3,
+.admin-data-transfer__composer-import h4 { margin: 0; }
+.admin-data-transfer__composer-checkbox { display: flex; align-items: center; gap: var(--spacing-xs); }
+.admin-data-transfer__composer-list { max-height: 18rem; overflow-y: auto; padding-left: 1.3rem; }
+
 .admin-data-transfer__cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

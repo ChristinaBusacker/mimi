@@ -19,6 +19,7 @@ import { firstValueFrom } from 'rxjs';
 import { Button } from '../../../components/button/button';
 import { AdminDataTransferService } from '../../../core/data-transfer/admin-data-transfer.service';
 import { ComposerArchiveClient, type ComposerArchiveScope } from '../../../core/data-transfer/composer-archive.service';
+import type { ComposerImportPreview, ComposerImportResult } from '@shared/data-transfer/composer-archive-import';
 import { composerArchiveErrorMessage } from '../../../core/data-transfer/composer-archive-error';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { LanguageService } from '../../../core/i18n/language.service';
@@ -75,6 +76,12 @@ export class AdminDataTransfer implements OnInit {
   protected readonly archiveOptions: readonly ComposerArchiveScope[] = ['all', 'pages', 'booklets'];
   protected readonly archiveScope = signal<ComposerArchiveScope | null>(null);
   protected readonly archiveError = signal<string | null>(null);
+  protected readonly archiveFile = signal<File | null>(null);
+  protected readonly archiveOverwrite = signal(false);
+  protected readonly archivePreview = signal<ComposerImportPreview | null>(null);
+  protected readonly archiveImportResult = signal<ComposerImportResult | null>(null);
+  protected readonly archiveImportError = signal<string | null>(null);
+  protected readonly archiveImportBusy = signal(false);
   protected readonly loading = signal(true);
   protected readonly availableTypes =
     signal<string[]>([]);
@@ -328,6 +335,62 @@ export class AdminDataTransfer implements OnInit {
     } finally {
       this.archiveScope.set(null);
     }
+  }
+
+  protected async selectComposerArchive(event: Event): Promise<void> {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) return;
+    const file = input.files?.[0] ?? null;
+    input.value = '';
+    this.archiveFile.set(file);
+    this.archiveOverwrite.set(false);
+    await this.previewComposerArchive();
+  }
+
+  protected async toggleArchiveOverwrite(event: Event): Promise<void> {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) return;
+    this.archiveOverwrite.set(input.checked);
+    await this.previewComposerArchive();
+  }
+
+  private async previewComposerArchive(): Promise<void> {
+    this.archivePreview.set(null);
+    this.archiveImportResult.set(null);
+    this.archiveImportError.set(null);
+    const file = this.archiveFile();
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      this.archiveImportError.set('Bitte eine Composer-ZIP-Datei auswählen.');
+      return;
+    }
+    this.archiveImportBusy.set(true);
+    try {
+      this.archivePreview.set(await firstValueFrom(this.composerArchive.preview(file, this.archiveOverwrite())));
+    } catch (error: unknown) {
+      this.archiveImportError.set((await composerArchiveErrorMessage(error)).replace('Composer-Export', 'Composer-Import'));
+    } finally { this.archiveImportBusy.set(false); }
+  }
+
+  protected async confirmComposerImport(): Promise<void> {
+    const file = this.archiveFile();
+    if (!file || !this.archivePreview() || this.archiveImportBusy()) return;
+    this.archiveImportBusy.set(true);
+    this.archiveImportError.set(null);
+    try {
+      const result = await firstValueFrom(this.composerArchive.import(file, this.archiveOverwrite()));
+      this.archiveImportResult.set(result);
+      this.archivePreview.set(null);
+      this.archiveFile.set(null);
+    } catch (error: unknown) {
+      this.archiveImportError.set((await composerArchiveErrorMessage(error)).replace('Composer-Export', 'Composer-Import'));
+    } finally { this.archiveImportBusy.set(false); }
+  }
+
+  protected cancelComposerImport(): void {
+    this.archiveFile.set(null);
+    this.archivePreview.set(null);
+    this.archiveImportError.set(null);
   }
 
   private downloadJson(
