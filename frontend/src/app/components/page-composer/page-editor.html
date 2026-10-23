@@ -20,9 +20,10 @@
       </button>
       <span class="composer__toolbar-divider"></span>
       <app-composer-transfer
-        [profile]="profile()" [document]="document()" [target]="transferTarget()"
-        [unsaved]="transferUnsaved()" [disabled]="transferBusy()"
-        (documentImport)="importLayout($event)" (zipImported)="zipImported.emit()"
+        [target]="transferTarget()"
+        [unsaved]="transferUnsaved()"
+        [disabled]="transferBusy()"
+        (zipImported)="zipImported.emit()"
       />
       <button
         type="button"
@@ -656,23 +657,37 @@
                 @case ('button') {
                   <h3>{{ 'page.editor.block.button' | i18n | async }}</h3>
                   <label>{{ 'page.blocks.button.label' | i18n | async }}</label>
-                  <input maxlength="160" [value]="block.label[locale()]" (input)="editInteractiveText('label', $event)" />
+                  <input
+                    maxlength="160"
+                    [value]="block.label[locale()]"
+                    (input)="editInteractiveText('label', $event)"
+                  />
                   <label>{{ 'page.blocks.button.destination' | i18n | async }}</label>
-                  <input maxlength="800" placeholder="/music oder https://..."
-                    [value]="block.href" (change)="editButtonLink($event)" />
+                  <input
+                    maxlength="800"
+                    placeholder="/music oder https://..."
+                    [value]="block.href"
+                    (change)="editButtonLink($event)"
+                  />
                   @if (linkError()) {
-                    <p role="alert" class="composer__hint">{{ 'page.blocks.button.invalidUrl' | i18n | async }}</p>
+                    <p role="alert" class="composer__hint">
+                      {{ 'page.blocks.button.invalidUrl' | i18n | async }}
+                    </p>
                   }
                   <label>{{ 'page.blocks.button.variant' | i18n | async }}</label>
                   <select [value]="block.variant" (change)="editButtonOption('variant', $event)">
                     @for (kind of ['primary', 'secondary', 'outline']; track kind) {
-                      <option [value]="kind">{{ 'page.blocks.button.' + kind | i18n | async }}</option>
+                      <option [value]="kind">
+                        {{ 'page.blocks.button.' + kind | i18n | async }}
+                      </option>
                     }
                   </select>
                   <label>{{ 'page.blocks.button.size' | i18n | async }}</label>
                   <select [value]="block.size" (change)="editButtonOption('size', $event)">
                     @for (size of ['small', 'medium', 'large']; track size) {
-                      <option [value]="size">{{ 'page.blocks.button.' + size | i18n | async }}</option>
+                      <option [value]="size">
+                        {{ 'page.blocks.button.' + size | i18n | async }}
+                      </option>
                     }
                   </select>
                   <label>{{ 'page.blocks.button.icon' | i18n | async }}</label>
@@ -683,145 +698,308 @@
                     }
                   </select>
                   <label>{{ 'page.blocks.button.iconPosition' | i18n | async }}</label>
-                  <select [value]="block.iconPosition ?? 'start'" (change)="editButtonOption('iconPosition', $event)">
+                  <select
+                    [value]="block.iconPosition ?? 'start'"
+                    (change)="editButtonOption('iconPosition', $event)"
+                  >
                     <option value="start">{{ 'page.blocks.button.start' | i18n | async }}</option>
                     <option value="end">{{ 'page.blocks.button.end' | i18n | async }}</option>
                   </select>
-                  <label class="composer__album-toggle"><input type="checkbox" [checked]="block.newTab ?? false"
-                     (change)="editButtonNewTab($event)" />{{ 'page.blocks.button.newTab' | i18n | async }}</label>
-                   <details class="composer__accordion composer__item-style-panel" open>
-                     <summary><app-icon name="paintbrush" />{{ 'page.blocks.appearance.buttonTitle' | i18n | async }}</summary>
-                     <div class="composer__accordion-content">
-                       @for (field of ['backgroundColor','hoverBackgroundColor','textColor','borderColor']; track field) {
-                         <div class="composer__control-color">
+                  <label class="composer__album-toggle"
+                    ><input
+                      type="checkbox"
+                      [checked]="block.newTab ?? false"
+                      (change)="editButtonNewTab($event)"
+                    />{{ 'page.blocks.button.newTab' | i18n | async }}</label
+                  >
+                  <details class="composer__accordion composer__item-style-panel" open>
+                    <summary>
+                      <app-icon name="paintbrush" />{{
+                        'page.blocks.appearance.buttonTitle' | i18n | async
+                      }}
+                    </summary>
+                    <div class="composer__accordion-content">
+                      @for (
+                        field of [
+                          'backgroundColor',
+                          'hoverBackgroundColor',
+                          'textColor',
+                          'borderColor',
+                        ];
+                        track field
+                      ) {
+                        <div class="composer__control-color">
                           @if (hasControlColor(field)) {
-                            <app-composer-color-picker [suggestedColors]="bookletColors()"
+                            <app-composer-color-picker
+                              [suggestedColors]="bookletColors()"
                               [label]="('page.blocks.appearance.' + field | i18n | async) ?? field"
-                              [value]="controlColor(field)" (valueChange)="setControlColor($any(field), $event)" />
-                            <button type="button" class="composer__control-reset" (click)="resetControlColor($any(field))"
-                              [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"><app-icon name="rotate-ccw" /></button>
+                              [value]="controlColor(field)"
+                              (valueChange)="setControlColor($any(field), $event)"
+                            />
+                            <button
+                              type="button"
+                              class="composer__control-reset"
+                              (click)="resetControlColor($any(field))"
+                              [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"
+                            >
+                              <app-icon name="rotate-ccw" />
+                            </button>
                           } @else {
                             <div class="composer__control-inherited">
-                              <span>{{ 'page.blocks.appearance.' + field | i18n | async }}: {{ 'page.blocks.styles.inherited' | i18n | async }}</span>
-                              <button type="button" class="composer__control-button" (click)="activateControlColor(field)">
+                              <span
+                                >{{ 'page.blocks.appearance.' + field | i18n | async }}:
+                                {{ 'page.blocks.styles.inherited' | i18n | async }}</span
+                              >
+                              <button
+                                type="button"
+                                class="composer__control-button"
+                                (click)="activateControlColor(field)"
+                              >
                                 {{ 'page.blocks.appearance.override' | i18n | async }}
                               </button>
                             </div>
                           }
-                         </div>
-                       }
-                       <div class="composer__control-numbers">
-                         @for (field of ['radius','borderWidth','fontSize','paddingX','paddingY']; track field) {
-                           <label>{{ 'page.blocks.appearance.' + field | i18n | async }}
-                             <input type="number" min="0" max="96" [value]="controlNumber(field)"
-                               (change)="setControlNumber($any(field), $event)" />
-                           </label>
-                         }
-                       </div>
-                       <label class="composer__album-toggle"><input type="checkbox" [checked]="block.appearance?.fullWidth ?? false"
-                         (change)="setControlFullWidth($event)" />{{ 'page.blocks.appearance.fullWidth' | i18n | async }}</label>
-                       <label>{{ 'page.blocks.appearance.shadow' | i18n | async }}
-                         <select [value]="controlShadowActive()" (change)="setControlShadow($any($event.target).value)">
-                           @for (preset of controlShadows; track preset) {
-                             <option [value]="preset">{{ 'page.editor.studio.shadow.' + preset | i18n | async }}</option>
-                           }
-                         </select>
-                       </label>
-                     </div>
-                   </details>
-                 }
-                 @case ('accordion') {
+                        </div>
+                      }
+                      <div class="composer__control-numbers">
+                        @for (
+                          field of ['radius', 'borderWidth', 'fontSize', 'paddingX', 'paddingY'];
+                          track field
+                        ) {
+                          <label
+                            >{{ 'page.blocks.appearance.' + field | i18n | async }}
+                            <input
+                              type="number"
+                              min="0"
+                              max="96"
+                              [value]="controlNumber(field)"
+                              (change)="setControlNumber($any(field), $event)"
+                            />
+                          </label>
+                        }
+                      </div>
+                      <label class="composer__album-toggle"
+                        ><input
+                          type="checkbox"
+                          [checked]="block.appearance?.fullWidth ?? false"
+                          (change)="setControlFullWidth($event)"
+                        />{{ 'page.blocks.appearance.fullWidth' | i18n | async }}</label
+                      >
+                      <label
+                        >{{ 'page.blocks.appearance.shadow' | i18n | async }}
+                        <select
+                          [value]="controlShadowActive()"
+                          (change)="setControlShadow($any($event.target).value)"
+                        >
+                          @for (preset of controlShadows; track preset) {
+                            <option [value]="preset">
+                              {{ 'page.editor.studio.shadow.' + preset | i18n | async }}
+                            </option>
+                          }
+                        </select>
+                      </label>
+                    </div>
+                  </details>
+                }
+                @case ('accordion') {
                   <h3>{{ 'page.editor.block.accordion' | i18n | async }}</h3>
-                  <label class="composer__album-toggle"><input type="checkbox" [checked]="block.allowMultiple ?? false"
-                    (change)="setAccordionMultiple($event)" />{{ 'page.blocks.accordion.multiple' | i18n | async }}</label>
+                  <label class="composer__album-toggle"
+                    ><input
+                      type="checkbox"
+                      [checked]="block.allowMultiple ?? false"
+                      (change)="setAccordionMultiple($event)"
+                    />{{ 'page.blocks.accordion.multiple' | i18n | async }}</label
+                  >
                   @for (item of block.items; track item.id; let index = $index) {
                     <fieldset class="composer__accordion-item-editor">
                       <legend>{{ index + 1 }}</legend>
                       <label>{{ 'page.blocks.accordion.title' | i18n | async }}</label>
-                      <input maxlength="160" [value]="item.title[locale()]"
-                        (change)="editAccordionItem(index, 'title', $event)" />
+                      <input
+                        maxlength="160"
+                        [value]="item.title[locale()]"
+                        (change)="editAccordionItem(index, 'title', $event)"
+                      />
                       <label>{{ 'page.blocks.accordion.body' | i18n | async }}</label>
-                       @if (activeAccordionEditor() === item.id || (activeAccordionEditor() === null && index === 0)) {
-                         <app-markdown-editor
-                           [label]="('page.blocks.accordion.body' | i18n | async) ?? ''"
-                           [formControl]="accordionBodyControl(item.id, item.body[locale()])"
-                           [assets]="assets()"
-                           [suggestedColors]="bookletColors()"
-                         />
-                       } @else {
-                         <button type="button" class="composer__control-button" (click)="focusAccordionEditor(item.id)">
-                           <app-icon name="pencil" />{{ 'page.blocks.accordion.editBody' | i18n | async }}
-                         </button>
-                       }
-                      <label class="composer__album-toggle"><input type="checkbox" [checked]="item.defaultOpen ?? false"
-                        (change)="toggleAccordionOpen(index, $event)" />{{ 'page.blocks.accordion.defaultOpen' | i18n | async }}</label>
-                       <div class="composer__accordion-item-actions">
-                         <button type="button" class="composer__control-button" [disabled]="$first" (click)="moveAccordionItem(index, -1)"
-                          [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
-                         <button type="button" class="composer__control-button" [disabled]="$last" (click)="moveAccordionItem(index, 1)"
-                          [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
-                         <button type="button" class="composer__control-button composer__control-button--danger" (click)="removeAccordionItem(index)">{{ 'page.editor.remove' | i18n | async }}</button>
-                       </div>
-                       <details class="composer__accordion composer__item-style-panel">
-                         <summary><app-icon name="paintbrush" />{{ 'page.blocks.appearance.title' | i18n | async }}</summary>
-                         <div class="composer__accordion-content">
-                           @for (field of ['headerBackgroundColor','headerColor','backgroundColor','textColor','borderColor']; track field) {
-                             <div class="composer__control-color">
+                      @if (
+                        activeAccordionEditor() === item.id ||
+                        (activeAccordionEditor() === null && index === 0)
+                      ) {
+                        <app-markdown-editor
+                          [label]="('page.blocks.accordion.body' | i18n | async) ?? ''"
+                          [formControl]="accordionBodyControl(item.id, item.body[locale()])"
+                          [assets]="assets()"
+                          [suggestedColors]="bookletColors()"
+                        />
+                      } @else {
+                        <button
+                          type="button"
+                          class="composer__control-button"
+                          (click)="focusAccordionEditor(item.id)"
+                        >
+                          <app-icon name="pencil" />{{
+                            'page.blocks.accordion.editBody' | i18n | async
+                          }}
+                        </button>
+                      }
+                      <label class="composer__album-toggle"
+                        ><input
+                          type="checkbox"
+                          [checked]="item.defaultOpen ?? false"
+                          (change)="toggleAccordionOpen(index, $event)"
+                        />{{ 'page.blocks.accordion.defaultOpen' | i18n | async }}</label
+                      >
+                      <div class="composer__accordion-item-actions">
+                        <button
+                          type="button"
+                          class="composer__control-button"
+                          [disabled]="$first"
+                          (click)="moveAccordionItem(index, -1)"
+                          [attr.aria-label]="'page.editor.up' | i18n | async"
+                        >
+                          <app-icon name="arrow-up" />
+                        </button>
+                        <button
+                          type="button"
+                          class="composer__control-button"
+                          [disabled]="$last"
+                          (click)="moveAccordionItem(index, 1)"
+                          [attr.aria-label]="'page.editor.down' | i18n | async"
+                        >
+                          <app-icon name="arrow-down" />
+                        </button>
+                        <button
+                          type="button"
+                          class="composer__control-button composer__control-button--danger"
+                          (click)="removeAccordionItem(index)"
+                        >
+                          {{ 'page.editor.remove' | i18n | async }}
+                        </button>
+                      </div>
+                      <details class="composer__accordion composer__item-style-panel">
+                        <summary>
+                          <app-icon name="paintbrush" />{{
+                            'page.blocks.appearance.title' | i18n | async
+                          }}
+                        </summary>
+                        <div class="composer__accordion-content">
+                          @for (
+                            field of [
+                              'headerBackgroundColor',
+                              'headerColor',
+                              'backgroundColor',
+                              'textColor',
+                              'borderColor',
+                            ];
+                            track field
+                          ) {
+                            <div class="composer__control-color">
                               @if (hasControlColor(field, item.id)) {
                                 <app-composer-color-picker
                                   [suggestedColors]="bookletColors()"
-                                  [label]="('page.blocks.appearance.' + field | i18n | async) ?? field"
+                                  [label]="
+                                    ('page.blocks.appearance.' + field | i18n | async) ?? field
+                                  "
                                   [value]="controlColor(field, item.id)"
-                                  (valueChange)="setControlColor($any(field), $event, item.id)" />
-                                <button type="button" class="composer__control-reset" (click)="resetControlColor($any(field), item.id)"
-                                  [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"><app-icon name="rotate-ccw" /></button>
+                                  (valueChange)="setControlColor($any(field), $event, item.id)"
+                                />
+                                <button
+                                  type="button"
+                                  class="composer__control-reset"
+                                  (click)="resetControlColor($any(field), item.id)"
+                                  [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"
+                                >
+                                  <app-icon name="rotate-ccw" />
+                                </button>
                               } @else {
                                 <div class="composer__control-inherited">
-                                  <span>{{ 'page.blocks.appearance.' + field | i18n | async }}: {{ 'page.blocks.styles.inherited' | i18n | async }}</span>
-                                  <button type="button" class="composer__control-button" (click)="activateControlColor(field, item.id)">
+                                  <span
+                                    >{{ 'page.blocks.appearance.' + field | i18n | async }}:
+                                    {{ 'page.blocks.styles.inherited' | i18n | async }}</span
+                                  >
+                                  <button
+                                    type="button"
+                                    class="composer__control-button"
+                                    (click)="activateControlColor(field, item.id)"
+                                  >
                                     {{ 'page.blocks.appearance.override' | i18n | async }}
                                   </button>
                                 </div>
                               }
-                             </div>
-                           }
-                           <div class="composer__control-numbers">
-                             @for (field of ['radius','borderWidth']; track field) {
-                               <label>{{ 'page.blocks.appearance.' + field | i18n | async }}
-                                 <input type="number" min="0" [max]="field === 'radius' ? 96 : 12"
-                                   [value]="controlNumber(field, item.id)" (change)="setControlNumber($any(field), $event, item.id)" />
-                               </label>
-                             }
-                           </div>
-                           <label>{{ 'page.blocks.appearance.shadow' | i18n | async }}
-                             <select [value]="controlShadowActive(item.id)" (change)="setControlShadow($any($event.target).value, item.id)">
-                               @for (preset of controlShadows; track preset) {
-                                 <option [value]="preset">{{ 'page.editor.studio.shadow.' + preset | i18n | async }}</option>
-                               }
-                             </select>
-                           </label>
-                         </div>
-                       </details>
-                     </fieldset>
-                   }
-                   <button type="button" class="composer__control-button composer__control-button--add" [disabled]="block.items.length >= 20"
-
-                    (click)="addAccordionItem()">{{ 'page.blocks.accordion.add' | i18n | async }}</button>
+                            </div>
+                          }
+                          <div class="composer__control-numbers">
+                            @for (field of ['radius', 'borderWidth']; track field) {
+                              <label
+                                >{{ 'page.blocks.appearance.' + field | i18n | async }}
+                                <input
+                                  type="number"
+                                  min="0"
+                                  [max]="field === 'radius' ? 96 : 12"
+                                  [value]="controlNumber(field, item.id)"
+                                  (change)="setControlNumber($any(field), $event, item.id)"
+                                />
+                              </label>
+                            }
+                          </div>
+                          <label
+                            >{{ 'page.blocks.appearance.shadow' | i18n | async }}
+                            <select
+                              [value]="controlShadowActive(item.id)"
+                              (change)="setControlShadow($any($event.target).value, item.id)"
+                            >
+                              @for (preset of controlShadows; track preset) {
+                                <option [value]="preset">
+                                  {{ 'page.editor.studio.shadow.' + preset | i18n | async }}
+                                </option>
+                              }
+                            </select>
+                          </label>
+                        </div>
+                      </details>
+                    </fieldset>
+                  }
+                  <button
+                    type="button"
+                    class="composer__control-button composer__control-button--add"
+                    [disabled]="block.items.length >= 20"
+                    (click)="addAccordionItem()"
+                  >
+                    {{ 'page.blocks.accordion.add' | i18n | async }}
+                  </button>
                 }
                 @case ('icon') {
                   <h3>{{ 'page.editor.block.icon' | i18n | async }}</h3>
-                  <div class="composer__icon-picker" role="group" [attr.aria-label]="'page.blocks.icon.select' | i18n | async">
+                  <div
+                    class="composer__icon-picker"
+                    role="group"
+                    [attr.aria-label]="'page.blocks.icon.select' | i18n | async"
+                  >
                     @for (icon of composerIcons; track icon) {
-                      <button type="button" [class.is-active]="block.name === icon"
-                        [attr.aria-pressed]="block.name === icon" [attr.aria-label]="icon"
-                        (click)="editIconName(icon)"><app-icon [name]="icon" /></button>
+                      <button
+                        type="button"
+                        [class.is-active]="block.name === icon"
+                        [attr.aria-pressed]="block.name === icon"
+                        [attr.aria-label]="icon"
+                        (click)="editIconName(icon)"
+                      >
+                        <app-icon [name]="icon" />
+                      </button>
                     }
                   </div>
                   <label>{{ 'page.blocks.icon.size' | i18n | async }}</label>
-                  <input type="number" min="16" max="128" [value]="block.size" (change)="editIconSize($event)" />
+                  <input
+                    type="number"
+                    min="16"
+                    max="128"
+                    [value]="block.size"
+                    (change)="editIconSize($event)"
+                  />
                   <label>{{ 'page.blocks.icon.ariaLabel' | i18n | async }}</label>
-                  <input maxlength="160" [value]="block.ariaLabel[locale()]"
-                    (change)="editInteractiveText('ariaLabel', $event)" />
+                  <input
+                    maxlength="160"
+                    [value]="block.ariaLabel[locale()]"
+                    (change)="editInteractiveText('ariaLabel', $event)"
+                  />
                 }
                 @case ('albumDetails') {
                   <p class="composer__hint">{{ 'page.editor.album.autoDetails' | i18n | async }}</p>
@@ -893,7 +1071,8 @@
                 @if (!document().theme) {
                   <p class="composer__hint">{{ 'page.theme.empty' | i18n | async }}</p>
                 }
-                <label>{{ 'page.theme.preset' | i18n | async }}
+                <label
+                  >{{ 'page.theme.preset' | i18n | async }}
                   <select (change)="applyThemePreset($event)">
                     <option value="">–</option>
                     @for (preset of themePresets; track preset.id) {
@@ -902,8 +1081,12 @@
                   </select>
                 </label>
                 @for (font of ['fontBody', 'fontHeading', 'fontAccent']; track font) {
-                  <label>{{ 'page.theme.' + font | i18n | async }}
-                    <select [value]="$any(themeValue())[font]" (change)="setThemeFont($any(font), $event)">
+                  <label
+                    >{{ 'page.theme.' + font | i18n | async }}
+                    <select
+                      [value]="$any(themeValue())[font]"
+                      (change)="setThemeFont($any(font), $event)"
+                    >
                       @for (option of themeFonts; track option.id) {
                         <option [value]="option.id">{{ option.label }}</option>
                       }
@@ -922,23 +1105,44 @@
                 <p class="composer__hint">{{ 'page.theme.breakpointNote' | i18n | async }}</p>
                 <div class="composer__theme-sizes">
                   @for (size of themeSizeKeys; track size) {
-                    <label>{{ size }}
-                      <input type="number" min="10" max="128" step="1"
-                        [value]="themeSize(size)" (change)="setThemeSize(size, $event)" />
+                    <label
+                      >{{ size }}
+                      <input
+                        type="number"
+                        min="10"
+                        max="128"
+                        step="1"
+                        [value]="themeSize(size)"
+                        (change)="setThemeSize(size, $event)"
+                      />
                     </label>
                   }
                 </div>
-                @for (field of ['lineHeight', 'letterSpacing', 'contentMaxWidth', 'readingMaxWidth']; track field) {
-                  <label>{{ 'page.theme.' + field | i18n | async }}
-                    <input type="number" step="0.1" [value]="$any(themeValue())[field]"
-                      (change)="setThemeNumber($any(field), $event)" />
+                @for (
+                  field of ['lineHeight', 'letterSpacing', 'contentMaxWidth', 'readingMaxWidth'];
+                  track field
+                ) {
+                  <label
+                    >{{ 'page.theme.' + field | i18n | async }}
+                    <input
+                      type="number"
+                      step="0.1"
+                      [value]="$any(themeValue())[field]"
+                      (change)="setThemeNumber($any(field), $event)"
+                    />
                   </label>
                 }
                 <div class="composer__theme-actions">
-                  <button type="button" (click)="openThemeJson()">{{ 'page.theme.editJson' | i18n | async }}</button>
-                  <button type="button" (click)="removeTheme()">{{ 'page.theme.reset' | i18n | async }}</button>
+                  <button type="button" (click)="openThemeJson()">
+                    {{ 'page.theme.editJson' | i18n | async }}
+                  </button>
+                  <button type="button" (click)="removeTheme()">
+                    {{ 'page.theme.reset' | i18n | async }}
+                  </button>
                 </div>
-                @if (themeJsonError()) { <p class="composer__theme-error" role="alert">{{ themeJsonError() }}</p> }
+                @if (themeJsonError()) {
+                  <p class="composer__theme-error" role="alert">{{ themeJsonError() }}</p>
+                }
               </div>
             }
 
@@ -1520,45 +1724,88 @@
                 </div>
               </details>
             } @else if (
-              selectedBlock()?.type === 'button' || selectedBlock()?.type === 'accordion' ||
+              selectedBlock()?.type === 'button' ||
+              selectedBlock()?.type === 'accordion' ||
               selectedBlock()?.type === 'icon'
             ) {
               <details class="composer__accordion" open>
-                <summary><app-icon name="paintbrush" class="white" />{{ 'page.editor.studio.presets' | i18n | async }}</summary>
+                <summary>
+                  <app-icon name="paintbrush" class="white" />{{
+                    'page.editor.studio.presets' | i18n | async
+                  }}
+                </summary>
                 <div class="composer__accordion-content composer__surface-presets">
                   @for (preset of ['none', 'soft', 'card', 'floating', 'glow']; track preset) {
                     <button type="button" (click)="applySurfacePreset($any(preset))">
-                      {{ (preset === 'none' ? 'page.editor.design.none' : 'page.editor.surface.' + preset) | i18n | async }}
+                      {{
+                        (preset === 'none'
+                          ? 'page.editor.design.none'
+                          : 'page.editor.surface.' + preset
+                        )
+                          | i18n
+                          | async
+                      }}
                     </button>
                   }
                 </div>
                 <div class="composer__accordion-content">
-                  <app-composer-color-picker [suggestedColors]="bookletColors()"
+                  <app-composer-color-picker
+                    [suggestedColors]="bookletColors()"
                     [label]="('page.editor.studio.textColor' | i18n | async) ?? ''"
-                    [value]="interactiveTextColor()" (valueChange)="setInteractiveTextColor($event)" />
-                  <app-composer-color-picker [suggestedColors]="bookletColors()"
+                    [value]="interactiveTextColor()"
+                    (valueChange)="setInteractiveTextColor($event)"
+                  />
+                  <app-composer-color-picker
+                    [suggestedColors]="bookletColors()"
                     [label]="('page.blocks.styles.background' | i18n | async) ?? ''"
-                    [value]="interactiveBackgroundColor()" (valueChange)="setInteractiveBackgroundColor($event)" />
-                  <label>{{ 'page.blocks.styles.radius' | i18n | async }}
-                    <input type="number" min="0" max="48"
-                      [value]="interactiveRadius()" (change)="setInteractiveRadius($event)" />
+                    [value]="interactiveBackgroundColor()"
+                    (valueChange)="setInteractiveBackgroundColor($event)"
+                  />
+                  <label
+                    >{{ 'page.blocks.styles.radius' | i18n | async }}
+                    <input
+                      type="number"
+                      min="0"
+                      max="48"
+                      [value]="interactiveRadius()"
+                      (change)="setInteractiveRadius($event)"
+                    />
                   </label>
                   <label class="composer__surface-toggle">
-                    <input type="checkbox" [checked]="!!selectedBlock()?.styles?.border"
-                      (change)="setBorderEnabled($event)" />{{ 'page.editor.surface.border' | i18n | async }}
+                    <input
+                      type="checkbox"
+                      [checked]="!!selectedBlock()?.styles?.border"
+                      (change)="setBorderEnabled($event)"
+                    />{{ 'page.editor.surface.border' | i18n | async }}
                   </label>
                   @if (selectedBlock()?.styles?.border; as border) {
-                    <label>{{ 'page.editor.surface.width' | i18n | async }}
-                      <input type="number" min="0" max="12" [value]="border.width" (change)="setBorderNumber($event)" />
+                    <label
+                      >{{ 'page.editor.surface.width' | i18n | async }}
+                      <input
+                        type="number"
+                        min="0"
+                        max="12"
+                        [value]="border.width"
+                        (change)="setBorderNumber($event)"
+                      />
                     </label>
                     <select [value]="border.style" (change)="setBorderStyle($event)">
-                      <option value="solid">{{ 'page.editor.surface.solid' | i18n | async }}</option>
-                      <option value="dashed">{{ 'page.editor.surface.dashed' | i18n | async }}</option>
-                      <option value="dotted">{{ 'page.editor.surface.dotted' | i18n | async }}</option>
+                      <option value="solid">
+                        {{ 'page.editor.surface.solid' | i18n | async }}
+                      </option>
+                      <option value="dashed">
+                        {{ 'page.editor.surface.dashed' | i18n | async }}
+                      </option>
+                      <option value="dotted">
+                        {{ 'page.editor.surface.dotted' | i18n | async }}
+                      </option>
                     </select>
-                    <app-composer-color-picker [suggestedColors]="bookletColors()"
+                    <app-composer-color-picker
+                      [suggestedColors]="bookletColors()"
                       [label]="('page.editor.design.color' | i18n | async) ?? ''"
-                      [value]="border.color" (valueChange)="setBorderColor($event)" />
+                      [value]="border.color"
+                      (valueChange)="setBorderColor($event)"
+                    />
                   }
                 </div>
               </details>
@@ -1597,12 +1844,21 @@
             <p class="composer__hint">{{ 'page.editor.advancedHint' | i18n | async }}</p>
             @if (selected()?.kind === 'page') {
               <div class="composer__theme">
-                <label>{{ 'page.theme.editJson' | i18n | async }}
-                  <textarea spellcheck="false" [value]="themeJson()" (input)="setThemeJsonDraft($event)"></textarea>
+                <label
+                  >{{ 'page.theme.editJson' | i18n | async }}
+                  <textarea
+                    spellcheck="false"
+                    [value]="themeJson()"
+                    (input)="setThemeJsonDraft($event)"
+                  ></textarea>
                 </label>
                 <p class="composer__hint">{{ 'page.theme.jsonHint' | i18n | async }}</p>
-                @if (themeJsonError()) { <p class="composer__theme-error" role="alert">{{ themeJsonError() }}</p> }
-                <button type="button" (click)="applyThemeJson()">{{ 'page.theme.applyJson' | i18n | async }}</button>
+                @if (themeJsonError()) {
+                  <p class="composer__theme-error" role="alert">{{ themeJsonError() }}</p>
+                }
+                <button type="button" (click)="applyThemeJson()">
+                  {{ 'page.theme.applyJson' | i18n | async }}
+                </button>
               </div>
             }
           }

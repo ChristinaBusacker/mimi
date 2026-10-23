@@ -1,49 +1,85 @@
-<button type="button" class="composer-transfer__open" [disabled]="disabled()" (click)="open()">
-  <app-icon name="folder" class="white" /> {{ 'transfer.single.toolbar' | i18n | async }}
-</button>
+<div class="composer-transfer__actions">
+  <button
+    type="button"
+    class="composer-transfer__action"
+    [disabled]="disabled() || working() || !target()"
+    [title]="'transfer.single.exportZip' | i18n | async"
+    (click)="exportZip()"
+  >
+    <app-icon name="export" class="white" /> {{ 'transfer.single.exportButton' | i18n | async }}
+  </button>
+  <button
+    type="button"
+    class="composer-transfer__action"
+    [disabled]="disabled() || working() || !target()"
+    [title]="'transfer.single.importButton' | i18n | async"
+    (click)="openImport()"
+  >
+    <app-icon name="import" class="white" /> {{ 'transfer.single.importButton' | i18n | async }}
+  </button>
+  @if (error(); as message) {
+    <p class="composer-transfer__feedback" role="alert">
+      {{ message.startsWith('transfer.single.') ? (message | i18n | async) : message }}
+    </p>
+  }
+</div>
 <dialog #dialog class="composer-transfer" (close)="reset()">
   <header>
-    <h2>{{ 'transfer.single.title' | i18n | async }}</h2>
-    <button type="button" class="composer-transfer__close" [disabled]="working()" (click)="close()" [attr.aria-label]="'transfer.single.close' | i18n | async">×</button>
+    <h2>{{ 'transfer.single.importButton' | i18n | async }}</h2>
+    <button
+      type="button"
+      class="composer-transfer__close"
+      [disabled]="working()"
+      (click)="close()"
+      [attr.aria-label]="'transfer.single.close' | i18n | async"
+    >
+      ×
+    </button>
   </header>
   <div class="composer-transfer__body">
-    <p>{{ 'transfer.single.explanation' | i18n | async }}</p>
-    <div class="composer-transfer__exports">
-      <button type="button" [disabled]="working()" (click)="exportJson()">{{ 'transfer.single.exportJson' | i18n | async }}</button>
-      @if (target()) {
-        <button type="button" [disabled]="working()" (click)="exportZip()">{{ 'transfer.single.exportZip' | i18n | async }}</button>
-        <small>{{ 'transfer.single.zipHint' | i18n | async }}</small>
-      }
-    </div>
+    <p>{{ 'transfer.single.importExplanation' | i18n | async }}</p>
     <div class="composer-transfer__import">
-      <label for="composer-transfer-file">{{ 'transfer.single.choose' | i18n | async }}</label>
-      <input id="composer-transfer-file" type="file" accept=".json,.zip,application/json,application/zip"
-        [disabled]="working() || disabled()" (change)="chooseFile($event)" />
+      <label for="composer-transfer-file">{{ 'transfer.single.chooseZip' | i18n | async }}</label>
+      <input
+        id="composer-transfer-file"
+        type="file"
+        accept=".zip,application/zip"
+        [disabled]="working() || disabled()"
+        (change)="chooseFile($event)"
+      />
       @if (pending(); as selection) {
         <div class="composer-transfer__preview" role="status">
           <strong>{{ 'transfer.single.preview' | i18n | async }}</strong>
-          @if (selection.kind === 'json') {
-            <p>{{ 'transfer.single.previewJson' | i18n | async }}: {{ selection.document.sections.length }}</p>
-            <p>{{ 'transfer.single.jsonDraft' | i18n | async }}</p>
-            <p class="composer-transfer__warning">{{ 'transfer.single.jsonAssets' | i18n | async }}</p>
-          } @else {
-            <p>{{ selection.preview.documents[0].slug }} · {{ selection.preview.assetCount }} {{ 'transfer.single.assets' | i18n | async }}</p>
-            <p>{{ 'transfer.single.zipDraft' | i18n | async }}</p>
-            @for (warning of selection.preview.warnings; track warning) { <p class="composer-transfer__warning">{{ warning }}</p> }
+          <p>
+            {{ selection.preview.documents[0].slug }} · {{ selection.preview.assetCount }}
+            {{ 'transfer.single.assets' | i18n | async }}
+          </p>
+          <p>{{ 'transfer.single.zipDraft' | i18n | async }}</p>
+          @for (warning of selection.preview.warnings; track warning) {
+            <p class="composer-transfer__warning">{{ warning }}</p>
           }
           <label class="composer-transfer__confirm">
             <input type="checkbox" [checked]="confirmed()" (change)="setConfirmed($event)" />
             {{ 'transfer.single.confirm' | i18n | async }}
           </label>
-          <button type="button" class="composer-transfer__primary" [disabled]="!confirmed() || working() || disabled()" (click)="importConfirmed()">
+          <button
+            type="button"
+            class="composer-transfer__primary"
+            [disabled]="!confirmed() || working() || disabled()"
+            (click)="importConfirmed()"
+          >
             {{ 'transfer.single.import' | i18n | async }}
           </button>
         </div>
       }
     </div>
-    @if (working()) { <p role="status">{{ 'transfer.single.working' | i18n | async }}</p> }
-    @if (error(); as error) {
-      <p class="composer-transfer__error" role="alert">{{ (error.startsWith('transfer.single.') ? (error | i18n | async) : error) }}</p>
+    @if (working()) {
+      <p role="status">{{ 'transfer.single.working' | i18n | async }}</p>
+    }
+    @if (error(); as message) {
+      <p class="composer-transfer__error" role="alert">
+        {{ message.startsWith('transfer.single.') ? (message | i18n | async) : message }}
+      </p>
     }
   </div>
 </dialog>

@@ -6,7 +6,7 @@ import type { ComposerImportPreview, ComposerImportResult } from '@shared/data-t
 import { API_BASE_URL } from '../http/api-base-url.token';
 
 export type ComposerArchiveScope = 'all' | 'pages' | 'booklets';
-export interface ComposerSingleTarget { kind: 'page' | 'album-booklet'; id: string; }
+export interface ComposerSingleTarget { kind: 'page' | 'album-booklet'; id: string; slug?: string; }
 
 /** Binary downloads are deliberately separate from the JSON settings-transfer API. */
 @Injectable({ providedIn: 'root' })
@@ -20,6 +20,11 @@ export class ComposerArchiveClient {
     return this.http.get(`${this.apiBaseUrl}/admin/composer-archive/export?${query}`, {
       responseType: 'blob', transferCache: false,
     });
+  }
+
+  /** A Composer toolbar never guesses the scope; both are derived from its target. */
+  exportSingle(target: ComposerSingleTarget): Observable<Blob> {
+    return this.export(target.kind === 'page' ? 'pages' : 'booklets', target.slug || target.id);
   }
 
   preview(file: File, overwrite: boolean): Observable<ComposerImportPreview> {

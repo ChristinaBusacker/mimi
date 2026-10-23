@@ -40,7 +40,7 @@
     <app-page-editor
       [profile]="'album'"
       [document]="document()"
-      [transferTarget]="{ kind: 'album-booklet', id: albumId }"
+      [transferTarget]="{ kind: 'album-booklet', id: albumId, slug: album()?.slug ?? '' }"
       [transferUnsaved]="dirty()" [transferBusy]="working()"
       (zipImported)="reloadImportedDraft()"
       [assets]="images()"

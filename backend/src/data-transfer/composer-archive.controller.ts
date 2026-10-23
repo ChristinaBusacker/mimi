@@ -11,11 +11,12 @@ import { AUTH_SESSION_COOKIE } from '../auth/session-cookie';
 import { ComposerArchiveService, type ComposerArchiveScope } from './composer-archive.service';
 import { ComposerArchiveImportService, type ComposerImportTarget } from './composer-archive-import.service';
 import { validatePageDocument } from '../content/page-document-validation';
+import { COMPOSER_UUID } from './composer-uuid';
 
 function importTarget(kind?: string, id?: string): ComposerImportTarget | undefined {
   if (kind === undefined && id === undefined) return undefined;
   if ((kind !== 'page' && kind !== 'album-booklet') || !id ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(id))
+      !COMPOSER_UUID.test(id))
     throw new BadRequestException('Invalid single-document import target.');
   return { kind, id };
 }

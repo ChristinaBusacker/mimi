@@ -1,0 +1,34 @@
+{
+  "localizations": [
+    {
+      "key": "transfer.single.exportButton",
+      "de": "ZIP exportieren",
+      "en": "Export ZIP"
+    },
+    {
+      "key": "transfer.single.importButton",
+      "de": "ZIP importieren",
+      "en": "Import ZIP"
+    },
+    {
+      "key": "transfer.single.importExplanation",
+      "de": "Das Archiv wird geprüft und ersetzt nach Bestätigung nur den Entwurf des geöffneten Dokuments. Veröffentlichte Inhalte bleiben erhalten.",
+      "en": "The archive is validated and replaces only the current document draft after confirmation. Published content is unchanged."
+    },
+    {
+      "key": "transfer.single.chooseZip",
+      "de": "ZIP-Archiv auswählen",
+      "en": "Select ZIP archive"
+    },
+    {
+      "key": "transfer.single.error.unsavedExport",
+      "de": "Bitte Änderungen zuerst als Entwurf speichern. Das ZIP enthält den zuletzt gespeicherten Stand einschließlich Assets.",
+      "en": "Save your changes as a draft first. ZIP includes the last saved version and its assets."
+    },
+    {
+      "key": "transfer.single.error.zipExtension",
+      "de": "Bitte ein ZIP-Archiv auswählen.",
+      "en": "Please select a ZIP archive."
+    }
+  ]
+}

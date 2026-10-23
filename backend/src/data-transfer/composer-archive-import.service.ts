@@ -16,8 +16,9 @@ import { SitePageEntry } from '../pages/entities/site-page.entry';
 import { SitePagesService } from '../pages/site-pages.service';
 import { collectSitePageAssets } from '../pages/site-page-assets';
 import { ComposerZipReader } from './composer-zip-reader';
+import { COMPOSER_UUID } from './composer-uuid';
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i;
+const UUID = COMPOSER_UUID;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA = /^[0-9a-f]{64}$/;
 const RESERVED = new Set([

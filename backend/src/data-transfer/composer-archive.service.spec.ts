@@ -69,4 +69,26 @@ describe('Composer archive export', () => {
       await rm(directory, { recursive: true, force: true });
     }
   });
+
+  it('exports a single page by its stable slug without requiring a UUID', async () => {
+    const page = {
+      uuid: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', key: 'page:story', slug: 'story',
+      draft: { schemaVersion: 1, id: 'page', styles: {}, sections: [] },
+      published: null, publishedAt: null,
+      draftMetadata: { title: { de: 'Story', en: 'Story' }, seoTitle: { de: '', en: '' },
+        seoDescription: { de: '', en: '' }, seoImageAssetId: null, indexable: true },
+      publishedMetadata: null,
+    } as unknown as SitePageEntry;
+    const pages = { findOneBy: vi.fn(async () => page) };
+    const albums = { findOneBy: vi.fn(async () => null) };
+    const service = new ComposerArchiveService(pages as never, albums as never, {} as never);
+    const chunks: Buffer[] = [];
+    for await (const part of await service.export('pages', 'story')) chunks.push(Buffer.from(part));
+    expect(pages.findOneBy).toHaveBeenCalledWith({ slug: 'story' });
+    // A standard v4 UUID must pass the validator as well.
+    await service.export('pages', page.uuid);
+    expect(pages.findOneBy).toHaveBeenLastCalledWith({ uuid: page.uuid });
+    const manifest = manifestFromZip(Buffer.concat(chunks));
+    expect((manifest['documents'] as Array<{ slug: string }>)[0].slug).toBe('story');
+  });
 });

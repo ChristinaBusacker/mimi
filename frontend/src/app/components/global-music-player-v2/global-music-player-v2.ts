@@ -1,7 +1,16 @@
 import { isPlatformBrowser, AsyncPipe } from '@angular/common';
 import {
-  ChangeDetectionStrategy, Component, DestroyRef, ElementRef, PLATFORM_ID,
-  afterNextRender, computed, effect, inject, signal, viewChild,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  PLATFORM_ID,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -35,24 +44,33 @@ export class GlobalMusicPlayer {
   private readonly waveformElement = viewChild<ElementRef<HTMLElement>>('waveformElement');
 
   protected readonly mobile = signal(false);
-  private readonly desktopCollapsed = signal(this.browser && this.storage.get<boolean>(UI_STORAGE_KEY) === true);
+  private readonly desktopCollapsed = signal(
+    this.browser && this.storage.get<boolean>(UI_STORAGE_KEY) === true,
+  );
   private readonly mobileExpanded = signal(false);
-  protected readonly compact = computed(() => this.mobile() ? !this.mobileExpanded() : this.desktopCollapsed());
+  protected readonly compact = computed(() =>
+    this.mobile() ? !this.mobileExpanded() : this.desktopCollapsed(),
+  );
   protected readonly panel = signal<'queue' | 'info' | null>(null);
   private readonly waveform = signal<readonly number[] | null>(null);
   private readonly waveWidth = signal(460);
-  protected readonly waveBars = computed(() => visibleWaveform(
-    this.waveform() ?? [], Math.max(64, Math.min(320, Math.floor(this.waveWidth() / 2.5))),
-  ));
+  protected readonly waveBars = computed(() =>
+    visibleWaveform(
+      this.waveform() ?? [],
+      Math.max(64, Math.min(320, Math.floor(this.waveWidth() / 2.5))),
+    ),
+  );
   protected readonly waveViewBox = computed(() => `0 0 ${this.waveBars().length * 2.5} 40`);
   private waveformRequest = 0;
 
-  protected readonly currentDuration = computed(() =>
-    this.playback.activeTrack()?.previewDurationSeconds ?? 0,
+  protected readonly currentDuration = computed(
+    () => this.playback.activeTrack()?.previewDurationSeconds ?? 0,
   );
   protected readonly playedPercent = computed(() => {
     const duration = this.currentDuration();
-    return duration > 0 ? Math.min(100, Math.max(0, 100 * this.playback.currentTime() / duration)) : 0;
+    return duration > 0
+      ? Math.min(100, Math.max(0, (100 * this.playback.currentTime()) / duration))
+      : 0;
   });
 
   constructor() {
@@ -97,7 +115,7 @@ export class GlobalMusicPlayer {
     if (this.compact()) this.panel.set(null);
   }
   protected togglePanel(target: 'queue' | 'info'): void {
-    this.panel.update((current) => current === target ? null : target);
+    this.panel.update((current) => (current === target ? null : target));
   }
   protected seek(event: Event): void {
     const element = event.target;
@@ -111,7 +129,9 @@ export class GlobalMusicPlayer {
     const value = Math.max(0, Math.floor(seconds));
     return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`;
   }
-  protected assetUrl(assetId: string): string { return `/api/assets/${assetId}`; }
+  protected assetUrl(assetId: string): string {
+    return `/api/assets/${assetId}`;
+  }
   protected playQueued(id: string): void {
     const track = this.playback.queue().find((item) => item.id === id);
     if (track) void this.playback.toggleTrack(track, this.playback.queue());

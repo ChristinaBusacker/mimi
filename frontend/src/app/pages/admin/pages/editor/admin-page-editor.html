@@ -74,7 +74,7 @@
       <app-page-editor
         profile="standard"
         [document]="document()"
-        [transferTarget]="{ kind: 'page', id: pageId }"
+        [transferTarget]="{ kind: 'page', id: pageId, slug: page()?.slug ?? '' }"
         [transferUnsaved]="dirty()" [transferBusy]="working()"
         (zipImported)="reloadImportedDraft()"
         [assets]="images()"

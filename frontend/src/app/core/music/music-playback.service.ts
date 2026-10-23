@@ -1,7 +1,15 @@
 import type { MusicTrackListItem } from '@shared/music/music';
 
 import { isPlatformBrowser } from '@angular/common';
-import { DestroyRef, Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
+import {
+  DestroyRef,
+  Injectable,
+  PLATFORM_ID,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { Store } from '@ngxs/store';
 import { firstValueFrom } from 'rxjs';
 
@@ -40,8 +48,10 @@ export class MusicPlaybackService {
     if (!this.shuffle()) return tracks;
     const byId = new Map(tracks.map((track) => [track.id, track]));
     const ids = this.shuffledIds();
-    return [...ids.map((id) => byId.get(id)).filter((item): item is MusicTrackListItem => !!item),
-      ...tracks.filter((item) => !ids.includes(item.id))];
+    return [
+      ...ids.map((id) => byId.get(id)).filter((item): item is MusicTrackListItem => !!item),
+      ...tracks.filter((item) => !ids.includes(item.id)),
+    ];
   });
   readonly previousTrack = computed(() => this.adjacent(-1));
   readonly nextTrack = computed(() => this.adjacent(1));
@@ -153,12 +163,14 @@ export class MusicPlaybackService {
   }
 
   cycleRepeat(): void {
-    this.repeat.update((mode) => mode === 'off' ? 'all' : mode === 'all' ? 'one' : 'off');
+    this.repeat.update((mode) => (mode === 'off' ? 'all' : mode === 'all' ? 'one' : 'off'));
     this.persist();
   }
 
   private makeShuffleOrder(activeId?: string): void {
-    const ids = this.queue().map((item) => item.id).filter((id) => id !== activeId);
+    const ids = this.queue()
+      .map((item) => item.id)
+      .filter((id) => id !== activeId);
     for (let i = ids.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [ids[i], ids[j]] = [ids[j], ids[i]];
@@ -185,9 +197,10 @@ export class MusicPlaybackService {
 
   seekTo(seconds: number): void {
     if (!Number.isFinite(seconds) || !this.activeTrack()) return;
-    const duration = this.audio && Number.isFinite(this.audio.duration)
-      ? this.audio.duration
-      : this.activeTrack()?.previewDurationSeconds ?? 0;
+    const duration =
+      this.audio && Number.isFinite(this.audio.duration)
+        ? this.audio.duration
+        : (this.activeTrack()?.previewDurationSeconds ?? 0);
     const position = Math.max(0, Math.min(seconds, duration));
     this.currentTime.set(position);
     if (this.audio?.getAttribute('src')) {
@@ -209,12 +222,15 @@ export class MusicPlaybackService {
       const track = data.tracks.find((item) => item.id === saved.trackId && item.previewAssetId);
       if (!track) return;
       const byId = new Map(data.tracks.map((item) => [item.id, item]));
-      const savedQueue = saved.queueTrackIds?.map((id) => byId.get(id)).filter(
-        (item): item is MusicTrackListItem => Boolean(item?.previewAssetId),
-      ) ?? [];
-      this.queue.set(savedQueue.some((item) => item.id === track.id)
-        ? savedQueue
-        : data.tracks.filter((item) => item.previewAssetId !== null));
+      const savedQueue =
+        saved.queueTrackIds
+          ?.map((id) => byId.get(id))
+          .filter((item): item is MusicTrackListItem => Boolean(item?.previewAssetId)) ?? [];
+      this.queue.set(
+        savedQueue.some((item) => item.id === track.id)
+          ? savedQueue
+          : data.tracks.filter((item) => item.previewAssetId !== null),
+      );
       if (this.shuffle()) this.makeShuffleOrder(track.id);
       this.activeTrack.set(track);
       this.currentTime.set(saved.positionSeconds);
@@ -250,7 +266,8 @@ export class MusicPlaybackService {
     const nextIndex = index + direction;
     if (nextIndex >= 0 && nextIndex < tracks.length) return tracks[nextIndex];
     return this.repeat() === 'all' && tracks.length > 1
-      ? tracks[(nextIndex + tracks.length) % tracks.length] : null;
+      ? tracks[(nextIndex + tracks.length) % tracks.length]
+      : null;
   }
 
   private ensureAudio(): HTMLAudioElement {
@@ -270,8 +287,8 @@ export class MusicPlaybackService {
     audio.addEventListener('loadedmetadata', () => {
       if (this.pendingPosition === null) return;
       const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
-      const position = duration > 0 && this.pendingPosition < duration - 1
-        ? this.pendingPosition : 0;
+      const position =
+        duration > 0 && this.pendingPosition < duration - 1 ? this.pendingPosition : 0;
       this.pendingPosition = null;
       audio.currentTime = position;
       this.currentTime.set(position);
@@ -328,10 +345,16 @@ export class MusicPlaybackService {
   private registerMediaSession(): void {
     if (!('mediaSession' in navigator)) return;
     const handlers: Partial<Record<MediaSessionAction, MediaSessionActionHandler>> = {
-      play: () => { void this.resume(); },
+      play: () => {
+        void this.resume();
+      },
       pause: () => this.pause(),
-      previoustrack: () => { void this.playAdjacent(-1); },
-      nexttrack: () => { void this.playAdjacent(1); },
+      previoustrack: () => {
+        void this.playAdjacent(-1);
+      },
+      nexttrack: () => {
+        void this.playAdjacent(1);
+      },
       seekto: ({ seekTime }) => this.seekTo(seekTime ?? this.currentTime()),
       seekbackward: ({ seekOffset }) => this.seekTo(this.currentTime() - (seekOffset ?? 5)),
       seekforward: ({ seekOffset }) => this.seekTo(this.currentTime() + (seekOffset ?? 5)),
@@ -383,7 +406,13 @@ export class MusicPlaybackService {
   private clearMediaSession(): void {
     if (!this.browser || !('mediaSession' in navigator)) return;
     for (const action of [
-      'play', 'pause', 'nexttrack', 'previoustrack', 'seekto', 'seekbackward', 'seekforward',
+      'play',
+      'pause',
+      'nexttrack',
+      'previoustrack',
+      'seekto',
+      'seekbackward',
+      'seekforward',
     ] as const) {
       try {
         navigator.mediaSession.setActionHandler(action, null);

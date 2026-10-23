@@ -182,12 +182,6 @@ export class PageEditor {
   /** Request persistence from the parent; the editor never saves directly. */
   readonly saveRequest = output<boolean>();
 
-  protected importLayout(document: PageDocument): void {
-    this.selected.set(null);
-    this.boundMarkdownKey = null;
-    this.commit(document);
-  }
-
   private readonly workspace = viewChild<ElementRef<HTMLElement>>('workspace');
   private readonly imageLibrary = viewChild(AssetLibrary);
   private readonly defaultInspectorWidth = 380;
@@ -1426,8 +1420,10 @@ export class PageEditor {
   private controlAppearance(field: string, id?: string): Record<string, unknown> | undefined {
     const block = this.selectedBlock();
     if (!block || (block.type !== 'button' && block.type !== 'accordion')) return undefined;
-    const appearance = block.type === 'button'
-      ? block.appearance : block.items.find((item) => item.id === id)?.appearance;
+    const appearance =
+      block.type === 'button'
+        ? block.appearance
+        : block.items.find((item) => item.id === id)?.appearance;
     return appearance as Record<string, unknown> | undefined;
   }
   protected hasControlColor(field: string, id?: string): boolean {
@@ -1449,7 +1445,11 @@ export class PageEditor {
     return '#87476fff';
   }
   protected activateControlColor(field: string, id?: string): void {
-    this.setControlColor(field as 'backgroundColor', this.controlSuggestedColor(field, id), id ?? null);
+    this.setControlColor(
+      field as 'backgroundColor',
+      this.controlSuggestedColor(field, id),
+      id ?? null,
+    );
   }
   protected controlNumber(field: string, id?: string): number {
     const block = this.selectedBlock();

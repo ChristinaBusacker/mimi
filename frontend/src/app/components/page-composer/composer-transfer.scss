@@ -1,15 +1,28 @@
+/* Same sizing and surface treatment as the surrounding Composer toolbar. */
 :host { display: contents; }
-.composer-transfer__open { display: inline-flex; gap: 6px; align-items: center; }
-.composer-transfer__open app-icon { width: 17px; }
+.composer-transfer__actions { display: inline-flex; gap: 5px; align-items: center; position: relative; min-width: 0; }
+.composer-transfer__action {
+  display: inline-flex; justify-content: center; align-items: center; gap: 5px;
+  min-height: 34px; padding: 5px 9px; border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 8px; background: transparent; color: inherit; font: inherit; cursor: pointer;
+}
+.composer-transfer__action:hover:not(:disabled) { background: rgb(218 141 187 / 21%); }
+.composer-transfer__action:focus-visible { outline: 2px solid #f4badd; outline-offset: 2px; }
+.composer-transfer__action:disabled { opacity: .45; cursor: not-allowed; }
+.composer-transfer__action app-icon { width: 17px; height: 17px; }
+.composer-transfer__feedback {
+  position: absolute; z-index: 20; inset-block-start: calc(100% + 8px); inset-inline-start: 0;
+  width: min(340px, 80vw); padding: 10px 12px; margin: 0; border: 1px solid #b37e9c;
+  border-radius: 9px; color: #ffccd9; background: #322138;
+  box-shadow: 0 10px 30px #120a1caa; font-size: .82rem; overflow-wrap: anywhere;
+}
 .composer-transfer { box-sizing: border-box; color: #ffe9f5; background: #2c2036; border: 1px solid #bc83ae; border-radius: 16px; width: min(550px, calc(100vw - 24px)); max-height: min(88dvh, 760px); padding: 0; box-shadow: 0 26px 70px #120a1ccd; }
 .composer-transfer::backdrop { background: #140d19ae; }
 .composer-transfer header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 16px 20px; background: #442d47; }
 .composer-transfer h2 { margin: 0; font-size: 1.1rem; }
 .composer-transfer__body { padding: 20px; display: grid; gap: 20px; overflow-y: auto; }
 .composer-transfer p { margin: 0; line-height: 1.5; }
-.composer-transfer__exports, .composer-transfer__import, .composer-transfer__preview { display: grid; gap: 11px; }
-.composer-transfer__exports { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.composer-transfer__exports small { grid-column: 1 / -1; opacity: .8; }
+.composer-transfer__import, .composer-transfer__preview { display: grid; gap: 11px; }
 .composer-transfer button { padding: 10px 13px; border: 1px solid #a77b9d; border-radius: 9px; background: #523555; color: #ffedf7; cursor: pointer; font: inherit; }
 .composer-transfer button:hover:not(:disabled) { background: #6c486a; }
 .composer-transfer button:focus-visible, .composer-transfer input:focus-visible { outline: 2px solid #ffa6d5; outline-offset: 2px; }
@@ -21,4 +34,4 @@
 .composer-transfer__confirm { display: flex; align-items: start; gap: 9px; }
 .composer-transfer__error { color: #ffb5c1; overflow-wrap: anywhere; }
 .composer-transfer__warning { opacity: .75; font-size: .85rem; }
-@media (max-width: 450px) { .composer-transfer__exports { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .composer-transfer__action { padding: 5px 7px; font-size: .8rem; } }

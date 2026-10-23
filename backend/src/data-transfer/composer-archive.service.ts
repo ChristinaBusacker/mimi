@@ -17,7 +17,8 @@ import { storedZip, type StoredZipEntry } from './stored-zip';
 export type ComposerArchiveScope = 'all' | 'pages' | 'booklets';
 const MAX_ASSETS = 250;
 const MAX_EXPORT_BYTES = 512 * 1024 * 1024; // ZIP32 streaming, bounded response
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const DOCUMENT_SLUG = /^[a-z0-9](?:[a-z0-9-]{0,158}[a-z0-9])?$/;
 const EXTENSIONS: Record<string, string> = {
   'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp',
   'image/avif': 'avif', 'image/gif': 'gif', 'audio/mpeg': 'mp3',
@@ -66,14 +67,17 @@ export class ComposerArchiveService {
   ) {}
 
   async export(scope: ComposerArchiveScope, id?: string): Promise<Readable> {
-    if (!['all', 'pages', 'booklets'].includes(scope) || (id && (scope === 'all' || !UUID.test(id)))) {
-      throw new BadRequestException('Invalid composer export scope or ID.');
+    if (!['all', 'pages', 'booklets'].includes(scope)) {
+      throw new BadRequestException(`Unsupported Composer export scope: ${String(scope)}.`);
+    }
+    if (id !== undefined && (scope === 'all' || (!UUID.test(id) && !DOCUMENT_SLUG.test(id)))) {
+      throw new BadRequestException('Composer single export requires a valid document UUID or slug, with pages or booklets scope.');
     }
 
     const snapshots: Snapshot[] = [];
     if (scope !== 'booklets') {
       const pages = id
-        ? [await this.pages.findOneBy({ uuid: id })].filter((x): x is SitePageEntry => x !== null)
+        ? [await this.pages.findOneBy(UUID.test(id) ? { uuid: id } : { slug: id })].filter((x): x is SitePageEntry => x !== null)
         : await this.pages.find({ order: { key: 'ASC' } });
       for (const page of pages) snapshots.push({
         kind: 'page', key: page.key, slug: page.slug, sourceId: page.uuid,
@@ -84,7 +88,7 @@ export class ComposerArchiveService {
     }
     if (scope !== 'pages') {
       const albums = id
-        ? [await this.albums.findOneBy({ uuid: id })].filter((x): x is MusicAlbumEntry => x !== null)
+        ? [await this.albums.findOneBy(UUID.test(id) ? { uuid: id } : { slug: id })].filter((x): x is MusicAlbumEntry => x !== null)
         : await this.albums.find({ order: { slug: 'ASC' } });
       for (const album of albums) {
         // Only albums with an actual booklet need a Composer export.
