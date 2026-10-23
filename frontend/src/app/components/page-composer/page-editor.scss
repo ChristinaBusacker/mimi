@@ -3,6 +3,7 @@
 @use './page-editor-surfaces';
 @use './page-interactive-editor';
 @use './page-theme-editor';
+@use './page-style-clipboard';
 
 :host {
   display: block;

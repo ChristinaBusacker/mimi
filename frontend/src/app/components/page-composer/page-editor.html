@@ -1064,6 +1064,32 @@
           }
           @if (inspectorTab() === 'design') {
             <h3>{{ 'page.editor.design' | i18n | async }}</h3>
+            @if (selected()?.kind !== 'page') {
+              <div class="composer__style-transfer">
+                <div class="composer__style-transfer-actions">
+                  <button type="button" (click)="copySelectedStyle()">
+                    <app-icon name="copy" class="white" />
+                    {{ 'page.editor.styleClipboard.copy' | i18n | async }}
+                  </button>
+                  <button type="button" [disabled]="!styleClipboard.copied()" (click)="pasteSelectedStyle()">
+                    <app-icon name="paintbrush" class="white" />
+                    {{ 'page.editor.styleClipboard.paste' | i18n | async }}
+                  </button>
+                </div>
+                @if (styleClipboard.copied(); as copied) {
+                  <p class="composer__style-transfer-note" role="status" aria-live="polite">
+                    <app-icon name="check" class="white" />
+                    {{ 'page.editor.styleClipboard.source' | i18n | async }}
+                    {{ ('page.editor.styleClipboard.kind.' + copied.kind) | i18n | async }}
+                    @if (copied.sourceIndex) { {{ copied.sourceIndex }} }
+                    @if (copied.blockType) { ({{ copied.blockType }}) }
+                    @if (styleClipboardNotice(); as notice) {
+                      · {{ ('page.editor.styleClipboard.' + notice) | i18n | async }}
+                    }
+                  </p>
+                }
+              </div>
+            }
             @if (selected()?.kind === 'page') {
               <div class="composer__theme">
                 <h4>{{ 'page.theme.title' | i18n | async }}</h4>

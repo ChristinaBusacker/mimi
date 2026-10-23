@@ -1,0 +1,48 @@
+.composer__style-transfer {
+  display: grid;
+  gap: 8px;
+  margin-block: 12px 18px;
+  padding: 11px;
+  border: 1px solid rgb(218 141 187 / 34%);
+  border-radius: 11px;
+  background: rgb(218 141 187 / 8%);
+}
+
+.composer__style-transfer-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.composer__style-transfer-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid rgb(218 141 187 / 45%);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 5%);
+  color: inherit;
+  font: inherit;
+}
+
+.composer__style-transfer-actions button:disabled {
+  opacity: .46;
+  cursor: not-allowed;
+}
+
+.composer__style-transfer-note {
+  margin: 0;
+  color: #e9bed8;
+  font-size: .82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.composer__style-transfer-note app-icon {
+  vertical-align: middle;
+  margin-right: 4px;
+}

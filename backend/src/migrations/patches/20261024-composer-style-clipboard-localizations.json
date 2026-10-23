@@ -1,0 +1,49 @@
+{
+  "localizations": [
+    {
+      "key": "page.editor.styleClipboard.copy",
+      "de": "Stil kopieren",
+      "en": "Copy style"
+    },
+    {
+      "key": "page.editor.styleClipboard.paste",
+      "de": "Stil anwenden",
+      "en": "Apply style"
+    },
+    {
+      "key": "page.editor.styleClipboard.source",
+      "de": "Stilvorlage:",
+      "en": "Style source:"
+    },
+    {
+      "key": "page.editor.styleClipboard.copied",
+      "de": "Stil kopiert. Wähle ein Ziel und klicke auf „Stil anwenden“.",
+      "en": "Style copied. Select a target and choose Apply style."
+    },
+    {
+      "key": "page.editor.styleClipboard.applied",
+      "de": "Stil angewendet. Mit Rückgängig kannst du die Änderung zurücknehmen.",
+      "en": "Style applied. You can undo this change."
+    },
+    {
+      "key": "page.editor.styleClipboard.kind.section",
+      "de": "Sektion",
+      "en": "Section"
+    },
+    {
+      "key": "page.editor.styleClipboard.kind.row",
+      "de": "Zeile",
+      "en": "Row"
+    },
+    {
+      "key": "page.editor.styleClipboard.kind.column",
+      "de": "Spalte",
+      "en": "Column"
+    },
+    {
+      "key": "page.editor.styleClipboard.kind.block",
+      "de": "Element",
+      "en": "Element"
+    }
+  ]
+}

@@ -19,7 +19,7 @@ import { PAGE_ROW_LAYOUTS, PAGE_ROW_OPTIONS } from '@shared/content/page-layouts
 import { ComposerColorPicker } from './composer-color-picker';
 import { ComposerBoxControl } from './composer-box-control';
 import { AsyncPipe } from '@angular/common';
-import { ElementRef, HostListener, afterNextRender, viewChild } from '@angular/core';
+import { ElementRef, HostListener, afterNextRender, inject, viewChild } from '@angular/core';
 import { AssetLibrary } from '../asset-library/asset-library';
 import {
   ChangeDetectionStrategy,
@@ -46,6 +46,7 @@ import { collectBookletColors } from './page-document-colors';
 import { pageComposerBlockKinds } from './page-composer-block-kinds';
 import { PAGE_COMPOSER_ICONS, validComposerDestination } from './page-interactive-blocks';
 import { PAGE_STYLE_DEFAULTS, effectiveBlockTextColor } from './page-style-defaults';
+import { PageStyleClipboard } from './page-style-clipboard';
 import type { PageTheme, PageThemeSizeKey, PageThemeColorKey } from '@shared/content/page-document';
 import {
   PAGE_THEME_FONTS,
@@ -181,6 +182,7 @@ export class PageEditor {
   readonly documentChange = output<PageDocument>();
   /** Request persistence from the parent; the editor never saves directly. */
   readonly saveRequest = output<boolean>();
+  protected readonly styleClipboard = inject(PageStyleClipboard);
 
   private readonly workspace = viewChild<ElementRef<HTMLElement>>('workspace');
   private readonly imageLibrary = viewChild(AssetLibrary);
@@ -853,6 +855,7 @@ export class PageEditor {
   private lastHistoryKey: string | null = null;
   private lastHistoryTime = 0;
   protected readonly selected = signal<Selection | null>(null);
+  protected readonly styleClipboardNotice = signal<'copied' | 'applied' | null>(null);
   protected readonly markdownControl = new FormControl('', { nonNullable: true });
   // A block's editor owns its current content while the user is editing it.
   // Replaying the document model into the control after each Tiptap update
@@ -953,6 +956,28 @@ export class PageEditor {
   protected selectDevice(device: 'desktop' | 'tablet' | 'mobile'): void {
     this.device.set(device);
     this.breakpoint.set(device);
+  }
+
+  protected copySelectedStyle(): void {
+    const selection = this.selected();
+    const node = this.active();
+    if (!selection || selection.kind === 'page' || !node) return;
+    this.styleClipboard.copy(
+      selection.kind,
+      node as PageSection | PageRow | PageColumn | PageBlock,
+      this.pathIndex(selection),
+    );
+    this.styleClipboardNotice.set('copied');
+  }
+
+  protected pasteSelectedStyle(): void {
+    const selection = this.selected();
+    if (!selection || selection.kind === 'page' || !this.styleClipboard.copied()) return;
+    this.changeNode(selection, (node) => {
+      this.styleClipboard.paste(selection.kind as Exclude<Selection['kind'], 'page'>,
+        node as PageSection | PageRow | PageColumn | PageBlock);
+    });
+    this.styleClipboardNotice.set('applied');
   }
 
   protected togglePreview(): void {
