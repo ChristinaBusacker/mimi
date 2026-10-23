@@ -1,10 +1,10 @@
 import type { PageDocument } from '@shared/content/page-document';
 import type { SitePageMetadata } from '@shared/content/site-page';
-import { BadRequestException, Injectable, NotFoundException, PayloadTooLargeException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, PayloadTooLargeException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createHash } from 'node:crypto';
-import { createReadStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { constants, createReadStream } from 'node:fs';
+import { access, stat } from 'node:fs/promises';
 import type { Readable } from 'node:stream';
 import { Repository } from 'typeorm';
 
@@ -98,28 +98,81 @@ export class ComposerArchiveService {
     }
     if (id && !snapshots.length) throw new NotFoundException('No Composer document found.');
 
+    // Record where each reference comes from, so a failed export names the affected document.
     const ids = new Set<string>();
+    const owners = new Map<string, Set<string>>();
+    const register = (assetId: string, owner: string): void => {
+      const normalized = assetId.toLowerCase();
+      ids.add(normalized);
+      const usages = owners.get(normalized) ?? new Set<string>();
+      usages.add(owner);
+      owners.set(normalized, usages);
+    };
     for (const snap of snapshots) {
+      const owner = snap.kind === 'page' ? `page /${snap.slug}` : `album ${snap.slug}`;
       for (const assetId of collectSitePageAssets(
         [snap.draft, snap.published], [snap.draftMetadata ?? null, snap.publishedMetadata ?? null],
-      )) ids.add(assetId);
-      if (snap.album?.coverAssetId) ids.add(snap.album.coverAssetId.toLowerCase());
-      if (snap.album?.editorial.heroAssetId) ids.add(snap.album.editorial.heroAssetId.toLowerCase());
+      )) register(assetId, owner);
+      if (snap.album?.coverAssetId) register(snap.album.coverAssetId, owner);
+      if (snap.album?.editorial.heroAssetId) register(snap.album.editorial.heroAssetId, owner);
     }
-    if (ids.size > MAX_ASSETS) throw new PayloadTooLargeException('Too many assets in Composer export.');
+    if (ids.size > MAX_ASSETS) {
+      throw new PayloadTooLargeException(
+        `Composer export contains ${ids.size} assets; at most ${MAX_ASSETS} are permitted.`,
+      );
+    }
+    const describe = (assetId: string): string =>
+      `asset ${assetId} (used by ${[...(owners.get(assetId) ?? [])].join(', ') || 'unknown document'})`;
+    const mib = (bytes: number): string => `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
 
     const sourceAssets: Array<{ path: string; absolutePath: string; sizeBytes: number; meta: Omit<ManifestAsset, 'sha256'> }> = [];
     let totalSize = 0;
     for (const assetId of [...ids].sort()) {
-      if (!UUID.test(assetId)) throw new BadRequestException('Invalid referenced asset ID.');
-      // Resolve before sending any response headers: missing original is a hard failure.
-      const [asset, file] = await Promise.all([this.assets.getById(assetId), this.assets.resolveFile(assetId)]);
+      if (!UUID.test(assetId)) throw new BadRequestException(`Invalid ID in ${describe(assetId)}.`);
+      // Resolve before sending response headers: a missing original is a hard failure.
+      let asset: Awaited<ReturnType<AssetsService['getById']>>;
+      let file: Awaited<ReturnType<AssetsService['resolveFile']>>;
+      try {
+        [asset, file] = await Promise.all([
+          this.assets.getById(assetId), this.assets.resolveFile(assetId),
+        ]);
+      } catch (error: unknown) {
+        if (error instanceof NotFoundException) {
+          throw new NotFoundException(`Missing asset record or original file for ${describe(assetId)}.`);
+        }
+        throw new InternalServerErrorException(`Could not resolve ${describe(assetId)} for export.`);
+      }
       const extension = EXTENSIONS[asset.mimeType];
-      if (!extension) throw new BadRequestException(`Unsupported exported asset MIME type: ${asset.mimeType}`);
-      const size = (await stat(file.absolutePath)).size;
-      if (size !== file.sizeBytes) throw new BadRequestException(`Asset file size mismatch: ${assetId}`);
+      if (!extension) {
+        throw new BadRequestException(
+          `Unsupported file type "${asset.mimeType}" for ${describe(assetId)} (${asset.originalFilename}).`,
+        );
+      }
+      let size: number;
+      try {
+        await access(file.absolutePath, constants.R_OK);
+        size = (await stat(file.absolutePath)).size;
+      } catch (error: unknown) {
+        if (error !== null && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+          throw new NotFoundException(`Original file is missing for ${describe(assetId)} (${asset.originalFilename}).`);
+        }
+        throw new InternalServerErrorException(
+          `Original file cannot be read for ${describe(assetId)} (${asset.originalFilename}).`,
+        );
+      }
+      if (size !== file.sizeBytes) {
+        throw new BadRequestException(
+          `File size differs for ${describe(assetId)} (${asset.originalFilename}): ` +
+          `found ${size} bytes, expected ${file.sizeBytes} bytes.`,
+        );
+      }
       totalSize += size;
-      if (totalSize > MAX_EXPORT_BYTES) throw new PayloadTooLargeException('Composer archive exceeds 512 MiB.');
+      if (totalSize > MAX_EXPORT_BYTES) {
+        throw new PayloadTooLargeException(
+          `Composer archive exceeds ${mib(MAX_EXPORT_BYTES)}: ${mib(totalSize)} reached ` +
+          `with ${describe(assetId)} (${asset.originalFilename}).`,
+        );
+      }
       const path = `assets/${assetId}.${extension}`;
       sourceAssets.push({ path, absolutePath: file.absolutePath, sizeBytes: size, meta: {
         sourceId: assetId, path, originalFilename: asset.originalFilename,

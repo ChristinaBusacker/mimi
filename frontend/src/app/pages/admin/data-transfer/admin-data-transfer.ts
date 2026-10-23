@@ -19,6 +19,7 @@ import { firstValueFrom } from 'rxjs';
 import { Button } from '../../../components/button/button';
 import { AdminDataTransferService } from '../../../core/data-transfer/admin-data-transfer.service';
 import { ComposerArchiveClient, type ComposerArchiveScope } from '../../../core/data-transfer/composer-archive.service';
+import { composerArchiveErrorMessage } from '../../../core/data-transfer/composer-archive-error';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { LanguageService } from '../../../core/i18n/language.service';
 
@@ -73,7 +74,7 @@ export class AdminDataTransfer implements OnInit {
 
   protected readonly archiveOptions: readonly ComposerArchiveScope[] = ['all', 'pages', 'booklets'];
   protected readonly archiveScope = signal<ComposerArchiveScope | null>(null);
-  protected readonly archiveError = signal(false);
+  protected readonly archiveError = signal<string | null>(null);
   protected readonly loading = signal(true);
   protected readonly availableTypes =
     signal<string[]>([]);
@@ -308,7 +309,7 @@ export class AdminDataTransfer implements OnInit {
   protected async exportComposer(scope: ComposerArchiveScope): Promise<void> {
     if (this.archiveScope() !== null || this.exportingBundle() || this.busyType() !== null) return;
     this.archiveScope.set(scope);
-    this.archiveError.set(false);
+    this.archiveError.set(null);
     try {
       const blob = await firstValueFrom(this.composerArchive.export(scope));
       const win = this.document.defaultView;
@@ -322,8 +323,8 @@ export class AdminDataTransfer implements OnInit {
       link.click();
       link.remove();
       win.URL.revokeObjectURL(url);
-    } catch {
-      this.archiveError.set(true);
+    } catch (error: unknown) {
+      this.archiveError.set(await composerArchiveErrorMessage(error));
     } finally {
       this.archiveScope.set(null);
     }

@@ -1,0 +1,10 @@
+@use '../site-page/site-page.scss';
+@use 'mixins' as *;
+
+:host {
+  @include maxWidthContent;
+
+  & h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+}

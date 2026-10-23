@@ -17,7 +17,8 @@ import { Privacy } from '../privacy/privacy';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PageRenderer, About, LegalNotice, Privacy],
   templateUrl: './system-page.html',
-  styleUrl: '../site-page/site-page.scss',
+  styleUrl: './system-page.scss',
+  styles: ':host {}',
 })
 export class SystemPage {
   private readonly route = inject(ActivatedRoute);

@@ -19,9 +19,9 @@
           </app-button>
         }
       </div>
-      @if (archiveError()) {
+      @if (archiveError(); as message) {
         <p role="alert" class="admin-data-transfer__status--error">
-          {{ 'admin.composerArchive.failed' | i18n | async }}
+          {{ message }}
         </p>
       }
     </div>
