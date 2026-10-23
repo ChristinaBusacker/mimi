@@ -191,11 +191,12 @@
                   <div
                     class="page-document__block page-document__node"
                     [class]="surface(block.styles)"
+                    [class.page-document__block--album]="block.type === 'albumDetails' || block.type === 'albumTracks' || block.type === 'albumCredits'"
                     [class.page-document__node--editable]="editable()"
                     [class.is-selected]="selectedId() === block.id"
                     [class.is-drop-before]="dropAt(block.id, 'before')"
                     [class.is-drop-after]="dropAt(block.id, 'after')"
-                    [ngStyle]="styleVars(block.styles)"
+                    [ngStyle]="blockStyleVars(block)"
                     [attr.data-editor-kind]="editable() ? 'block' : null"
                     [attr.data-editor-id]="editable() ? block.id : null"
                     [attr.data-editor-parent]="editable() ? column.id : null"
@@ -515,13 +516,7 @@
                       }
                       @case ('albumDetails') {
                         @if (album(); as entry) {
-                          <div
-                            class="page-document__album-details"
-                            [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
-                            [style.--pc-album-text]="block.palette?.textColor ?? null"
-                            [style.--pc-album-icon]="block.palette?.iconColor ?? null"
-                            [style.--pc-album-subtitle]="block.palette?.subtitleColor ?? null"
-                          >
+                          <div class="page-document__album-details">
                             @if (albumDate(entry.releasedAt); as date) {
                               <div class="page-document__album-fact">
                                 <app-icon name="music" class="white" />
@@ -570,6 +565,25 @@
                                 }}</small></span
                               >
                             </div>
+                            @if (albumTags(entry).length) {
+                              <div class="page-document__album-tags" [attr.aria-label]="'music.album.tags' | i18n | async">
+                                @for (tag of albumTags(entry); track tag) { <span>{{ tag }}</span> }
+                              </div>
+                            }
+                            @if (entry.editorial.spotifyUrl || entry.editorial.deezerUrl || entry.editorial.supportUrl) {
+                              <nav class="page-document__album-links" [attr.aria-label]="'music.album.links' | i18n | async">
+                                @if (entry.editorial.spotifyUrl) {
+                                  <a [href]="entry.editorial.spotifyUrl" target="_blank" rel="noopener noreferrer">Spotify</a>
+                                }
+                                @if (entry.editorial.deezerUrl) {
+                                  <a [href]="entry.editorial.deezerUrl" target="_blank" rel="noopener noreferrer">Deezer</a>
+                                }
+                                @if (entry.editorial.supportUrl) {
+                                  <a [href]="entry.editorial.supportUrl" [attr.target]="externalLink(entry.editorial.supportUrl) ? '_blank' : null"
+                                     [attr.rel]="externalLink(entry.editorial.supportUrl) ? 'noopener noreferrer' : null">{{ 'music.support.action' | i18n | async }}</a>
+                                }
+                              </nav>
+                            }
                           </div>
                         } @else if (studio()) {
                           <p class="page-document__empty">
@@ -579,45 +593,12 @@
                       }
                       @case ('albumTracks') {
                         @if (album(); as entry) {
-                          @if (studio()) {
-                            <div
-                              class="page-document__album-tracklist"
-                              [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
-                              [style.--pc-album-text]="block.palette?.textColor ?? null"
-                            >
-                              <h3>{{ 'page.editor.album.tracklist' | i18n | async }}</h3>
-                              @for (track of entry.tracks; track track.id) {
-                                <div
-                                  class="page-document__album-track"
-                                  [class.is-playing]="isTrackPlaying(track.id)"
-                                >
-                                  <span>{{ track.trackNumber ?? $index + 1 }}</span>
-                                  <strong>{{ track.title }}</strong>
-                                  <span>{{ albumDuration(track.durationSeconds) }}</span>
-                                  <span
-                                    class="page-document__album-track-action"
-                                    aria-hidden="true"
-                                  >
-                                    <app-icon
-                                      [name]="isTrackPlaying(track.id) ? 'pause' : 'play'"
-                                      class="white"
-                                    />
-                                  </span>
-                                </div>
-                              } @empty {
-                                <p>{{ 'music.page.noTracks' | i18n | async }}</p>
-                              }
-                            </div>
-                          } @else if (entry.tracks.length) {
-                            <app-music-library-player
-                              [tracks]="entry.tracks"
-                              [locale]="locale()"
-                              [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
-                              [style.--pc-album-text]="block.palette?.textColor ?? null"
-                            />
-                          } @else {
-                            <p>{{ 'music.page.noTracks' | i18n | async }}</p>
-                          }
+                          <app-album-track-list
+                            [tracks]="entry.tracks"
+                            [locale]="locale()"
+                            [albumTitle]="entry.title"
+                            [studio]="studio() || editable()"
+                          />
                         } @else if (studio()) {
                           <p class="page-document__empty">
                             {{ 'page.editor.album.noContext' | i18n | async }}
@@ -628,11 +609,7 @@
                         @let credits =
                           block.entries.length ? block.entries : (album()?.editorial.credits ?? []);
                         @if (credits.length || studio()) {
-                          <section
-                            class="page-document__album-credits"
-                            [style.--pc-album-bg]="block.palette?.backgroundColor ?? null"
-                            [style.--pc-album-text]="block.palette?.textColor ?? null"
-                          >
+                          <section class="page-document__album-credits">
                             <h3>{{ block.heading[locale()] || block.heading.de }}</h3>
                             <dl>
                               @for (credit of credits; track $index) {

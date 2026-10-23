@@ -11,7 +11,7 @@ import { combineLatest, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { Icon } from '../../../components/icon/icon';
 import { PageRenderer } from '../../../components/page-composer/page-renderer';
 import { pageThemeVars } from '../../../components/page-composer/page-theme';
-import { MusicLibraryPlayer } from '../../../components/music-library-player/music-library-player';
+import { AlbumTrackList } from '../../../components/album-track-list/album-track-list';
 import { RenderedContent } from '../../../components/rendered-content/rendered-content';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { I18nState } from '../../../core/i18n/i18n.state';
@@ -24,7 +24,7 @@ import {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, NgStyle, Icon, I18nPipe, MusicLibraryPlayer, PageRenderer, RenderedContent],
+  imports: [AsyncPipe, NgStyle, Icon, I18nPipe, AlbumTrackList, PageRenderer, RenderedContent],
   selector: 'app-music-album',
   styleUrl: './music-album.scss',
   templateUrl: './music-album.html',
@@ -97,7 +97,7 @@ export class MusicAlbumPage {
     pageThemeVars(this.data().album.booklet?.theme),
   );
 
-  protected readonly hasEmbeddedPlayer = computed(
+  protected readonly hasEmbeddedTrackList = computed(
     () =>
       this.data().album.booklet?.sections.some((section) =>
         section.rows.some((row) =>

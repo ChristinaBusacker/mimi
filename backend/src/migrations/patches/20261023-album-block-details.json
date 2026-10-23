@@ -1,0 +1,6 @@
+{
+  "localizations": [
+    { "key": "music.album.tags", "de": "Album-Tags", "en": "Album tags" },
+    { "key": "music.album.links", "de": "Weitere Album-Links", "en": "More album links" }
+  ]
+}

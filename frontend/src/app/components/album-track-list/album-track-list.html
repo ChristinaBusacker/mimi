@@ -1,0 +1,38 @@
+<section class="album-tracklist" [attr.aria-label]="'page.editor.album.tracklist' | i18n | async">
+  <h3>{{ 'page.editor.album.tracklist' | i18n | async }}</h3>
+  <ol class="album-tracklist__tracks">
+    @for (track of tracks(); track track.id; let index = $index) {
+      <li class="album-tracklist__track" [class.is-playing]="isPlaying(track.id)">
+        <span class="album-tracklist__number">{{ track.trackNumber ?? index + 1 }}</span>
+        <button
+          type="button"
+          class="album-tracklist__play"
+          [disabled]="!track.previewAssetId"
+          [attr.aria-label]="(
+            !track.previewAssetId ? 'music.player.noPreview' :
+            isPlaying(track.id) ? 'music.player.pauseTrack' : 'music.player.playTrack'
+          ) | i18n | async"
+          [attr.aria-pressed]="isPlaying(track.id)"
+          (click)="toggle(track)"
+        >
+          <app-icon [name]="isPlaying(track.id) ? 'pause' : 'play'" class="white" />
+        </button>
+        <strong class="album-tracklist__title">{{ track.title }}</strong>
+        <span class="album-tracklist__album">
+          @if (track.album; as album) {
+            @if (studio()) {
+              {{ album.title }}
+            } @else {
+              <a [routerLink]="['/music/albums', album.slug]">{{ album.title }}</a>
+            }
+          } @else {
+            {{ albumTitle() }}
+          }
+        </span>
+        <time class="album-tracklist__duration">{{ duration(track.durationSeconds) }}</time>
+      </li>
+    } @empty {
+      <li class="album-tracklist__empty">{{ 'music.page.noTracks' | i18n | async }}</li>
+    }
+  </ol>
+</section>

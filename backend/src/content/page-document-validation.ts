@@ -280,7 +280,8 @@ function albumPalette(value: unknown, details = false): PageAlbumPalette {
 }
 function block(value: unknown): PageBlock {
   const data = record(value);
-  const base = node(data, false, data['type'] === 'text');
+  const albumBlock = data['type'] === 'albumDetails' || data['type'] === 'albumTracks' || data['type'] === 'albumCredits';
+  const base = node(data, albumBlock, data['type'] === 'text');
   switch (data['type']) {
     case 'text':
       return { ...base, type: 'text', markdown: localized(data['markdown']) };

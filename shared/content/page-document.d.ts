@@ -130,7 +130,7 @@ export interface PageAlbumDetailsBlock extends PageNode {
   type: 'albumDetails';
   palette?: PageAlbumPalette;
 }
-/** Renders the existing music player on published album pages. */
+/** Renders a compact track list. Playback stays with the global music player. */
 export interface PageAlbumTracksBlock extends PageNode {
   type: 'albumTracks';
   palette?: PageAlbumPalette;

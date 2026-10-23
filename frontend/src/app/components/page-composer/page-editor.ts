@@ -520,6 +520,8 @@ export class PageEditor {
     const enabled = (event.target as HTMLInputElement).checked;
     this.changeSelected((node) => {
       if (enabled) node.styles.border = { width: 1, style: 'solid', color: '#ecadd0c0' };
+      else if ('type' in node && ['albumDetails', 'albumTracks', 'albumCredits'].includes(node.type))
+        node.styles.border = { width: 0, style: 'solid', color: '#00000000' };
       else delete node.styles.border;
     });
   }
@@ -685,6 +687,9 @@ export class PageEditor {
         delete node.styles.backgroundColor;
         node.styles.background = 'none';
         node.styles.radius = 0;
+        // Distinguish a deliberate transparent surface from legacy album defaults.
+        if ('type' in node && ['albumDetails', 'albumTracks', 'albumCredits'].includes(node.type))
+          node.styles.backgroundColor = '#00000000';
         return;
       }
       node.styles.background = 'none';
@@ -730,13 +735,17 @@ export class PageEditor {
     }
     if (!['none', 'color', 'gradient'].includes(kind)) return;
     const selection = this.selected();
-    if (selection?.kind !== 'section' && selection?.kind !== 'column' && selection?.kind !== 'row')
+    if (selection?.kind !== 'section' && selection?.kind !== 'column' && selection?.kind !== 'row' &&
+        !['albumDetails', 'albumTracks', 'albumCredits'].includes(this.selectedBlock()?.type ?? ''))
       return;
     this.changeSelected((node) => {
       node.styles.background = 'none';
       delete node.styles.backgroundColor;
-      if (kind === 'none') delete node.styles.designBackground;
-      else if (kind === 'color') node.styles.designBackground = { kind, color: '#35273f' };
+      if (kind === 'none') {
+        delete node.styles.designBackground;
+        if ('type' in node && ['albumDetails', 'albumTracks', 'albumCredits'].includes(node.type))
+          node.styles.backgroundColor = '#00000000';
+      } else if (kind === 'color') node.styles.designBackground = { kind, color: '#35273f' };
       else
         node.styles.designBackground = {
           kind: 'gradient',

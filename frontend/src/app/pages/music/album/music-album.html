@@ -61,13 +61,9 @@
     </section>
   }
 
-  @if (!hasEmbeddedPlayer()) {
+  @if (!hasEmbeddedTrackList()) {
     <section class="booklet__tracks" [attr.aria-label]="'music.library.title' | i18n | async">
-      @if (tracks().length) {
-        <app-music-library-player [tracks]="tracks()" [locale]="albumData.locale" />
-      } @else {
-        <p>{{ 'music.page.noTracks' | i18n | async }}</p>
-      }
+      <app-album-track-list [tracks]="tracks()" [locale]="albumData.locale" [albumTitle]="album.title" />
     </section>
   }
 </article>

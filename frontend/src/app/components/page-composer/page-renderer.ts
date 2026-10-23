@@ -2,6 +2,7 @@ import type { AlbumBookletContext } from '@shared/content/album-booklet-context'
 import type {
   ComposerBackground,
   PageGalleryBlock,
+  PageBlock,
   PageSliderBlock,
   PageDocument,
   PageLocale,
@@ -35,9 +36,8 @@ import { CarouselSlide } from '../carousel/carousel-slide.directive';
 import type { Asset } from '@shared/assets/asset';
 import { PageInlineMarkdown } from './page-inline-markdown';
 import { I18nPipe } from '../../core/i18n/i18n.pipe';
-import { MusicLibraryPlayer } from '../music-library-player/music-library-player';
+import { AlbumTrackList } from '../album-track-list/album-track-list';
 import { LightboxService } from '../lightbox/lightbox.service';
-import { MusicPlaybackService } from '../../core/music/music-playback.service';
 import { pageGridColumns } from '../../../helpers/pageGridColumns.helper';
 import { ResponsiveImageService } from '../../core/assets/responsive-image.service';
 import { PAGE_STYLE_DEFAULTS, pageTextColorVars } from './page-style-defaults';
@@ -90,7 +90,7 @@ const ASSET = /^asset:([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
     Carousel,
     CarouselSlide,
     PageInlineMarkdown,
-    MusicLibraryPlayer,
+    AlbumTrackList,
   ],
   templateUrl: './page-renderer.html',
   styleUrl: './page-renderer.scss',
@@ -102,7 +102,6 @@ export class PageRenderer {
   private scheduleParallax: (() => void) | null = null;
   private readonly lightbox = inject(LightboxService);
   private readonly sanitizer = inject(DomSanitizer);
-  protected readonly playback = inject(MusicPlaybackService);
   protected readonly imageSources = inject(ResponsiveImageService);
   private readonly markdown = new MarkdownIt({ html: false, linkify: false, breaks: false });
 
@@ -171,10 +170,6 @@ export class PageRenderer {
   protected galleryCount(count: number): number {
     return Math.min(6, count);
   }
-  protected isTrackPlaying(id: string): boolean {
-    return this.playback.playing() && this.playback.activeTrack()?.id === id;
-  }
-
   protected externalLink(href: string): boolean {
     return /^https?:\/\//i.test(href);
   }
@@ -356,9 +351,10 @@ export class PageRenderer {
       timeZone: 'UTC',
     }).format(date);
   }
-  protected albumDuration(seconds: number): string {
-    const total = Math.max(0, Math.round(seconds));
-    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+  protected albumTags(entry: AlbumBookletContext): readonly string[] {
+    const tags = entry.editorial.tags;
+    const translated = tags?.[this.locale()];
+    return translated?.length ? translated : tags?.de ?? [];
   }
   protected surface(styles: PageStyles): string {
     return `page-surface--${styles.background ?? 'none'}`;
@@ -462,6 +458,39 @@ export class PageRenderer {
 
   protected backgroundParallax(styles: PageStyles): boolean {
     return styles.designBackground?.kind === 'image' && styles.designBackground.parallax === true;
+  }
+
+  /** Existing album blocks keep their legacy palette until a shared surface overrides it. */
+  protected blockStyleVars(block: PageBlock): Record<string, string> {
+    const vars = this.styleVars(block.styles);
+    if (block.type !== 'albumDetails' && block.type !== 'albumTracks' && block.type !== 'albumCredits')
+      return vars;
+    const { styles, palette } = block;
+    const hasBackground = !!styles.designBackground || !!styles.backgroundColor ||
+      (styles.background !== undefined && styles.background !== 'none');
+    if (styles.designBackground?.kind === 'color')
+      vars['--pc-background-color'] = styles.designBackground.color;
+    if (!hasBackground) {
+      vars['--pc-design-color'] = palette?.backgroundColor ??
+        (block.type === 'albumDetails' ? 'rgb(20 14 32 / 45%)' : 'rgb(18 11 30 / 38%)');
+      // Tablet/mobile use --pc-background-color, not the design token.
+      vars['--pc-background-color'] = vars['--pc-design-color'];
+    }
+    if (!styles.textColor && palette?.textColor) {
+      vars['--pc-text-color'] = palette.textColor;
+      if (!styles.responsive?.tablet?.textColor) vars['--pc-tablet-text-color'] = 'var(--pc-text-color)';
+      if (!styles.responsive?.mobile?.textColor) vars['--pc-mobile-text-color'] = 'var(--pc-tablet-text-color)';
+    }
+    if (!styles.paddingBox && (!styles.padding || styles.padding === 0) && !styles.spacing)
+      vars['--pc-box-padding'] = block.type === 'albumDetails'
+        ? 'clamp(18px, 2.6vw, 30px)' : 'clamp(18px, 3vw, 36px)';
+    if (!styles.corners && (!styles.radius || styles.radius === 0))
+      vars['--pc-radius'] = block.type === 'albumDetails' ? '14px' : '16px';
+    if (!styles.border && styles.backgroundColor !== '#00000000')
+      vars['border'] = '1px solid rgb(255 255 255 / 15%)';
+    if (palette?.iconColor) vars['--pc-album-icon'] = palette.iconColor;
+    if (palette?.subtitleColor) vars['--pc-album-subtitle'] = palette.subtitleColor;
+    return vars;
   }
 
   protected documentStyleVars(): Record<string, string> {

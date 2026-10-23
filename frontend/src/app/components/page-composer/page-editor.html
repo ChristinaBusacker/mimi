@@ -811,7 +811,10 @@
             @if (
               selected()?.kind === 'section' ||
               selected()?.kind === 'row' ||
-              selected()?.kind === 'column'
+              selected()?.kind === 'column' ||
+              selectedBlock()?.type === 'albumDetails' ||
+              selectedBlock()?.type === 'albumTracks' ||
+              selectedBlock()?.type === 'albumCredits'
             ) {
               <p class="composer__hint">{{ 'page.editor.design.global' | i18n | async }}</p>
               <details class="composer__accordion" open>
@@ -886,7 +889,7 @@
                       <option value="gradient">
                         {{ 'page.editor.design.gradient' | i18n | async }}
                       </option>
-                      @if (selected()?.kind !== 'row') {
+                      @if (selected()?.kind === 'section' || selected()?.kind === 'column') {
                         <option value="image">
                           {{ 'page.editor.design.image' | i18n | async }}
                         </option>
@@ -1126,7 +1129,7 @@
                   <label class="composer__surface-toggle">
                     <input
                       type="checkbox"
-                      [checked]="!!node.styles.border"
+                      [checked]="!!node.styles.border && node.styles.border.width > 0"
                       (change)="setBorderEnabled($event)"
                     />
                     {{ 'page.editor.surface.border' | i18n | async }}

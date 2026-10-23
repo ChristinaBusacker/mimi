@@ -1,0 +1,49 @@
+:host { display: block; min-width: 0; color: inherit; }
+.album-tracklist { min-width: 0; color: inherit; }
+.album-tracklist h3 { margin: 0 0 18px; font-size: 1.35rem; color: inherit; font-family: var(--pc-theme-font-heading, var(--font-headline)); }
+.album-tracklist__tracks { list-style: none; margin: 0; padding: 0; }
+.album-tracklist__track {
+  display: grid;
+  grid-template-columns: 2.4em 40px minmax(0, 1fr) minmax(90px, 0.65fr) 5ch;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 6px;
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+.album-tracklist__track.is-playing {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  border-radius: 8px;
+}
+.album-tracklist__number, .album-tracklist__duration { opacity: .72; font-variant-numeric: tabular-nums; }
+.album-tracklist__title { min-width: 0; overflow-wrap: anywhere; font-weight: 600; }
+.album-tracklist__album { min-width: 0; overflow-wrap: anywhere; opacity: .85; }
+.album-tracklist__album a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.album-tracklist__album a:hover, .album-tracklist__album a:focus-visible { opacity: .75; }
+.album-tracklist__duration { justify-self: end; }
+.album-tracklist__play {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: inherit;
+  cursor: pointer;
+}
+.album-tracklist__play:disabled { opacity: .35; cursor: not-allowed; }
+.album-tracklist__play:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.album-tracklist__play app-icon { width: 19px; height: 19px; }
+.album-tracklist__empty { padding: 16px 0; }
+@container page-composer (max-width: 580px) {
+  .album-tracklist__track { grid-template-columns: 2em 40px minmax(0, 1fr) 5ch; gap: 7px; }
+  .album-tracklist__album { grid-column: 3; grid-row: 2; font-size: .78rem; }
+  .album-tracklist__duration { grid-column: 4; grid-row: 1; }
+}
+@media (max-width: 580px) {
+  .album-tracklist__track { grid-template-columns: 2em 40px minmax(0, 1fr) 5ch; gap: 7px; }
+  .album-tracklist__album { grid-column: 3; grid-row: 2; font-size: .78rem; }
+  .album-tracklist__duration { grid-column: 4; grid-row: 1; }
+}

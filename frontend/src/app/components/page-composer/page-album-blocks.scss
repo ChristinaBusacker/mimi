@@ -4,12 +4,8 @@
   justify-content: space-between;
   gap: clamp(18px, 4vw, 50px);
   align-items: center;
-  padding: clamp(18px, 2.6vw, 30px);
-  border: 1px solid rgb(255 255 255 / 16%);
-  border-radius: 14px;
-  background: var(--pc-album-bg, rgb(20 14 32 / 45%));
-  backdrop-filter: blur(12px);
-  color: var(--pc-album-text, #fff5fa);
+  min-width: 0;
+  color: inherit;
 }
 .page-document__album-fact {
   display: flex;
@@ -42,18 +38,15 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-.page-document__album-tracklist,
 .page-document__album-credits {
-  padding: clamp(18px, 3vw, 36px);
-  border: 1px solid rgb(255 255 255 / 15%);
-  border-radius: 16px;
-  background: var(--pc-album-bg, rgb(18 11 30 / 38%));
-  color: var(--pc-album-text, #fff5fa);
+  min-width: 0;
+  color: inherit;
 }
-.page-document__album-tracklist h3,
 .page-document__album-credits h3 {
   margin: 0 0 22px;
   font-size: 1.35rem;
+  color: inherit;
+  font-family: var(--pc-theme-font-heading, var(--font-headline));
 }
 .page-document__album-track {
   display: grid;
@@ -103,12 +96,37 @@
   .page-document__album-details {
     gap: 16px;
   }
-  .page-document__album-tracklist,
-  .page-document__album-credits {
-    padding: 16px;
-  }
   .page-document__album-credits dl > div {
     grid-template-columns: 1fr;
     gap: 4px;
   }
+}
+.page-document__album-tags,
+.page-document__album-links {
+  display: flex;
+  flex: 1 0 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.page-document__album-tags span {
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: 999px;
+  font-size: .83rem;
+}
+.page-document__album-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+.page-document__album-links a:hover,
+.page-document__album-links a:focus-visible {
+  background: color-mix(in srgb, currentColor 13%, transparent);
 }
