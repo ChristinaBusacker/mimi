@@ -683,9 +683,40 @@
                     <option value="end">{{ 'page.blocks.button.end' | i18n | async }}</option>
                   </select>
                   <label class="composer__album-toggle"><input type="checkbox" [checked]="block.newTab ?? false"
-                    (change)="editButtonNewTab($event)" />{{ 'page.blocks.button.newTab' | i18n | async }}</label>
-                }
-                @case ('accordion') {
+                     (change)="editButtonNewTab($event)" />{{ 'page.blocks.button.newTab' | i18n | async }}</label>
+                   <details class="composer__accordion composer__item-style-panel" open>
+                     <summary><app-icon name="paintbrush" />{{ 'page.blocks.appearance.buttonTitle' | i18n | async }}</summary>
+                     <div class="composer__accordion-content">
+                       @for (field of ['backgroundColor','hoverBackgroundColor','textColor','borderColor']; track field) {
+                         <div class="composer__control-color">
+                           <app-composer-color-picker [suggestedColors]="bookletColors()"
+                             [label]="('page.blocks.appearance.' + field | i18n | async) ?? field"
+                             [value]="controlColor(field)" (valueChange)="setControlColor($any(field), $event)" />
+                           <button type="button" class="composer__control-reset" (click)="resetControlColor($any(field))"
+                             [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"><app-icon name="rotate-ccw" /></button>
+                         </div>
+                       }
+                       <div class="composer__control-numbers">
+                         @for (field of ['radius','borderWidth','fontSize','paddingX','paddingY']; track field) {
+                           <label>{{ 'page.blocks.appearance.' + field | i18n | async }}
+                             <input type="number" min="0" max="96" [value]="controlNumber(field)"
+                               (change)="setControlNumber($any(field), $event)" />
+                           </label>
+                         }
+                       </div>
+                       <label class="composer__album-toggle"><input type="checkbox" [checked]="block.appearance?.fullWidth ?? false"
+                         (change)="setControlFullWidth($event)" />{{ 'page.blocks.appearance.fullWidth' | i18n | async }}</label>
+                       <label>{{ 'page.blocks.appearance.shadow' | i18n | async }}
+                         <select [value]="controlShadowActive()" (change)="setControlShadow($any($event.target).value)">
+                           @for (preset of controlShadows; track preset) {
+                             <option [value]="preset">{{ 'page.editor.studio.shadow.' + preset | i18n | async }}</option>
+                           }
+                         </select>
+                       </label>
+                     </div>
+                   </details>
+                 }
+                 @case ('accordion') {
                   <h3>{{ 'page.editor.block.accordion' | i18n | async }}</h3>
                   <label class="composer__album-toggle"><input type="checkbox" [checked]="block.allowMultiple ?? false"
                     (change)="setAccordionMultiple($event)" />{{ 'page.blocks.accordion.multiple' | i18n | async }}</label>
@@ -696,20 +727,62 @@
                       <input maxlength="160" [value]="item.title[locale()]"
                         (change)="editAccordionItem(index, 'title', $event)" />
                       <label>{{ 'page.blocks.accordion.body' | i18n | async }}</label>
-                      <textarea rows="5" maxlength="4000" [value]="item.body[locale()]"
-                        (change)="editAccordionItem(index, 'body', $event)"></textarea>
+                       @if (activeAccordionEditor() === item.id || (activeAccordionEditor() === null && index === 0)) {
+                         <app-markdown-editor
+                           [label]="('page.blocks.accordion.body' | i18n | async) ?? ''"
+                           [formControl]="accordionBodyControl(item.id, item.body[locale()])"
+                           [assets]="assets()"
+                           [suggestedColors]="bookletColors()"
+                         />
+                       } @else {
+                         <button type="button" class="composer__control-button" (click)="focusAccordionEditor(item.id)">
+                           <app-icon name="pencil" />{{ 'page.blocks.accordion.editBody' | i18n | async }}
+                         </button>
+                       }
                       <label class="composer__album-toggle"><input type="checkbox" [checked]="item.defaultOpen ?? false"
                         (change)="toggleAccordionOpen(index, $event)" />{{ 'page.blocks.accordion.defaultOpen' | i18n | async }}</label>
-                      <div class="composer__accordion-item-actions">
-                        <button type="button" [disabled]="$first" (click)="moveAccordionItem(index, -1)"
+                       <div class="composer__accordion-item-actions">
+                         <button type="button" class="composer__control-button" [disabled]="$first" (click)="moveAccordionItem(index, -1)"
                           [attr.aria-label]="'page.editor.up' | i18n | async"><app-icon name="arrow-up" /></button>
-                        <button type="button" [disabled]="$last" (click)="moveAccordionItem(index, 1)"
+                         <button type="button" class="composer__control-button" [disabled]="$last" (click)="moveAccordionItem(index, 1)"
                           [attr.aria-label]="'page.editor.down' | i18n | async"><app-icon name="arrow-down" /></button>
-                        <button type="button" (click)="removeAccordionItem(index)">{{ 'page.editor.remove' | i18n | async }}</button>
-                      </div>
-                    </fieldset>
-                  }
-                  <button type="button" [disabled]="block.items.length >= 20"
+                         <button type="button" class="composer__control-button composer__control-button--danger" (click)="removeAccordionItem(index)">{{ 'page.editor.remove' | i18n | async }}</button>
+                       </div>
+                       <details class="composer__accordion composer__item-style-panel">
+                         <summary><app-icon name="paintbrush" />{{ 'page.blocks.appearance.title' | i18n | async }}</summary>
+                         <div class="composer__accordion-content">
+                           @for (field of ['headerBackgroundColor','headerColor','backgroundColor','textColor','borderColor']; track field) {
+                             <div class="composer__control-color">
+                               <app-composer-color-picker
+                                 [suggestedColors]="bookletColors()"
+                                 [label]="('page.blocks.appearance.' + field | i18n | async) ?? field"
+                                 [value]="controlColor(field, item.id)"
+                                 (valueChange)="setControlColor($any(field), $event, item.id)" />
+                               <button type="button" class="composer__control-reset" (click)="resetControlColor($any(field), item.id)"
+                                 [title]="('page.blocks.appearance.reset' | i18n | async) ?? ''"><app-icon name="rotate-ccw" /></button>
+                             </div>
+                           }
+                           <div class="composer__control-numbers">
+                             @for (field of ['radius','borderWidth']; track field) {
+                               <label>{{ 'page.blocks.appearance.' + field | i18n | async }}
+                                 <input type="number" min="0" [max]="field === 'radius' ? 96 : 12"
+                                   [value]="controlNumber(field, item.id)" (change)="setControlNumber($any(field), $event, item.id)" />
+                               </label>
+                             }
+                           </div>
+                           <label>{{ 'page.blocks.appearance.shadow' | i18n | async }}
+                             <select [value]="controlShadowActive(item.id)" (change)="setControlShadow($any($event.target).value, item.id)">
+                               @for (preset of controlShadows; track preset) {
+                                 <option [value]="preset">{{ 'page.editor.studio.shadow.' + preset | i18n | async }}</option>
+                               }
+                             </select>
+                           </label>
+                         </div>
+                       </details>
+                     </fieldset>
+                   }
+                   <button type="button" class="composer__control-button composer__control-button--add" [disabled]="block.items.length >= 20"
+
                     (click)="addAccordionItem()">{{ 'page.blocks.accordion.add' | i18n | async }}</button>
                 }
                 @case ('icon') {

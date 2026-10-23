@@ -1,0 +1,99 @@
+{
+  "localizations": [
+    {
+      "key": "page.blocks.styles.background",
+      "de": "Block-Hintergrund",
+      "en": "Block background"
+    },
+    {
+      "key": "page.blocks.styles.radius",
+      "de": "Block-Eckenradius",
+      "en": "Block corner radius"
+    },
+    {
+      "key": "page.blocks.accordion.editBody",
+      "de": "Inhalt bearbeiten",
+      "en": "Edit content"
+    },
+    {
+      "key": "page.blocks.appearance.title",
+      "de": "Diesen Eintrag gestalten",
+      "en": "Style this entry"
+    },
+    {
+      "key": "page.blocks.appearance.buttonTitle",
+      "de": "Button selbst gestalten",
+      "en": "Style the button itself"
+    },
+    {
+      "key": "page.blocks.appearance.reset",
+      "de": "Auf geerbten Wert zurücksetzen",
+      "en": "Reset to inherited value"
+    },
+    {
+      "key": "page.blocks.appearance.backgroundColor",
+      "de": "Hintergrundfarbe",
+      "en": "Background color"
+    },
+    {
+      "key": "page.blocks.appearance.hoverBackgroundColor",
+      "de": "Hover-Hintergrundfarbe",
+      "en": "Hover background color"
+    },
+    {
+      "key": "page.blocks.appearance.headerBackgroundColor",
+      "de": "Kopfzeilen-Hintergrund",
+      "en": "Heading background"
+    },
+    {
+      "key": "page.blocks.appearance.headerColor",
+      "de": "Überschriftenfarbe",
+      "en": "Heading text color"
+    },
+    {
+      "key": "page.blocks.appearance.textColor",
+      "de": "Textfarbe",
+      "en": "Text color"
+    },
+    {
+      "key": "page.blocks.appearance.borderColor",
+      "de": "Rahmenfarbe",
+      "en": "Border color"
+    },
+    {
+      "key": "page.blocks.appearance.borderWidth",
+      "de": "Rahmenbreite (px)",
+      "en": "Border width (px)"
+    },
+    {
+      "key": "page.blocks.appearance.radius",
+      "de": "Eckenradius (px)",
+      "en": "Corner radius (px)"
+    },
+    {
+      "key": "page.blocks.appearance.fontSize",
+      "de": "Schriftgröße (px)",
+      "en": "Font size (px)"
+    },
+    {
+      "key": "page.blocks.appearance.paddingX",
+      "de": "Innenabstand horizontal (px)",
+      "en": "Horizontal padding (px)"
+    },
+    {
+      "key": "page.blocks.appearance.paddingY",
+      "de": "Innenabstand vertikal (px)",
+      "en": "Vertical padding (px)"
+    },
+    {
+      "key": "page.blocks.appearance.fullWidth",
+      "de": "Gesamte Breite nutzen",
+      "en": "Fill available width"
+    },
+    {
+      "key": "page.blocks.appearance.shadow",
+      "de": "Schlagschatten",
+      "en": "Drop shadow"
+    }
+  ]
+}

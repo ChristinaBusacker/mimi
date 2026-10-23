@@ -172,6 +172,29 @@ export class PageRenderer {
   protected galleryCount(count: number): number {
     return Math.min(6, count);
   }
+  protected controlAppearanceVars(appearance: unknown): Record<string, string> {
+    if (!appearance || typeof appearance !== 'object') return {};
+    const a = appearance as Record<string, unknown>;
+    const out: Record<string, string> = {};
+    const colorKeys: Record<string, string> = {
+      backgroundColor: '--pc-control-bg', hoverBackgroundColor: '--pc-control-hover-bg',
+      textColor: '--pc-control-color', headerBackgroundColor: '--pc-control-header-bg',
+      headerColor: '--pc-control-header-color', borderColor: '--pc-control-border-color',
+    };
+    for (const [key, token] of Object.entries(colorKeys))
+      if (typeof a[key] === 'string') out[token] = a[key] as string;
+    for (const [key, token, unit] of [
+      ['borderWidth','--pc-control-border-width','px'], ['radius','--pc-control-radius','px'],
+      ['fontSize','--pc-control-font-size','px'], ['paddingX','--pc-control-padding-x','px'],
+      ['paddingY','--pc-control-padding-y','px'],
+    ]) if (typeof a[key] === 'number') out[token] = `${a[key]}${unit}`;
+    if (a['shadow']) {
+      const shadow = a['shadow'] as { x: number; y: number; blur: number; spread: number; color: string };
+      out['--pc-control-shadow'] = `${shadow.x}px ${shadow.y}px ${shadow.blur}px ${shadow.spread}px ${shadow.color}`;
+    }
+    return out;
+  }
+
   protected externalLink(href: string): boolean {
     return /^https?:\/\//i.test(href);
   }

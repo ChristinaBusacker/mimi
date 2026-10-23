@@ -126,6 +126,31 @@ export interface PageSpacerBlock extends PageNode {
   height: number;
 }
 /** A localized navigation action. Destinations are internal paths or HTTPS URLs. */
+/** Styles for the actual control, separate from its containing Composer block. */
+export interface PageControlAppearance {
+  backgroundColor?: string;
+  hoverBackgroundColor?: string;
+  textColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  radius?: number;
+  shadow?: ComposerShadow;
+  fontSize?: number;
+  paddingX?: number;
+  paddingY?: number;
+  fullWidth?: boolean;
+}
+/** Each accordion entry can have its own header, body and surface styling. */
+export interface PageAccordionAppearance {
+  backgroundColor?: string;
+  headerBackgroundColor?: string;
+  headerColor?: string;
+  textColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  radius?: number;
+  shadow?: ComposerShadow;
+}
 export interface PageButtonBlock extends PageNode {
   type: 'button';
   label: LocalizedText;
@@ -135,6 +160,7 @@ export interface PageButtonBlock extends PageNode {
   icon?: string | null;
   iconPosition?: 'start' | 'end';
   newTab?: boolean;
+  appearance?: PageControlAppearance;
 }
 export interface PageAccordionItem {
   id: string;
@@ -142,6 +168,7 @@ export interface PageAccordionItem {
   /** Markdown, rendered through the existing sanitized content pipeline. */
   body: LocalizedText;
   defaultOpen?: boolean;
+  appearance?: PageAccordionAppearance;
 }
 export interface PageAccordionBlock extends PageNode {
   type: 'accordion';

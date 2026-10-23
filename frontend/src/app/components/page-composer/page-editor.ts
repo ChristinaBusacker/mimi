@@ -46,8 +46,13 @@ import { PAGE_COMPOSER_ICONS, validComposerDestination } from './page-interactiv
 import { PAGE_STYLE_DEFAULTS, effectiveBlockTextColor } from './page-style-defaults';
 import type { PageTheme, PageThemeSizeKey, PageThemeColorKey } from '@shared/content/page-document';
 import {
-  PAGE_THEME_FONTS, PAGE_THEME_PRESETS, PAGE_THEME_SIZE_KEYS, PAGE_THEME_COLOR_KEYS,
-  defaultPageTheme, pageThemeWithDefaults, parsePageTheme,
+  PAGE_THEME_FONTS,
+  PAGE_THEME_PRESETS,
+  PAGE_THEME_SIZE_KEYS,
+  PAGE_THEME_COLOR_KEYS,
+  defaultPageTheme,
+  pageThemeWithDefaults,
+  parsePageTheme,
 } from './page-theme';
 
 type Selection = { kind: 'page' | 'section' | 'row' | 'column' | 'block'; id: string };
@@ -106,8 +111,17 @@ const makeBlock = (kind: BlockKind): PageBlock => {
     case 'spacer':
       return { ...base, type: kind, height: 48 };
     case 'button':
-      return { ...base, type: kind, label: { de: 'Mehr erfahren', en: 'Learn more' },
-        href: '', variant: 'primary', size: 'medium', icon: null, iconPosition: 'start', newTab: false };
+      return {
+        ...base,
+        type: kind,
+        label: { de: 'Mehr erfahren', en: 'Learn more' },
+        href: '',
+        variant: 'primary',
+        size: 'medium',
+        icon: null,
+        iconPosition: 'start',
+        newTab: false,
+      };
     case 'accordion':
       return { ...base, type: kind, items: [], allowMultiple: false };
     case 'icon':
@@ -528,7 +542,10 @@ export class PageEditor {
     const enabled = (event.target as HTMLInputElement).checked;
     this.changeSelected((node) => {
       if (enabled) node.styles.border = { width: 1, style: 'solid', color: '#ecadd0c0' };
-      else if ('type' in node && ['albumDetails', 'albumTracks', 'albumCredits'].includes(node.type))
+      else if (
+        'type' in node &&
+        ['albumDetails', 'albumTracks', 'albumCredits'].includes(node.type)
+      )
         node.styles.border = { width: 0, style: 'solid', color: '#00000000' };
       else delete node.styles.border;
     });
@@ -614,9 +631,10 @@ export class PageEditor {
     const breakpoint = this.breakpoint();
     this.changeSelected((node) => {
       if (!('type' in node) || node.type !== 'text') return;
-      const target: PageStyleValues = breakpoint === 'desktop'
-        ? node.styles
-        : ((node.styles.responsive ??= {})[breakpoint] ??= {});
+      const target: PageStyleValues =
+        breakpoint === 'desktop'
+          ? node.styles
+          : ((node.styles.responsive ??= {})[breakpoint] ??= {});
       target.textColor = color.toLowerCase();
     });
   }
@@ -743,8 +761,12 @@ export class PageEditor {
     }
     if (!['none', 'color', 'gradient'].includes(kind)) return;
     const selection = this.selected();
-    if (selection?.kind !== 'section' && selection?.kind !== 'column' && selection?.kind !== 'row' &&
-        !['albumDetails', 'albumTracks', 'albumCredits'].includes(this.selectedBlock()?.type ?? ''))
+    if (
+      selection?.kind !== 'section' &&
+      selection?.kind !== 'column' &&
+      selection?.kind !== 'row' &&
+      !['albumDetails', 'albumTracks', 'albumCredits'].includes(this.selectedBlock()?.type ?? '')
+    )
       return;
     this.changeSelected((node) => {
       node.styles.background = 'none';
@@ -1185,7 +1207,8 @@ export class PageEditor {
   }
   protected albumPaletteColor(field: keyof PageAlbumPalette): string {
     const block = this.selectedBlock();
-    if (!block || !['albumDetails', 'albumTracks', 'albumCredits'].includes(block.type)) return '#ffffffff';
+    if (!block || !['albumDetails', 'albumTracks', 'albumCredits'].includes(block.type))
+      return '#ffffffff';
     if ('palette' in block && block.palette?.[field]) return block.palette[field]!;
     if (field === 'backgroundColor') return '#140e2073';
     if (field === 'iconColor') return '#df9cbdff';
@@ -1195,16 +1218,27 @@ export class PageEditor {
   protected albumPaletteSet(field: keyof PageAlbumPalette, color: string): void {
     if (!/^#[a-f0-9]{8}$/i.test(color)) return;
     this.changeSelected((node) => {
-      if (!('type' in node) ||
-          (node.type !== 'albumDetails' && node.type !== 'albumTracks' && node.type !== 'albumCredits')) return;
-      if (node.type !== 'albumDetails' && (field === 'iconColor' || field === 'subtitleColor')) return;
+      if (
+        !('type' in node) ||
+        (node.type !== 'albumDetails' &&
+          node.type !== 'albumTracks' &&
+          node.type !== 'albumCredits')
+      )
+        return;
+      if (node.type !== 'albumDetails' && (field === 'iconColor' || field === 'subtitleColor'))
+        return;
       (node.palette ??= {})[field] = color.toLowerCase();
     });
   }
   protected albumPaletteReset(field: keyof PageAlbumPalette): void {
     this.changeSelected((node) => {
-      if (!('type' in node) ||
-          (node.type !== 'albumDetails' && node.type !== 'albumTracks' && node.type !== 'albumCredits')) return;
+      if (
+        !('type' in node) ||
+        (node.type !== 'albumDetails' &&
+          node.type !== 'albumTracks' &&
+          node.type !== 'albumCredits')
+      )
+        return;
       if (node.palette) {
         delete node.palette[field];
         if (!Object.keys(node.palette).length) delete node.palette;
@@ -1262,7 +1296,9 @@ export class PageEditor {
   }
   protected interactiveTextColor(): string {
     const block = this.selectedBlock();
-    return block ? effectiveBlockTextColor(this.document(), block.id, this.breakpoint()) : '#ffffffff';
+    return block
+      ? effectiveBlockTextColor(this.document(), block.id, this.breakpoint())
+      : '#ffffffff';
   }
   protected interactiveBackgroundColor(): string {
     const design = this.selectedBlock()?.styles.designBackground;
@@ -1273,8 +1309,10 @@ export class PageEditor {
     const breakpoint = this.breakpoint();
     this.changeSelected((node) => {
       if (!('type' in node) || !['button', 'accordion', 'icon'].includes(node.type)) return;
-      const target: PageStyleValues = breakpoint === 'desktop' ? node.styles
-        : ((node.styles.responsive ??= {})[breakpoint] ??= {});
+      const target: PageStyleValues =
+        breakpoint === 'desktop'
+          ? node.styles
+          : ((node.styles.responsive ??= {})[breakpoint] ??= {});
       target.textColor = color.toLowerCase();
     });
   }
@@ -1290,7 +1328,8 @@ export class PageEditor {
     const styles = this.selectedBlock()?.styles;
     if (!styles) return 0;
     const breakpoint = this.breakpoint();
-    return breakpoint === 'desktop' ? (styles.radius ?? 0)
+    return breakpoint === 'desktop'
+      ? (styles.radius ?? 0)
       : (styles.responsive?.[breakpoint]?.radius ?? styles.radius ?? 0);
   }
   protected setInteractiveRadius(event: Event): void {
@@ -1299,8 +1338,10 @@ export class PageEditor {
     const breakpoint = this.breakpoint();
     this.changeSelected((node) => {
       if (!('type' in node) || !['button', 'accordion', 'icon'].includes(node.type)) return;
-      const target: PageStyleValues = breakpoint === 'desktop' ? node.styles
-        : ((node.styles.responsive ??= {})[breakpoint] ??= {});
+      const target: PageStyleValues =
+        breakpoint === 'desktop'
+          ? node.styles
+          : ((node.styles.responsive ??= {})[breakpoint] ??= {});
       target.radius = radius;
       if (breakpoint === 'desktop') delete node.styles.corners;
     });
@@ -1321,7 +1362,10 @@ export class PageEditor {
       if ('type' in node && node.type === 'button') node.href = href;
     });
   }
-  protected editButtonOption(field: 'variant' | 'size' | 'icon' | 'iconPosition', event: Event): void {
+  protected editButtonOption(
+    field: 'variant' | 'size' | 'icon' | 'iconPosition',
+    event: Event,
+  ): void {
     const value = this.value(event);
     this.changeSelected((node) => {
       if (!('type' in node) || node.type !== 'button') return;
@@ -1341,11 +1385,161 @@ export class PageEditor {
       if ('type' in node && node.type === 'button') node.newTab = checked;
     });
   }
+  // Only one rich-text editor is active at a time to avoid 20 Tiptap instances.
+  protected readonly activeAccordionEditor = signal<string | null>(null);
+  private readonly accordionControls = new Map<string, FormControl<string>>();
+  protected accordionBodyControl(id: string, body: string): FormControl<string> {
+    const key = `${id}:${this.locale()}`;
+    let control = this.accordionControls.get(key);
+    if (!control) {
+      control = new FormControl(body, { nonNullable: true });
+      control.valueChanges.subscribe((value) => {
+        this.changeSelected((node) => {
+          if ('type' in node && node.type === 'accordion') {
+            const item = node.items.find((entry) => entry.id === id);
+            if (item) item.body[key.endsWith(':en') ? 'en' : 'de'] = value.slice(0, 4000);
+          }
+        });
+      });
+      this.accordionControls.set(key, control);
+    } else if (control.value !== body) control.setValue(body, { emitEvent: false });
+    return control;
+  }
+  protected focusAccordionEditor(id: string): void {
+    this.activeAccordionEditor.set(id);
+  }
+
+  protected readonly controlShadows = ['none', 'soft', 'card', 'floating', 'glow'] as const;
+  protected controlColor(field: string, id?: string): string {
+    const block = this.selectedBlock();
+    if (!block || (block.type !== 'button' && block.type !== 'accordion')) return '#00000000';
+    const appearance =
+      block.type === 'button'
+        ? block.appearance
+        : block.items.find((item) => item.id === id)?.appearance;
+    const value = (appearance as unknown as Record<string, unknown> | undefined)?.[field];
+    return typeof value === 'string' ? value : '#00000000';
+  }
+  protected controlNumber(field: string, id?: string): number {
+    const block = this.selectedBlock();
+    if (!block || (block.type !== 'button' && block.type !== 'accordion')) return 0;
+    const appearance =
+      block.type === 'button'
+        ? block.appearance
+        : block.items.find((item) => item.id === id)?.appearance;
+    const value = (appearance as unknown as Record<string, unknown> | undefined)?.[field];
+    return typeof value === 'number'
+      ? value
+      : field === 'radius'
+        ? 10
+        : field === 'fontSize'
+          ? 16
+          : 0;
+  }
+  private updateAppearance(
+    id: string | null,
+    update: (style: Record<string, unknown>) => void,
+  ): void {
+    this.changeSelected((node) => {
+      if (!('type' in node)) return;
+      if (node.type === 'button' && id === null)
+        update((node.appearance ??= {}) as unknown as Record<string, unknown>);
+      if (node.type === 'accordion' && id !== null) {
+        const item = node.items.find((entry) => entry.id === id);
+        if (item) update((item.appearance ??= {}) as unknown as Record<string, unknown>);
+      }
+    });
+  }
+  protected setControlColor(
+    field:
+      | 'backgroundColor'
+      | 'hoverBackgroundColor'
+      | 'headerBackgroundColor'
+      | 'headerColor'
+      | 'textColor'
+      | 'borderColor',
+    color: string,
+    id: string | null = null,
+  ): void {
+    if (!/^#[0-9a-f]{8}$/i.test(color)) return;
+    this.updateAppearance(id, (style) => {
+      style[field] = color.toLowerCase();
+    });
+  }
+  protected resetControlColor(
+    field:
+      | 'backgroundColor'
+      | 'hoverBackgroundColor'
+      | 'headerBackgroundColor'
+      | 'headerColor'
+      | 'textColor'
+      | 'borderColor',
+    id: string | null = null,
+  ): void {
+    this.updateAppearance(id, (style) => {
+      delete style[field];
+    });
+  }
+  protected setControlNumber(
+    field: 'radius' | 'borderWidth' | 'fontSize' | 'paddingX' | 'paddingY',
+    event: Event,
+    id: string | null = null,
+  ): void {
+    const value = Number(this.value(event));
+    const max =
+      field === 'radius'
+        ? 96
+        : field === 'borderWidth'
+          ? 12
+          : field === 'fontSize'
+            ? 64
+            : field === 'paddingX'
+              ? 96
+              : 64;
+    if (!Number.isFinite(value) || value < (field === 'fontSize' ? 10 : 0) || value > max) return;
+    this.updateAppearance(id, (style) => {
+      style[field] = value;
+    });
+  }
+  protected setControlShadow(preset: string, id: string | null = null): void {
+    if (!['none', 'soft', 'card', 'floating', 'glow'].includes(preset)) return;
+    this.updateAppearance(id, (style) => {
+      const value = SHADOW_PRESETS[preset as ShadowPreset];
+      if (!value) delete style['shadow'];
+      else style['shadow'] = { ...value };
+    });
+  }
+  protected controlShadowActive(id?: string): string {
+    const block = this.selectedBlock();
+    if (!block || (block.type !== 'button' && block.type !== 'accordion')) return 'none';
+    const appearance =
+      block.type === 'button'
+        ? block.appearance
+        : block.items.find((item) => item.id === id)?.appearance;
+    const shadow = appearance?.shadow;
+    if (!shadow) return 'none';
+    return (
+      this.controlShadows.find(
+        (name) => JSON.stringify(SHADOW_PRESETS[name]) === JSON.stringify(shadow),
+      ) ?? 'custom'
+    );
+  }
+  protected setControlFullWidth(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.updateAppearance(null, (style) => {
+      style['fullWidth'] = checked;
+    });
+  }
+
   protected addAccordionItem(): void {
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'accordion' && node.items.length < 20)
-        node.items.push({ id: crypto.randomUUID(), title: { de: '', en: '' },
-          body: { de: '', en: '' }, defaultOpen: false });
+        node.items.push({
+          id: crypto.randomUUID(),
+          title: { de: '', en: '' },
+          body: { de: '', en: '' },
+          defaultOpen: false,
+        });
     });
   }
   protected editAccordionItem(index: number, field: 'title' | 'body', event: Event): void {
@@ -1359,7 +1553,8 @@ export class PageEditor {
     const checked = (event.target as HTMLInputElement).checked;
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'accordion' && node.items[index]) {
-        if (checked && !node.allowMultiple) node.items.forEach((item) => item.defaultOpen = false);
+        if (checked && !node.allowMultiple)
+          node.items.forEach((item) => (item.defaultOpen = false));
         node.items[index].defaultOpen = checked;
       }
     });
@@ -1369,9 +1564,10 @@ export class PageEditor {
     this.changeSelected((node) => {
       if ('type' in node && node.type === 'accordion') {
         node.allowMultiple = checked;
-        if (!checked) node.items.forEach((item, index) => {
-          if (index > 0) item.defaultOpen = false;
-        });
+        if (!checked)
+          node.items.forEach((item, index) => {
+            if (index > 0) item.defaultOpen = false;
+          });
       }
     });
   }
@@ -1532,7 +1728,10 @@ export class PageEditor {
           if ('blocks' in value) value.blocks.forEach(freshen);
           if (
             'type' in value &&
-            (value.type === 'gallery' || value.type === 'slider' || value.type === 'cardCarousel' || value.type === 'accordion')
+            (value.type === 'gallery' ||
+              value.type === 'slider' ||
+              value.type === 'cardCarousel' ||
+              value.type === 'accordion')
           )
             for (const item of value.items) item.id = crypto.randomUUID();
         };
@@ -1589,18 +1788,24 @@ export class PageEditor {
   }
   protected themeSize(key: PageThemeSizeKey): number {
     const theme = this.themeValue();
-    return (this.breakpoint() === 'desktop'
-      ? theme.sizes?.[key]
-      : this.breakpoint() === 'tablet'
-        ? theme.responsive?.tablet?.[key] ?? theme.sizes?.[key]
-        : theme.responsive?.mobile?.[key] ?? theme.responsive?.tablet?.[key] ?? theme.sizes?.[key]) ?? 16;
+    return (
+      (this.breakpoint() === 'desktop'
+        ? theme.sizes?.[key]
+        : this.breakpoint() === 'tablet'
+          ? (theme.responsive?.tablet?.[key] ?? theme.sizes?.[key])
+          : (theme.responsive?.mobile?.[key] ??
+            theme.responsive?.tablet?.[key] ??
+            theme.sizes?.[key])) ?? 16
+    );
   }
   private updateTheme(change: (theme: PageTheme) => void): void {
     const theme = pageThemeWithDefaults(this.document().theme);
     change(theme);
     try {
       const validated = parsePageTheme(theme);
-      this.change((doc) => { doc.theme = validated; });
+      this.change((doc) => {
+        doc.theme = validated;
+      });
       this.themeJsonError.set('');
     } catch (error) {
       this.themeJsonError.set(error instanceof Error ? error.message : 'Invalid theme');
@@ -1608,10 +1813,14 @@ export class PageEditor {
   }
   protected setThemeFont(field: 'fontBody' | 'fontHeading' | 'fontAccent', event: Event): void {
     const id = this.value(event);
-    this.updateTheme((theme) => { theme[field] = id; });
+    this.updateTheme((theme) => {
+      theme[field] = id;
+    });
   }
   protected setThemeColor(field: PageThemeColorKey, color: string): void {
-    this.updateTheme((theme) => { (theme.colors ??= {})[field] = color; });
+    this.updateTheme((theme) => {
+      (theme.colors ??= {})[field] = color;
+    });
   }
   protected setThemeSize(field: PageThemeSizeKey, event: Event): void {
     const raw = this.value(event);
@@ -1623,18 +1832,31 @@ export class PageEditor {
       else (theme.responsive ??= {})[view] = { ...(theme.responsive?.[view] ?? {}), [field]: size };
     });
   }
-  protected setThemeNumber(field: 'lineHeight' | 'letterSpacing' | 'contentMaxWidth' | 'readingMaxWidth', event: Event): void {
+  protected setThemeNumber(
+    field: 'lineHeight' | 'letterSpacing' | 'contentMaxWidth' | 'readingMaxWidth',
+    event: Event,
+  ): void {
     const raw = this.value(event);
     if (!raw.trim()) return;
-    this.updateTheme((theme) => { theme[field] = Number(raw); });
+    this.updateTheme((theme) => {
+      theme[field] = Number(raw);
+    });
   }
   protected applyThemePreset(event: Event): void {
     const preset = PAGE_THEME_PRESETS.find((item) => item.id === this.value(event));
     if (!preset) return;
     try {
-      const theme = parsePageTheme({ ...defaultPageTheme(), ...preset.overrides,
-        colors: { ...defaultPageTheme().colors, ...('colors' in preset.overrides ? preset.overrides.colors : {}) } });
-      this.change((doc) => { doc.theme = theme; });
+      const theme = parsePageTheme({
+        ...defaultPageTheme(),
+        ...preset.overrides,
+        colors: {
+          ...defaultPageTheme().colors,
+          ...('colors' in preset.overrides ? preset.overrides.colors : {}),
+        },
+      });
+      this.change((doc) => {
+        doc.theme = theme;
+      });
     } catch (error) {
       this.themeJsonError.set(error instanceof Error ? error.message : 'Invalid preset');
     }
@@ -1650,14 +1872,18 @@ export class PageEditor {
   protected applyThemeJson(): void {
     try {
       const theme = parsePageTheme(JSON.parse(this.themeJson()) as unknown);
-      this.change((doc) => { doc.theme = theme; });
+      this.change((doc) => {
+        doc.theme = theme;
+      });
       this.themeJsonError.set('');
     } catch (error) {
       this.themeJsonError.set(error instanceof Error ? error.message : 'Invalid JSON');
     }
   }
   protected removeTheme(): void {
-    this.change((doc) => { delete doc.theme; });
+    this.change((doc) => {
+      delete doc.theme;
+    });
     this.themeJsonError.set('');
   }
 

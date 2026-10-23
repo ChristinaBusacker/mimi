@@ -5,17 +5,32 @@
   border: 1px solid var(--pc-theme-accent, #da8dbb); background: color-mix(in srgb, var(--pc-theme-accent, #da8dbb) 48%, #241122); color: inherit;
   font-weight: 700; text-decoration: none; line-height: 1.25; transition: filter 120ms ease; }
 .page-document__action:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
-.page-document__action[href]:hover { filter: brightness(1.13); }
+.page-document__action[href]:hover { filter: brightness(1.08);
+  background: var(--pc-control-hover-bg, var(--pc-control-bg, var(--pc-theme-accent, #da8dbb))); }
 .page-document__action:not([href]) { cursor: not-allowed; opacity: 0.55; }
-.page-document__action--secondary { background: rgb(218 141 187 / 18%); color: inherit; border-color: currentColor; }
-.page-document__action--outline { background: transparent; color: inherit; border-color: currentColor; }
-.page-document__action--small { min-height: 34px; padding: 6px 13px; font-size: 0.86em; }
-.page-document__action--large { min-height: 50px; padding: 13px 27px; font-size: 1.12em; }
+ .page-document__action--full { width: 100%; justify-content: center; }
+.page-document__action { background: var(--pc-control-bg, color-mix(in srgb, var(--pc-theme-accent, #da8dbb) 48%, #241122));
+  color: var(--pc-control-color, inherit); border-color: var(--pc-control-border-color, var(--pc-theme-accent, #da8dbb));
+  border-width: var(--pc-control-border-width, 1px); border-radius: var(--pc-control-radius, 10px);
+  box-shadow: var(--pc-control-shadow, none); font-size: var(--pc-control-font-size, inherit);
+  padding: var(--pc-control-padding-y, 10px) var(--pc-control-padding-x, 20px); }
+.page-document__action--secondary { background: var(--pc-control-bg, rgb(218 141 187 / 18%)); color: var(--pc-control-color, inherit);
+  border-color: var(--pc-control-border-color, currentColor); }
+.page-document__action--outline { background: var(--pc-control-bg, transparent); color: var(--pc-control-color, inherit);
+  border-color: var(--pc-control-border-color, currentColor); }
+.page-document__action--small { min-height: 34px; padding: var(--pc-control-padding-y, 6px) var(--pc-control-padding-x, 13px); font-size: var(--pc-control-font-size, 0.86em); }
+.page-document__action--large { min-height: 50px; padding: var(--pc-control-padding-y, 13px) var(--pc-control-padding-x, 27px); font-size: var(--pc-control-font-size, 1.12em); }
 .page-document__action app-icon { width: 19px; flex: 0 0 19px; fill: currentColor; }
 .page-document__accordions { display: grid; gap: 10px; }
 .page-document__accordion-item { border: 1px solid rgb(255 255 255 / 22%); border-radius: 10px;
   background: rgb(255 255 255 / 5%); overflow: hidden; }
-.page-document__accordion-item > summary { cursor: pointer; padding: 15px 18px; font-weight: 700; }
+.page-document__accordion-item { background: var(--pc-control-bg, rgb(255 255 255 / 5%));
+  border-color: var(--pc-control-border-color, rgb(255 255 255 / 22%));
+  border-width: var(--pc-control-border-width, 1px);
+  border-radius: var(--pc-control-radius, 10px); box-shadow: var(--pc-control-shadow, none);
+  color: var(--pc-control-color, inherit); }
+.page-document__accordion-item > summary { cursor: pointer; padding: 15px 18px; font-weight: 700;
+  background: var(--pc-control-header-bg, transparent); color: var(--pc-control-header-color, inherit); }
 .page-document__accordion-item > summary:focus-visible { outline: 2px solid var(--pc-theme-accent, #da8dbb); outline-offset: -3px; }
 .page-document__accordion-item[open] > summary { border-bottom: 1px solid rgb(255 255 255 / 15%); }
 .page-document__accordion-item > .page-document__markdown { padding: 15px 18px; }

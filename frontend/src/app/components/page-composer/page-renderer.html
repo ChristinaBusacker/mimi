@@ -513,7 +513,8 @@
                       }
                       @case ('button') {
                         <div class="page-document__action-wrap">
-                          <a class="page-document__action" [class.page-document__action--secondary]="block.variant === 'secondary'"
+                          <a class="page-document__action" [ngStyle]="controlAppearanceVars(block.appearance)"
+                            [class.page-document__action--full]="block.appearance?.fullWidth" [class.page-document__action--secondary]="block.variant === 'secondary'"
                             [class.page-document__action--outline]="block.variant === 'outline'"
                             [class.page-document__action--small]="block.size === 'small'"
                             [class.page-document__action--large]="block.size === 'large'"
@@ -535,7 +536,7 @@
                       @case ('accordion') {
                         <div class="page-document__accordions">
                           @for (item of block.items; track item.id) {
-                            <details class="page-document__accordion-item"
+                            <details class="page-document__accordion-item" [ngStyle]="controlAppearanceVars(item.appearance)"
                               [attr.name]="block.allowMultiple ? null : block.id"
                               [attr.open]="item.defaultOpen ? '' : null">
                               <summary>{{ item.title[locale()] || item.title.de }}</summary>

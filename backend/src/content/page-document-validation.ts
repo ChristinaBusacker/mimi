@@ -299,6 +299,46 @@ function composerIcon(value: unknown): string {
   if (!COMPOSER_ICONS.has(name)) invalid('invalid composer icon');
   return name;
 }
+function controlShadow(value: unknown) {
+  const input = record(value);
+  if (Object.keys(input).some((key) => !['x','y','blur','spread','color'].includes(key)))
+    invalid('unknown control shadow property');
+  return {
+    x: offset(input['x']), y: offset(input['y']),
+    blur: number(input['blur'], 160, 0), spread: offset(input['spread']),
+    color: surfaceColor(input['color']),
+  };
+}
+/** Independent button/accordion item surface, without accepting raw CSS. */
+function controlAppearance(value: unknown, accordion = false): Record<string, unknown> {
+  const data = record(value);
+  const allowed = accordion
+    ? ['backgroundColor','headerBackgroundColor','headerColor','textColor',
+       'borderColor','borderWidth','radius','shadow']
+    : ['backgroundColor','hoverBackgroundColor','textColor','borderColor',
+       'borderWidth','radius','shadow','fontSize','paddingX','paddingY','fullWidth'];
+  if (Object.keys(data).some((key) => !allowed.includes(key)))
+    invalid('unknown control appearance property');
+  const result: Record<string, unknown> = {};
+  for (const key of ['backgroundColor','hoverBackgroundColor','headerBackgroundColor',
+    'headerColor','textColor','borderColor']) {
+    if (data[key] !== undefined) result[key] = surfaceColor(data[key]);
+  }
+  for (const [key, max] of [['radius',96],['borderWidth',12],
+    ['fontSize',64],['paddingX',96],['paddingY',64]] as const) {
+    if (data[key] !== undefined) {
+      const size = number(data[key], max, 0);
+      if (key === 'fontSize' && size < 10) invalid('invalid control font size');
+      result[key] = size;
+    }
+  }
+  if (data['shadow'] !== undefined) result['shadow'] = controlShadow(data['shadow']);
+  if (data['fullWidth'] !== undefined) {
+    if (typeof data['fullWidth'] !== 'boolean') invalid('invalid full width flag');
+    result['fullWidth'] = data['fullWidth'];
+  }
+  return result;
+}
 function block(value: unknown): PageBlock {
   const data = record(value);
   const decoratedBlock = ['albumDetails', 'albumTracks', 'albumCredits', 'button', 'accordion', 'icon']
@@ -366,7 +406,8 @@ function block(value: unknown): PageBlock {
         variant: variant as 'primary' | 'secondary' | 'outline', size: size as 'small' | 'medium' | 'large',
         ...(data['icon'] === undefined ? {} : { icon: data['icon'] === null ? null : composerIcon(data['icon']) }),
         ...(placement === undefined ? {} : { iconPosition: placement as 'start' | 'end' }),
-        ...(data['newTab'] === undefined ? {} : { newTab: data['newTab'] as boolean }) };
+        ...(data['newTab'] === undefined ? {} : { newTab: data['newTab'] as boolean }),
+        ...(data['appearance'] === undefined ? {} : { appearance: controlAppearance(data['appearance']) as Extract<PageBlock, { type: 'button' }>['appearance'] }) };
     }
     case 'accordion': {
       if (data['allowMultiple'] !== undefined && typeof data['allowMultiple'] !== 'boolean')
@@ -380,7 +421,8 @@ function block(value: unknown): PageBlock {
         if (title.de.length > 160 || title.en.length > 160 ||
             body.de.length > 4000 || body.en.length > 4000) invalid('accordion content too long');
         return { id: id(entry['id']), title, body,
-          ...(entry['defaultOpen'] === undefined ? {} : { defaultOpen: entry['defaultOpen'] as boolean }) };
+          ...(entry['defaultOpen'] === undefined ? {} : { defaultOpen: entry['defaultOpen'] as boolean }),
+          ...(entry['appearance'] === undefined ? {} : { appearance: controlAppearance(entry['appearance'], true) as Extract<PageBlock, { type: 'accordion' }>['items'][number]['appearance'] }) };
       });
       if (!data['allowMultiple'] && items.filter((entry) => entry.defaultOpen).length > 1)
         invalid('single-open accordion has multiple defaults');
