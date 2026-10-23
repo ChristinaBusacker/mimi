@@ -1,6 +1,7 @@
 import { Node } from '@tiptap/core';
+import { createMimiInlineIconNodeView } from './mimi-inline-icon-node-view';
 import '@tiptap/markdown';
-import { mimiInlineHtml, parseMimiInline, readMimiInline, serializeMimiInline, type MimiInlineControl } from '@shared/content/mimi-inline-controls';
+import { MIMI_INLINE_ICON_DEFAULTS, mimiInlineHtml, parseMimiInline, readMimiInline, serializeMimiInline, type MimiInlineControl } from '@shared/content/mimi-inline-controls';
 
 /** Editable atomic widgets; Markdown remains portable, typed and HTML-free. */
 export const MimiInlineControls = Node.create({
@@ -8,8 +9,8 @@ export const MimiInlineControls = Node.create({
   selectable: true, draggable: true, markdownTokenName: 'mimiInlineControl',
   addAttributes() {
     return {
-      kind: { default: 'icon' }, name: { default: 'heart' }, size: { default: 24 },
-      color: { default: '#ed9fcaff' }, label: { default: '' }, href: { default: '' },
+      kind: { default: 'icon' }, name: { default: MIMI_INLINE_ICON_DEFAULTS.name }, size: { default: MIMI_INLINE_ICON_DEFAULTS.size },
+      color: { default: MIMI_INLINE_ICON_DEFAULTS.color }, label: { default: '' }, href: { default: '' },
       variant: { default: 'primary' },
     };
   },
@@ -31,19 +32,34 @@ export const MimiInlineControls = Node.create({
     }, widget.kind === 'icon' ? `✦ ${widget.name}` : widget.label];
   },
   addNodeView() {
-    return ({ node }) => {
+    return ({ node, view, getPos }) => {
+      if (node.attrs['kind'] === 'icon') {
+        return createMimiInlineIconNodeView({ node, view, getPos });
+      }
       const dom = document.createElement('span');
-      const widget = node.attrs as MimiInlineControl;
-      const spec = serializeMimiInline(widget);
-      const value = /^%%mimi-(?:icon|button)\[([^\]]+)\]%%$/.exec(spec)?.[1] ?? '';
-      dom.dataset['mimiInline'] = widget.kind;
-      dom.dataset['mimiSpec'] = value;
-      dom.className = 'markdown-editor__inline-widget';
-      dom.contentEditable = 'false';
-      dom.innerHTML = mimiInlineHtml(widget);
-      // A CTA is editable content here, not a live navigation target.
-      dom.querySelector('a')?.removeAttribute('href');
-      return { dom };
+      let current = node;
+      const paint = () => {
+        const widget = current.attrs as MimiInlineControl;
+        const spec = serializeMimiInline(widget);
+        const value = /^%%mimi-(?:icon|button)\[([^\]]+)\]%%$/.exec(spec)?.[1] ?? '';
+        dom.dataset['mimiInline'] = widget.kind;
+        dom.dataset['mimiSpec'] = value;
+        dom.className = 'markdown-editor__inline-widget';
+        dom.contentEditable = 'false';
+        dom.innerHTML = mimiInlineHtml(widget);
+        // Navigation must never occur inside the editor.
+        dom.querySelector('a')?.removeAttribute('href');
+      };
+      paint();
+      return {
+        dom,
+        update(next) {
+          if (next.type !== current.type || next.attrs['kind'] !== current.attrs['kind']) return false;
+          current = next;
+          paint();
+          return true;
+        },
+      };
     };
   },
   markdownTokenizer: {

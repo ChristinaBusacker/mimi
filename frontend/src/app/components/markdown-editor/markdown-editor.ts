@@ -35,7 +35,7 @@ import { MarkdownTextColor } from './text-color.extension';
 import { MarkdownStrike, MarkdownUnderline } from './text-decoration-marks.extension';
 import { YoutubeEmbed } from './youtube-embed.extension';
 import { MimiInlineControls } from './mimi-inline-controls.extension';
-import { MIMI_INLINE_ICONS, readMimiInline, serializeMimiInline, type MimiInlineControl } from '@shared/content/mimi-inline-controls';
+import { MIMI_INLINE_ICON_DEFAULTS, MIMI_INLINE_ICONS, readMimiInline, serializeMimiInline, type MimiInlineControl } from '@shared/content/mimi-inline-controls';
 
 type EditorDialog = 'link' | 'image' | 'youtube' | 'inlineIcon' | 'inlineButton';
 
@@ -95,9 +95,9 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
   protected readonly editingLink = signal(false);
   protected readonly editingInline = signal(false);
   protected readonly inlineIcons = MIMI_INLINE_ICONS;
-  protected readonly inlineIconName = signal('heart');
-  protected readonly inlineIconSize = signal(24);
-  protected readonly inlineIconColor = signal('#ed9fcaff');
+  protected readonly inlineIconName = signal<string>(MIMI_INLINE_ICON_DEFAULTS.name);
+  protected readonly inlineIconSize = signal<number>(MIMI_INLINE_ICON_DEFAULTS.size);
+  protected readonly inlineIconColor = signal<string>(MIMI_INLINE_ICON_DEFAULTS.color);
   protected readonly inlineButtonLabel = signal('Mehr erfahren');
   protected readonly inlineButtonHref = signal('/music');
   protected readonly inlineButtonVariant = signal<'primary' | 'secondary' | 'outline'>('primary');
@@ -476,7 +476,10 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
         this.resetImageForm();
       }
     } else if (dialog === 'inlineIcon' || dialog === 'inlineButton') {
-      this.editingInline.set(this.loadSelectedInline(dialog === 'inlineIcon' ? 'icon' : 'button'));
+      const kind = dialog === 'inlineIcon' ? 'icon' : 'button';
+      // Fresh insertion starts from the documented defaults, not a prior dialog's values.
+      this.resetInlineDialog(kind);
+      this.editingInline.set(this.loadSelectedInline(kind));
     } else if (!this.loadSelectedYoutube()) {
       this.resetYoutubeForm();
     }
@@ -515,10 +518,44 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
     this.storedSelection = null;
   }
 
+  private resetInlineDialog(kind: 'icon' | 'button'): void {
+    if (kind === 'icon') {
+      this.inlineIconName.set(MIMI_INLINE_ICON_DEFAULTS.name);
+      this.inlineIconSize.set(MIMI_INLINE_ICON_DEFAULTS.size);
+      this.inlineIconColor.set(MIMI_INLINE_ICON_DEFAULTS.color);
+    } else {
+      this.inlineButtonLabel.set('Mehr erfahren');
+      this.inlineButtonHref.set('/music');
+      this.inlineButtonVariant.set('primary');
+    }
+  }
+
+  protected insertAnotherInlineIcon(): void {
+    const editor = this.editor();
+    const position = this.storedSelection?.from;
+    if (editor && typeof position === 'number') {
+      const selected = editor.state.doc.nodeAt(position);
+      if (selected?.type.name === 'mimiInlineControl') {
+        const after = position + selected.nodeSize;
+        this.storedSelection = { kind: 'text', from: after, to: after };
+      }
+    }
+    this.resetInlineDialog('icon');
+    this.editingInline.set(false);
+  }
+
+  protected selectInlineIcon(name: string): void {
+    if (this.inlineIcons.includes(name)) this.inlineIconName.set(name);
+  }
+
+  protected changeInlineIconColor(color: string): void {
+    if (/^#[0-9a-f]{8}$/i.test(color)) this.inlineIconColor.set(color.toLowerCase());
+  }
+
   protected setInlineValue(field: 'name' | 'size' | 'color' | 'label' | 'href' | 'variant', event: Event): void {
     const value = this.readControlValue(event);
     if (field === 'name') this.inlineIconName.set(value);
-    else if (field === 'size') this.inlineIconSize.set(Number(value));
+    else if (field === 'size') { const size = Number(value); if (Number.isInteger(size) && size >= 12 && size <= 128) this.inlineIconSize.set(size); }
     else if (field === 'color') this.inlineIconColor.set(/^#[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() + 'ff' : value);
     else if (field === 'label') this.inlineButtonLabel.set(value);
     else if (field === 'href') this.inlineButtonHref.set(value);

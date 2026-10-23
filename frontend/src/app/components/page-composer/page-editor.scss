@@ -711,7 +711,7 @@
 .composer__inspector {
   position: sticky;
   align-self: start;
-  top: calc(var(--composer-sticky-top) + var(--composer-toolbar-height));
+  top: 100px;
   max-height: calc(100dvh - var(--composer-sticky-top) - var(--composer-toolbar-height));
   overflow-y: auto;
   overscroll-behavior: contain;

@@ -108,24 +108,42 @@
       <app-icon name="quote" class="white" />
     </button>
 
-    <button type="button" [disabled]="isDisabled()" [class.active]="isCodeActive()"
-      [attr.aria-label]="'admin.markdown.workflow.inlineCode' | i18n | async" (click)="toggleCode()">
-      <app-icon name="code-2" />
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      [class.active]="isCodeActive()"
+      [attr.aria-label]="'admin.markdown.workflow.inlineCode' | i18n | async"
+      (click)="toggleCode()"
+    >
+      <app-icon name="code-2" class="white" />
     </button>
-    <button type="button" [disabled]="isDisabled()"
-      [attr.aria-label]="'admin.markdown.workflow.horizontalRule' | i18n | async" (click)="insertHorizontalRule()">
-      <app-icon name="minus" />
+    <button
+      type="button"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.workflow.horizontalRule' | i18n | async"
+      (click)="insertHorizontalRule()"
+    >
+      <app-icon name="minus" class="white" />
     </button>
 
     <span class="divider"></span>
     <div class="markdown-editor__color-tool" (pointerdown)="rememberColorSelection()">
-      <app-composer-color-picker [label]="('admin.markdown.v2.textColor' | i18n | async) ?? ''"
+      <app-composer-color-picker
+        [label]="''"
         [suggestedColors]="suggestedColors()"
-        [disabled]="isDisabled()" [value]="textColor()" (valueChange)="applyTextColor($event)" />
+        [disabled]="isDisabled()"
+        [value]="textColor()"
+        (valueChange)="applyTextColor($event)"
+      />
     </div>
-    <button type="button" [disabled]="isDisabled()"
+    <button
+      type="button"
+      [disabled]="isDisabled()"
       [attr.aria-label]="'admin.markdown.v2.clearColor' | i18n | async"
-      (click)="removeTextColor()"><app-icon name="eraser" /></button>
+      (click)="removeTextColor()"
+    >
+      <app-icon name="eraser" class="white" />
+    </button>
     <span class="divider"></span>
 
     <button
@@ -160,14 +178,24 @@
     >
       <app-icon name="youtube" class="white" />
     </button>
-    <button type="button" [disabled]="isDisabled()"
+    <button
+      type="button"
+      [disabled]="isDisabled()"
       [class.active]="dialogType() === 'inlineIcon' || isInlineSelected('icon')"
       [attr.aria-label]="'admin.markdown.inlineIcon' | i18n | async"
-      (click)="openDialog('inlineIcon')"><app-icon name="heart" class="white" /></button>
-    <button type="button" [disabled]="isDisabled()"
+      (click)="openDialog('inlineIcon')"
+    >
+      <app-icon name="heart" class="white" />
+    </button>
+    <button
+      type="button"
+      [disabled]="isDisabled()"
       [class.active]="dialogType() === 'inlineButton' || isInlineSelected('button')"
       [attr.aria-label]="'admin.markdown.inlineButton' | i18n | async"
-      (click)="openDialog('inlineButton')"><app-icon name="link" class="white" /></button>
+      (click)="openDialog('inlineButton')"
+    >
+      <app-icon name="link" class="white" />
+    </button>
 
     <span class="spacer"></span>
 
@@ -211,8 +239,19 @@
             @case ('youtube') {
               {{ 'admin.markdown.youtubeDialogTitle' | i18n | async }}
             }
-            @case ('inlineIcon') { {{ 'admin.markdown.inlineIconTitle' | i18n | async }} }
-            @case ('inlineButton') { {{ 'admin.markdown.inlineButtonTitle' | i18n | async }} }
+            @case ('inlineIcon') {
+              {{
+                (editingInline()
+                  ? 'admin.markdown.inlineIconTitle'
+                  : 'admin.markdown.inlineIconInsertTitle'
+                )
+                  | i18n
+                  | async
+              }}
+            }
+            @case ('inlineButton') {
+              {{ 'admin.markdown.inlineButtonTitle' | i18n | async }}
+            }
           }
         </h2>
 
@@ -316,16 +355,33 @@
           </select>
         </label>
         <div class="markdown-editor__width-control">
-          <label for="markup-image-width">{{ 'admin.markdown.v2.imageWidth' | i18n | async }}:
-            {{ imageWidth() === null ? ('admin.markdown.v2.automatic' | i18n | async) : imageWidth() + '%' }}
+          <label for="markup-image-width"
+            >{{ 'admin.markdown.v2.imageWidth' | i18n | async }}:
+            {{
+              imageWidth() === null
+                ? ('admin.markdown.v2.automatic' | i18n | async)
+                : imageWidth() + '%'
+            }}
           </label>
-          <input id="markup-image-width" type="range" min="10" max="100" step="1"
-            [value]="imageWidth() ?? 100" (input)="setImageWidth($event)" />
-          <button type="button" (click)="resetImageWidth()">{{ 'admin.markdown.v2.automatic' | i18n | async }}</button>
+          <input
+            id="markup-image-width"
+            type="range"
+            min="10"
+            max="100"
+            step="1"
+            [value]="imageWidth() ?? 100"
+            (input)="setImageWidth($event)"
+          />
+          <button type="button" (click)="resetImageWidth()">
+            {{ 'admin.markdown.v2.automatic' | i18n | async }}
+          </button>
           @if (selectedImage(); as image) {
             <div class="markdown-editor__width-preview">
-              <img [src]="image.thumbnailUrl ?? image.url" [alt]="imageAlt()"
-                [style.width.%]="imageWidth() ?? 100" />
+              <img
+                [src]="image.thumbnailUrl ?? image.url"
+                [alt]="imageAlt()"
+                [style.width.%]="imageWidth() ?? 100"
+              />
             </div>
           }
         </div>
@@ -420,42 +476,127 @@
       }
 
       @if (dialogType() === 'inlineIcon') {
-        <label>{{ 'admin.markdown.inlineIconName' | i18n | async }}
-          <select [value]="inlineIconName()" (change)="setInlineValue('name', $event)">
-            @for (name of inlineIcons; track name) { <option [value]="name">{{ name }}</option> }
-          </select>
+        @if (editingInline()) {
+          <button
+            type="button"
+            class="markdown-inline-picker__new"
+            (click)="insertAnotherInlineIcon()"
+          >
+            {{ 'admin.markdown.inlineIconNew' | i18n | async }}
+          </button>
+        }
+        <div class="markdown-inline-picker__preview" aria-live="polite">
+          <app-icon
+            [name]="inlineIconName()"
+            [style.width.px]="inlineIconSize()"
+            [style.height.px]="inlineIconSize()"
+            [style.color]="inlineIconColor()"
+            [attr.aria-label]="inlineIconName()"
+          />
+          <span>{{ inlineIconName() }} · {{ inlineIconSize() }} px</span>
+        </div>
+        <div class="markdown-inline-picker__label">
+          {{ 'admin.markdown.inlineIconName' | i18n | async }}
+        </div>
+        <div
+          class="markdown-inline-picker__grid"
+          role="group"
+          [attr.aria-label]="'admin.markdown.inlineIconName' | i18n | async"
+        >
+          @for (name of inlineIcons; track name) {
+            <button
+              type="button"
+              class="markdown-inline-picker__choice"
+              [class.is-selected]="inlineIconName() === name"
+              [attr.aria-pressed]="inlineIconName() === name"
+              [attr.aria-label]="name"
+              [title]="name"
+              (click)="selectInlineIcon(name)"
+            >
+              <app-icon [name]="name" />
+              <span>{{ name }}</span>
+            </button>
+          }
+        </div>
+        <label class="markdown-inline-picker__size"
+          >{{ 'admin.markdown.inlineSize' | i18n | async }}
+          <input
+            type="range"
+            min="12"
+            max="128"
+            step="1"
+            [value]="inlineIconSize()"
+            (input)="setInlineValue('size', $event)"
+          />
+          <input
+            type="number"
+            min="12"
+            max="128"
+            [value]="inlineIconSize()"
+            (change)="setInlineValue('size', $event)"
+          />
         </label>
-        <label>{{ 'admin.markdown.inlineSize' | i18n | async }}
-          <input type="number" min="12" max="96" [value]="inlineIconSize()" (input)="setInlineValue('size', $event)" />
-        </label>
-        <label>{{ 'admin.markdown.inlineColor' | i18n | async }}
-          <input type="color" [value]="inlineIconColor().slice(0,7)"
-            (input)="setInlineValue('color', $event)" />
-        </label>
+        <app-composer-color-picker
+          [suggestedColors]="suggestedColors()"
+          [label]="('admin.markdown.inlineColor' | i18n | async) ?? 'Icon-Farbe'"
+          [value]="inlineIconColor()"
+          (valueChange)="changeInlineIconColor($event)"
+        />
         <div class="dialog-actions">
-          <button type="button" class="primary" (click)="saveInline()">{{ 'admin.markdown.inlineSave' | i18n | async }}</button>
-          @if (editingInline()) { <button type="button" (click)="removeInline()">{{ 'admin.markdown.removeFromContent' | i18n | async }}</button> }
-          <button type="button" (click)="closeDialog()">{{ 'admin.markdown.close' | i18n | async }}</button>
+          <button type="button" class="primary" (click)="saveInline()">
+            {{ 'admin.markdown.inlineSave' | i18n | async }}
+          </button>
+          @if (editingInline()) {
+            <button type="button" (click)="removeInline()">
+              {{ 'admin.markdown.removeFromContent' | i18n | async }}
+            </button>
+          }
+          <button type="button" (click)="closeDialog()">
+            {{ 'admin.markdown.close' | i18n | async }}
+          </button>
         </div>
       }
       @if (dialogType() === 'inlineButton') {
-        <label>{{ 'admin.markdown.inlineLabel' | i18n | async }}
-          <input type="text" maxlength="160" [value]="inlineButtonLabel()" (input)="setInlineValue('label', $event)" />
+        <label
+          >{{ 'admin.markdown.inlineLabel' | i18n | async }}
+          <input
+            type="text"
+            maxlength="160"
+            [value]="inlineButtonLabel()"
+            (input)="setInlineValue('label', $event)"
+          />
         </label>
-        <label>{{ 'admin.markdown.inlineDestination' | i18n | async }}
-          <input type="text" maxlength="800" [value]="inlineButtonHref()" (input)="setInlineValue('href', $event)" />
+        <label
+          >{{ 'admin.markdown.inlineDestination' | i18n | async }}
+          <input
+            type="text"
+            maxlength="800"
+            [value]="inlineButtonHref()"
+            (input)="setInlineValue('href', $event)"
+          />
         </label>
-        <label>{{ 'admin.markdown.inlineVariant' | i18n | async }}
+        <label
+          >{{ 'admin.markdown.inlineVariant' | i18n | async }}
           <select [value]="inlineButtonVariant()" (change)="setInlineValue('variant', $event)">
             @for (variant of ['primary', 'secondary', 'outline']; track variant) {
-              <option [value]="variant">{{ 'page.blocks.button.' + variant | i18n | async }}</option>
+              <option [value]="variant">
+                {{ 'page.blocks.button.' + variant | i18n | async }}
+              </option>
             }
           </select>
         </label>
         <div class="dialog-actions">
-          <button type="button" class="primary" (click)="saveInline()">{{ 'admin.markdown.inlineSave' | i18n | async }}</button>
-          @if (editingInline()) { <button type="button" (click)="removeInline()">{{ 'admin.markdown.removeFromContent' | i18n | async }}</button> }
-          <button type="button" (click)="closeDialog()">{{ 'admin.markdown.close' | i18n | async }}</button>
+          <button type="button" class="primary" (click)="saveInline()">
+            {{ 'admin.markdown.inlineSave' | i18n | async }}
+          </button>
+          @if (editingInline()) {
+            <button type="button" (click)="removeInline()">
+              {{ 'admin.markdown.removeFromContent' | i18n | async }}
+            </button>
+          }
+          <button type="button" (click)="closeDialog()">
+            {{ 'admin.markdown.close' | i18n | async }}
+          </button>
         </div>
       }
 

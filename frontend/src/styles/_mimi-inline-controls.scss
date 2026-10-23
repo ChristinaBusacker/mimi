@@ -24,3 +24,48 @@
   outline: 2px solid #f4afd3; outline-offset: 2px;
   background: #c886ac22;
 }
+
+/* The size handle behaves like an image handle, but uses absolute px dimensions. */
+.markdown-inline-icon { position: relative; vertical-align: middle; }
+.markdown-inline-icon__graphic { display: inline-flex; vertical-align: middle; max-width: none; }
+.markdown-inline-icon__graphic svg { display: block; max-width: none; }
+.markdown-inline-icon__resize {
+  display: none; position: absolute; z-index: 2; right: -7px; bottom: -7px;
+  width: 12px; height: 12px; border-radius: 3px;
+  border: 2px solid #381d35; background: #f4a9d1;
+  cursor: nwse-resize; touch-action: none;
+}
+.markdown-inline-icon.ProseMirror-selectednode .markdown-inline-icon__resize { display: block; }
+.markdown-inline-icon__resize:focus-visible { display: block; outline: 2px solid #fff; outline-offset: 2px; }
+
+.markdown-inline-picker__new {
+  display: inline-flex; align-self: start; padding: 8px 13px;
+  border-radius: 8px; background: #654061; color: #fff1f9;
+  border: 1px solid #c68cae; cursor: pointer; font: inherit;
+}
+.markdown-inline-picker__new:hover { background: #794d70; }
+.markdown-inline-picker__preview {
+  display: flex; align-items: center; gap: 16px; min-height: 100px;
+  padding: 14px; border: 1px solid #8d6887; border-radius: 12px;
+  background: #32203a; color: #f1d1e5;
+}
+.markdown-inline-picker__preview app-icon { flex: 0 0 auto; fill: currentColor; }
+.markdown-inline-picker__preview app-icon svg { display: block; width: 100%; height: 100%; }
+.markdown-inline-picker__label { margin-top: 2px; font-weight: 700; }
+.markdown-inline-picker__grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px; padding: 4px 0; max-height: 290px; overflow: auto;
+}
+.markdown-inline-picker__choice {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; min-height: 74px; padding: 8px 5px; border-radius: 10px;
+  border: 1px solid #775374; background: #39253d; color: #f9deed;
+  cursor: pointer; font-size: 11px; font-weight: 600;
+}
+.markdown-inline-picker__choice app-icon { width: 26px; fill: currentColor; }
+.markdown-inline-picker__choice app-icon svg { display: block; width: 100%; }
+.markdown-inline-picker__choice.is-selected { border-color: #f6abd2; background: #744265; box-shadow: 0 0 0 1px #f6abd2; }
+.markdown-inline-picker__choice:hover, .markdown-inline-picker__choice:focus-visible { background: #62415f; outline: 1px solid #f6abd2; }
+.markdown-inline-picker__size { display: grid; grid-template-columns: minmax(0,1fr) 92px; align-items: center; gap: 8px; }
+.markdown-inline-picker__size input[type="range"] { grid-column: 1; width: 100%; accent-color: #f2a6ce; }
+.markdown-inline-picker__size input[type="number"] { grid-column: 2; width: 100%; }

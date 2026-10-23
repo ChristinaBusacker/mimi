@@ -1,0 +1,6 @@
+{
+  "localizations": [
+    { "key": "admin.markdown.inlineIconInsertTitle", "de": "Inline-Icon einfügen", "en": "Insert inline icon" },
+    { "key": "admin.markdown.inlineIconNew", "de": "Neues Icon einfügen", "en": "Insert another icon" }
+  ]
+}

@@ -11,6 +11,14 @@ describe('Mimi inline widgets', () => {
     expect(parseMimiInline('button', '%E0%A4%A|%2Fabout|primary')).toBeNull();
     expect(parseMimiInline('icon', 'script|32|#ffffffff')).toBeNull();
   });
+  it('round-trips resized icons and rejects values outside the drag range', () => {
+    for (const size of [12, 24, 63, 96, 128]) {
+      const icon = { kind: 'icon' as const, name: 'heart', size, color: '#ed9fcaff' };
+      expect(readMimiInline(serializeMimiInline(icon))?.widget).toEqual(icon);
+    }
+    expect(parseMimiInline('icon', 'heart|129|#ed9fcaff')).toBeNull();
+    expect(parseMimiInline('icon', 'heart|11|#ed9fcaff')).toBeNull();
+  });
   it('renders safe SVG and anchor without converting strings to HTML', () => {
     const md = new MarkdownIt({ html: false }); installMimiInlineControls(md);
     const html = md.render(`Hi ${serializeMimiInline({ kind: 'icon', name: 'heart', size: 24, color: '#ed9fcaff' })} ${serializeMimiInline({ kind: 'button', label: 'Mimi & Musik', href: '/music', variant: 'outline' })}`);
