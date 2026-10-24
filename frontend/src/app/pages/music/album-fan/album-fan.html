@@ -26,6 +26,15 @@
         (pointercancel)="onPointerCancel($event)"
         (wheel)="onWheel($event)"
       >
+        <div class="album-fan__atmosphere" aria-hidden="true">
+          @for (card of atmosphereCards(); track card.album.id) {
+            <div
+              class="album-fan__atmosphere-art"
+              [class.is-active]="card.active"
+              [style.background-image]="card.atmosphereImage"
+            ></div>
+          }
+        </div>
         <canvas
           #albumStageCanvas
           class="album-fan__canvas"

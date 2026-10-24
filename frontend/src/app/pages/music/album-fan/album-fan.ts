@@ -22,6 +22,7 @@ import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { AlbumSelectionService } from '../../../core/music/album-selection.service';
 import { prepareBookletPortal } from '../../../core/navigation/booklet-transition';
 import { albumFanWindow } from './album-fan-layout';
+import { albumAtmosphereAsset } from './album-stage-atmosphere';
 import type { AlbumStageRenderer } from './album-stage-renderer';
 
 interface AlbumFanCard {
@@ -37,6 +38,7 @@ interface AlbumFanCard {
   zIndex: number;
   outer: boolean;
   active: boolean;
+  atmosphereImage: string;
 }
 
 @Component({
@@ -70,9 +72,9 @@ export class AlbumFan implements OnInit {
   );
 
   protected readonly activeCoverBackground = computed(() => {
-    const coverAssetId = this.activeAlbum()?.coverAssetId;
+    const assetId = albumAtmosphereAsset(this.activeAlbum());
 
-    return coverAssetId ? `url("${this.assetUrl(coverAssetId)}")` : 'none';
+    return assetId ? `url("${this.assetUrl(assetId)}")` : 'none';
   });
 
   protected readonly cards = computed<AlbumFanCard[]>(() => {
@@ -83,9 +85,11 @@ export class AlbumFan implements OnInit {
     // drag offset remain continuous as the window advances through the catalog.
     return albumFanWindow(albums.length, activeIndex, this.dragProgress()).map(({ index, offset }) => {
       const absoluteOffset = Math.abs(offset);
+      const backdrop = albumAtmosphereAsset(albums[index]);
 
       return {
         album: albums[index],
+        atmosphereImage: backdrop ? `url("${this.assetUrl(backdrop)}")` : 'none',
         index,
         x: this.horizontalOffset(offset),
         y: `${(absoluteOffset * 15).toFixed(2)}px`,
@@ -101,6 +105,10 @@ export class AlbumFan implements OnInit {
     });
   });
 
+  // At most the active backdrop and its two neighbors are mounted.
+  // Keeping neighbors mounted lets CSS crossfade without loading every album hero.
+  protected readonly atmosphereCards = computed(() => this.cards().filter((card) => !card.outer));
+
   protected readonly showDots = computed(() => this.albums().length <= 12);
 
   constructor() {
@@ -111,7 +119,7 @@ export class AlbumFan implements OnInit {
       }
     });
     effect(() => {
-      this.renderer?.setAlbum(this.activeAlbum()?.coverAssetId ?? null);
+      this.renderer?.setAlbum(albumAtmosphereAsset(this.activeAlbum()));
     });
     this.destroyRef.onDestroy(() => {
       this.renderer?.dispose();

@@ -31,6 +31,8 @@ export interface MusicAlbumSummary {
   title: string;
   coverAssetId: string | null;
   releasedAt: string | null;
+  /** Optional scene image. Falls back to the cover for older albums. */
+  heroAssetId?: string | null;
 }
 
 export interface MusicAlbum extends MusicAlbumSummary {

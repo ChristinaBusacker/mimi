@@ -403,6 +403,7 @@ export class MusicService {
       title: translation.title,
       coverAssetId: album.coverAssetId,
       releasedAt: album.releasedAt,
+      heroAssetId: album.editorial?.heroAssetId ?? null,
     };
   }
 

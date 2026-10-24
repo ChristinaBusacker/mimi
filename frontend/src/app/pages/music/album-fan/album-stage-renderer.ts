@@ -68,7 +68,7 @@ export class AlbumStageRenderer {
   private readonly beamMaterial = new MeshBasicMaterial({
     color: 0xeab1ef,
     transparent: true,
-    opacity: 0.055,
+    opacity: 0.028,
     depthWrite: false,
     side: DoubleSide,
     blending: AdditiveBlending,
