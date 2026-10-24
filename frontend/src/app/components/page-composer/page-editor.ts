@@ -617,6 +617,17 @@ export class PageEditor {
     const id = block?.styles[kind] ?? theme[kind];
     return this.themeFonts.find((font) => font.id === id)?.css ?? 'inherit';
   }
+  /** Mirror global typography including active responsive breakpoint in the markup editor. */
+  protected markdownFontSizes(): Record<PageThemeSizeKey, number> {
+    const theme = pageThemeWithDefaults(this.document().theme);
+    const breakpoint = this.breakpoint();
+    return Object.fromEntries(PAGE_THEME_SIZE_KEYS.map((key) => {
+      const size = breakpoint === 'mobile'
+        ? theme.responsive?.mobile?.[key] ?? theme.responsive?.tablet?.[key]
+        : breakpoint === 'tablet' ? theme.responsive?.tablet?.[key] : undefined;
+      return [key, size ?? theme.sizes?.[key] ?? 16];
+    })) as Record<PageThemeSizeKey, number>;
+  }
   protected setHeadingColor(color: string): void {
     if (!/^#[0-9a-f]{8}$/i.test(color)) return;
     this.changeSelected((node) => {

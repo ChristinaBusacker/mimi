@@ -128,12 +128,15 @@
     padding: 0;
     margin: 0;
   }
+  // Legacy pages also use Composer typography defaults rather than browser 1.5rem H2.
+  h2 { font-size: var(--pc-theme-active-size-h2, var(--pc-theme-size-h2, 42px)); }
   h5 {
     font-size: 1.1em;
     font-weight: 600;
     letter-spacing: 0.04em;
   }
   h6 {
+    font-family: var(--pc-block-font-body, var(--pc-theme-font-body, inherit));
     font-size: 0.74em;
     font-weight: 800;
     text-transform: uppercase;

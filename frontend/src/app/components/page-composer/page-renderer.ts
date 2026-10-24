@@ -30,7 +30,7 @@ import { RouterLink } from '@angular/router';
 import type { SafeHtml } from '@angular/platform-browser';
 import MarkdownIt from 'markdown-it';
 import sanitizeHtml from 'sanitize-html';
-import { installMimiTextColor, installMimiParagraphAlignment, parseMimiMediaTitle } from '@shared/content/mimi-markdown-rendering';
+import { installMimiTextColor, installMimiFontSize, installMimiParagraphAlignment, parseMimiMediaTitle } from '@shared/content/mimi-markdown-rendering';
 import { installMimiInlineControls } from '@shared/content/mimi-inline-controls';
 import { Icon } from '../icon/icon';
 import { Carousel } from '../carousel/carousel';
@@ -113,6 +113,7 @@ export class PageRenderer {
     afterNextRender(() => this.initParallax());
     afterEveryRender(() => this.scheduleParallax?.());
     installMimiTextColor(this.markdown);
+    installMimiFontSize(this.markdown);
     installMimiParagraphAlignment(this.markdown);
     installMimiInlineControls(this.markdown);
     this.markdown.renderer.rules['image'] = (tokens, index): string => {
@@ -425,7 +426,10 @@ export class PageRenderer {
         ],
       },
       allowedStyles: {
-        span: { color: [/^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/i] },
+        span: {
+          color: [/^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/i],
+          'font-size': [/^(?:75|85|100|115|130|150|175|200|250|300)%$/],
+        },
         p: { 'text-align': [/^(?:left|center|right)$/] },
         svg: { color: [/^#[a-f0-9]{8}$/i] },
         img: {

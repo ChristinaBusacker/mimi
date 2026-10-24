@@ -39,6 +39,8 @@
     font-family: var(--pc-block-font-heading, var(--pc-theme-font-heading));
     color: var(--pc-heading-color, var(--pc-theme-color-heading));
   }
+  // Eyebrow is a body-font label, not a heading-font headline.
+  h6 { font-family: var(--pc-block-font-body, var(--pc-theme-font-body)); }
   h1 {
     font-size: var(--pc-theme-active-size-h1, var(--pc-theme-size-h1));
   }

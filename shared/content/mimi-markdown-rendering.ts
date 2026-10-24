@@ -51,9 +51,36 @@ export function installMimiTextColor(markdown: InstanceType<typeof MarkdownIt>):
   markdown.renderer.rules['mimi_text_color_close'] = (): string => '</span>';
 }
 
+/** Renders only validated inline scaling emitted by MarkdownFontSize. */
+export function installMimiFontSize(markdown: InstanceType<typeof MarkdownIt>): void {
+  markdown.inline.ruler.before('emphasis', 'mimiFontSize', (state, silent): boolean => {
+    const match = /^%%size-(75|85|100|115|130|150|175|200|250|300)\[([^\]\n]+)\]%%/.exec(
+      state.src.slice(state.pos),
+    );
+    if (!match) return false;
+    if (!silent) {
+      const open = state.push('mimi_font_size_open', 'span', 1);
+      open.attrSet('data-mimi-size', match[1]);
+      state.md.inline.parse(match[2], state.md, state.env, state.tokens);
+      state.push('mimi_font_size_close', 'span', -1);
+    }
+    state.pos += match[0].length;
+    return true;
+  });
+  markdown.renderer.rules['mimi_font_size_open'] = (tokens, index): string => {
+    const size = tokens[index].attrGet('data-mimi-size') ?? '';
+    return /^(?:75|85|100|115|130|150|175|200|250|300)$/.test(size + '')
+      ? `<span style="font-size:${size}%">`
+      : '<span>';
+  };
+  markdown.renderer.rules['mimi_font_size_close'] = (): string => '</span>';
+}
+
 /** Renders the exact alignment markers emitted by MimiAlignedParagraph. */
 export function installMimiParagraphAlignment(markdown: InstanceType<typeof MarkdownIt>): void {
-  markdown.block.ruler.before('paragraph', 'mimiParagraphAlignment',
+  markdown.block.ruler.before(
+    'paragraph',
+    'mimiParagraphAlignment',
     (state, startLine, endLine, silent): boolean => {
       const start = state.bMarks[startLine] + state.tShift[startLine];
       const begin = state.src.slice(start, state.eMarks[startLine]);
@@ -83,5 +110,6 @@ export function installMimiParagraphAlignment(markdown: InstanceType<typeof Mark
       state.push('paragraph_close', 'p', -1);
       state.line = close + 1;
       return true;
-    });
+    },
+  );
 }

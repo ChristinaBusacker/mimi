@@ -2,7 +2,8 @@
   [style.--pc-editor-font-body]="fontBody()"
   [style.--pc-editor-font-heading]="fontHeading()"
   [style.--pc-editor-text-color]="previewTextColor()"
-  [style.--pc-editor-heading-color]="headingTextColor()">
+  [style.--pc-editor-heading-color]="headingTextColor()"
+  [ngStyle]="typographyStyles()">
   <div
     class="markdown-editor__toolbar"
     role="toolbar"
@@ -35,6 +36,15 @@
         <option value="codeBlock">{{ 'admin.markdown.workflow.codeBlock' | i18n | async }}</option>
       </select>
     </label>
+
+    <button type="button" [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.fontSize.decrease' | i18n | async"
+      [title]="'admin.markdown.fontSize.decrease' | i18n | async"
+      (click)="changeFontSize('smaller')">A−</button>
+    <button type="button" [disabled]="isDisabled()"
+      [attr.aria-label]="'admin.markdown.fontSize.increase' | i18n | async"
+      [title]="'admin.markdown.fontSize.increase' | i18n | async"
+      (click)="changeFontSize('larger')">A+</button>
 
     <button
       type="button"

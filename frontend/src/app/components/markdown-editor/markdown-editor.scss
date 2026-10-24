@@ -342,6 +342,16 @@
   line-height: 1.6;
   color: var(--pc-editor-text-color, inherit);
   font-family: var(--pc-editor-font-body, inherit);
+  font-size: var(--markdown-size-body, 16px);
+
+  // Match the public page's heading sizes, not browser 1.5rem defaults.
+  :is(h1, h2, h3, h4, h5) { font-family: var(--pc-editor-font-heading, inherit); }
+  h1 { font-size: var(--markdown-size-h1, 48px); }
+  h2 { font-size: var(--markdown-size-h2, 42px); }
+  h3 { font-size: var(--markdown-size-h3, 28px); }
+  h4 { font-size: var(--markdown-size-h4, 20px); }
+  p, li { font-size: var(--markdown-size-body, 16px); }
+  small { font-size: var(--markdown-size-small, 13px); }
 
   // Candy is a paragraph preset, not a global block or page font override.
   p[data-mimi-candy] {
@@ -484,12 +494,13 @@
   }
 }
 .markdown-editor__content h5 {
-  font-size: 1.1rem;
+  font-size: var(--markdown-size-h5, 18px);
   font-weight: 600;
   letter-spacing: 0.04em;
 }
 .markdown-editor__content h6 {
-  font-size: 0.74rem;
+  font-family: var(--pc-editor-font-body, inherit);
+  font-size: var(--markdown-size-h6, 13px);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.14em;

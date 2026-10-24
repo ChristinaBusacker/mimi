@@ -1,0 +1,6 @@
+{
+  "localizations": [
+    { "key": "admin.markdown.fontSize.decrease", "de": "Markierten Text verkleinern", "en": "Decrease selected text size" },
+    { "key": "admin.markdown.fontSize.increase", "de": "Markierten Text vergrößern", "en": "Increase selected text size" }
+  ]
+}

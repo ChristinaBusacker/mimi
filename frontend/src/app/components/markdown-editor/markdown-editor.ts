@@ -1,7 +1,7 @@
 import type { Asset } from '@shared/assets/asset';
 import type { ContentMediaAlignment, ContentMediaSize } from '@shared/content/content-media';
 
-import { AsyncPipe, isPlatformBrowser } from '@angular/common';
+import { AsyncPipe, NgStyle, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -33,6 +33,7 @@ import { normalizeMarkdownDocument } from './normalize-markdown-document';
 import { AssetImage, imageDisplayMode, mediaWidth } from './asset-image.extension';
 import type { ImageDisplayMode } from './asset-image.extension';
 import { MarkdownTextColor } from './text-color.extension';
+import { MarkdownFontSize, nextMimiFontSize } from './font-size.extension';
 import { MarkdownStrike, MarkdownUnderline } from './text-decoration-marks.extension';
 import { YoutubeEmbed } from './youtube-embed.extension';
 import { MimiInlineControls } from './mimi-inline-controls.extension';
@@ -64,7 +65,7 @@ const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,20}$/;
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [AssetLibrary, ComposerColorPicker, AsyncPipe, I18nPipe, Icon],
+  imports: [AssetLibrary, ComposerColorPicker, AsyncPipe, NgStyle, I18nPipe, Icon],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -84,6 +85,15 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
   readonly headingTextColor = input<string | null>(null);
   readonly fontBody = input<string | null>(null);
   readonly fontHeading = input<string | null>(null);
+  readonly fontSizes = input<Partial<Record<'body' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'small' | 'label', number>>>({});
+  protected readonly typographyStyles = computed((): Record<string, string> => {
+    const vars: Record<string, string> = {};
+    for (const [role, size] of Object.entries(this.fontSizes())) {
+      if (typeof size === 'number' && Number.isFinite(size))
+        vars[`--markdown-size-${role}`] = `${size}px`;
+    }
+    return vars;
+  });
   private readonly platformId = inject(PLATFORM_ID);
   private readonly editorHost = viewChild<ElementRef<HTMLElement>>('editorHost');
   private readonly settingsDialog = viewChild<ElementRef<HTMLDialogElement>>('settingsDialog');
@@ -176,6 +186,7 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
         MarkdownUnderline,
         MarkdownStrike,
         MarkdownTextColor,
+        MarkdownFontSize,
         MimiAlignedParagraph,
         AssetImage,
         YoutubeEmbed,
@@ -359,6 +370,17 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
     }
 
     editor.chain().focus().setParagraph().updateAttributes('paragraph', { candy: value === 'candy' }).run();
+  }
+
+  /** Scale a selected span relative to its surrounding theme-defined paragraph size. */
+  protected changeFontSize(direction: 'larger' | 'smaller'): void {
+    const editor = this.editor();
+    if (!editor || this.disabled()) return;
+    const current = editor.getAttributes('mimiFontSize')['percent'];
+    const percent = nextMimiFontSize(typeof current === 'number' ? current : 100, direction);
+    const chain = editor.chain().focus();
+    if (percent === 100) chain.unsetMark('mimiFontSize').run();
+    else chain.setMark('mimiFontSize', { percent }).run();
   }
 
   protected isBoldActive(): boolean {
