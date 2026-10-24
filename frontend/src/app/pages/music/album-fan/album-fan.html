@@ -36,9 +36,9 @@
 
         @for (card of cards(); track card.album.id) {
           <article
-            class="album-fan__card"
+            class="album-fan__card is-visible"
             [class.is-active]="card.active"
-            [class.is-visible]="card.visible"
+            [class.is-outer]="card.outer"
             [style.--fan-x]="card.x"
             [style.--fan-y]="card.y"
             [style.--fan-z]="card.depth"

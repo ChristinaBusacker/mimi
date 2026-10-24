@@ -21,6 +21,7 @@ import { Icon } from '../../../components/icon/icon';
 import { I18nPipe } from '../../../core/i18n/i18n.pipe';
 import { AlbumSelectionService } from '../../../core/music/album-selection.service';
 import { prepareBookletPortal } from '../../../core/navigation/booklet-transition';
+import { albumFanWindow } from './album-fan-layout';
 import type { AlbumStageRenderer } from './album-stage-renderer';
 
 interface AlbumFanCard {
@@ -34,7 +35,7 @@ interface AlbumFanCard {
   scale: number;
   opacity: number;
   zIndex: number;
-  visible: boolean;
+  outer: boolean;
   active: boolean;
 }
 
@@ -76,32 +77,25 @@ export class AlbumFan implements OnInit {
 
   protected readonly cards = computed<AlbumFanCard[]>(() => {
     const albums = this.albums();
-    const count = albums.length;
-
-    if (count === 0) {
-      return [];
-    }
-
     const activeIndex = this.normalizedActiveIndex();
-    const position = activeIndex + this.dragProgress();
 
-    return albums.map((album, index) => {
-      const offset = this.circularOffset(index, position, count);
+    // Render at most five covers, independent of catalog size. The selection and
+    // drag offset remain continuous as the window advances through the catalog.
+    return albumFanWindow(albums.length, activeIndex, this.dragProgress()).map(({ index, offset }) => {
       const absoluteOffset = Math.abs(offset);
-      const x = this.horizontalOffset(offset);
 
       return {
-        album,
+        album: albums[index],
         index,
-        x,
-        y: `${(absoluteOffset * 18).toFixed(2)}px`,
-        depth: `${(-absoluteOffset * 155).toFixed(2)}px`,
-        rotateY: `${(-offset * 12).toFixed(2)}deg`,
-        rotateZ: `${(offset * 3.25).toFixed(2)}deg`,
-        scale: Math.max(0.6, 1 - absoluteOffset * 0.14),
-        opacity: Math.max(0, 1 - absoluteOffset * 0.20),
-        zIndex: 100 - Math.round(absoluteOffset * 10),
-        visible: absoluteOffset <= 3.2,
+        x: this.horizontalOffset(offset),
+        y: `${(absoluteOffset * 15).toFixed(2)}px`,
+        depth: `${(-absoluteOffset * 175).toFixed(2)}px`,
+        rotateY: `${(-offset * 15).toFixed(2)}deg`,
+        rotateZ: `${(offset * 4.5).toFixed(2)}deg`,
+        scale: Math.max(0.54, 1 - absoluteOffset * 0.22),
+        opacity: Math.max(0.36, 1 - absoluteOffset * 0.29),
+        zIndex: 100 - Math.round(absoluteOffset * 12),
+        outer: absoluteOffset > 1.5,
         active: index === activeIndex,
       };
     });
@@ -374,25 +368,6 @@ export class AlbumFan implements OnInit {
     }
   }
 
-  private circularOffset(index: number, position: number, count: number): number {
-    if (count <= 1) {
-      return 0;
-    }
-
-    let offset = index - position;
-    const half = count / 2;
-
-    while (offset > half) {
-      offset -= count;
-    }
-
-    while (offset < -half) {
-      offset += count;
-    }
-
-    return offset;
-  }
-
   private horizontalOffset(offset: number): string {
     const absoluteOffset = Math.abs(offset);
 
@@ -400,9 +375,11 @@ export class AlbumFan implements OnInit {
       return '0px';
     }
 
-    const minimum = 92 * absoluteOffset;
-    const preferred = 13 * offset;
-    const maximum = 190 * absoluteOffset;
+    // The inner covers stay visibly separate from the lead. Outer covers
+    // remain a subdued silhouette, including on ultrawide screens.
+    const minimum = 128 * absoluteOffset;
+    const preferred = 19.5 * offset;
+    const maximum = 230 * absoluteOffset;
 
     if (offset > 0) {
       return `clamp(${minimum.toFixed(2)}px, ${preferred.toFixed(3)}vw, ${maximum.toFixed(2)}px)`;

@@ -596,3 +596,110 @@
     transition: none;
   }
 }
+
+// Showcase layout: foreground album, two neighboring covers and two quiet outer covers.
+// The existing Three.js light rig remains unchanged (album atmosphere is a separate patch).
+.album-fan__stage {
+  min-height: clamp(415px, 40vw, 530px);
+}
+
+.album-fan__card {
+  bottom: 121px;
+  width: clamp(185px, 22vw, 280px);
+}
+
+.album-fan__card.is-outer {
+  filter: brightness(0.68) saturate(0.78);
+}
+
+.album-fan__card.is-active {
+  filter: brightness(1.06) saturate(1.08);
+}
+
+.album-fan__card.is-active .album-fan__cover {
+  border-color: rgb(255 215 242 / 76%);
+  box-shadow:
+    0 34px 66px rgb(5 4 14 / 64%),
+    0 0 0 2px rgb(255 225 245 / 26%),
+    0 0 36px rgb(var(--album-stage-light) / 30%);
+}
+
+// The title and the action become the foreground of the same scene, not a
+// separate card beneath the stage. Leave the active cover unobstructed.
+.album-fan__details {
+  width: min(660px, calc(100% - 64px));
+  min-height: 0;
+  margin: -49px auto 0;
+  padding: 15px 24px 18px;
+  border: 1px solid rgb(249 204 237 / 26%);
+  border-radius: var(--radius-card);
+  background: linear-gradient(160deg, rgb(60 31 61 / 91%), rgb(28 15 36 / 96%));
+  box-shadow: 0 18px 34px rgb(0 0 0 / 32%), inset 0 1px 0 rgb(255 255 255 / 8%);
+  backdrop-filter: blur(14px);
+}
+
+.album-fan__details > span {
+  color: var(--page-accent, var(--color-accent-music));
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.album-fan__details strong {
+  max-width: 100%;
+  font-size: clamp(2rem, 3vw, 3.5rem);
+}
+
+.album-fan__details a {
+  margin-top: 8px;
+}
+
+@include compact-layout {
+  .album-fan__stage {
+    min-height: 375px;
+  }
+
+  .album-fan__card {
+    bottom: 99px;
+    width: clamp(148px, 34vw, 225px);
+  }
+
+  // At tablet and phone widths the five-slot catalog window remains intact,
+  // but only the lead cover and its immediate neighbors are displayed.
+  .album-fan__card.is-outer {
+    opacity: 0 !important; // Overrides the computed inline fan opacity.
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .album-fan__details {
+    margin-top: -33px;
+    width: min(100%, calc(100% - 32px));
+  }
+}
+
+@media (max-width: 560px) {
+  .album-fan__stage {
+    min-height: 318px;
+  }
+
+  .album-fan__card {
+    bottom: 85px;
+    width: clamp(128px, 42vw, 182px);
+  }
+
+  .album-fan__details {
+    margin-top: -22px;
+    padding: 14px 14px 16px;
+  }
+
+  .album-fan__details strong {
+    font-size: clamp(1.7rem, 7.3vw, 2.5rem);
+  }
+}
+
+@include reduced-motion {
+  .album-fan__details {
+    transition: none;
+  }
+}
