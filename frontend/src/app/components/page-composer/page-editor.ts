@@ -46,7 +46,7 @@ import { insertPageItem, movePageItem } from './page-editor-operations';
 import { collectBookletColors } from './page-document-colors';
 import { pageComposerBlockKinds } from './page-composer-block-kinds';
 import { PAGE_COMPOSER_ICONS, validComposerDestination } from './page-interactive-blocks';
-import { PAGE_STYLE_DEFAULTS, effectiveBlockTextColor } from './page-style-defaults';
+import { PAGE_STYLE_DEFAULTS, effectiveBlockTextColor, effectiveBlockHeadingColor } from './page-style-defaults';
 import { PageStyleClipboard } from './page-style-clipboard';
 import type { PageTheme, PageThemeSizeKey, PageThemeColorKey } from '@shared/content/page-document';
 import {
@@ -608,7 +608,14 @@ export class PageEditor {
     return effectiveBlockTextColor(this.document(), block?.id ?? '', this.breakpoint());
   }
   protected headingColor(): string {
-    return this.selectedBlock()?.styles.headingColor ?? this.textColor();
+    const block = this.selectedBlock();
+    return effectiveBlockHeadingColor(this.document(), block?.id ?? '', this.breakpoint());
+  }
+  protected markdownFont(kind: 'fontBody' | 'fontHeading'): string {
+    const block = this.selectedBlock();
+    const theme = pageThemeWithDefaults(this.document().theme);
+    const id = block?.styles[kind] ?? theme[kind];
+    return this.themeFonts.find((font) => font.id === id)?.css ?? 'inherit';
   }
   protected setHeadingColor(color: string): void {
     if (!/^#[0-9a-f]{8}$/i.test(color)) return;
@@ -785,7 +792,7 @@ export class PageEditor {
       selection?.kind !== 'section' &&
       selection?.kind !== 'column' &&
       selection?.kind !== 'row' &&
-      !['albumDetails', 'albumTracks', 'albumCredits'].includes(this.selectedBlock()?.type ?? '')
+      !['text', 'albumDetails', 'albumTracks', 'albumCredits'].includes(this.selectedBlock()?.type ?? '')
     )
       return;
     this.changeSelected((node) => {

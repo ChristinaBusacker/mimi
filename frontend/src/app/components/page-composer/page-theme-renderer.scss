@@ -1,4 +1,10 @@
 /* Scoped to themed documents. Legacy documents keep their previous typography. */
+// The Candy paragraph explicitly overrides both global and block font selections.
+:host ::ng-deep .page-document__markdown p.mimi-candy {
+  font-family: 'EmilysCandy', cursive;
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
 :host ::ng-deep .page-document__markdown {
   font-family: var(--pc-block-font-body, inherit);
 }
@@ -58,6 +64,12 @@
   li {
     font-size: var(--pc-theme-active-size-body, var(--pc-theme-size-body));
   }
+}
+// Explicit paragraph format wins even in themed documents.
+:host ::ng-deep .page-document--themed .page-document__markdown p.mimi-candy {
+  font-family: 'EmilysCandy', cursive;
+  font-size: 1.8rem;
+  line-height: 1;
 }
 @container page-composer (max-width: 900px) {
   .page-document--themed {

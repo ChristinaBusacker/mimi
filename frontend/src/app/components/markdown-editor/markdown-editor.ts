@@ -44,6 +44,7 @@ type EditableMedia = 'image' | 'youtube';
 
 type EditorBlockType =
   | 'paragraph'
+  | 'candy'
   | 'heading1'
   | 'heading2'
   | 'heading3'
@@ -77,8 +78,12 @@ const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,20}$/;
 })
 export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAccessor {
   readonly suggestedColors = input<readonly string[] | null>(null);
-  /** Inherited color from the Composer text block when no inline mark exists. */
+  /** Effective Composer text/block styles, mirrored in the editing surface. */
   readonly defaultTextColor = input('#ffffffff');
+  readonly previewTextColor = input<string | null>(null);
+  readonly headingTextColor = input<string | null>(null);
+  readonly fontBody = input<string | null>(null);
+  readonly fontHeading = input<string | null>(null);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly editorHost = viewChild<ElementRef<HTMLElement>>('editorHost');
   private readonly settingsDialog = viewChild<ElementRef<HTMLDialogElement>>('settingsDialog');
@@ -301,6 +306,7 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
       return 'heading3';
     }
 
+    if (this.editor()?.isActive('paragraph', { candy: true })) return 'candy';
     return 'paragraph';
   }
 
@@ -352,7 +358,7 @@ export class MarkdownEditor implements AfterViewInit, OnDestroy, ControlValueAcc
       return;
     }
 
-    editor.chain().focus().setParagraph().run();
+    editor.chain().focus().setParagraph().updateAttributes('paragraph', { candy: value === 'candy' }).run();
   }
 
   protected isBoldActive(): boolean {

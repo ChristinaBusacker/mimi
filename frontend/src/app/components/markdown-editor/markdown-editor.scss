@@ -15,7 +15,8 @@
   h4,
   h5,
   h6 {
-    color: var(--pc-heading-color, inherit);
+    color: var(--pc-editor-heading-color, var(--pc-heading-color, inherit));
+    font-family: var(--pc-editor-font-heading, inherit);
     padding: 0;
     margin: 0;
   }
@@ -98,10 +99,22 @@
       flex-direction: column;
       gap: 3px;
       width: 17px;
-      i { display: block; height: 2px; width: 100%; background: currentColor; border-radius: 2px; }
-      i:nth-child(2) { width: 65%; }
-      &.align-center i:nth-child(2) { align-self: center; }
-      &.align-right i:nth-child(2) { align-self: flex-end; }
+      i {
+        display: block;
+        height: 2px;
+        width: 100%;
+        background: currentColor;
+        border-radius: 2px;
+      }
+      i:nth-child(2) {
+        width: 65%;
+      }
+      &.align-center i:nth-child(2) {
+        align-self: center;
+      }
+      &.align-right i:nth-child(2) {
+        align-self: flex-end;
+      }
     }
   }
   .markdown-editor__color-tool {
@@ -327,6 +340,15 @@
   padding: var(--spacing-sm);
   outline: none;
   line-height: 1.6;
+  color: var(--pc-editor-text-color, inherit);
+  font-family: var(--pc-editor-font-body, inherit);
+
+  // Candy is a paragraph preset, not a global block or page font override.
+  p[data-mimi-candy] {
+    font-family: 'EmilysCandy', cursive;
+    font-size: 1.8rem;
+    line-height: 1;
+  }
 
   > *:first-child {
     margin-top: 0;

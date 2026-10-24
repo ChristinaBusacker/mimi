@@ -2,6 +2,7 @@ import type { PageDocument } from '@shared/content/page-document';
 import {
   PAGE_DEFAULT_TEXT_COLOR,
   PAGE_STYLE_DEFAULTS,
+  effectiveBlockHeadingColor,
   effectiveBlockTextColor,
   pageTextColorVars,
 } from './page-style-defaults';
@@ -26,10 +27,28 @@ const text = column.blocks[0];
 describe('Page Composer defaults and text color inheritance', () => {
   beforeEach(() => {
     document.styles = {};
+    document.theme = undefined;
     section.styles = {};
     section.rows[0].styles = {};
     column.styles = {};
     text.styles = {};
+  });
+
+  it('applies page theme, ancestor, block and explicit heading colors in order', () => {
+    document.theme = { colors: { heading: '#ddaabbff' } };
+    expect(effectiveBlockHeadingColor(document, 'text')).toBe('#ddaabbff');
+    section.styles.textColor = '#223344ff';
+    expect(effectiveBlockHeadingColor(document, 'text')).toBe('#223344ff');
+    text.styles.textColor = '#556677ff';
+    expect(effectiveBlockHeadingColor(document, 'text')).toBe('#556677ff');
+    text.styles.headingColor = '#aabbccff';
+    expect(effectiveBlockHeadingColor(document, 'text')).toBe('#aabbccff');
+  });
+
+  it('resolves responsive text overrides for heading inheritance', () => {
+    section.styles.responsive = { tablet: { textColor: '#775533ff' } };
+    expect(effectiveBlockHeadingColor(document, 'text', 'desktop')).toBe(PAGE_DEFAULT_TEXT_COLOR);
+    expect(effectiveBlockHeadingColor(document, 'text', 'mobile')).toBe('#775533ff');
   });
 
   it('uses the same unstyled white fallback as the color picker', () => {

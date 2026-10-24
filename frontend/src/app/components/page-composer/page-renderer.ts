@@ -401,13 +401,14 @@ export class PageRenderer {
         ...sanitizeHtml.defaults.allowedAttributes,
         a: ['href', 'title', 'class', 'target', 'rel'],
         img: ['src', 'srcset', 'sizes', 'alt', 'loading', 'class', 'style'],
-        p: ['style'],
+        p: ['style', 'class'],
         svg: ['class', 'viewBox', 'width', 'height', 'style', 'role', 'aria-label'],
         path: ['d', 'fill'],
         span: ['style'],
       },
       allowedClasses: {
         a: ['mimi-inline-button', 'mimi-inline-button--primary', 'mimi-inline-button--secondary', 'mimi-inline-button--outline'],
+        p: ['mimi-candy'],
         svg: ['mimi-inline-icon'],
         img: [
           'content-media',
@@ -572,8 +573,13 @@ export class PageRenderer {
       const s = styles.shadow;
       result['box-shadow'] = `${s.x}px ${s.y}px ${s.blur}px ${s.spread}px ${s.color}`;
     }
-    // Heading overrides are local to the text block. Inherit its normal text color otherwise.
-    result['--pc-heading-color'] = styles.headingColor ?? 'var(--pc-theme-color-heading, inherit)';
+    // Define heading color only when this node explicitly overrides it.
+    // Otherwise CSS inheritance preserves a Section/Row/Column style over the page theme.
+    const hasLocalTextColor = !!(styles.textColor || styles.responsive?.tablet?.textColor ||
+      styles.responsive?.mobile?.textColor);
+    if (styles.headingColor) result['--pc-heading-color'] = styles.headingColor;
+    else if (hasLocalTextColor) result['--pc-heading-color'] = 'currentColor';
+    else if (isPage) result['--pc-heading-color'] = 'var(--pc-theme-color-heading, inherit)';
     // A node's own design must not leak down via inherited CSS custom properties.
     result['--pc-design-color'] =
       styles.designBackground?.kind === 'color'

@@ -57,7 +57,7 @@ export function installMimiParagraphAlignment(markdown: InstanceType<typeof Mark
     (state, startLine, endLine, silent): boolean => {
       const start = state.bMarks[startLine] + state.tShift[startLine];
       const begin = state.src.slice(start, state.eMarks[startLine]);
-      const match = /^:::align-(center|right)\s*$/.exec(begin);
+      const match = /^:::(?:align-(center|right)(-candy)?|candy)\s*$/.exec(begin);
       if (!match) return false;
       let close = startLine + 1;
       while (close < endLine && close - startLine <= 30) {
@@ -75,7 +75,8 @@ export function installMimiParagraphAlignment(markdown: InstanceType<typeof Mark
       }).join('\n');
       if (!text.trim()) return false;
       const open = state.push('paragraph_open', 'p', 1);
-      open.attrSet('style', `text-align:${match[1]}`);
+      if (match[1]) open.attrSet('style', `text-align:${match[1]}`);
+      if (match[2] === '-candy' || begin.trim() === ':::candy') open.attrSet('class', 'mimi-candy');
       const inline = state.push('inline', '', 0);
       inline.content = text;
       inline.children = [];

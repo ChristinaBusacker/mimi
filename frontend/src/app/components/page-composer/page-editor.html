@@ -433,6 +433,10 @@
                   <app-markdown-editor
                     [suggestedColors]="bookletColors()"
                     [defaultTextColor]="textColor()"
+                    [previewTextColor]="textColor()"
+                    [headingTextColor]="headingColor()"
+                    [fontBody]="markdownFont('fontBody')"
+                    [fontHeading]="markdownFont('fontHeading')"
                     [formControl]="markdownControl"
                     [assets]="assets()"
                     [label]="('page.editor.content' | i18n | async) ?? ''"

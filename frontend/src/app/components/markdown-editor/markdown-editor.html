@@ -1,4 +1,8 @@
-<div class="markdown-editor" role="group" [attr.aria-label]="label()">
+<div class="markdown-editor" role="group" [attr.aria-label]="label()"
+  [style.--pc-editor-font-body]="fontBody()"
+  [style.--pc-editor-font-heading]="fontHeading()"
+  [style.--pc-editor-text-color]="previewTextColor()"
+  [style.--pc-editor-heading-color]="headingTextColor()">
   <div
     class="markdown-editor__toolbar"
     role="toolbar"
@@ -17,6 +21,7 @@
         <option value="paragraph">
           {{ 'admin.markdown.paragraph' | i18n | async }}
         </option>
+        <option value="candy">Candy · Emily's Candy</option>
         <option value="heading1">{{ 'admin.markdown.workflow.heading1' | i18n | async }}</option>
         <option value="heading2">
           {{ 'admin.markdown.heading2' | i18n | async }}

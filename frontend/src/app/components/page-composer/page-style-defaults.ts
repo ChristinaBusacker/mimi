@@ -32,6 +32,36 @@ export function pageTextColorVars(styles: PageStyles, isPage = false): Record<st
   };
 }
 
+/** The heading's effective color follows the same precedence as the public renderer:
+ * page heading theme < nearest node/ancestor color < text-block heading color.
+ * Explicit inline Markdown text-color marks remain the final override in HTML.
+ */
+export function effectiveBlockHeadingColor(
+  document: PageDocument,
+  blockId: string,
+  breakpoint: PageBreakpoint = 'desktop',
+): string {
+  const colorOn = (styles: PageStyles): string | null => {
+    let color = styles.textColor ?? null;
+    if (breakpoint !== 'desktop') color = styles.responsive?.tablet?.textColor ?? color;
+    if (breakpoint === 'mobile') color = styles.responsive?.mobile?.textColor ?? color;
+    return styles.headingColor ?? color;
+  };
+  const page = colorOn(document.styles) ?? document.theme?.colors?.heading ?? PAGE_DEFAULT_TEXT_COLOR;
+  for (const section of document.sections) {
+    const sectionColor = colorOn(section.styles) ?? page;
+    for (const row of section.rows) {
+      const rowColor = colorOn(row.styles) ?? sectionColor;
+      for (const column of row.columns) {
+        const columnColor = colorOn(column.styles) ?? rowColor;
+        const block = column.blocks.find((item) => item.id === blockId);
+        if (block) return colorOn(block.styles) ?? columnColor;
+      }
+    }
+  }
+  return page;
+}
+
 /** The effective picker color follows the same document hierarchy as CSS. */
 export function effectiveBlockTextColor(
   document: PageDocument,
